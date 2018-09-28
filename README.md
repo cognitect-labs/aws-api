@@ -22,12 +22,12 @@ same way for every operation on every service.
 
 ## Approach
 
-AWS SDKs are specified by data descriptions (json) of operations, inputs, and
+AWS SDKs are described in data (json) which specifies operations, inputs, and
 outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
 
-Each SDK has its own copy of the data
+Each AWS SDK has its own copy of the data
 descriptions in their github repos. We use
 [aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
 the source for these, and release individual artifacts for each api.
@@ -54,7 +54,6 @@ The api-version is whichever is the most recent api version as of
 [https://github.com/aws/aws-sdk-js/tree/v2.324.0/apis](https://github.com/aws/aws-sdk-js/tree/v2.324.0/apis),
 to find it.
 
-
 ## Usage
 
 To use aws-api in your application, you depend on
@@ -74,8 +73,6 @@ To use, for example, the s3 api, add the following to deps.edn
 ```
 
 Fire up a repl using that deps.edn, and then you can do things like this:
-
-Now, in the repl:
 
 ``` clojure
 (require '[cognitect.aws.client.api :as aws]))
