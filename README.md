@@ -7,10 +7,16 @@ services from your Clojure program.
 
 ## Rationale
 
-AWS APIs are data-driven services.  AWS SDKs hide these services
-behind language-specific OO interfaces. Absent a Clojure SDK, Clojure
-developers lean primarily on the Java SDK either directly or through
-wrapper libs.
+AWS APIs are data oriented. Not only in the "send data, get data back"
+sense, but all of the operations and data structures for every service
+are, themselves, described in data which can be used to generate
+mechanical transformations from application data to wire data and
+back. This is exactly what we want from a Clojure API.
+
+Using the AWS Java SDK directly via interop requires knowledge of
+OO hierarchies of what are basically data classes, and while the
+existing Clojure wrappers hide much of this from you, they don't
+hide it from your process.
 
 aws-api is an idiomatic, data-oriented Clojure library for
 invoking AWS APIs.  While the library offers some helper and
