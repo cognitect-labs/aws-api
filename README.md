@@ -1,5 +1,3 @@
-# WIP - none of this really exists yet!
-
 # aws-api
 
 aws-api is a Clojure library which provides programmatic access to AWS
@@ -52,7 +50,7 @@ release whose version number includes the 2.324.0 from the version
 of aws-sdk-js.
 
 We also include the revision of our generator in the version. For example,
-`com.cognitect.aws/dynamo-db-1234.2.324.0` indicates revision `1234` of the
+`com.cognitect.aws/dynamo-db-631.2.324.0` indicates revision `631` of the
 generator, and tag `v2.324.0` of aws-sdk-js.
 
 The api-version is whichever is the most recent api version as of
@@ -70,12 +68,20 @@ The api library contains all the code you'll invoke and the others
 provide data resources used to drive your interactions with the
 service.
 
+Until we start publishing jars, you'll need to work with local
+deps (via tools.deps), as follows.
+
+``` sh
+git clone https://github.com/cognitect-labs/aws-api
+git clone https://github.com/cognitect-labs/aws-api-services
+```
+
 To use, for example, the s3 api, add the following to deps.edn
 
 ``` clojure
-{:deps {com.cognitect.aws/api       {:mvn/version "<version>"}
-        com.cognitect.aws/endpoints {:mvn/version "<version>"}
-        com.cognitect.aws/s3        {:mvn/version "<version>"}}
+{:deps {com.cognitect.aws/api       {:local/root "<path to aws-api>"}
+        com.cognitect.aws/endpoints {:local/root "<path to aws-api-resources>/endpoints"}
+        com.cognitect.aws/s3        {:local/root "<path to aws-api-resources>/s3"}}
 ```
 
 Fire up a repl using that deps.edn, and then you can do things like this:
