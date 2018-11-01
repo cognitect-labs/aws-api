@@ -28,7 +28,7 @@ same way for every operation on every service.
 
 ## Approach
 
-AWS SDKs are described in data (json) which specifies operations, inputs, and
+AWS APIs are described in data (json) which specifies operations, inputs, and
 outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
@@ -111,3 +111,17 @@ Do stuff:
 (aws/invoke s3-client {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
 (aws/invoke s3-client {:op :ListBuckets})
 ```
+
+## Credentials lookup
+
+The aws-api client looks up credentials the same way the [java
+SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
+does.
+
+## Region lookup
+
+The aws-api client looks up the region the same with the [java
+SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html)
+does, with an additional check for a System property named
+"aws.region" after it checks for the AWS_REGION environment variable
+and before it checks your aws configuration.
