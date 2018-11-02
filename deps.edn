@@ -8,5 +8,4 @@
            org.slf4j/slf4j-log4j12         {:mvn/version "1.7.25"}
            commons-codec/commons-codec     {:mvn/version "1.11"}
            org.clojure/data.json           {:mvn/version "0.2.6"}
-           com.cognitect/http-client       {:mvn/version "0.1.87"}
-           org.apache.maven/maven-artifact {:mvn/version "3.5.4"}}}
+	   com.cognitect/http-client       {:mvn/version "0.1.87"}}}
