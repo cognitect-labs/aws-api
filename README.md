@@ -59,25 +59,12 @@ To use aws-api in your application, you depend on
 `com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service
 of your choice, e.g. `com.cognitect.aws/s3`.
 
-This repo contains the `api` code, which is all you'll invoke. The
-[aws-api-services](https://github.com/cognitect-labs/aws-api-services)
-repo contains data resources for `endpoints` and all of the AWS
-services, used to drive interactions with AWS APIs.
-
-Until we start publishing jars, you'll need to work with local
-deps (via tools.deps), as follows.
-
-``` sh
-git clone https://github.com/cognitect-labs/aws-api
-git clone https://github.com/cognitect-labs/aws-api-services
-```
-
 To use, for example, the s3 api, add the following to deps.edn
 
 ``` clojure
-{:deps {com.cognitect.aws/api       {:local/root "<path to aws-api>"}
-        com.cognitect.aws/endpoints {:local/root "<path to aws-api-resources>/endpoints"}
-        com.cognitect.aws/s3        {:local/root "<path to aws-api-resources>/s3"}}
+{:deps {com.cognitect.aws/api       {:mvn/version "0.1.0-20181102.193118-1"}
+        com.cognitect.aws/endpoints {:mvn/version "1.11.441"}
+        com.cognitect.aws/s3        {:mvn/version "632.2.348.0"}}}
 ```
 
 Fire up a repl using that deps.edn, and then you can do things like this:
