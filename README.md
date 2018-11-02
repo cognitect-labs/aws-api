@@ -59,9 +59,10 @@ To use aws-api in your application, you depend on
 `com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service
 of your choice, e.g. `com.cognitect.aws/s3`.
 
-The `api` library contains all the code you'll invoke and the others
-provide data resources used to drive your interactions with AWS
-services.
+This repo contains the `api` code, which is all you'll invoke. The
+[aws-api-services](https://github.com/cognitect-labs/aws-api-services)
+repo contains data resources for `endpoints` and all of the AWS
+services, used to drive interactions with AWS APIs.
 
 Until we start publishing jars, you'll need to work with local
 deps (via tools.deps), as follows.
