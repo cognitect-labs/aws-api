@@ -36,7 +36,7 @@ descriptions in their github repos. We use
 [aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
 the source for these, and release individual artifacts for each api.
 The [api descriptors](https://github.com/aws/aws-sdk-js/tree/master/apis)
-include the AWS api-version in their filenames (and in their data), for
+include the AWS `api-version` in their filenames (and in their data). For
 example you'll see both of the following files listed:
 
     dynamodb-2011-12-05.normal.json
@@ -53,20 +53,15 @@ We also include the revision of our generator in the version. For example,
 `com.cognitect.aws/dynamo-db-631.2.324.0` indicates revision `631` of the
 generator, and tag `v2.324.0` of aws-sdk-js.
 
-The api-version is whichever is the most recent api version as of
-`v2.324.0`.  You can check the content of
-[https://github.com/aws/aws-sdk-js/tree/v2.324.0/apis](https://github.com/aws/aws-sdk-js/tree/v2.324.0/apis),
-to find it.
-
 ## Usage
 
 To use aws-api in your application, you depend on
 `com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service
 of your choice, e.g. `com.cognitect.aws/s3`.
 
-The api library contains all the code you'll invoke and the others
-provide data resources used to drive your interactions with the
-service.
+The `api` library contains all the code you'll invoke and the others
+provide data resources used to drive your interactions with AWS
+services.
 
 Until we start publishing jars, you'll need to work with local
 deps (via tools.deps), as follows.
