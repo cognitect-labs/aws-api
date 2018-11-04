@@ -1,0 +1,12 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
+{:paths ["src"]
+ :deps  {com.cognitect.aws/api       {:mvn/version "0.1.15"}
+         com.cognitect.aws/endpoints {:mvn/version "1.11.441" }
+         com.cognitect.aws/s3        {:mvn/version "632.2.348.0" }
+         com.cognitect.aws/dynamodb  {:mvn/version "632.2.348.0" }
+         com.cognitect.aws/ec2       {:mvn/version "632.2.348.0" }
+         com.cognitect.aws/iam       {:mvn/version "632.2.348.0" }
+         com.cognitect.aws/lambda    {:mvn/version "632.2.348.0" }
+         com.cognitect.aws/ssm       {:mvn/version "632.2.348.0" }}}

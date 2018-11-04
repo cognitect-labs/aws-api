@@ -101,6 +101,8 @@ Do stuff:
 (aws/invoke s3-client {:op :ListBuckets})
 ```
 
+See the [examples](examples) directory for more examples.
+
 ## Credentials lookup
 
 The aws-api client looks up credentials the same way the [java

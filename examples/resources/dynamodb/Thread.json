@@ -1,0 +1,130 @@
+{
+    "Thread": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "ForumName": {
+                        "S": "Amazon DynamoDB"
+                    },
+                    "Subject": {
+                        "S": "DynamoDB Thread 1"
+                    },
+                    "Message": {
+                        "S": "DynamoDB thread 1 message"
+                    },
+                    "LastPostedBy": {
+                        "S": "User A"
+                    },
+                    "LastPostedDateTime": {
+                        "S": "2015-09-22T19:58:22.514Z"
+                    },
+                    "Views": {
+                        "N": "0"
+                    },
+                    "Replies": {
+                        "N": "0"
+                    },
+                    "Answered": {
+                        "N": "0"
+                    },
+                    "Tags": {
+                        "L": [
+                            {
+                                "S": "index"
+                            },
+                            {
+                                "S": "primarykey"
+                            },
+                            {
+                                "S": "table"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ForumName": {
+                        "S": "Amazon DynamoDB"
+                    },
+                    "Subject": {
+                        "S": "DynamoDB Thread 2"
+                    },
+                    "Message": {
+                        "S": "DynamoDB thread 2 message"
+                    },
+                    "LastPostedBy": {
+                        "S": "User A"
+                    },
+                    "LastPostedDateTime": {
+                        "S": "2015-09-15T19:58:22.514Z"
+                    },
+                    "Views": {
+                        "N": "0"
+                    },
+                    "Replies": {
+                        "N": "0"
+                    },
+                    "Answered": {
+                        "N": "0"
+                    },
+                    "Tags": {
+                        "L": [
+                            {
+                                "S": "items"
+                            },
+                            {
+                                "S": "attributes"
+                            },
+                            {
+                                "S": "throughput"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "ForumName": {
+                        "S": "Amazon S3"
+                    },
+                    "Subject": {
+                        "S": "S3 Thread 1"
+                    },
+                    "Message": {
+                        "S": "S3 thread 1 message"
+                    },
+                    "LastPostedBy": {
+                        "S": "User A"
+                    },
+                    "LastPostedDateTime": {
+                        "S": "2015-09-29T19:58:22.514Z"
+                    },
+                    "Views": {
+                        "N": "0"
+                    },
+                    "Replies": {
+                        "N": "0"
+                    },
+                    "Answered": {
+                        "N": "0"
+                    },
+                    "Tags": {
+                        "L": [
+                            {
+                                "S": "largeobjects"
+                            },
+                            {
+                                "S": "multipart upload"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    ]
+}
