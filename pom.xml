@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.cognitect.aws</groupId>
     <artifactId>api</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>DEV</version>
     <packaging>jar</packaging>
     <name>api</name>
     <dependencies>
