@@ -146,7 +146,7 @@
 
 (defn url-encode
   "Percent encode the string to put in a URL."
-  [s]
+  [^String s]
   (-> s
       (URLEncoder/encode "UTF-8")
       (.replace "+" "%20")))
