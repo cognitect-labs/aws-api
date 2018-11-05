@@ -70,7 +70,7 @@ To use, for example, the s3 api, add the following to deps.edn
 Fire up a repl using that deps.edn, and then you can do things like this:
 
 ``` clojure
-(require '[cognitect.aws.client.api :as aws]))
+(require '[cognitect.aws.client.api :as aws])
 ```
 
 Create a client:
