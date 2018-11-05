@@ -51,6 +51,7 @@
   [{:keys [uri]}]
   (let [encoded-path (-> uri
                          (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
+                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.
                          (URI.)
                          (.normalize)
                          (.getPath)

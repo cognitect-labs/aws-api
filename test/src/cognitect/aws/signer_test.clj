@@ -19,7 +19,7 @@
 
 (defn parse-request-line
   [request-line]
-  (let [[request-method uri & rest] (str/split request-line #" ")
+  (let [[_ request-method uri] (re-find #"^([A-Za-z]+)\s(.*)\s(HTTP.*)$" request-line)
         [path query-string] (str/split uri #"\?" 2)]
     {:request-method (keyword (str/lower-case request-method))
      :uri path
