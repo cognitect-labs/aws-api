@@ -12,6 +12,7 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
+            [cognitect.aws.signers :as signers]
             [cognitect.aws.util :as util]))
 
 (defn client
@@ -53,8 +54,6 @@
                     (region/fetch
                      (or region-provider
                          (region/default-region-provider)))))]
-    ;; TODO: (dchelimsky 2018-07-19) why is this here instead of the ns dec?
-    (require 'cognitect.aws.signers)
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     {:service service
      :region region
