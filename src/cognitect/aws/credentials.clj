@@ -169,19 +169,20 @@
 
   Arguments:
 
-  f             File    The profile configuration file. (default: ~/.aws/credentials)
   profile-name  string  The name of the profile in the file. (default: default)
-https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html
-  Parsed properties:
+  f             File    The profile configuration file. (default: ~/.aws/credentials)
 
-  aws_access_key        required
-  aws_secret_access_key required
-  aws_session_token     optional"
+  https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html
+    Parsed properties:
+
+    aws_access_key        required
+    aws_secret_access_key required
+    aws_session_token     optional"
   ([]
-   (profile-credentials-provider (io/file (System/getProperty "user.home") ".aws" "credentials")))
-  ([f]
-   (profile-credentials-provider f "default"))
-  ([f profile-name]
+   (profile-credentials-provider "default"))
+  ([profile-name]
+   (profile-credentials-provider profile-name (io/file (System/getProperty "user.home") ".aws" "credentials")))
+  ([profile-name f]
    (reify CredentialsProvider
      (fetch [_]
        (try
