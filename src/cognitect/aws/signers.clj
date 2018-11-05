@@ -7,7 +7,8 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
-  (:import [java.net URI]))
+  (:import [java.net URI]
+           [java.net URLDecoder]))
 
 (set! *warn-on-reflection* true)
 
@@ -67,7 +68,10 @@
    (when-not (str/blank? query)
      (->> (str/split query #"&")
           (map #(let [[k v] (str/split % #"=" 2)]
-                  (str (uri-encode k) "=" (uri-encode v))))
+                  ;; decode first because sometimes it's already been url encoded
+                  (str (uri-encode (URLDecoder/decode k))
+                       "="
+                       (uri-encode (URLDecoder/decode v)))))
           sort
           (str/join "&")))))
 
