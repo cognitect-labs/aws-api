@@ -11,9 +11,11 @@
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
 
-;; These tests are not well-formed.
-(def exclude-test?
-  #{"post-vanilla-query-nonunreserved"})
+
+(def exclude-dir?
+  "These dirs have subdirs with tests, but no tests directly in them."
+  #{"post-sts-token"
+    "normalize-path"})
 
 (defn parse-request-line
   [request-line]
@@ -73,16 +75,20 @@
 
 (defn sub-directories
   [dir]
-  (->> dir (.listFiles) (filter #(.isDirectory %))))
+  (let [children (->> dir (.listFiles) (filter #(.isDirectory %)))]
+    (into children
+          (mapcat sub-directories children))))
 
 (defn read-tests
   [dir]
-  (map (fn [test-directory]
-         (reduce #(let [[kw parser] (suffix-handlers (suffix %2))]
-                    (assoc %1 kw (parser (slurp %2))))
-                 {:name (.getName test-directory)}
-                 (.listFiles test-directory)))
-       (sub-directories dir)))
+  (->> (sub-directories dir)
+       (remove #(exclude-dir? (.getName %)))
+       (map (fn [test-directory]
+              (reduce #(let [[kw parser] (suffix-handlers (suffix %2))]
+                         (assoc %1 kw (parser (slurp %2))))
+                      {:name (.getName test-directory)}
+                      (->> (.listFiles test-directory)
+                           (remove #(.isDirectory %))))))))
 
 (def credentials
   {:aws/access-key-id "AKIDEXAMPLE"
@@ -90,14 +96,16 @@
 
 (deftest test-aws-sign-v4
   (let [service {:metadata {:signatureVersion "v4" :endpointPrefix "service"}}]
-    (doseq [{:keys [name request authorization]} (read-tests (io/file (io/resource "aws4_testsuite")))]
-      (when-not (exclude-test? name)
-        (testing name
-          (let [signed-request (client/sign-http-request service :us-east-1 request credentials)]
-            (is (= (get-in signed-request [:headers "authorization"])
-                   authorization))))))))
+    (doseq [{:keys [name request authorization]} (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))]
+      (testing name
+        (let [signed-request (client/sign-http-request service :us-east-1 request credentials)]
+          (is (= (get-in signed-request [:headers "authorization"])
+                 authorization)))))))
 
 (comment
   (run-tests)
 
+  (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
+
+  (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))
   )
