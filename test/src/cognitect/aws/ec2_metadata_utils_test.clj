@@ -24,6 +24,6 @@
   (is (= "us-east-1" (ec2-metadata-utils/get-ec2-instance-region))))
 
 (comment
-  (run-tests)
+  (run-tests))
 
-  )
+

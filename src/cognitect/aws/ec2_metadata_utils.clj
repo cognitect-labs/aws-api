@@ -43,8 +43,9 @@
 (defn get-items
   "Takes a metadata server uri and returns a sequence of metadata items.
    Optionally, can take max retry attempts."
-  [uri {:keys [retries]
-        :or {retries 3}
+  [uri {:keys [retries split-lines]
+        :or {retries 3
+             split-lines true}
         :as options}]
   (let [client (http/create {})
         request (request-map uri)
@@ -58,16 +59,27 @@
     ;; TODO: handle unhappy paths -JS
     (if-not (:cognitect.anomalies/category response)
       (if (= (:status response) 200)
-        (-> response :body util/bbuf->str str/split-lines)
+        (let [body-str (util/bbuf->str (:body response))]
+          (if split-lines
+            (str/split-lines body-str)
+            [body-str]))
         nil)
       nil)))
 
 (defn get-items-at-path
   ([path]
-   (get-items-at-path path {:retries 3}))
+   (get-items-at-path path nil))
   ([path opts]
    (get-items (build-uri (get-host-address) path) opts)))
 
+(defn get-data
+  "Takes a metadata server uri and returns a single value."
+  [uri]
+  (first (get-items uri {:split-lines false})))
+
+(defn get-data-at-path
+  [path]
+  (get-data (build-uri (get-host-address) path)))
 
 (defn get-ec2-instance-data
   []
