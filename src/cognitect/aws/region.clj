@@ -76,12 +76,11 @@
   region        required
   "
   ([]
-   (profile-region-provider
-     (or (io/file (System/getenv "AWS_CONFIG_FILE"))
-         (io/file (System/getProperty "user.home") ".aws" "config"))))
-  ([f]
-   (profile-region-provider f "default"))
-  ([^File f profile-name]
+   (profile-region-provider "default"))
+  ([profile-name]
+   (profile-region-provider profile-name (or (io/file (System/getenv "AWS_CONFIG_FILE"))
+                                             (io/file (System/getProperty "user.home") ".aws" "config"))))
+  ([^File profile-name f]
    (reify RegionProvider
      (fetch [_]
        (when (.exists f)

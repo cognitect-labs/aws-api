@@ -26,10 +26,10 @@
                (region/fetch (region/profile-region-provider))))))
     (testing "The provider reads the default profile correctly."
       (is (= "us-east-1"
-             (region/fetch (region/profile-region-provider config)))))
+             (region/fetch (region/profile-region-provider "default" config)))))
     (testing "The provider reads a custom profile correctly."
       (is (= "us-west-1"
-             (region/fetch (region/profile-region-provider config "tardigrade")))))))
+             (region/fetch (region/profile-region-provider "tardigrade" config)))))))
 
 (deftest instance-region-provider-test
   (testing "The provider obtains the region from the instance metadata correctly."
