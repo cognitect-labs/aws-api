@@ -205,10 +205,17 @@
      (fetch [_]
        (when-let [container-creds
                   (some-> (or (when-let [relative-uri (get env ecs-container-credentials-path-env-var)]
-                                (ec2-metadata-utils/get-items-at-path relative-uri))
+                                (some->> (ec2-metadata-utils/get-items-at-path relative-uri)
+                                         first
+                                         (str relative-uri)
+                                         ec2-metadata-utils/get-data-at-path))
+
                               (when-let [full-uri (get env ecs-container-credentials-full-uri-env-var)]
-                                (ec2-metadata-utils/get-items (URI. full-uri) {})))
-                          first
+                                (some->> (ec2-metadata-utils/get-items full-uri {})
+                                         first
+                                         (str full-uri)
+                                         (URI.)
+                                         ec2-metadata-utils/get-data)))
                           (json/read-str :key-fn keyword))]
            (valid-credentials
              {:aws/access-key-id (:AccessKeyId container-creds)
@@ -224,15 +231,13 @@
    (reify CredentialsProvider
      (fetch [_]
        (when-not (System/getenv ecs-container-credentials-path-env-var)
-         (when-let [ec2-creds (some-> (ec2-metadata-utils/get-items-at-path ec2-security-credentials-resource)
-                                      first
-                                      (#(ec2-metadata-utils/get-items-at-path (str ec2-security-credentials-resource %)))
-                                      first
-                                      (json/read-str :key-fn keyword))]
-           (valid-credentials
-             {:aws/access-key-id (:AccessKeyId ec2-creds)
-              :aws/secret-access-key (:SecretAccessKey ec2-creds)
-              :aws/session-token (:Token ec2-creds)}))))))
+         (when-let [cred-name (first (ec2-metadata-utils/get-items-at-path ec2-security-credentials-resource))]
+           (let [creds (some-> (ec2-metadata-utils/get-data-at-path (str ec2-security-credentials-resource cred-name))
+                               (json/read-str :key-fn keyword))]
+             (valid-credentials
+               {:aws/access-key-id (:AccessKeyId creds)
+                :aws/secret-access-key (:SecretAccessKey creds)
+                :aws/session-token (:Token creds)})))))))
   ([]
    (instance-profile-credentials-provider (System/getenv))))
 
