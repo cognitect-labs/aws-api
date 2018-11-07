@@ -84,8 +84,7 @@
 (defn get-ec2-instance-data
   []
   (some-> (build-path ec2-dynamicdata-root instance-identity-document)
-          get-items-at-path
-          first
+          get-data-at-path
           (json/read-str :key-fn keyword)))
 
 (defn get-ec2-instance-region

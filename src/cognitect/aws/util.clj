@@ -228,7 +228,7 @@
        (remove #(or (str/blank? %) (.startsWith ^String % "#")))
        (reduce (fn [m ^String line]
                  (if (.startsWith line "[")
-                   (assoc m :current (subs line 1 (dec (count line))))
+                   (assoc m :current (second (re-find #"\[(?:profile)?\s*(.+)\]" line)))
                    (if-let [current (:current m)]
                      (let [[k v] (-> line (str/split #"="))]
                        (update-in m [:profiles current] assoc (str/trim k) (str/trim v)))
