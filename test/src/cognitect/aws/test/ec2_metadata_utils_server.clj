@@ -46,8 +46,8 @@
   [uri]
   (cond
     (= uri "/latest/meta-data/iam/info") iam-info
-    (= uri "/latest/meta-data/iam/security-credentials") iam-cred-list
-    (str/starts-with? uri "/latest/meta-data/iam/security-credentials/") iam-cred
+    (= uri "/latest/meta-data/iam/security-credentials/") iam-cred-list
+    (re-find #"/latest/meta-data/iam/security-credentials/.+" uri) iam-cred
     (= uri "/latest/dynamic/instance-identity/document") instance-info
     :default nil))
 (defn handler
@@ -64,6 +64,6 @@
 (comment
   (def s (start 0))
 
-  (s)
+  (s))
 
-  )
+
