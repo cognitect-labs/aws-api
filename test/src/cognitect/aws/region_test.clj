@@ -20,10 +20,6 @@
 
 (deftest profile-region-provider-test
   (let [config (io/file (io/resource "region/.aws/config"))]
-    (testing "Finds the default config if present in user home"
-      (with-redefs {System/getProperty (constantly (.getPath (io/resource "region")))}
-        (is (= "us-east-1"
-               (region/fetch (region/profile-region-provider))))))
     (testing "The provider reads the default profile correctly."
       (is (= "us-east-1"
              (region/fetch (region/profile-region-provider "default" config)))))
@@ -36,6 +32,6 @@
     (is (= "us-east-1" (region/fetch (region/instance-region-provider))))))
 
 (comment
-  (run-tests)
+  (run-tests))
 
-  )
+
