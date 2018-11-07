@@ -80,7 +80,7 @@
   ([profile-name]
    (profile-region-provider profile-name (or (io/file (System/getenv "AWS_CONFIG_FILE"))
                                              (io/file (System/getProperty "user.home") ".aws" "config"))))
-  ([^File profile-name f]
+  ([profile-name ^File f]
    (reify RegionProvider
      (fetch [_]
        (when (.exists f)
