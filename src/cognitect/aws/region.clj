@@ -9,7 +9,8 @@
             [cognitect.aws.util :as util]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import [java.util.concurrent Executors ScheduledExecutorService]
-           [java.util.concurrent TimeUnit]))
+           [java.util.concurrent TimeUnit]
+           [java.io File]))
 
 (defn valid-region
   "Return the credential region if valid, otherwise nil."
@@ -76,20 +77,19 @@
   "
   ([]
    (profile-region-provider
-    (let [default-config (io/file (System/getProperty "user.home") ".aws" "config")]
-      (if (.exists default-config)
-        default-config
-        (io/file (System/getenv "AWS_CONFIG_FILE"))))))
+     (or (io/file (System/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
+         (io/file (System/getProperty "user.home") ".aws" "config"))))
   ([f]
    (profile-region-provider f "default"))
-  ([f profile-name]
+  ([^File f profile-name]
    (reify RegionProvider
      (fetch [_]
-       (try
-         (let [profile (get (util/config->profiles f) profile-name)]
-           (valid-region (get profile "region")))
-         (catch Throwable t
-           (log/error t "Unable to fetch region from the AWS config file " (str f))))))))
+       (when (.exists f)
+        (try
+          (let [profile (get (util/config->profiles f) profile-name)]
+            (valid-region (get profile "region")))
+          (catch Throwable t
+            (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
 
 (defn instance-region-provider
   "Return the region from the ec2 instance's metadata service.
