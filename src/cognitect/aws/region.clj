@@ -77,7 +77,7 @@
   "
   ([]
    (profile-region-provider
-     (or (io/file (System/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
+     (or (io/file (System/getenv "AWS_CONFIG_FILE"))
          (io/file (System/getProperty "user.home") ".aws" "config"))))
   ([f]
    (profile-region-provider f "default"))
