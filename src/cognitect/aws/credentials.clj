@@ -12,6 +12,7 @@
     [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils])
   (:import [java.util.concurrent Executors ScheduledExecutorService]
            [java.util.concurrent TimeUnit]
+           [java.io File]
            (java.net URI)))
 
 (def ^:const ecs-container-credentials-path-env-var "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
@@ -181,19 +182,21 @@
   ([]
    (profile-credentials-provider "default"))
   ([profile-name]
-   (profile-credentials-provider profile-name (io/file (System/getProperty "user.home") ".aws" "credentials")))
-  ([profile-name f]
+   (profile-credentials-provider profile-name (or (io/file (System/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
+                                                  (io/file (System/getProperty "user.home") ".aws" "credentials"))))
+  ([profile-name ^File f]
    (reify CredentialsProvider
      (fetch [_]
-       (try
-         (let [profile (get (util/config->profiles f) profile-name)]
-           (valid-credentials
-            {:aws/access-key-id     (get profile "aws_access_key_id")
-             :aws/secret-access-key (get profile "aws_secret_access_key")
-             :aws/session-token     (get profile "aws_session_token")}
-            "aws profiles file"))
-         (catch Throwable t
-           (log/error t "Error fetching credentials from aws profiles file")))))))
+       (when (.exists f)
+        (try
+          (let [profile (get (util/config->profiles f) profile-name)]
+            (valid-credentials
+             {:aws/access-key-id     (get profile "aws_access_key_id")
+              :aws/secret-access-key (get profile "aws_secret_access_key")
+              :aws/session-token     (get profile "aws_session_token")}
+             "aws profiles file"))
+          (catch Throwable t
+            (log/error t "Error fetching credentials from aws profiles file"))))))))
 
 (defn container-credentials-provider
   "Return credentials from ECS iff AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set."
