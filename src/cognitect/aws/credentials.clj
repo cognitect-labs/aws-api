@@ -225,7 +225,8 @@
      (fetch [_]
        (when-not (System/getenv ecs-container-credentials-path-env-var)
          (when-let [ec2-creds (some-> (ec2-metadata-utils/get-items-at-path ec2-security-credentials-resource)
-                                      (#(do (def *blah %) %))
+                                      first
+                                      (#(ec2-metadata-utils/get-items-at-path (str ec2-security-credentials-resource %)))
                                       first
                                       (json/read-str :key-fn keyword))]
            (valid-credentials
