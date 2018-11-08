@@ -136,19 +136,24 @@
   ([service region http-request credentials]
    (v4-sign-http-request service region http-request credentials false))
   ([service region http-request credentials content-sha256?]
-   (let [{:keys [:aws/access-key-id :aws/secret-access-key]} credentials
-         auth-info {:access-key-id access-key-id
-                    :secret-access-key secret-access-key
-                    :service (service/endpoint-prefix service)
-                    :region (name region)}]
-     (update http-request :headers
-             #(cond-> %
-                content-sha256? (assoc "x-amz-content-sha256" (hash-payload http-request))
-                :always (assoc "authorization" (format "AWS4-HMAC-SHA256 Credential=%s/%s, SignedHeaders=%s, Signature=%s"
-                                                       (:access-key-id auth-info)
-                                                       (credential-scope auth-info http-request)
-                                                       (signed-headers http-request)
-                                                       (signature auth-info http-request))))))))
+   (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
+         auth-info      {:access-key-id     access-key-id
+                         :secret-access-key secret-access-key
+                         :service           (service/endpoint-prefix service)
+                         :region            (name region)}
+         req-with-token (-> http-request
+                            (update :headers
+                                    #(cond-> % session-token (assoc "x-amz-security-token" session-token))))]
+     (-> req-with-token
+         (update :headers
+                 #(cond-> %
+                    content-sha256? (assoc "x-amz-content-sha256" (hash-payload req-with-token))
+                    :always         (assoc "authorization"
+                                           (format "AWS4-HMAC-SHA256 Credential=%s/%s, SignedHeaders=%s, Signature=%s"
+                                                   (:access-key-id auth-info)
+                                                   (credential-scope auth-info req-with-token)
+                                                   (signed-headers req-with-token)
+                                                   (signature auth-info req-with-token)))))))))
 
 (defmethod client/sign-http-request "v4"
   [service region http-request credentials]
