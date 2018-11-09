@@ -47,10 +47,10 @@
         :or {retries 3
              split-lines true}
         :as options}]
-  (let [client (http/create {})
+  (let [http-client (http/create {})
         request (request-map uri)
         response (loop [retry-delay (exp-backoff-delays 250 retries)]
-                   (let [rsp (async/<!! (http/submit client request))]
+                   (let [rsp (async/<!! (http/submit http-client request))]
                      (if (and (retry? rsp) (not-empty retry-delay))
                        (do
                          (Thread/sleep (first retry-delay))

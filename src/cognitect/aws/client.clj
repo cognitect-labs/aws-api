@@ -10,6 +10,9 @@
 
 (set! *warn-on-reflection* true)
 
+(defprotocol ClientSPI
+  (-get-info [_] "Intended for internal use only"))
+
 (defmulti build-http-request
   "AWS request -> HTTP request."
   (fn [service op-map]
@@ -38,8 +41,9 @@
 
 (defn send-request
   "Send the request to AWS and return a channel which delivers the response."
-  [{:keys [service region credentials endpoint] :as client} op-map]
-  (let [resp-chan (a/chan 1)]
+  [client op-map]
+  (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
+        resp-chan (a/chan 1)]
     (try
       (let [{:keys [hostname]} endpoint
             http-request (-> (build-http-request service op-map)
@@ -48,11 +52,11 @@
                              (assoc ::http/meta op-map))
             http-request (sign-http-request service region http-request @credentials)
             c (a/chan 1)]
-        (http/submit (:http-client client) http-request c)
+        (http/submit http-client http-request c)
         (a/go
           (let [http-response (a/<! c)]
             (a/put! resp-chan
-                    (with-meta (handle-http-response client http-response)
+                    (with-meta (handle-http-response (-get-info client) http-response)
                       (-> http-response
                           (dissoc ::http/meta)
                           (update :body util/bbuf->str)))))))

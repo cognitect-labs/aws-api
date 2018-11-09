@@ -12,22 +12,18 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
-            [cognitect.aws.signers :as signers]
+            [cognitect.aws.signers]
             [cognitect.aws.util :as util]))
+
+(deftype Client [info]
+  client/ClientSPI
+  (-get-info [_] info))
 
 (defn client
   "Given a config map, create a client for specified api. Supported keys
   in config are:
-  One of api
-   or api-descriptor are required.
-  :api                  - this or api-descriptor required, the name of the api
+  :api                  - required, this or api-descriptor required, the name of the api
                           you want to interact with e.g. s3, cloudformation, etc
-  :api-version          - optional, works in conjunction with :api, the
-                          yyyy-mm-dd formatted date string. If you don't provide
-                          this, we'll use the latest one available.
-  :api-descriptor       - this or api required, a reference to a descriptor
-                          file for the desired api; can be any valid input for
-                          clojure.java.io/reader (file, uri, url, etc)
   :region               - optional, the aws region serving the API endpoints you
                           want to interact with, defaults to region provided by
                           by the default region provider (see cognitect.aws.region)
@@ -55,16 +51,17 @@
                      (or region-provider
                          (region/default-region-provider)))))]
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
-    {:service service
-     :region region
-     :endpoint (or (endpoint/resolve api region)
-                   (throw (ex-info "No known endpoint." {:service api :region region})))
-     :retry? (or retry? client/default-retry?)
-     :backoff (or backoff (client/capped-exponential-backoff 300 20000 0))
-     :http-client (http/create {:trust-all true}) ;; FIX :trust-all
-     :credentials (credentials/auto-refreshing-credentials
-                   (or credentials-provider
-                       (credentials/default-credentials-provider)))}))
+    (->Client
+     {:service service
+      :region region
+      :endpoint (or (endpoint/resolve api region)
+                    (throw (ex-info "No known endpoint." {:service api :region region})))
+      :retry? (or retry? client/default-retry?)
+      :backoff (or backoff (client/capped-exponential-backoff 300 20000 0))
+      :http-client (http/create {:trust-all true}) ;; FIX :trust-all
+      :credentials (credentials/auto-refreshing-credentials
+                    (or credentials-provider
+                        (credentials/default-credentials-provider)))})))
 
 (defn validate-requests [client tf]
   (api.async/validate-requests client tf))
@@ -89,17 +86,17 @@
 (defn ops
   "Retuns a list of the operations supported by client."
   [client]
-  (->> client :service :operations keys sort))
+  (->> client client/-get-info :service :operations keys sort))
 
 (defn request-spec
   "Returns the key for the request spec for op."
   [client op]
-  (service/request-spec-key (:service client) op))
+  (service/request-spec-key (-> client client/-get-info :service) op))
 
 (defn response-spec
   "Returns the key for the response spec for op."
   [client op]
-  (service/response-spec-key (:service client) op))
+  (service/response-spec-key (-> client client/-get-info :service) op))
 
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
 (defn pprint [& args]
@@ -109,8 +106,8 @@
 (defn doc
   "Just like clojure.repl/doc for op on client."
   [client op]
-  (let [docs (service/docs (:service client))]
-    (require (service/spec-ns (:service client)))
+  (let [docs (service/docs (-> client client/-get-info :service))]
+    (require (service/spec-ns (-> client client/-get-info :service)))
     (if-let [op-doc (get docs op)]
       (do
         (println "-------------------------")
