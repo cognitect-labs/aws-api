@@ -123,6 +123,11 @@
           (println "Request Syntax")
           (println)
           (pprint (:main request))
+          (when-let [required (:required request)]
+            (println)
+            (println "Required")
+            (println)
+            (pprint required))
           (when-let [given (:refs request)]
             (println)
             (println "Given")
