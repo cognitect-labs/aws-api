@@ -53,26 +53,31 @@ we'll add a row to this table.
 
 ### com.cognitect.aws/api
 
-This is code that we own, so we'll release it
-whenever we have a meaningful addition to deliver.
+This is core engine, and we'll release it whenever we have a
+meaningful addition to deliver.
+
+All of the other libs are generated from other sources, so we follow
+their release schedules.
 
 ### com.cognitect.aws/endpoints
 
-This is generated from source data in an aws sdk repository. We
-periodically check to see if there are any new tags in the source
-repo. When there are, we diff the endpoint resources at the first new
-tag against the last released tag. If there is a diff, we cut a
-release at that new tag, and then do the same thing, comparing the
-next new tag to the last released tag, until we run out of new tags.
+This is generated from source data in an aws github repository, so we
+periodically check to see if there are any new release tags in the
+source repo. When there are, we diff the endpoint resource at the
+first new tag with the last released tag. If there is a diff, we
+cut a release at that new tag, and then do the same thing, comparing
+the next new tag to the last released tag, until we run out of new
+tags.
 
 For example, if the last version we released is `1.1.11.444`, we look
 to see if there are any tags newer than `1.11.444` in the source
 repo. If we find e.g. `1.11.445`, `1.11.446`, and `1.11.447`, we'll
 diff `1.11.445` against `1.11.444`. If the endpoints resource changed,
 we'll cut a `1.1.11.445` release and then continue, comparing
-`1.1.446` to `1.1.445`, and so on. If there is no difference, we move
-to the next tag (`1.1.446`) and compare it to our last-released basis
-(`1.1.444`), and so on.
+`1.1.446` to `1.1.445`, and so on.
+
+If there is no difference, we move to the next tag (`1.1.446`) and
+compare it to our last-released basis (`1.1.444`), and so on.
 
 ### com.cognitect.aws/<service>
 
