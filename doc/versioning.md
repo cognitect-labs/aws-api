@@ -12,14 +12,14 @@ all have different release schedules and version semantics.
 
     0.1.[rev]
 
-Where `rev` is the revision in the git repository.
+`rev` is the revision in the git repository.
 
 ## com.cognitect.aws/endpoints
 
     [source-rev].[source.repo.tag]
 
-Where `source-rev` indicates which aws-sdk (or other resource) we are
-generating from, and `source.repo-tag` indicates the tag in the source
+`source-rev` indicates which aws-sdk (or other resource) we are
+generating from, and `source.repo.tag` indicates the tag in the source
 repository from which we are generating the endpoints library. For
 example, `endpoints-1.1.11.444` is sourced from
 [aws-sdk-java](https://github.com/aws/aws-sdk-java), per the table
@@ -36,15 +36,15 @@ we'll add a row to this table.
 
     [generator-rev].[source.repo.tag]
 
-Where `generator-rev` indicates the revision of the code we use to
+`generator-rev` indicates the revision of the code we use to
 generate all the services and `source.repo.tag` is the tag in the aws
 repository from which we are generating service libraries. For example,
-`s3-631.2.347.0` is sourced from [aws-sdk-js](https://github.com/aws/aws-sdk-js),
+`s3-631.2.346.0` is sourced from [aws-sdk-js](https://github.com/aws/aws-sdk-js),
 per the table below, at the `2.347.0` tag.
 
 | generator-rev | source repository | example source tag | example service version |
 |---------------|-------------------|--------------------|-------------------------|
-| >= 631        | aws-sdk-js        | v2.351.0           | 631.2.351.0             |
+| >= 631        | aws-sdk-js        | v2.347.0           | 631.2.347.0             |
 
 If we start to source services from a different repository,
 we'll add a row to this table.
@@ -65,13 +65,14 @@ tag against the last released tag. If there is a diff, we cut a
 release at that new tag, and then do the same thing, comparing the
 next new tag to the last released tag, until we run out of new tags.
 
-For example, if the last version we released is `1.1.11.444`, we
-look to see if there are any tags newer than `1.11.444` in the source
+For example, if the last version we released is `1.1.11.444`, we look
+to see if there are any tags newer than `1.11.444` in the source
 repo. If we find e.g. `1.11.445`, `1.11.446`, and `1.11.447`, we'll
-diff `1.11.445` against `1.11.444`. If the endpoints resource
-changed, we'll cut a `1.1.11.445` release and then continue, comparing
-`1.1.446` to `1.1.445`. If there is no difference, we move to the next
-tag (`1.1.446`) and compare it to our last-released basis (`1.1.444`), etc.
+diff `1.11.445` against `1.11.444`. If the endpoints resource changed,
+we'll cut a `1.1.11.445` release and then continue, comparing
+`1.1.446` to `1.1.445`, and so on. If there is no difference, we move
+to the next tag (`1.1.446`) and compare it to our last-released basis
+(`1.1.444`), and so on.
 
 ### com.cognitect.aws/<service>
 
