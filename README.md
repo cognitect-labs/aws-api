@@ -55,7 +55,7 @@ generator, and tag `v2.324.0` of aws-sdk-js.
 
 ## Usage
 
-### Prerequisites:
+### prerequisites
 
 * Clojure >= 1.9.0
 * Clojure CLI tools >= 1.9.0.397
@@ -74,6 +74,8 @@ To use, for example, the s3 api, add the following to deps.edn
         com.cognitect.aws/endpoints {:mvn/version "1.1.11.444"}
         com.cognitect.aws/s3        {:mvn/version "632.2.348.0"}}}
 ```
+
+### explore!
 
 Fire up a repl using that deps.edn, and then you can do things like this:
 
