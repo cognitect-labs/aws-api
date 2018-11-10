@@ -55,6 +55,14 @@ generator, and tag `v2.324.0` of aws-sdk-js.
 
 ## Usage
 
+### Prerequisites:
+
+* Clojure >= 1.9.0
+* Clojure CLI tools >= 1.9.0.397
+    * [https://clojure.org/guides/getting_started](https://clojure.org/guides/getting_started)
+
+### deps
+
 To use aws-api in your application, you depend on
 `com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service
 of your choice, e.g. `com.cognitect.aws/s3`.
