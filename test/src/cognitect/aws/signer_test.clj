@@ -102,6 +102,10 @@
           (is (= (get-in signed-request [:headers "authorization"])
                  authorization)))))))
 
+(deftest test-canonical-query-string
+  (testing "key with no value"
+    (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
+
 (comment
   (run-tests)
 

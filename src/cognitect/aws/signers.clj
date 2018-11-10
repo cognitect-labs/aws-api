@@ -71,7 +71,10 @@
                   ;; decode first because sometimes it's already been url encoded
                   (str (uri-encode (URLDecoder/decode k))
                        "="
-                       (uri-encode (URLDecoder/decode v)))))
+                       ;; edge case: sometimes there is no value, e.g.
+                       ;; s3 PutBucketPolicy, whose uri is "<bucket-name>?policy". In
+                       ;; this case we want "policy=".
+                       (some-> v URLDecoder/decode uri-encode))))
           sort
           (str/join "&")))))
 
