@@ -23,26 +23,24 @@
   "Given a config map, create a client for specified api. Supported keys
   in config are:
   :api                  - required, this or api-descriptor required, the name of the api
-                          you want to interact with e.g. s3, cloudformation, etc
+                          you want to interact with e.g. :s3, :cloudformation, etc
   :region               - optional, the aws region serving the API endpoints you
                           want to interact with, defaults to region provided by
                           by the default region provider (see cognitect.aws.region)
-  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                          protocol, defaults to cognitect.aws.region/default-region-provider
-  :retry?               - optional, fn which takes an http-response (see
-                          cognitect.http-client/submit) and returns a boolean
-                          instructing the client whether or not to retry the
-                          request. Defaults to
-                          cognitect.aws.client/default-retry.
-  :backoff              - optional, fn which takes the number of retries so far
-                          and returns a number of milliseconds to wait before
-                          the next retry (if the retry? fn indicates more
-                          retries), defaults to
-                          (cognitect.aws.client/capped-exponential-backoff 300 20000 0)
   :credentials-provider - optional, implementation of
                           cognitect.aws.credentials/CredentialsProvider
                           protocol, defaults to
-                          cognitect.aws.credentials/default-credentials-provider"
+                          cognitect.aws.credentials/default-credentials-provider
+  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
+                          protocol, defaults to cognitect.aws.region/default-region-provider
+  :retry?               - optional, fn of http-response (see cognitect.http-client/submit).
+                          Returns a boolean instructing the client whether or
+                          not to retry the request. Default: cognitect.aws.client/default-retry.
+  :backoff              - optional, fn of number of retries so far. Should return
+                          number of milliseconds to wait before the next retry
+                          (if the retry? fn returns true. Default:
+                          (cognitect.aws.client/capped-exponential-backoff 300 20000 0)
+  "
   [{:keys [api region region-provider retry? backoff credentials-provider] :as config}]
   (let [service (service/service-description (name api))
         region (keyword
