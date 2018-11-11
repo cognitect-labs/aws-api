@@ -100,5 +100,5 @@
     (let [operation (get-in service [:operations op])
           output-shape (service/shape service (:output operation))]
       (if (< status 400)
-        {::client/result (shape/xml-parse output-shape (util/bbuf->str body))}
+        (shape/xml-parse output-shape (util/bbuf->str body))
         (common/xml-parse-error http-response)))))

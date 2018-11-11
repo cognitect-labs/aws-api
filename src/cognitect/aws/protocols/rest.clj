@@ -229,7 +229,7 @@
     (let [operation    (get-in service [:operations op])
           output-shape (service/shape service (:output operation))]
       (if (< status 400)
-        {::client/result (merge (parse-non-payload-attrs output-shape http-response)
-                                (when output-shape
-                                  (parse-body output-shape body parse-body-str)))}
+        (merge (parse-non-payload-attrs output-shape http-response)
+               (when output-shape
+                 (parse-body output-shape body parse-body-str)))
         (parse-error http-response)))))

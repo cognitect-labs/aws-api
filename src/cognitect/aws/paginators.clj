@@ -28,20 +28,20 @@
                                       (update op-map
                                               ::client/callback
                                               (fn [callback]
-                                                (fn [{:keys [::client/error ::client/result] :as aws-response}]
-                                                  (if error
-                                                    (callback (assoc aws-response :paginator/state acc))
+                                                (fn [response]
+                                                  (if (:cognitect.anomalies/category response)
+                                                    (callback (assoc response :paginator/state acc))
                                                     (let [acc (rf acc (if result-key
-                                                                        (get result result-key)
-                                                                        result))
-                                                          next-token (get result output-token)]
+                                                                        (get response result-key)
+                                                                        response))
+                                                          next-token (get response output-token)]
                                                       (cond
                                                         (reduced? acc)
-                                                        (callback {::client/result (rf @acc)})
+                                                        (callback (rf @acc))
 
                                                         next-token
                                                         (step acc (update op-map :request assoc input-token next-token))
 
                                                         :else
-                                                        (callback {::client/result (rf acc)})))))))))]
+                                                        (callback (rf acc))))))))))]
         (step init op-map)))))

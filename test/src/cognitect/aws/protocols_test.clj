@@ -89,10 +89,10 @@
                                                       {:status  (:status_code response)
                                                        :headers (:headers response)
                                                        :body    (util/str->bbuf (:body response))})]
-      (when-let [error (::client/error parsed-response)]
+      (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
-      (is (= result (::client/result parsed-response))))
+      (is (= result parsed-response)))
     (catch Exception e
       (is (nil?
            {:test-case test-case

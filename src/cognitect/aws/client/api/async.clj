@@ -51,10 +51,6 @@
       (let [send          #(client/send-request client op-map)
             retry?        (or (:retry? op-map) retry?)
             backoff       (or (:backoff op-map) backoff)
-            response-chan (client/with-retry send
-                            (a/promise-chan
-                             (map #(with-meta (::client/result % %) (meta %))))
-                            retry?
-                            backoff)]
+            response-chan (client/with-retry send (a/promise-chan) retry? backoff)]
         (a/take! response-chan (partial a/put! result-chan))
         result-chan))))
