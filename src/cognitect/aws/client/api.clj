@@ -5,6 +5,7 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [clojure.java.io :as io]
+            [clojure.string :as str]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
             [cognitect.aws.credentials :as credentials]
@@ -101,43 +102,44 @@
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
+(defn doc-data [client op]
+  (let [docs (service/docs (-> client client/-get-info :service))]
+    (require (service/spec-ns (-> client client/-get-info :service)))
+    (get docs op)))
+
+(defn doc-str [client op]
+  (if-let [{:keys [request response] :as op-doc} (doc-data client op)]
+    (str/join "\n"
+              (cond-> ["-------------------------"
+                       (name op)
+                       ""
+                       (:documentation op-doc)]
+                request
+                (into (cond-> [""
+                               "-------------------------"
+                               "Request Syntax"
+                               ""
+                               (with-out-str (pprint (:main request)))]
+                        (:required request)
+                        (into ["Required"
+                               ""
+                               (with-out-str (pprint (:required request)))])
+                        (:refs request)
+                        (into ["Given"
+                               ""
+                               (with-out-str (pprint (:refs request)))])))
+                response
+                (into (cond-> ["-------------------------"
+                               "Response Syntax"
+                               ""
+                               (with-out-str (pprint (:main response)))]
+                        (:refs response)
+                        (into ["Given"
+                               ""
+                               (with-out-str (pprint (:refs response)))])))))
+    (str "No docs for" (name op))))
+
 (defn doc
   "Just like clojure.repl/doc for op on client."
   [client op]
-  (let [docs (service/docs (-> client client/-get-info :service))]
-    (require (service/spec-ns (-> client client/-get-info :service)))
-    (if-let [op-doc (get docs op)]
-      (do
-        (println "-------------------------")
-        (println (name op))
-        (println)
-        (println (:documentation op-doc))
-        (when-let [request (:request op-doc)]
-          (println)
-          (println "-------------------------")
-          (println "Request Syntax")
-          (println)
-          (pprint (:main request))
-          (when-let [required (:required request)]
-            (println)
-            (println "Required")
-            (println)
-            (pprint required))
-          (when-let [given (:refs request)]
-            (println)
-            (println "Given")
-            (println)
-            (pprint given)))
-        (when-let [response (:response op-doc)]
-          (println)
-          (println "-------------------------")
-          (println "Response Syntax")
-          (println)
-          (pprint (:main response))
-          (when-let [given (:refs response)]
-            (println)
-            (println "Given")
-            (println)
-            (pprint given)))
-        (println ""))
-      (println "No docs for" (name op)))))
+  (println (doc-str client op)))
