@@ -102,18 +102,30 @@
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
-(defn doc-data [client op]
+(defn doc-data
+  "Given a client and an operation (keyword), returns a map with
+  the following keys:
+    :operation (same as the one you passed)
+    :documentation (from source api description)
+    :request (request syntax helper generated from source api description)
+    :request (response syntax helper generated from source api description)
+  "
+  [client operation]
   (let [docs (service/docs (-> client client/-get-info :service))]
     (require (service/spec-ns (-> client client/-get-info :service)))
-    (get docs op)))
+    (some-> (get docs operation)
+            (assoc :operation operation))))
 
-(defn doc-str [client op]
-  (if-let [{:keys [request response] :as op-doc} (doc-data client op)]
+(defn doc-str
+  "Given data produced by `doc-data` (or similar), returns a string
+  representation."
+  [{:keys [operation documentation request response] :as data}]
+  (when data
     (str/join "\n"
               (cond-> ["-------------------------"
-                       (name op)
+                       (name operation)
                        ""
-                       (:documentation op-doc)]
+                       documentation]
                 request
                 (into (cond-> [""
                                "-------------------------"
@@ -136,10 +148,11 @@
                         (:refs response)
                         (into ["Given"
                                ""
-                               (with-out-str (pprint (:refs response)))])))))
-    (str "No docs for" (name op))))
+                               (with-out-str (pprint (:refs response)))])))))))
 
 (defn doc
-  "Just like clojure.repl/doc for op on client."
-  [client op]
-  (println (doc-str client op)))
+  "Given a client and an operation (keyword), prints documentation
+  for that operation to the current value of *out*. Returns nil."
+  [client operation]
+  (println (or (some-> (doc-data client operation) doc-str)
+               (str "No docs for " (name operation)))))
