@@ -180,7 +180,9 @@
     aws_secret_access_key required
     aws_session_token     optional"
   ([]
-   (profile-credentials-provider "default"))
+   (profile-credentials-provider (or (System/getenv "AWS_PROFILE")
+                                     (System/getProperty "aws.profile")
+                                     "default")))
   ([profile-name]
    (profile-credentials-provider profile-name (or (io/file (System/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
                                                   (io/file (System/getProperty "user.home") ".aws" "credentials"))))
