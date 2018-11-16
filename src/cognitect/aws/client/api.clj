@@ -65,9 +65,6 @@
                     (or credentials-provider
                         (credentials/default-credentials-provider)))})))
 
-(defn validate-requests [client tf]
-  (api.async/validate-requests client tf))
-
 (defn invoke
   "Package and send a request to AWS and return the result.
   Supported keys in op-map:
@@ -89,15 +86,8 @@
   [client]
   (->> client client/-get-info :service :operations keys sort))
 
-(defn request-spec
-  "Returns the key for the request spec for op."
-  [client op]
-  (service/request-spec-key (-> client client/-get-info :service) op))
-
-(defn response-spec
-  "Returns the key for the response spec for op."
-  [client op]
-  (service/response-spec-key (-> client client/-get-info :service) op))
+(defn validate-requests [client tf]
+  (api.async/validate-requests client tf))
 
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
 (defn pprint [& args]
