@@ -4,7 +4,6 @@
 (ns cognitect.aws.client.api
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
-            [clojure.java.io :as io]
             [clojure.string :as str]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
@@ -14,7 +13,7 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
-            [cognitect.aws.signers]
+            [cognitect.aws.signers] ;; implements multimethods
             [cognitect.aws.util :as util]))
 
 (deftype Client [info]

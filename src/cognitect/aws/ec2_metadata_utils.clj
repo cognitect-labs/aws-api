@@ -1,10 +1,10 @@
 (ns cognitect.aws.ec2-metadata-utils
-  (:require [cognitect.http-client :as http]
-            [clojure.core.async :as async]
+  (:require [clojure.string :as str]
+            [clojure.data.json :as json]
+            [clojure.core.async :as a]
+            [cognitect.http-client :as http]
             [cognitect.aws.util :as util]
-            [cognitect.aws.retry :as retry]
-            [clojure.string :as str]
-            [clojure.data.json :as json])
+            [cognitect.aws.retry :as retry])
   (:import (java.net URI)))
 
 (def ec2-metadata-service-override-system-property "com.amazonaws.sdk.ec2MetadataServiceEndpointOverride")
@@ -40,11 +40,11 @@
         :or {retries 3
              split-lines true}
         :as options}]
-  (let [response (async/<!! (retry/with-retry
-                              #(http/submit (http/create {}) (request-map uri))
-                              (async/promise-chan)
-                              retry/default-retriable?
-                              retry/default-backoff))]
+  (let [response (a/<!! (retry/with-retry
+                          #(http/submit (http/create {}) (request-map uri))
+                          (a/promise-chan)
+                          retry/default-retriable?
+                          retry/default-backoff))]
     ;; TODO: handle unhappy paths -JS
     (if-not (:cognitect.anomalies/category response)
       (if (= (:status response) 200)

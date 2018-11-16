@@ -65,8 +65,6 @@
                            ::throwable t})))
     resp-chan))
 
-
-
 (defn stop
   "Stop the client."
   [client]
