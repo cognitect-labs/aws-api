@@ -2,7 +2,7 @@
   (:require [cognitect.http-client :as http]
             [clojure.core.async :as async]
             [cognitect.aws.util :as util]
-            [cognitect.aws.client.retry :as retry]
+            [cognitect.aws.retry :as retry]
             [clojure.string :as str]
             [clojure.data.json :as json])
   (:import (java.net URI)))

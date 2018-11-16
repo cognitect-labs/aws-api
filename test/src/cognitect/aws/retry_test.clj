@@ -1,7 +1,7 @@
-(ns cognitect.aws.client.retry-test
+(ns cognitect.aws.retry-test
   (:require [clojure.test :refer :all]
             [clojure.core.async :as async]
-            [cognitect.aws.client.retry :as retry]))
+            [cognitect.aws.retry :as retry]))
 
 (deftest test-no-retry
   (is (= {:this :map}

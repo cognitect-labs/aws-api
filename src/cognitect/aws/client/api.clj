@@ -8,7 +8,7 @@
             [clojure.string :as str]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
-            [cognitect.aws.client.retry :as retry]
+            [cognitect.aws.retry :as retry]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.service :as service]
@@ -38,13 +38,13 @@
   :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
                           Should return a boolean telling the client whether or
                           not the request is retriable.  The default,
-                          cognitect.aws.client.retry/default-retriable?, returns
+                          cognitect.aws.retry/default-retriable?, returns
                           true when the response indicates that the service is
                           busy or unavailable.
   :backoff              - optional, fn of number of retries so far. Should return
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
-                          Defaults to cognitect.aws.client.retry/default-backoff."
+                          Defaults to cognitect.aws.retry/default-backoff."
   [{:keys [api region region-provider retriable? backoff credentials-provider] :as config}]
   (let [service (service/service-description (name api))
         region  (keyword

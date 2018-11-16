@@ -5,7 +5,7 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
-            [cognitect.aws.client.retry :as retry]
+            [cognitect.aws.retry :as retry]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))
 

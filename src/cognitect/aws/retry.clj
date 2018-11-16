@@ -1,4 +1,4 @@
-(ns cognitect.aws.client.retry
+(ns cognitect.aws.retry
   (:require [clojure.core.async :as a]))
 
 (defn with-retry
