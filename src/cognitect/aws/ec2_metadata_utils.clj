@@ -2,7 +2,7 @@
   (:require [cognitect.http-client :as http]
             [clojure.core.async :as async]
             [cognitect.aws.util :as util]
-            [cognitect.aws.defaults :as defaults]
+            [cognitect.aws.client.retry :as retry]
             [clojure.string :as str]
             [clojure.data.json :as json])
   (:import (java.net URI)))
@@ -46,10 +46,10 @@
         :as options}]
   (let [http-client (http/create {})
         request (request-map uri)
-        ;; TODO (dchelimsky 2018-11-16) align this with client/with-retry
+        ;; TODO (dchelimsky 2018-11-16) align this with retry/with-retry
         response (loop [retry-delay (exp-backoff-delays 250 retries)]
                    (let [rsp (async/<!! (http/submit http-client request))]
-                     (if (and (defaults/retriable? rsp) (not-empty retry-delay))
+                     (if (and (retry/default-retriable? rsp) (not-empty retry-delay))
                        (do
                          (Thread/sleep (first retry-delay))
                          (recur (next retry-delay)))

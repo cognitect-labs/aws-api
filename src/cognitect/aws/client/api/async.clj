@@ -5,6 +5,7 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
+            [cognitect.aws.client.retry :as retry]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))
 
@@ -51,6 +52,6 @@
       (let [send          #(client/send-request client op-map)
             retriable?    (or (:retriable? op-map) retriable?)
             backoff       (or (:backoff op-map) backoff)
-            response-chan (client/with-retry send (a/promise-chan) retriable? backoff)]
+            response-chan (retry/with-retry send (a/promise-chan) retriable? backoff)]
         (a/take! response-chan (partial a/put! result-chan))
         result-chan))))

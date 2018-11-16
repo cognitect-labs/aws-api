@@ -65,22 +65,7 @@
                            ::throwable t})))
     resp-chan))
 
-(defn with-retry
-  "Calls req-fn, a function that wraps some operation and returns a
-  channel. When the response to req-fn is retriable? and backoff
-  returns an int, waits backoff ms and retries, otherwise puts
-  response on resp-chan."
-  [req-fn resp-chan retriable? backoff]
-  (a/go-loop [retries 0]
-    (let [resp (a/<! (req-fn))]
-      (if (retriable? resp)
-        (if-let [bo (backoff retries)]
-          (do
-            (a/<! (a/timeout bo))
-            (recur (inc retries)))
-          (a/>! resp-chan resp))
-        (a/>! resp-chan resp))))
-  resp-chan)
+
 
 (defn stop
   "Stop the client."

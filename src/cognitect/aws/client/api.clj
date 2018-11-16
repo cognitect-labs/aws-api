@@ -7,8 +7,8 @@
             [clojure.java.io :as io]
             [clojure.string :as str]
             [cognitect.http-client :as http]
-            [cognitect.aws.defaults :as defaults]
             [cognitect.aws.client :as client]
+            [cognitect.aws.client.retry :as retry]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.service :as service]
@@ -38,13 +38,13 @@
   :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
                           Should return a boolean telling the client whether or
                           not the request is retriable.  The default,
-                          cognitect.aws.defaults/retriable?, returns true
-                          when the response indicates that the service is busy
-                          or unavailable.
+                          cognitect.aws.client.retry/default-retriable?, returns
+                          true when the response indicates that the service is
+                          busy or unavailable.
   :backoff              - optional, fn of number of retries so far. Should return
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
-                          Defaults to cognitect.aws.defaults/backoff."
+                          Defaults to cognitect.aws.client.retry/default-backoff."
   [{:keys [api region region-provider retriable? backoff credentials-provider] :as config}]
   (let [service (service/service-description (name api))
         region  (keyword
@@ -58,8 +58,8 @@
       :region      region
       :endpoint    (or (endpoint/resolve api region)
                        (throw (ex-info "No known endpoint." {:service api :region region})))
-      :retriable?  (or retriable? defaults/retriable?)
-      :backoff     (or backoff defaults/backoff)
+      :retriable?  (or retriable? retry/default-retriable?)
+      :backoff     (or backoff retry/default-backoff)
       :http-client (http/create {:trust-all true}) ;; FIX :trust-all
       :credentials (credentials/auto-refreshing-credentials
                     (or credentials-provider
