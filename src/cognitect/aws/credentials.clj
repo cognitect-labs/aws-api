@@ -25,8 +25,7 @@
   (fetch [_]
     "Return the credentials found by this provider, or nil.
 
-    Return a map with the following keys:
-
+    Credentials should be a map with the following keys:
 
     :aws/access-key-id                      string  required
     :aws/secret-access-key                  string  required

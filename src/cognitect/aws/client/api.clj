@@ -7,6 +7,7 @@
             [clojure.java.io :as io]
             [clojure.string :as str]
             [cognitect.http-client :as http]
+            [cognitect.aws.defaults :as defaults]
             [cognitect.aws.client :as client]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
@@ -34,29 +35,31 @@
                           cognitect.aws.credentials/default-credentials-provider
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                           protocol, defaults to cognitect.aws.region/default-region-provider
-  :retry?               - optional, fn of http-response (see cognitect.http-client/submit).
-                          Returns a boolean instructing the client whether or
-                          not to retry the request. Default: cognitect.aws.client/default-retry.
+  :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
+                          Should return a boolean telling the client whether or
+                          not the request is retriable.  The default,
+                          cognitect.aws.defaults/retriable?, returns true
+                          when the response indicates that the service is busy
+                          or unavailable.
   :backoff              - optional, fn of number of retries so far. Should return
                           number of milliseconds to wait before the next retry
-                          (if the retry? fn returns true. Default:
-                          (cognitect.aws.client/capped-exponential-backoff 300 20000 0)
-  "
-  [{:keys [api region region-provider retry? backoff credentials-provider] :as config}]
+                          (if the request is retriable?), or nil if it should stop.
+                          Defaults to cognitect.aws.defaults/backoff."
+  [{:keys [api region region-provider retriable? backoff credentials-provider] :as config}]
   (let [service (service/service-description (name api))
-        region (keyword
-                (or region
-                    (region/fetch
-                     (or region-provider
-                         (region/default-region-provider)))))]
+        region  (keyword
+                 (or region
+                     (region/fetch
+                      (or region-provider
+                          (region/default-region-provider)))))]
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (->Client
-     {:service service
-      :region region
-      :endpoint (or (endpoint/resolve api region)
-                    (throw (ex-info "No known endpoint." {:service api :region region})))
-      :retry? (or retry? client/default-retry?)
-      :backoff (or backoff (client/capped-exponential-backoff 300 20000 0))
+     {:service     service
+      :region      region
+      :endpoint    (or (endpoint/resolve api region)
+                       (throw (ex-info "No known endpoint." {:service api :region region})))
+      :retriable?  (or retriable? defaults/retriable?)
+      :backoff     (or backoff defaults/backoff)
       :http-client (http/create {:trust-all true}) ;; FIX :trust-all
       :credentials (credentials/auto-refreshing-credentials
                     (or credentials-provider
@@ -71,14 +74,13 @@
 
   :op                   - required, keyword, the op to perform
   :request              - required only for ops that require them
-  :retry?               - optional, defaults to :retry? passed to client,
-                          if present, then cognitect.aws.client/default-retry.
-  :backoff              - optional, defaults to :backoff passed to client,
-                          if present, then
-                          (cognitect.aws.client/capped-exponential-backoff 300 20000 0)
+  :retriable?           - optional, defaults to :retriable? on the client.
+                          See client.
+  :backoff              - optional, defaults to :backoff on the client.
+                          See client.
 
   If (cognitect.aws.client.api/validate-requests) is true, validates
-  that :request in op-map is valid for this op."
+  :request in op-map."
   [client op-map]
   (a/<!! (api.async/invoke client op-map)))
 

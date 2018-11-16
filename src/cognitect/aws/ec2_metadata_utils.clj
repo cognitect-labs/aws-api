@@ -2,6 +2,7 @@
   (:require [cognitect.http-client :as http]
             [clojure.core.async :as async]
             [cognitect.aws.util :as util]
+            [cognitect.aws.defaults :as defaults]
             [clojure.string :as str]
             [clojure.data.json :as json])
   (:import (java.net URI)))
@@ -36,10 +37,6 @@
    :request-method :get
    :headers {:accept "*/*"}})
 
-(defn retry?
-  [http-response]
-  (#{:cognitect.anomalies/busy :cognitect.anomalies/unavailable} (:cognitect.anomalies/category http-response)))
-
 (defn get-items
   "Takes a metadata server uri and returns a sequence of metadata items.
    Optionally, can take max retry attempts."
@@ -49,9 +46,10 @@
         :as options}]
   (let [http-client (http/create {})
         request (request-map uri)
+        ;; TODO (dchelimsky 2018-11-16) align this with client/with-retry
         response (loop [retry-delay (exp-backoff-delays 250 retries)]
                    (let [rsp (async/<!! (http/submit http-client request))]
-                     (if (and (retry? rsp) (not-empty retry-delay))
+                     (if (and (defaults/retriable? rsp) (not-empty retry-delay))
                        (do
                          (Thread/sleep (first retry-delay))
                          (recur (next retry-delay)))

@@ -66,34 +66,21 @@
     resp-chan))
 
 (defn with-retry
-  "Call req-fn, a function that wraps some operation and returns a
-  channel. Uses retry? on the response to decide whether the request
-  should be retried. Uses backoff to decide how much to backoff.  When
-  retry? returns false, puts response on resp-chan."
-  [req-fn resp-chan retry? backoff]
+  "Calls req-fn, a function that wraps some operation and returns a
+  channel. When the response to req-fn is retriable? and backoff
+  returns an int, waits backoff ms and retries, otherwise puts
+  response on resp-chan."
+  [req-fn resp-chan retriable? backoff]
   (a/go-loop [retries 0]
-    (when-not (zero? retries)
-      (a/<! (a/timeout (backoff retries))))
     (let [resp (a/<! (req-fn))]
-      (if (retry? resp)
-        (recur (inc retries))
+      (if (retriable? resp)
+        (if-let [bo (backoff retries)]
+          (do
+            (a/<! (a/timeout bo))
+            (recur (inc retries)))
+          (a/>! resp-chan resp))
         (a/>! resp-chan resp))))
   resp-chan)
-
-(defn default-retry?
-  [http-response]
-  (when-let [anomaly-category (:cognitect.anomalies/category http-response)]
-    (contains? #{:cognitect.anomalies/busy
-                 :cognitect.anomalies/unavailable}
-               anomaly-category)))
-
-(defn capped-exponential-backoff
-  ;; TODO: (dchelimsky 2018-07-27) add docstring, please!
-  [base max-backoff random-range]
-  (fn [retries]
-    (min max-backoff
-         (* (+ base (rand-int random-range))
-            (bit-shift-left 1 retries)))))
 
 (defn stop
   "Stop the client."

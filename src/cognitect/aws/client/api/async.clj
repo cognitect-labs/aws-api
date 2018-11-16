@@ -40,17 +40,17 @@
 
   :ch - optional, channel to deliver the result"
   [client op-map]
-  (let [result-chan                      (or (:ch op-map) (a/promise-chan))
-        {:keys [service retry? backoff]} (client/-get-info client)
-        validation-error                 (and (get @validate-requests? client)
-                                              (validate service op-map))]
+  (let [result-chan                          (or (:ch op-map) (a/promise-chan))
+        {:keys [service retriable? backoff]} (client/-get-info client)
+        validation-error                     (and (get @validate-requests? client)
+                                                  (validate service op-map))]
     (if validation-error
       (do
         (a/put! result-chan validation-error)
         result-chan)
       (let [send          #(client/send-request client op-map)
-            retry?        (or (:retry? op-map) retry?)
+            retriable?    (or (:retriable? op-map) retriable?)
             backoff       (or (:backoff op-map) backoff)
-            response-chan (client/with-retry send (a/promise-chan) retry? backoff)]
+            response-chan (client/with-retry send (a/promise-chan) retriable? backoff)]
         (a/take! response-chan (partial a/put! result-chan))
         result-chan))))
