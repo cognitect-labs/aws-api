@@ -100,33 +100,3 @@
   [client]
   (http/stop (:http-client client))
   (credentials/stop (:credentials client)))
-
-(defn wait
-  "Call req until the predicate success? returns true. Return a
-  promise channel that will receive the value ::done when the waiter
-  completes.
-
-  Only retry when the predicate retry? returns true."
-  [{:keys [req success? retry? delay max-retries]
-    :or {retry? (constantly false) max-retries 25 delay 20000}}]
-  (let [result-chan (a/promise-chan)]
-    (a/go-loop [retries 0]
-      (if (>= retries max-retries)
-        (a/>! result-chan {::error ::too-many-retries})
-        (do
-          (when-not (zero? retries)
-            (a/<! (a/timeout delay)))
-          (let [result (a/<! (req))]
-            (cond
-              (success? result)
-              (a/>! result-chan ::done)
-
-              (or (retry? result)
-                  (not (::error result)))
-              (recur (inc retries))
-
-              :else
-              (a/>! result-chan {::error :waiter-state-error}))))))
-    result-chan))
-
-;; TODO: Paginator that push vector of responses in a channel
