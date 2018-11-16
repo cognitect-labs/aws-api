@@ -14,10 +14,6 @@
 (defn build-path [& components]
   (str/replace (str/join \/ components) #"\/\/+" (constantly "/")))
 
-(defn exp-backoff-delays
-  [min-wait retries]
-  (map (partial * min-wait) (map #(Math/pow 2 %) (range retries))))
-
 (defn get-host-address
   "Gets the EC2 metadata host address"
   []
@@ -44,16 +40,11 @@
         :or {retries 3
              split-lines true}
         :as options}]
-  (let [http-client (http/create {})
-        request (request-map uri)
-        ;; TODO (dchelimsky 2018-11-16) align this with retry/with-retry
-        response (loop [retry-delay (exp-backoff-delays 250 retries)]
-                   (let [rsp (async/<!! (http/submit http-client request))]
-                     (if (and (retry/default-retriable? rsp) (not-empty retry-delay))
-                       (do
-                         (Thread/sleep (first retry-delay))
-                         (recur (next retry-delay)))
-                       rsp)))]
+  (let [response (async/<!! (retry/with-retry
+                              #(http/submit (http/create {}) (request-map uri))
+                              (async/promise-chan)
+                              retry/default-retriable?
+                              retry/default-backoff))]
     ;; TODO: handle unhappy paths -JS
     (if-not (:cognitect.anomalies/category response)
       (if (= (:status response) 200)
