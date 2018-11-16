@@ -2,9 +2,11 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.region-test
-  (:require [cognitect.aws.region :as region]
-            [clojure.test :refer :all]
+  (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [cognitect.aws.region :as region]
+            [cognitect.aws.util :as u]
+            [cognitect.aws.test.utils :as tu]
             [cognitect.aws.ec2-metadata-utils-test :as ec2]))
 
 (use-fixtures :once ec2/test-fixture)
@@ -19,13 +21,23 @@
       (is (thrown-with-msg? Exception #"No region found" (region/fetch (region/chain-region-provider [p1])))))))
 
 (deftest profile-region-provider-test
-  (let [config (io/file (io/resource "region/.aws/config"))]
-    (testing "The provider reads the default profile correctly."
+  (let [config (io/file (io/resource ".aws/config"))]
+    (testing "reads the default profile correctly."
       (is (= "us-east-1"
              (region/fetch (region/profile-region-provider "default" config)))))
-    (testing "The provider reads a custom profile correctly."
+    (testing "reads a custom profile correctly."
       (is (= "us-west-1"
-             (region/fetch (region/profile-region-provider "tardigrade" config)))))))
+             (region/fetch (region/profile-region-provider "tardigrade" config)))))
+
+    (testing "uses env vars and sys props for credentials file location and profile"
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CONFIG_FILE" config})]
+        (is (= "us-east-1" (region/fetch (region/profile-region-provider)))))
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CONFIG_FILE" config
+                                              "AWS_PROFILE" "tardigrade"})]
+        (is (= "us-west-1" (region/fetch (region/profile-region-provider)))))
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CONFIG_FILE" config})
+                    u/getProperty (tu/stub-getProperty {"aws.profile" "tardigrade"})]
+        (is (= "us-west-1" (region/fetch (region/profile-region-provider))))))))
 
 (deftest instance-region-provider-test
   (testing "The provider obtains the region from the instance metadata correctly."
@@ -33,5 +45,3 @@
 
 (comment
   (run-tests))
-
-

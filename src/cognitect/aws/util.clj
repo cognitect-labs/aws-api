@@ -249,3 +249,15 @@
       (if v
         @v
         (throw (RuntimeException. (str "Var " s " is not on the classpath")))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Wrappers - here to support testing with-redefs since
+;;;;            we can't redef static methods
+
+(defn getenv
+  ([] (System/getenv))
+  ([k] (System/getenv k)))
+
+(defn getProperty [k]
+  (System/getProperty k))

@@ -3,11 +3,19 @@
 
 (ns cognitect.aws.credentials-test
   (:require [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.util :as u]
+            [cognitect.aws.test.utils :as tu]
             [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.test :refer :all]
             [clojure.java.io :as io]))
 
 (use-fixtures :once ec2-metadata-utils-test/test-fixture)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; tests
 
 (deftest chain-credentials-provider-test
   (let [cnt   (atom 0)
@@ -32,9 +40,9 @@
 
 (deftest environment-credentials-provider-test
   (testing "required vars present"
-    (is (map? (credentials/fetch
-               (credentials/environment-credentials-provider {"AWS_ACCESS_KEY_ID" "foo"
-                                                              "AWS_SECRET_ACCESS_KEY" "bar"})))))
+    (with-redefs [u/getenv (tu/stub-getenv {"AWS_ACCESS_KEY_ID" "foo"
+                                            "AWS_SECRET_ACCESS_KEY" "bar"})]
+      (is (map? (credentials/fetch (credentials/environment-credentials-provider))))))
   (testing "required vars blank"
     (doall
      (for [env [{}
@@ -44,14 +52,16 @@
                  "AWS_SECRET_ACCESS_KEY" "bar"}
                 {"AWS_ACCESS_KEY_ID" "foo"
                  "AWS_SECRET_ACCESS_KEY" ""}]]
-       (let [p (credentials/environment-credentials-provider env)]
-         (is (nil? (credentials/fetch p))))))))
+       (with-redefs [u/getenv (tu/stub-getenv env)]
+         (let [p (credentials/environment-credentials-provider)]
+           (is (nil? (credentials/fetch p)))))))))
 
 (deftest system-properites-credentials-provider-test
   (testing "required vars present"
-    (is (map? (credentials/fetch
-               (credentials/system-property-credentials-provider {"aws.accessKeyId" "foo"
-                                                                  "aws.secretKey" "bar"})))))
+    (with-redefs [u/getProperty (tu/stub-getProperty {"aws.accessKeyId" "foo"
+                                                      "aws.secretKey" "bar"})]
+      (is (map? (credentials/fetch
+                 (credentials/system-property-credentials-provider))))))
   (testing "required vars blank"
     (doall
      (for [props [{}
@@ -61,36 +71,56 @@
                    "aws.secretKey" "bar"}
                   {"aws.accessKeyId" "foo"
                    "aws.secretKey" ""}]]
-       (let [p (credentials/system-property-credentials-provider props)]
-         (is (nil? (credentials/fetch p))))))))
+       (with-redefs [u/getProperty (tu/stub-getProperty props)]
+         (let [p (credentials/system-property-credentials-provider)]
+           (is (nil? (credentials/fetch p)))))))))
 
 (deftest profile-credentials-provider-test
-  (let [well-formed (io/file (io/resource "credentials/well-formed-config"))]
-    (testing "The provider reads the default profile correctly."
+  (let [test-config (io/file (io/resource ".aws/credentials"))]
+    (testing "reads the default profile correctly."
       (is (= {:aws/access-key-id "DEFAULT_AWS_ACCESS_KEY"
               :aws/secret-access-key "DEFAULT_AWS_SECRET_ACCESS_KEY"
               :aws/session-token nil}
-             (credentials/fetch (credentials/profile-credentials-provider "default" well-formed)))))
-    (testing "The provider reads a custom profile correctly."
+             (credentials/fetch (credentials/profile-credentials-provider "default" test-config)))))
+    (testing "reads a custom profile correctly."
       (is (= {:aws/access-key-id "TARDIGRADE_AWS_ACCESS_KEY"
               :aws/secret-access-key "TARDIGRADE_AWS_SECRET_ACCESS_KEY"
               :aws/session-token "TARDIGRADE_AWS_SESSION_TOKEN"}
-             (credentials/fetch (credentials/profile-credentials-provider "tardigrade" well-formed)))))))
+             (credentials/fetch (credentials/profile-credentials-provider "tardigrade" test-config)))))
+    (testing "uses env vars and sys props for credentials file location and profile"
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CREDENTIAL_PROFILES_FILE" test-config})]
+        (is (= {:aws/access-key-id "DEFAULT_AWS_ACCESS_KEY"
+                :aws/secret-access-key "DEFAULT_AWS_SECRET_ACCESS_KEY"
+                :aws/session-token nil}
+               (credentials/fetch (credentials/profile-credentials-provider)))))
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CREDENTIAL_PROFILES_FILE" test-config
+                                              "AWS_PROFILE" "tardigrade"})]
+        (is (= {:aws/access-key-id "TARDIGRADE_AWS_ACCESS_KEY"
+                :aws/secret-access-key "TARDIGRADE_AWS_SECRET_ACCESS_KEY"
+                :aws/session-token "TARDIGRADE_AWS_SESSION_TOKEN"}
+               (credentials/fetch (credentials/profile-credentials-provider)))))
+      (with-redefs [u/getenv (tu/stub-getenv {"AWS_CREDENTIAL_PROFILES_FILE" test-config})
+                    u/getProperty (tu/stub-getProperty {"aws.profile" "tardigrade"})]
+        (is (= {:aws/access-key-id "TARDIGRADE_AWS_ACCESS_KEY"
+                :aws/secret-access-key "TARDIGRADE_AWS_SECRET_ACCESS_KEY"
+                :aws/session-token "TARDIGRADE_AWS_SESSION_TOKEN"}
+               (credentials/fetch (credentials/profile-credentials-provider))))))))
 
 (deftest container-credentials-provider-test
   (testing "The provider reads container metadata correctly."
-    (let [env {credentials/ecs-container-credentials-path-env-var "/latest/meta-data/iam/security-credentials/"}]
+    (with-redefs [u/getenv (tu/stub-getenv {credentials/ecs-container-credentials-path-env-var
+                                            "/latest/meta-data/iam/security-credentials/"})]
       (is (= {:aws/access-key-id "foobar"
               :aws/secret-access-key "it^s4$3cret!"
               :aws/session-token "norealvalue"}
-             (credentials/fetch (credentials/container-credentials-provider env)))))))
+             (credentials/fetch (credentials/container-credentials-provider)))))))
 
 (deftest instance-profile-credentials-provider-test
   (testing "The provider reads ec2 metadata correctly."
     (is (= {:aws/access-key-id "foobar"
             :aws/secret-access-key "it^s4$3cret!"
             :aws/session-token "norealvalue"}
-           (credentials/fetch (credentials/instance-profile-credentials-provider {}))))))
+           (credentials/fetch (credentials/instance-profile-credentials-provider))))))
 
 (deftest auto-refresh-test
   (let [cnt (atom 0)

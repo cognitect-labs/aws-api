@@ -50,6 +50,7 @@
     (re-find #"/latest/meta-data/iam/security-credentials/.+" uri) iam-cred
     (= uri "/latest/dynamic/instance-identity/document") instance-info
     :default nil))
+
 (defn handler
   [req]
   (let [resp-body (route (:uri req))]
@@ -65,5 +66,3 @@
   (def s (start 0))
 
   (s))
-
-

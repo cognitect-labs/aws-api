@@ -6,7 +6,7 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [cognitect.aws.util :as util]
+            [cognitect.aws.util :as u]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import [java.util.concurrent Executors ScheduledExecutorService]
            [java.util.concurrent TimeUnit]
@@ -25,8 +25,6 @@
     Return a map with the following keys:
 
     :aws/region                        string  required "))
-
-;; Providers
 
 (defn chain-region-provider
   "Chain together multiple region providers.
@@ -50,7 +48,7 @@
   Returns nil if any of the required variables is blank."
   []
   (reify RegionProvider
-    (fetch [_] (valid-region (System/getenv "AWS_REGION")))))
+    (fetch [_] (valid-region (u/getenv "AWS_REGION")))))
 
 (defn system-property-region-provider
   "Return the region from the system properties.
@@ -61,7 +59,7 @@
   Returns nil the required property is blank."
   []
   (reify RegionProvider
-    (fetch [_] (valid-region (System/getProperty "aws.region")))))
+    (fetch [_] (valid-region (u/getProperty "aws.region")))))
 
 (defn profile-region-provider
   "Return the region in a AWS configuration profile.
@@ -76,16 +74,18 @@
   region        required
   "
   ([]
-   (profile-region-provider "default"))
+   (profile-region-provider (or (u/getenv "AWS_PROFILE")
+                                (u/getProperty "aws.profile")
+                                "default")))
   ([profile-name]
-   (profile-region-provider profile-name (or (io/file (System/getenv "AWS_CONFIG_FILE"))
-                                             (io/file (System/getProperty "user.home") ".aws" "config"))))
+   (profile-region-provider profile-name (or (io/file (u/getenv "AWS_CONFIG_FILE"))
+                                             (io/file (u/getProperty "user.home") ".aws" "config"))))
   ([profile-name ^File f]
    (reify RegionProvider
      (fetch [_]
        (when (.exists f)
         (try
-          (let [profile (get (util/config->profiles f) profile-name)]
+          (let [profile (get (u/config->profiles f) profile-name)]
             (valid-region (get profile "region")))
           (catch Throwable t
             (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
