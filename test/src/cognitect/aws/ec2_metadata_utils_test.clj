@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.ec2-metadata-utils-test
   (:require [clojure.test :refer :all]
             [clojure.core.async :as a]

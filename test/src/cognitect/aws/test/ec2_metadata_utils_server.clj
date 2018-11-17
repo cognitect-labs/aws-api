@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.test.ec2-metadata-utils-server
   "Modeled after com.amazonaws.util.EC2MetadataUtilsServer"
   (:require [clojure.string :as str]

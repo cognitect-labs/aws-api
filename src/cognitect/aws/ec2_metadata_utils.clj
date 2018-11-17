@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.ec2-metadata-utils
   (:require [clojure.string :as str]
             [clojure.data.json :as json]

@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.retry-test
   (:require [clojure.test :refer :all]
             [clojure.core.async :as a]
