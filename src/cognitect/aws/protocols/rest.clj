@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.protocols.rest
   "Common feature across the rest protocols (rest-json, rest-xml)."
   (:require [clojure.string :as str]
