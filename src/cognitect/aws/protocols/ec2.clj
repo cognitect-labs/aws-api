@@ -7,7 +7,8 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.common :as common])
+            [cognitect.aws.protocols.common :as common]
+            [cognitect.aws.protocols.query :as query])
   (:import (java.util Date)))
 
 (defn serialized-name
@@ -20,17 +21,12 @@
 (defmulti serialize
   (fn [shape args serialized prefix] (:type shape)))
 
-(defn prefix-assoc
-  [serialized prefix val]
-  (assoc serialized (str/join "." prefix) val))
-
 (defmethod serialize :default
   [shape args serialized prefix]
-  (prefix-assoc serialized prefix args))
+  (query/serialize shape args serialized prefix))
 
 (defmethod serialize "structure"
   [shape args serialized prefix]
-  ;; TODO: (dchelimsky 2018-07-06) this is duplicated in query/serialize for structure.
   (let [args (util/with-defaults shape args)]
     (reduce (fn [serialized k]
               (let [member-shape (shape/member-shape shape k)
@@ -48,34 +44,6 @@
               (serialize member-shape member serialized (conj prefix (str i))))
             serialized
             (map-indexed (fn [i member] [(inc i) member]) args))))
-
-(defmethod serialize "map"
-  [shape args serialized prefix]
-  (let [map-prefix (if (:flattened shape) prefix (conj prefix "entry"))
-        key-shape (shape/key-shape shape)
-        key-suffix (serialized-name key-shape "key")
-        value-shape (shape/value-shape shape)
-        value-suffix (serialized-name value-shape "value")]
-    (reduce (fn [serialized [i k v]]
-              (as-> serialized $
-                (serialize key-shape (name k) $ (conj map-prefix (str i) key-suffix))
-                (serialize value-shape v $ (conj map-prefix (str i) value-suffix))))
-            serialized
-            (map-indexed (fn [i [k v]] [(inc i) k v]) args))))
-
-(defmethod serialize "blob"
-  [shape args serialized prefix]
-  (prefix-assoc serialized prefix (util/base64-encode args)))
-
-(defmethod serialize "timestamp"
-  [shape args serialized prefix]
-  (prefix-assoc serialized prefix (->> (* args 1000)
-                                       (util/format-timestamp util/iso8601-date-format)
-                                       (util/url-encode))))
-
-(defmethod serialize "boolean"
-  [shape args serialized prefix]
-  (prefix-assoc serialized prefix (if args "true" "false")))
 
 (defmethod client/build-http-request "ec2"
   [service {:keys [op request]}]

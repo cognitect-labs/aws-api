@@ -32,7 +32,6 @@
 
 (defmethod serialize "structure"
   [shape args serialized prefix]
-  ;; TODO: (dchelimsky 2018-07-06) this is dupliclated in ec2/serialize for structure.
   (let [args (util/with-defaults shape args)]
     (reduce (fn [serialized k]
               (let [member-shape (shape/member-shape shape k)
