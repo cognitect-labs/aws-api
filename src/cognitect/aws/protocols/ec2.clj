@@ -57,8 +57,8 @@
      :scheme         :https
      :server-port    443
      :uri            "/"
-     :body           (util/str->bbuf
-                      (str/join "&" (map (fn [[k v]] (str k "=" (name v)))
+     :body           (util/->bbuf
+                      (str/join "&" (map (fn [[k v]] (str k "=" v))
                                          (serialize input-shape request params []))))}))
 
 (defmethod client/parse-http-response "ec2"

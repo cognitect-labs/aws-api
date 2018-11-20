@@ -34,7 +34,7 @@
      :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
                       "x-amz-target" (str targetPrefix "." (:name operation))
                       "content-type" (str "application/x-amz-json-" jsonVersion)}
-     :body           (some-> body util/str->bbuf)}))
+     :body           (some-> body util/->bbuf)}))
 
 (defmethod client/parse-http-response "json"
   [service {:keys [op] :as op-map} {:keys [status headers body] :as http-response}]

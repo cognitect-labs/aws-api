@@ -4,10 +4,12 @@
 (ns cognitect.aws.util
   (:require [clojure.string :as str]
             [clojure.xml :as xml]
-            [clojure.data.json :as json])
+            [clojure.data.json :as json]
+            [clojure.java.io :as io])
   (:import [java.text SimpleDateFormat]
            [java.util Date TimeZone]
            [java.util UUID]
+           [java.io InputStream]
            [java.security MessageDigest]
            [org.apache.commons.codec.binary Hex]
            [javax.crypto Mac]
@@ -96,10 +98,25 @@
       (.get (.duplicate bbuf) bytes)
       (String. bytes "UTF-8"))))
 
-(defn ^ByteBuffer str->bbuf
-  "Creates a java.nio.ByteBuffer object from a UTF-8 string."
-  [^String s]
-  (ByteBuffer/wrap (.getBytes ^String s "UTF-8")))
+(defn #^bytes input-stream->byte-array [is]
+  (doto (byte-array (.available ^InputStream is))
+    (#(.read ^InputStream is %))))
+
+(defprotocol BBuffable
+  (->bbuf [data]))
+
+(extend-protocol BBuffable
+  (class (byte-array 0))
+  (->bbuf [bs] (ByteBuffer/wrap bs))
+
+  String
+  (->bbuf [s] (->bbuf (.getBytes s "UTF-8")))
+
+  java.io.InputStream
+  (->bbuf [is] (->bbuf (input-stream->byte-array is)))
+
+  nil
+  (->bbuf [_]))
 
 (defn xml-read
   "Parse the UTF-8 XML string."
@@ -176,10 +193,15 @@
          (for [[k v] (select-keys m ks)]
            [k (f v)]))))
 
-(defn base64-encode
-  "base64 encode a string"
-  [^String s]
-  (Base64/encodeBase64String (.getBytes s "UTF-8")))
+(defprotocol Base64Encodable
+  (base64-encode [data]))
+
+(extend-protocol Base64Encodable
+  (class (byte-array 0))
+  (base64-encode [ba] (Base64/encodeBase64String ba))
+
+  java.io.InputStream
+  (base64-encode [is] (base64-encode (input-stream->byte-array is))))
 
 (defn base64-decode
   "base64 decode a string"
@@ -187,9 +209,7 @@
   (String. (Base64/decodeBase64 ^String s)))
 
 (defn encode-jsonvalue [data]
-  (-> data
-      json/json-str
-      base64-encode))
+  (Base64/encodeBase64String (.getBytes ^String (json/write-str data))))
 
 (defn parse-jsonvalue [data]
   (-> data

@@ -95,7 +95,7 @@
      :uri "/"
      :headers {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))
                "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
-     :body (util/str->bbuf
+     :body (util/->bbuf
              (str/join "&" (map (fn [[k v]]
                                   (str k "=" v))
                                 (serialize input-shape request params []))))}))

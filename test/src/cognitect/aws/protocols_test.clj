@@ -31,6 +31,54 @@
     (is (contains? headers s))
     (is (= v (get headers s)))))
 
+(defn get-bytes [s] (.getBytes s))
+
+(defmulti with-blob-xforms (fn [input-or-output protocol test-name test-case]
+                             [input-or-output protocol test-name]))
+
+(defmethod with-blob-xforms :default
+  [_ _ _ test-case] test-case)
+
+(defmethod with-blob-xforms ["input" "ec2" "Base64 encoded Blobs"]
+  [_ _ _ test-case]
+  (update-in test-case [:params :BlobArg] get-bytes))
+
+(defmethod with-blob-xforms ["input" "query" "Base64 encoded Blobs"]
+  [_ _ _ test-case]
+  (update-in test-case [:params :BlobArg] get-bytes))
+
+(defmethod with-blob-xforms ["input" "json" "Base64 encoded Blobs"]
+  [_ _ _ test-case]
+  (if (get-in test-case [:params :BlobArg])
+    (update-in test-case [:params :BlobArg] get-bytes)
+    (-> test-case
+        (update-in [:params :BlobMap :key1] get-bytes)
+        (update-in [:params :BlobMap :key2] get-bytes))))
+
+(defmethod with-blob-xforms ["input" "json" "Nested blobs"]
+  [_ _ _ test-case]
+  (-> test-case
+      (update-in [:params :ListParam 0] get-bytes)
+      (update-in [:params :ListParam 1] get-bytes)))
+
+(defmethod with-blob-xforms ["input" "rest-xml" "Blob and timestamp shapes"]
+  [_ _ _ test-case]
+  (update-in test-case [:params :StructureParam :b] get-bytes))
+
+(defmethod with-blob-xforms ["input" "rest-xml" "Blob payload"]
+  [_ _ _ test-case]
+  (if (get-in test-case [:params :foo])
+    (update-in test-case [:params :foo] get-bytes)
+    test-case))
+
+(defmethod with-blob-xforms ["input" "rest-json" "Blob and timestamp shapes"]
+  [_ _ _ test-case]
+  (update-in test-case [:params :Bar] get-bytes))
+
+(defmethod with-blob-xforms ["input" "rest-json" "Serialize blobs in body"]
+  [_ _ _ test-case]
+  (update-in test-case [:params :Bar] get-bytes))
+
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
 (defmethod test-request-body :default
@@ -88,7 +136,7 @@
                                                       op-map
                                                       {:status  (:status_code response)
                                                        :headers (:headers response)
-                                                       :body    (util/str->bbuf (:body response))})]
+                                                       :body    (util/->bbuf (:body response))})]
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
@@ -109,7 +157,11 @@
         (doseq [{:keys [given] :as test-case} (:cases test)
                 :let [service (assoc (select-keys test [:metadata :shapes])
                                      :operations {(:name given) given})]]
-          (run-test input-or-output service test-case)))))))
+          (run-test input-or-output service (with-blob-xforms
+                                              input-or-output
+                                              protocol
+                                              (:description test)
+                                              test-case))))))))
 
 (deftest test-protocols
   (with-redefs [util/gen-idempotency-token (constantly "00000000-0000-4000-8000-000000000000")]

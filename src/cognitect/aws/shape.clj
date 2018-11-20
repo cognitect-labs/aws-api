@@ -137,12 +137,12 @@
   (fn [shape instance] (:type shape)))
 
 (defmethod json-serialize* :default
-  [shape args]
-  args)
+  [shape data]
+  data)
 
 (defmethod json-serialize* "blob"
-  [_ s]
-  (util/base64-encode s))
+  [_ data]
+  (util/base64-encode data))
 
 ;; ----------------------------------------------------------------------------------------
 ;; XML Parser & Serializer

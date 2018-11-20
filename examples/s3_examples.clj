@@ -51,7 +51,7 @@
 (aws/invoke s3-client {:op :ListObjects :request {:Bucket bucket-name}})
 
 (aws/invoke s3-client {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
-                                                :Body "Oh hai!"}})
+                                                :Body (.getBytes "Oh hai!")}})
 
 ;; now you should see the object you just added
 (aws/invoke s3-client {:op :ListObjects :request {:Bucket bucket-name}})

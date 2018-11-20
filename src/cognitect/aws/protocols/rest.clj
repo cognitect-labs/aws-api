@@ -150,8 +150,8 @@
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))
             (assoc :body
-                   (when-let [body (serialize-body input-shape-name input-shape body-args serialize-body-args)]
-                     (util/str->bbuf body))))))))
+                   (util/->bbuf
+                    (serialize-body input-shape-name input-shape body-args serialize-body-args))))))))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Parser
