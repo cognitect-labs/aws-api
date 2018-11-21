@@ -1,8 +1,6 @@
-# Types
+# Data Types
 
-AWS service descriptions define a number of data types for use in
-`:request` maps passed to `cognitect.aws.client.api/invoke` and
-responses. aws-api supports them as follows:
+AWS service descriptions define a number of data types for use in `:request` maps passed to `cognitect.aws.client.api/invoke` and responses. aws-api supports them as follows:
 
 | AWS type  | Clojure/java input type           | Clojure/java output type (if different) |
 |-----------|-----------------------------------|-----------------------------------------|
@@ -19,8 +17,7 @@ responses. aws-api supports them as follows:
 | blob      | byte[] or java.io.InputStream     | java.io.InputStream                     |
 | timestamp | Long                              |                                         |
 
-You can validate that your request maps conform to these types by
-enabling `clojure.spec`-backed request validation during development:
+You can validate that your request maps conform to these types by enabling `clojure.spec`-backed request validation during development:
 
 ``` clojure
 (cognitect.aws.client.api/validate-requests client true)
