@@ -50,13 +50,21 @@
 ;; no objects yet ...
 (aws/invoke s3-client {:op :ListObjects :request {:Bucket bucket-name}})
 
+;; Body is blob type, for which we accept a byte-array or an InputStream
 (aws/invoke s3-client {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
                                                 :Body (.getBytes "Oh hai!")}})
+
+(aws/invoke s3-client {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
+                                                :Body (io/input-stream (.getBytes "Oh hai!"))}})
 
 ;; now you should see the object you just added
 (aws/invoke s3-client {:op :ListObjects :request {:Bucket bucket-name}})
 
+;; Body is a blob type, which always returns an InputStream
 (aws/invoke s3-client {:op :GetObject :request {:Bucket bucket-name :Key "hello.txt"}})
+
+;; check it!
+(slurp (io/reader (:Body *1)))
 
 (aws/invoke s3-client {:op :DeleteObject :request {:Bucket bucket-name :Key "hello.txt"}})
 

@@ -33,51 +33,68 @@
 
 (defn get-bytes [s] (.getBytes s))
 
-(defmulti with-blob-xforms (fn [input-or-output protocol test-name test-case]
-                             [input-or-output protocol test-name]))
+(defmulti with-blob-xforms
+  "The botocore tests we're taking advantage of here all assume that
+  we accept strings for blob types, but this library does not.  Use
+  this multimethod to xform strings to byte arrays before submitting
+  requests to invoke."
+  (fn [protocol test-name test-case]
+    [protocol test-name]))
 
 (defmethod with-blob-xforms :default
-  [_ _ _ test-case] test-case)
+  [_ _ test-case] test-case)
 
-(defmethod with-blob-xforms ["input" "ec2" "Base64 encoded Blobs"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["ec2" "Base64 encoded Blobs"]
+  [_ _ test-case]
   (update-in test-case [:params :BlobArg] get-bytes))
 
-(defmethod with-blob-xforms ["input" "query" "Base64 encoded Blobs"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["query" "Base64 encoded Blobs"]
+  [_ _ test-case]
   (update-in test-case [:params :BlobArg] get-bytes))
 
-(defmethod with-blob-xforms ["input" "json" "Base64 encoded Blobs"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["json" "Base64 encoded Blobs"]
+  [_ _ test-case]
   (if (get-in test-case [:params :BlobArg])
     (update-in test-case [:params :BlobArg] get-bytes)
     (-> test-case
         (update-in [:params :BlobMap :key1] get-bytes)
         (update-in [:params :BlobMap :key2] get-bytes))))
 
-(defmethod with-blob-xforms ["input" "json" "Nested blobs"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["json" "Nested blobs"]
+  [_ _ test-case]
   (-> test-case
       (update-in [:params :ListParam 0] get-bytes)
       (update-in [:params :ListParam 1] get-bytes)))
 
-(defmethod with-blob-xforms ["input" "rest-xml" "Blob and timestamp shapes"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["rest-xml" "Blob and timestamp shapes"]
+  [_ _ test-case]
   (update-in test-case [:params :StructureParam :b] get-bytes))
 
-(defmethod with-blob-xforms ["input" "rest-xml" "Blob payload"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["rest-xml" "Blob payload"]
+  [_ _ test-case]
   (if (get-in test-case [:params :foo])
     (update-in test-case [:params :foo] get-bytes)
     test-case))
 
-(defmethod with-blob-xforms ["input" "rest-json" "Blob and timestamp shapes"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["rest-json" "Blob and timestamp shapes"]
+  [_ _ test-case]
   (update-in test-case [:params :Bar] get-bytes))
 
-(defmethod with-blob-xforms ["input" "rest-json" "Serialize blobs in body"]
-  [_ _ _ test-case]
+(defmethod with-blob-xforms ["rest-json" "Serialize blobs in body"]
+  [_ _ test-case]
   (update-in test-case [:params :Bar] get-bytes))
+
+(defmulti with-parsed-streams (fn [protocol description response]
+                                [protocol description]))
+
+(defmethod with-parsed-streams :default
+  [_ _ response] response)
+
+(defmethod with-parsed-streams ["rest-xml" "Streaming payload"]
+  [_ _ response] (update response :Stream (comp slurp io/reader)))
+
+(defmethod with-parsed-streams ["rest-json" "Streaming payload"]
+  [_ _ response] (update response :Stream (comp slurp io/reader)))
 
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
@@ -109,27 +126,27 @@
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
 
-(defmulti run-test (fn [io service test-case] io))
+(defmulti run-test (fn [io protocol description service test-case] io))
 
 (defmethod run-test "input"
-  [_ service {expected :serialized
-              :keys    [given params]
-              :as      test-case}]
-  (try
-    (let [op-map       {:op (:name given) :request params}
-          http-request (client/build-http-request service op-map)]
-      (test-request-method (:method expected) http-request)
-      (test-request-uri (:uri expected) http-request)
-      (test-request-headers (:headers expected) http-request)
-      (test-request-body (get-in service [:metadata :protocol]) (:body expected) http-request))
-    (catch Exception e
-      (is (nil?
-           {:expected  expected
-            :test-case test-case
-            :exception e})))))
+  [_ protocol description service test-case]
+  (let [{expected :serialized :keys [given params]}
+        (with-blob-xforms protocol description test-case)]
+    (try
+      (let [op-map       {:op (:name given) :request params}
+            http-request (client/build-http-request service op-map)]
+        (test-request-method (:method expected) http-request)
+        (test-request-uri (:uri expected) http-request)
+        (test-request-headers (:headers expected) http-request)
+        (test-request-body (get-in service [:metadata :protocol]) (:body expected) http-request))
+      (catch Exception e
+        (is (nil?
+             {:expected  expected
+              :test-case test-case
+              :exception e}))))))
 
 (defmethod run-test "output"
-  [_ service {:keys [given response result] :as test-case}]
+  [_ protocol description service {:keys [given response result] :as test-case}]
   (try
     (let [op-map          {:op (:name given)}
           parsed-response (client/parse-http-response service
@@ -140,7 +157,7 @@
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
-      (is (= result parsed-response)))
+      (is (= result (with-parsed-streams protocol description parsed-response))))
     (catch Exception e
       (is (nil?
            {:test-case test-case
@@ -157,11 +174,7 @@
         (doseq [{:keys [given] :as test-case} (:cases test)
                 :let [service (assoc (select-keys test [:metadata :shapes])
                                      :operations {(:name given) given})]]
-          (run-test input-or-output service (with-blob-xforms
-                                              input-or-output
-                                              protocol
-                                              (:description test)
-                                              test-case))))))))
+          (run-test input-or-output protocol (:description test) service test-case)))))))
 
 (deftest test-protocols
   (with-redefs [util/gen-idempotency-token (constantly "00000000-0000-4000-8000-000000000000")]
