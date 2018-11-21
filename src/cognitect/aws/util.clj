@@ -89,14 +89,24 @@
     (.init mac (SecretKeySpec. key "HmacSHA256"))
     (.doFinal mac (.getBytes data "UTF-8"))))
 
-(defn bbuf->str
-  "Creates a string from java.nio.ByteBuffer object.
-   The encoding is fixed to UTF-8."
+(defn bbuf->bytes
   [^ByteBuffer bbuf]
   (when bbuf
     (let [bytes (byte-array (.remaining bbuf))]
       (.get (.duplicate bbuf) bytes)
-      (String. bytes "UTF-8"))))
+      bytes)))
+
+(defn bbuf->str
+  "Creates a string from java.nio.ByteBuffer object.
+   The encoding is fixed to UTF-8."
+  [^ByteBuffer bbuf]
+  (when-let [bytes (bbuf->bytes bbuf)]
+    (String. #^bytes bytes "UTF-8")))
+
+(defn bbuf->input-stream
+  [^ByteBuffer bbuf]
+  (when bbuf
+    (io/input-stream (bbuf->bytes bbuf))))
 
 (defn #^bytes input-stream->byte-array [is]
   (doto (byte-array (.available ^InputStream is))
