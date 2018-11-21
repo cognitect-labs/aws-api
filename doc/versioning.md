@@ -32,7 +32,7 @@ below, at the `1.11.444` tag.
 If we start to source endpoints from a different repository,
 we'll add a row to this table.
 
-### com.cognitect.aws/<service>
+### com.cognitect.aws/&lt;service>
 
     [generator-rev].[source.repo.tag]
 
@@ -79,7 +79,7 @@ we'll cut a `1.1.11.445` release and then continue, comparing
 If there is no difference, we move to the next tag (`1.1.446`) and
 compare it to our last-released basis (`1.1.444`), and so on.
 
-### com.cognitect.aws/<service>
+### com.cognitect.aws/&lt;service>
 
 This works just like `endpoints`, above, except that we do the same
 thing for every aws service available in the source repository.
