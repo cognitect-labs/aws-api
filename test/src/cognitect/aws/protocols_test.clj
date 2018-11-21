@@ -96,6 +96,30 @@
 (defmethod with-parsed-streams ["rest-json" "Streaming payload"]
   [_ _ response] (update response :Stream (comp slurp io/reader)))
 
+(defmethod with-parsed-streams ["rest-xml" "Blob"]
+  [_ _ response]
+  (update response :Blob (comp slurp io/reader)))
+
+(defmethod with-parsed-streams ["query" "Blob"]
+  [_ _ response]
+  (update response :Blob (comp slurp io/reader)))
+
+(defmethod with-parsed-streams ["ec2" "Blob"]
+  [_ _ response]
+  (update response :Blob (comp slurp io/reader)))
+
+(defmethod with-parsed-streams ["rest-json" "Blob members"]
+  [_ _ response]
+  (-> response
+      (update :BlobMember (comp slurp io/reader))
+      (update-in [:StructMember :foo] (comp slurp io/reader))))
+
+(defmethod with-parsed-streams ["json" "Blob members"]
+  [_ _ response]
+  (-> response
+      (update :BlobMember (comp slurp io/reader))
+      (update-in [:StructMember :foo] (comp slurp io/reader))))
+
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
 (defmethod test-request-body :default

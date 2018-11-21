@@ -214,9 +214,9 @@
   (base64-encode [is] (base64-encode (input-stream->byte-array is))))
 
 (defn base64-decode
-  "base64 decode a string"
+  "base64 decode a base64-encoded string to an input stream"
   [s]
-  (String. (Base64/decodeBase64 ^String s)))
+  (io/input-stream (Base64/decodeBase64 ^String s)))
 
 (defn encode-jsonvalue [data]
   (Base64/encodeBase64String (.getBytes ^String (json/write-str data))))
@@ -224,6 +224,8 @@
 (defn parse-jsonvalue [data]
   (-> data
       base64-decode
+      io/reader
+      slurp
       (json/read-str :key-fn keyword)))
 
 (defn gen-idempotency-token []

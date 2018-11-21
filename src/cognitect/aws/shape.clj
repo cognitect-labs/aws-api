@@ -349,7 +349,7 @@
 (defmethod xml-parse* "float"     [_ nodes] (Double. (data nodes)))
 (defmethod xml-parse* "long"      [_ nodes] (Long. (data nodes)))
 (defmethod xml-parse* "integer"   [_ nodes] (Long. (data nodes)))
-(defmethod xml-parse* "blob"      [_ nodes] (String. (util/base64-decode (data nodes))))
+(defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
   [_ nodes]
   (let [ts (data nodes)
