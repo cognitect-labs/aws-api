@@ -10,7 +10,7 @@ all have different release schedules and version semantics.
 
 ## com.cognitect.aws/api
 
-    0.1.[rev]
+    0.8.[rev]
 
 `rev` is the revision in the git repository.
 
