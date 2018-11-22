@@ -43,15 +43,17 @@ example you'll see both of the following files listed:
     dynamodb-2012-08-10.normal.json
 
 Whenever we release com.cognitect.aws/dynamodb, we look for the
-descriptor with the most recent API version. If aws-sdk-js-v2.324.0
+descriptor with the most recent API version. If aws-sdk-js-v2.351.0
 contains an update to dynamodb-2012-08-10.normal.json, or a new
 dynamodb descriptor with a more recent api-version, we'll make a
-release whose version number includes the 2.324.0 from the version
+release whose version number includes the 2.351.0 from the version
 of aws-sdk-js.
 
 We also include the revision of our generator in the version. For example,
-`com.cognitect.aws/dynamo-db-631.2.324.0` indicates revision `631` of the
-generator, and tag `v2.324.0` of aws-sdk-js.
+`com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
+generator, and tag `v2.351.0` of aws-sdk-js.
+
+[Latest releases](doc/latest-releases.md)
 
 ## Usage
 
@@ -72,7 +74,7 @@ To use, for example, the s3 api, add the following to deps.edn
 ``` clojure
 {:deps {com.cognitect.aws/api       {:mvn/version "0.8.79"}
         com.cognitect.aws/endpoints {:mvn/version "1.1.11.451"}
-        com.cognitect.aws/s3        {:mvn/version "652.2.350.0"}}}
+        com.cognitect.aws/s3        {:mvn/version "653.2.351.0"}}}
 ```
 
 ### explore!
