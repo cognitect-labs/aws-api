@@ -85,8 +85,11 @@
   [client]
   (->> client client/-get-info :service :operations keys sort))
 
-(defn validate-requests [client tf]
-  (api.async/validate-requests client tf))
+(defn validate-requests
+  ([client]
+   (validate-requests client true))
+  ([client bool]
+   (api.async/validate-requests client bool)))
 
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
 (defn pprint [& args]
