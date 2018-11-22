@@ -91,6 +91,16 @@
   ([client bool]
    (api.async/validate-requests client bool)))
 
+(defn request-spec
+  "Returns the key for the request spec for op."
+  [client op]
+  (service/request-spec-key (-> client client/-get-info :service) op))
+
+(defn response-spec
+  "Returns the key for the response spec for op."
+  [client op]
+  (service/response-spec-key (-> client client/-get-info :service) op))
+
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
 (defn pprint [& args]
   (binding [*print-namespace-maps* false]

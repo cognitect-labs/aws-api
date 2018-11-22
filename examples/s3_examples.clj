@@ -3,6 +3,7 @@
 
 (require '[clojure.core.async :as a]
          '[clojure.spec.alpha :as s]
+         '[clojure.spec.gen.alpha :as gen]
          '[clojure.java.io :as io]
          '[cognitect.aws.service :as service]
          '[cognitect.aws.client.api :as aws]
@@ -23,9 +24,11 @@
 ;; specs
 (aws/request-spec s3-client :CreateBucket)
 (s/describe (aws/request-spec s3-client :CreateBucket))
+(gen/sample (s/gen (aws/request-spec s3-client :CreateBucket)))
 
 (aws/response-spec s3-client :CreateBucket)
 (s/describe (aws/response-spec s3-client :CreateBucket))
+(gen/sample (s/gen (aws/response-spec s3-client :CreateBucket)))
 
 ;; * use this bucket-name to avoid collisions with other devs
 ;; * don't forget to delete the bucket when done exploring!
