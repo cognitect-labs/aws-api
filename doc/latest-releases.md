@@ -1,159 +1,160 @@
-# Latest releases
+# Latest releases as of 2018-11-22
 
-```
-com.cognitect.aws/api                          {:mvn/version "0.8.79"}
-com.cognitect.aws/endpoints                    {:mvn/version "1.1.11.451"}
-com.cognitect.aws/AWSMigrationHub              {:mvn/version "652.2.351.0"}
-com.cognitect.aws/acm                          {:mvn/version "652.2.351.0"}
-com.cognitect.aws/acm-pca                      {:mvn/version "652.2.351.0"}
-com.cognitect.aws/alexaforbusiness             {:mvn/version "652.2.351.0"}
-com.cognitect.aws/apigateway                   {:mvn/version "652.2.352.0"}
-com.cognitect.aws/application-autoscaling      {:mvn/version "652.2.351.0"}
-com.cognitect.aws/appstream                    {:mvn/version "652.2.351.0"}
-com.cognitect.aws/appsync                      {:mvn/version "652.2.351.0"}
-com.cognitect.aws/athena                       {:mvn/version "652.2.351.0"}
-com.cognitect.aws/autoscaling                  {:mvn/version "652.2.358.0"}
-com.cognitect.aws/autoscaling-plans            {:mvn/version "652.2.351.0"}
-com.cognitect.aws/batch                        {:mvn/version "652.2.356.0"}
-com.cognitect.aws/budgets                      {:mvn/version "652.2.356.0"}
-com.cognitect.aws/ce                           {:mvn/version "652.2.359.0"}
-com.cognitect.aws/chime                        {:mvn/version "652.2.356.0"}
-com.cognitect.aws/cloud9                       {:mvn/version "652.2.351.0"}
-com.cognitect.aws/clouddirectory               {:mvn/version "652.2.351.0"}
-com.cognitect.aws/cloudformation               {:mvn/version "652.2.356.0"}
-com.cognitect.aws/cloudfront                   {:mvn/version "652.2.360.0"}
-com.cognitect.aws/cloudhsm                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cloudhsmv2                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cloudsearch                  {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cloudsearchdomain            {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cloudtrail                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/codebuild                    {:mvn/version "652.2.358.0"}
-com.cognitect.aws/codecommit                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/codedeploy                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/codepipeline                 {:mvn/version "652.2.355.0"}
-com.cognitect.aws/codestar                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cognito-identity             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cognito-idp                  {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cognito-sync                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/comprehend                   {:mvn/version "652.2.359.0"}
-com.cognitect.aws/config                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/connect                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/cur                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/datapipeline                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/dax                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/devicefarm                   {:mvn/version "652.2.360.0"}
-com.cognitect.aws/devices                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/directconnect                {:mvn/version "652.2.350.0"}
-com.cognitect.aws/discovery                    {:mvn/version "652.2.350.0"}
-com.cognitect.aws/dlm                          {:mvn/version "652.2.353.0"}
-com.cognitect.aws/dms                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/ds                           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/dynamodb                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/ec2                          {:mvn/version "652.2.360.0"}
-com.cognitect.aws/ecr                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/ecs                          {:mvn/version "652.2.359.0"}
-com.cognitect.aws/eks                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticache                  {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticbeanstalk             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticfilesystem            {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticloadbalancing         {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticloadbalancingv2       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elasticmapreduce             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/elastictranscoder            {:mvn/version "652.2.350.0"}
-com.cognitect.aws/email                        {:mvn/version "652.2.350.0"}
-com.cognitect.aws/entitlement-marketplace      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/es                           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/events                       {:mvn/version "652.2.353.0"}
-com.cognitect.aws/firehose                     {:mvn/version "652.2.355.0"}
-com.cognitect.aws/fms                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/gamelift                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/glacier                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/glue                         {:mvn/version "652.2.350.0"}
-com.cognitect.aws/greengrass                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/guardduty                    {:mvn/version "652.2.350.0"}
-com.cognitect.aws/health                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iam                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/importexport                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/inspector                    {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iot                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iot-data                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iot-jobs-data                {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iot1click-projects           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/iotanalytics                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kinesis                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kinesis-video-archived-media {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kinesis-video-media          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kinesisanalytics             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kinesisvideo                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/kms                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/lambda                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/lex-models                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/lightsail                    {:mvn/version "652.2.350.0"}
-com.cognitect.aws/logs                         {:mvn/version "652.2.350.0"}
-com.cognitect.aws/machinelearning              {:mvn/version "652.2.350.0"}
-com.cognitect.aws/macie                        {:mvn/version "652.2.350.0"}
-com.cognitect.aws/marketplacecommerceanalytics {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mediaconvert                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/medialive                    {:mvn/version "652.2.353.0"}
-com.cognitect.aws/mediapackage                 {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mediastore                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mediastore-data              {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mediatailor                  {:mvn/version "652.2.357.0"}
-com.cognitect.aws/meteringmarketplace          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mobile                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mobileanalytics              {:mvn/version "652.2.350.0"}
-com.cognitect.aws/monitoring                   {:mvn/version "652.2.360.0"}
-com.cognitect.aws/mq                           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/mturk-requester              {:mvn/version "652.2.350.0"}
-com.cognitect.aws/neptune                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/opsworks                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/opsworkscm                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/organizations                {:mvn/version "652.2.350.0"}
-com.cognitect.aws/pi                           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/pinpoint                     {:mvn/version "652.2.358.0"}
-com.cognitect.aws/pinpoint-email               {:mvn/version "652.2.353.0"}
-com.cognitect.aws/pinpoint-sms-voice           {:mvn/version "652.2.358.0"}
-com.cognitect.aws/polly                        {:mvn/version "652.2.355.0"}
-com.cognitect.aws/pricing                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/ram                          {:mvn/version "652.2.358.0"}
-com.cognitect.aws/rds                          {:mvn/version "652.2.360.0"}
-com.cognitect.aws/rds-data                     {:mvn/version "652.2.360.0"}
-com.cognitect.aws/redshift                     {:mvn/version "652.2.360.0"}
-com.cognitect.aws/rekognition                  {:mvn/version "652.2.350.0"}
-com.cognitect.aws/resource-groups              {:mvn/version "652.2.357.0"}
-com.cognitect.aws/resourcegroupstaggingapi     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/route53                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/route53domains               {:mvn/version "652.2.350.0"}
-com.cognitect.aws/route53resolver              {:mvn/version "652.2.360.0"}
-com.cognitect.aws/runtime-lex                  {:mvn/version "652.2.350.0"}
-com.cognitect.aws/runtime-sagemaker            {:mvn/version "652.2.350.0"}
-com.cognitect.aws/s3                           {:mvn/version "652.2.350.0"}
-com.cognitect.aws/s3control                    {:mvn/version "652.2.360.0"}
-com.cognitect.aws/sagemaker                    {:mvn/version "652.2.357.0"}
-com.cognitect.aws/sdb                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/secretsmanager               {:mvn/version "652.2.350.0"}
-com.cognitect.aws/serverlessrepo               {:mvn/version "652.2.351.0"}
-com.cognitect.aws/servicecatalog               {:mvn/version "652.2.357.0"}
-com.cognitect.aws/servicediscovery             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/shield                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/signer                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/sms                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/snowball                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/sns                          {:mvn/version "652.2.357.0"}
-com.cognitect.aws/sqs                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/ssm                          {:mvn/version "652.2.360.0"}
-com.cognitect.aws/states                       {:mvn/version "652.2.350.0"}
-com.cognitect.aws/storagegateway               {:mvn/version "652.2.350.0"}
-com.cognitect.aws/streams-dynamodb             {:mvn/version "652.2.350.0"}
-com.cognitect.aws/sts                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/support                      {:mvn/version "652.2.350.0"}
-com.cognitect.aws/swf                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/transcribe                   {:mvn/version "652.2.350.0"}
-com.cognitect.aws/translate                    {:mvn/version "652.2.350.0"}
-com.cognitect.aws/waf                          {:mvn/version "652.2.350.0"}
-com.cognitect.aws/waf-regional                 {:mvn/version "652.2.351.0"}
-com.cognitect.aws/workdocs                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/workmail                     {:mvn/version "652.2.350.0"}
-com.cognitect.aws/workspaces                   {:mvn/version "652.2.359.0"}
-com.cognitect.aws/xray                         {:mvn/version "652.2.360.0"}
-```
+| lib | version |
+|-|-|
+| com.cognitect.aws/api | 0.8.79 |
+| com.cognitect.aws/endpoints | 1.1.11.451 |
+| com.cognitect.aws/AWSMigrationHub | 653.2.352.0 |
+| com.cognitect.aws/acm | 653.2.352.0 |
+| com.cognitect.aws/acm-pca | 653.2.352.0 |
+| com.cognitect.aws/alexaforbusiness | 653.2.352.0 |
+| com.cognitect.aws/apigateway | 653.2.353.0 |
+| com.cognitect.aws/application-autoscaling | 653.2.352.0 |
+| com.cognitect.aws/appstream | 653.2.352.0 |
+| com.cognitect.aws/appsync | 653.2.352.0 |
+| com.cognitect.aws/athena | 653.2.352.0 |
+| com.cognitect.aws/autoscaling | 653.2.359.0 |
+| com.cognitect.aws/autoscaling-plans | 653.2.352.0 |
+| com.cognitect.aws/batch | 653.2.357.0 |
+| com.cognitect.aws/budgets | 653.2.357.0 |
+| com.cognitect.aws/ce | 653.2.360.0 |
+| com.cognitect.aws/chime | 653.2.357.0 |
+| com.cognitect.aws/cloud9 | 653.2.352.0 |
+| com.cognitect.aws/clouddirectory | 653.2.352.0 |
+| com.cognitect.aws/cloudformation | 653.2.357.0 |
+| com.cognitect.aws/cloudfront | 653.2.361.0 |
+| com.cognitect.aws/cloudhsm | 653.2.351.0 |
+| com.cognitect.aws/cloudhsmv2 | 653.2.351.0 |
+| com.cognitect.aws/cloudsearch | 653.2.351.0 |
+| com.cognitect.aws/cloudsearchdomain | 653.2.351.0 |
+| com.cognitect.aws/cloudtrail | 653.2.351.0 |
+| com.cognitect.aws/codebuild | 653.2.359.0 |
+| com.cognitect.aws/codecommit | 653.2.351.0 |
+| com.cognitect.aws/codedeploy | 653.2.351.0 |
+| com.cognitect.aws/codepipeline | 653.2.356.0 |
+| com.cognitect.aws/codestar | 653.2.351.0 |
+| com.cognitect.aws/cognito-identity | 653.2.351.0 |
+| com.cognitect.aws/cognito-idp | 653.2.351.0 |
+| com.cognitect.aws/cognito-sync | 653.2.351.0 |
+| com.cognitect.aws/comprehend | 653.2.360.0 |
+| com.cognitect.aws/config | 653.2.351.0 |
+| com.cognitect.aws/connect | 653.2.351.0 |
+| com.cognitect.aws/cur | 653.2.351.0 |
+| com.cognitect.aws/datapipeline | 653.2.351.0 |
+| com.cognitect.aws/dax | 653.2.351.0 |
+| com.cognitect.aws/devicefarm | 653.2.361.0 |
+| com.cognitect.aws/devices | 653.2.351.0 |
+| com.cognitect.aws/directconnect | 653.2.351.0 |
+| com.cognitect.aws/discovery | 653.2.351.0 |
+| com.cognitect.aws/dlm | 653.2.354.0 |
+| com.cognitect.aws/dms | 653.2.351.0 |
+| com.cognitect.aws/ds | 653.2.351.0 |
+| com.cognitect.aws/dynamodb | 653.2.351.0 |
+| com.cognitect.aws/ec2 | 653.2.361.0 |
+| com.cognitect.aws/ecr | 653.2.351.0 |
+| com.cognitect.aws/ecs | 653.2.360.0 |
+| com.cognitect.aws/eks | 653.2.351.0 |
+| com.cognitect.aws/elasticache | 653.2.351.0 |
+| com.cognitect.aws/elasticbeanstalk | 653.2.351.0 |
+| com.cognitect.aws/elasticfilesystem | 653.2.351.0 |
+| com.cognitect.aws/elasticloadbalancing | 653.2.351.0 |
+| com.cognitect.aws/elasticloadbalancingv2 | 653.2.351.0 |
+| com.cognitect.aws/elasticmapreduce | 653.2.351.0 |
+| com.cognitect.aws/elastictranscoder | 653.2.351.0 |
+| com.cognitect.aws/email | 653.2.351.0 |
+| com.cognitect.aws/entitlement-marketplace | 653.2.351.0 |
+| com.cognitect.aws/es | 653.2.351.0 |
+| com.cognitect.aws/events | 653.2.354.0 |
+| com.cognitect.aws/firehose | 653.2.356.0 |
+| com.cognitect.aws/fms | 653.2.351.0 |
+| com.cognitect.aws/gamelift | 653.2.351.0 |
+| com.cognitect.aws/glacier | 653.2.351.0 |
+| com.cognitect.aws/glue | 653.2.351.0 |
+| com.cognitect.aws/greengrass | 653.2.351.0 |
+| com.cognitect.aws/guardduty | 653.2.351.0 |
+| com.cognitect.aws/health | 653.2.351.0 |
+| com.cognitect.aws/iam | 653.2.351.0 |
+| com.cognitect.aws/importexport | 653.2.351.0 |
+| com.cognitect.aws/inspector | 653.2.351.0 |
+| com.cognitect.aws/iot | 653.2.351.0 |
+| com.cognitect.aws/iot-data | 653.2.351.0 |
+| com.cognitect.aws/iot-jobs-data | 653.2.351.0 |
+| com.cognitect.aws/iot1click-projects | 653.2.351.0 |
+| com.cognitect.aws/iotanalytics | 653.2.351.0 |
+| com.cognitect.aws/kinesis | 653.2.351.0 |
+| com.cognitect.aws/kinesis-video-archived-media | 653.2.351.0 |
+| com.cognitect.aws/kinesis-video-media | 653.2.351.0 |
+| com.cognitect.aws/kinesisanalytics | 653.2.351.0 |
+| com.cognitect.aws/kinesisvideo | 653.2.351.0 |
+| com.cognitect.aws/kms | 653.2.351.0 |
+| com.cognitect.aws/lambda | 653.2.351.0 |
+| com.cognitect.aws/lex-models | 653.2.351.0 |
+| com.cognitect.aws/lightsail | 653.2.351.0 |
+| com.cognitect.aws/logs | 653.2.351.0 |
+| com.cognitect.aws/machinelearning | 653.2.351.0 |
+| com.cognitect.aws/macie | 653.2.351.0 |
+| com.cognitect.aws/marketplacecommerceanalytics | 653.2.351.0 |
+| com.cognitect.aws/mediaconvert | 653.2.351.0 |
+| com.cognitect.aws/medialive | 653.2.354.0 |
+| com.cognitect.aws/mediapackage | 653.2.351.0 |
+| com.cognitect.aws/mediastore | 653.2.351.0 |
+| com.cognitect.aws/mediastore-data | 653.2.351.0 |
+| com.cognitect.aws/mediatailor | 653.2.358.0 |
+| com.cognitect.aws/meteringmarketplace | 653.2.351.0 |
+| com.cognitect.aws/mobile | 653.2.351.0 |
+| com.cognitect.aws/mobileanalytics | 653.2.351.0 |
+| com.cognitect.aws/monitoring | 653.2.361.0 |
+| com.cognitect.aws/mq | 653.2.351.0 |
+| com.cognitect.aws/mturk-requester | 653.2.351.0 |
+| com.cognitect.aws/neptune | 653.2.351.0 |
+| com.cognitect.aws/opsworks | 653.2.351.0 |
+| com.cognitect.aws/opsworkscm | 653.2.351.0 |
+| com.cognitect.aws/organizations | 653.2.351.0 |
+| com.cognitect.aws/pi | 653.2.351.0 |
+| com.cognitect.aws/pinpoint | 653.2.359.0 |
+| com.cognitect.aws/pinpoint-email | 653.2.354.0 |
+| com.cognitect.aws/pinpoint-sms-voice | 653.2.359.0 |
+| com.cognitect.aws/polly | 653.2.356.0 |
+| com.cognitect.aws/pricing | 653.2.351.0 |
+| com.cognitect.aws/quicksight | 653.2.361.0 |
+| com.cognitect.aws/ram | 653.2.359.0 |
+| com.cognitect.aws/rds | 653.2.361.0 |
+| com.cognitect.aws/rds-data | 653.2.361.0 |
+| com.cognitect.aws/redshift | 653.2.361.0 |
+| com.cognitect.aws/rekognition | 653.2.351.0 |
+| com.cognitect.aws/resource-groups | 653.2.358.0 |
+| com.cognitect.aws/resourcegroupstaggingapi | 653.2.351.0 |
+| com.cognitect.aws/route53 | 653.2.351.0 |
+| com.cognitect.aws/route53domains | 653.2.351.0 |
+| com.cognitect.aws/route53resolver | 653.2.361.0 |
+| com.cognitect.aws/runtime-lex | 653.2.351.0 |
+| com.cognitect.aws/runtime-sagemaker | 653.2.351.0 |
+| com.cognitect.aws/s3 | 653.2.351.0 |
+| com.cognitect.aws/s3control | 653.2.361.0 |
+| com.cognitect.aws/sagemaker | 653.2.358.0 |
+| com.cognitect.aws/sdb | 653.2.351.0 |
+| com.cognitect.aws/secretsmanager | 653.2.351.0 |
+| com.cognitect.aws/serverlessrepo | 653.2.352.0 |
+| com.cognitect.aws/servicecatalog | 653.2.358.0 |
+| com.cognitect.aws/servicediscovery | 653.2.351.0 |
+| com.cognitect.aws/shield | 653.2.351.0 |
+| com.cognitect.aws/signer | 653.2.351.0 |
+| com.cognitect.aws/sms | 653.2.351.0 |
+| com.cognitect.aws/snowball | 653.2.351.0 |
+| com.cognitect.aws/sns | 653.2.358.0 |
+| com.cognitect.aws/sqs | 653.2.351.0 |
+| com.cognitect.aws/ssm | 653.2.361.0 |
+| com.cognitect.aws/states | 653.2.351.0 |
+| com.cognitect.aws/storagegateway | 653.2.351.0 |
+| com.cognitect.aws/streams-dynamodb | 653.2.351.0 |
+| com.cognitect.aws/sts | 653.2.351.0 |
+| com.cognitect.aws/support | 653.2.351.0 |
+| com.cognitect.aws/swf | 653.2.351.0 |
+| com.cognitect.aws/transcribe | 653.2.351.0 |
+| com.cognitect.aws/translate | 653.2.351.0 |
+| com.cognitect.aws/waf | 653.2.351.0 |
+| com.cognitect.aws/waf-regional | 653.2.352.0 |
+| com.cognitect.aws/workdocs | 653.2.351.0 |
+| com.cognitect.aws/workmail | 653.2.351.0 |
+| com.cognitect.aws/workspaces | 653.2.360.0 |
+| com.cognitect.aws/xray | 653.2.361.0 |
