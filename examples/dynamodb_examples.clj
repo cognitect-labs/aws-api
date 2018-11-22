@@ -82,11 +82,11 @@
                                                 :WriteCapacityUnits 1}}})
 
 (->> ["Forum" "Reply" "Thread"]
-     (map #(a/<!! (aws.async/invoke ddb-client {:op      :DescribeTable
-                                                :request {:TableName %}
-                                                :ch      (a/promise-chan (comp
-                                                                          (map :Table)
-                                                                          (map :TableStatus)))})))
+     (map #(aws/invoke ddb-client {:op      :DescribeTable
+                                   :request {:TableName %}
+                                   :ch      (a/promise-chan (comp
+                                                             (map :Table)
+                                                             (map :TableStatus)))}))
      (into #{}))
 
 ;; when ^^ returns #{"ACTIVE"}, the tables are all ready
@@ -108,7 +108,7 @@
   (->> ["Forum.json"
         "Reply.json"
         "Thread.json"]
-       (map #(-> (io/file "examples" "resources-dynamodb" %)
+       (map #(-> (io/file "examples" "resources" "dynamodb" %)
                  slurp
                  (json/read-str :key-fn xform-specified-keys)))
        (map #(aws/invoke ddb-client {:op      :BatchWriteItem

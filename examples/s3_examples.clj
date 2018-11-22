@@ -48,8 +48,6 @@
 ;; now you should see the bucket you just added
 (aws/invoke s3-client {:op :ListBuckets})
 
-(aws/invoke s3-client {:op :GetBucketAcl :request {:Bucket bucket-name}})
-
 ;; no objects yet ...
 (aws/invoke s3-client {:op :ListObjects :request {:Bucket bucket-name}})
 
@@ -82,10 +80,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; see how submit works w/ async
-(clojure.repl/doc api.async/invoke)
+(clojure.repl/doc aws.async/invoke)
 
 ;; async!
-(a/<!! (aws.async/invoke s3-client {:op :ListBuckets}))
+(def c (aws.async/invoke s3-client {:op :ListBuckets}))
+
+(a/<!! c)
+
+(meta *1)
 
 ;; supply your own channel
 (let [ch (a/chan)]
