@@ -135,3 +135,36 @@
      (map #(aws/invoke ddb-client {:op      :DeleteTable
                                    :request {:TableName %}}))
      (into []))
+
+
+{:request
+ {:ReturnConsumedCapacity string,
+  :AttributesToGet [:seq-of string],
+  :FilterExpression string,
+  :ExpressionAttributeNames [:map-of string string],
+  :ExclusiveStartKey [:map-of string shape/AttributeValue],
+  :Limit integer,
+  :ExpressionAttributeValues [:map-of string shape/AttributeValue],
+  :ProjectionExpression string,
+  :Segment integer,
+  :ConsistentRead boolean,
+  :TotalSegments integer,
+  :TableName string,
+  :Select string,
+  :IndexName string,
+  :ConditionalOperator string,
+  :ScanFilter [:map-of string {:AttributeValueList [:seq-of shape/AttributeValue],
+                               :ComparisonOperator string}]}
+
+ :refs
+ {shape/AttributeValue
+  {:L [:seq-of shape/AttributeValue],
+   :M [:map-of string shape/AttributeValue],
+   :NS [:seq-of string],
+   :BOOL boolean,
+   :B blob,
+   :SS [:seq-of string],
+   :NULL boolean,
+   :S string,
+   :BS [:map-of blob],
+   :N string}}}

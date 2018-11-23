@@ -11,13 +11,15 @@
 (aws/validate-requests ssm-client true)
 
 ;; what ops are available
-(aws/ops ssm-client)
+(aws/ops-data ssm-client)
+
+(-> (aws/ops-data client) keys sort)
 
 ;; print docs
 (aws/doc ssm-client :PutParameter)
 
 ;; or describe args as data
-(pp/pprint (s/describe (aws/request-spec ssm-client :PutParameter)))
+(pp/pprint (s/describe (aws/request-spec-key ssm-client :PutParameter)))
 
 ;; describe an op param
 (s/form :cognitect.aws.ssm.PutParameterRequest/Type)
