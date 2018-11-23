@@ -81,11 +81,6 @@
   [client op-map]
   (a/<!! (api.async/invoke client op-map)))
 
-(defn ops
-  "Retuns a list of the operations supported by client."
-  [client]
-  (->> client client/-get-info :service :operations keys sort))
-
 (defn validate-requests
   ([client]
    (validate-requests client true))
