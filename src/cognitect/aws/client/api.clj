@@ -91,12 +91,12 @@
   ([client bool]
    (api.async/validate-requests client bool)))
 
-(defn request-spec
+(defn request-spec-key
   "Returns the key for the request spec for op."
   [client op]
   (service/request-spec-key (-> client client/-get-info :service) op))
 
-(defn response-spec
+(defn response-spec-key
   "Returns the key for the response spec for op."
   [client op]
   (service/response-spec-key (-> client client/-get-info :service) op))
