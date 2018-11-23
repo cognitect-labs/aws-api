@@ -15,12 +15,12 @@
 (def ddb-client (aws/client {:api :dynamodb}))
 
 ;; ask what it can do
-(aws/ops ddb-client)
+(aws/ops-data ddb-client)
 
 ;; doc!
 (aws/doc ddb-client :ListTables)
 (aws/doc ddb-client :CreateTable)
-(aws/doc ddb-client :Scan) ;; this one has references in the request/response syntax
+(aws/doc ddb-client :Scan) ;; this one has references in the request/response
 
 ;; 1. Create Example Tables
 

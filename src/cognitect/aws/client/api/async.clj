@@ -14,7 +14,7 @@
 (defn validate-requests [client tf]
   (swap! validate-requests? assoc client tf)
   (when tf
-    (require [(service/spec-ns (-> client client/-get-info :service))]))
+    (service/load-specs (-> client client/-get-info :service)))
   tf)
 
 (def ^:private registry-ref (delay (util/dynaload 'clojure.spec.alpha/registry)))

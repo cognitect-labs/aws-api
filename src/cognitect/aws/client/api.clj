@@ -5,6 +5,7 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [clojure.string :as str]
+            [clojure.walk :as walk]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
@@ -106,57 +107,46 @@
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
-(defn doc-data
-  "Given a client and an operation (keyword), returns a map with
-  the following keys:
-    :operation (same as the one you passed)
-    :documentation (from source api description)
-    :request (request syntax helper generated from source api description)
-    :request (response syntax helper generated from source api description)
-  "
-  [client operation]
-  (let [docs (service/docs (-> client client/-get-info :service))]
-    (require (service/spec-ns (-> client client/-get-info :service)))
-    (some-> (get docs operation)
-            (assoc :operation operation))))
+(defn ops-data [client]
+  (->> client
+       client/-get-info
+       :service
+       service/docs))
 
 (defn doc-str
-  "Given data produced by `doc-data` (or similar), returns a string
+  "Given data produced by `ops-data` (or similar), returns a string
   representation."
-  [{:keys [operation documentation request response] :as data}]
-  (when data
+  [{:keys [documentation request required response refs] :as doc}]
+  (when doc
     (str/join "\n"
               (cond-> ["-------------------------"
-                       (name operation)
+                       (:name doc)
                        ""
                        documentation]
                 request
-                (into (cond-> [""
-                               "-------------------------"
-                               "Request Syntax"
-                               ""
-                               (with-out-str (pprint (:main request)))]
-                        (:required request)
-                        (into ["Required"
-                               ""
-                               (with-out-str (pprint (:required request)))])
-                        (:refs request)
-                        (into ["Given"
-                               ""
-                               (with-out-str (pprint (:refs request)))])))
+                (into [""
+                       "-------------------------"
+                       "Request"
+                       ""
+                       (with-out-str (pprint request))])
+                required
+                (into ["Required"
+                       ""
+                       (with-out-str (pprint required))])
                 response
-                (into (cond-> ["-------------------------"
-                               "Response Syntax"
-                               ""
-                               (with-out-str (pprint (:main response)))]
-                        (:refs response)
-                        (into ["Given"
-                               ""
-                               (with-out-str (pprint (:refs response)))])))))))
+                (into ["-------------------------"
+                       "Response"
+                       ""
+                       (with-out-str (pprint response))])
+                refs
+                (into ["-------------------------"
+                       "Given"
+                       ""
+                       (with-out-str (pprint refs))])))))
 
 (defn doc
   "Given a client and an operation (keyword), prints documentation
   for that operation to the current value of *out*. Returns nil."
   [client operation]
-  (println (or (some-> (doc-data client operation) doc-str)
+  (println (or (some-> (ops-data client) operation doc-str)
                (str "No docs for " (name operation)))))

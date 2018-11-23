@@ -15,20 +15,23 @@
 ;; guard against invalid :request map
 (aws/validate-requests s3-client true)
 
-;; ask what it can do
-(aws/ops s3-client)
-
-;; doc!
+;; what can it do?
+(aws/ops-data s3-client)
+;; op names
+(-> (aws/ops-data s3-client) keys)
+;; op doc-data
+(-> (aws/ops-data s3-client) :CreateBucket)
+;; a little more friendly
 (aws/doc s3-client :CreateBucket)
 
 ;; specs
-(aws/request-spec s3-client :CreateBucket)
-(s/describe (aws/request-spec s3-client :CreateBucket))
-(gen/sample (s/gen (aws/request-spec s3-client :CreateBucket)))
+(aws/request-spec-key s3-client :CreateBucket)
+(s/describe (aws/request-spec-key s3-client :CreateBucket))
+(gen/sample (s/gen (aws/request-spec-key s3-client :CreateBucket)))
 
-(aws/response-spec s3-client :CreateBucket)
-(s/describe (aws/response-spec s3-client :CreateBucket))
-(gen/sample (s/gen (aws/response-spec s3-client :CreateBucket)))
+(aws/response-spec-key s3-client :CreateBucket)
+(s/describe (aws/response-spec-key s3-client :CreateBucket))
+(gen/sample (s/gen (aws/response-spec-key s3-client :CreateBucket)))
 
 ;; * use this bucket-name to avoid collisions with other devs
 ;; * don't forget to delete the bucket when done exploring!

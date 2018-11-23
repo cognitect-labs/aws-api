@@ -3,6 +3,7 @@
 
 (ns cognitect.aws.service
   (:require [clojure.string :as str]
+            [clojure.walk :as walk]
             [clojure.java.io :as io]
             [cognitect.aws.shape :as shape]))
 
@@ -57,19 +58,37 @@
 
 (defonce svc-docs (atom {}))
 
+(comment
+  (swap! svc-docs empty)
+  )
+
+(defn with-ref-meta [m op doc]
+  (let [ref-atom    (atom nil)
+        refs        (:refs doc)
+        updated-doc (walk/postwalk
+                     (fn [n]
+                       (if  (contains? refs n)
+                         (with-meta n
+                           {'clojure.core.protocols/datafy #(-> ref-atom deref %)})
+                         n))
+                     doc)]
+    (reset! ref-atom (:refs updated-doc))
+    (assoc m op (into {:name (name op)} updated-doc))))
+
 (defn docs
   "Returns the docs for this service"
   [service]
-  (load-specs service)
   (let [k (service-name service)]
     (if-let [doc (get @svc-docs k)]
       doc
       (-> (swap! svc-docs
                  assoc
                  k
-                 (clojure.edn/read-string
-                  (slurp
-                   (io/resource (format "%s/%s/docs.edn" base-resource-path (service-name service))))))
+                 (reduce-kv with-ref-meta
+                            {}
+                            (clojure.edn/read-string
+                             (slurp
+                              (io/resource (format "%s/%s/docs.edn" base-resource-path (service-name service)))))))
           (get k)))))
 
 (defn request-spec-key
