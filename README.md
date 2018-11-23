@@ -26,7 +26,7 @@ same way for every operation on every service.
 
 ## Approach
 
-AWS APIs are described in data (json) which specifies operations, inputs, and
+AWS APIs are described in data which specifies operations, inputs, and
 outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
