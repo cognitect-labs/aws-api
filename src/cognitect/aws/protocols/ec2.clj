@@ -49,7 +49,7 @@
   [service {:keys [op request]}]
   (let [operation   (get-in service [:operations op])
         input-shape (service/shape service (:input operation))
-        params      {"Action"  op
+        params      {"Action"  (name op)
                      "Version" (get-in service [:metadata :apiVersion])}]
     {:request-method :post
      :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
