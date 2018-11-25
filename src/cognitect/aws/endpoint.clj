@@ -30,27 +30,27 @@
 (defn service-resolve
   "Resolve the endpoint for the given service."
   [partition service-name service endpoint-key]
-  (let [endpoint (get-in service [:endpoints endpoint-key])]
-    (let [endpoint-name (name endpoint-key)
-          result (merge (:defaults partition)
-                        (:defaults service)
-                        endpoint
-                        {:partition (:partition partition)
-                         :endpoint-name endpoint-name
-                         :dnsSuffix (:dnsSuffix partition)})]
-      (util/map-vals #(render-template % {"service" service-name
-                                          "region" endpoint-name
-                                          "dnsSuffix" (:dnsSuffix partition)})
-                     result
-                     [:hostname :sslCommonName]))))
+  (let [endpoint      (get-in service [:endpoints endpoint-key])
+        endpoint-name (name endpoint-key)
+        result        (merge (:defaults partition)
+                             (:defaults service)
+                             endpoint
+                             {:partition     (:partition partition)
+                              :endpoint-name endpoint-name
+                              :dnsSuffix     (:dnsSuffix partition)})]
+    (util/map-vals #(render-template % {"service"   service-name
+                                        "region"    endpoint-name
+                                        "dnsSuffix" (:dnsSuffix partition)})
+                   result
+                   [:hostname :sslCommonName])))
 
 (defn partition-resolve
   [{:keys [services] :as partition} service-key region-key]
-  (let [{:keys [partitionEndpoint isRegionalized] :as service} (get services service-key)]
-    (let [endpoint-key (if (and partitionEndpoint (not isRegionalized))
-                         (keyword partitionEndpoint)
-                         region-key)]
-      (service-resolve partition (name service-key) service endpoint-key))))
+  (let [{:keys [partitionEndpoint isRegionalized] :as service} (get services service-key)
+        endpoint-key (if (and partitionEndpoint (not isRegionalized))
+                       (keyword partitionEndpoint)
+                       region-key)]
+    (service-resolve partition (name service-key) service endpoint-key)))
 
 (defn resolve*
   "Resolves an endpoint for a given service and region.
