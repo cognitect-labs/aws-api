@@ -56,7 +56,7 @@
     (->Client
      {:service     service
       :region      region
-      :endpoint    (or (endpoint/resolve api region)
+      :endpoint    (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
                        (throw (ex-info "No known endpoint." {:service api :region region})))
       :retriable?  (or retriable? retry/default-retriable?)
       :backoff     (or backoff retry/default-backoff)
