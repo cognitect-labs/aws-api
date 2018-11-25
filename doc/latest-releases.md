@@ -2,7 +2,7 @@
 
 | lib | version |
 |-|-|
-| com.cognitect.aws/api | 0.8.89 |
+| com.cognitect.aws/api | 0.8.103 |
 | com.cognitect.aws/endpoints | 1.1.11.451 |
 | com.cognitect.aws/AWSMigrationHub | 657.2.353.0 |
 | com.cognitect.aws/acm | 657.2.353.0 |
