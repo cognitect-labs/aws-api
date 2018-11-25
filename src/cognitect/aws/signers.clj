@@ -165,3 +165,7 @@
 (defmethod client/sign-http-request "s3"
   [service region http-request credentials]
   (v4-sign-http-request service region http-request credentials true))
+
+(defmethod client/sign-http-request "s3v4"
+  [service region http-request credentials]
+  (v4-sign-http-request service region http-request credentials true))
