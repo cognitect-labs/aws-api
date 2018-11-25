@@ -67,10 +67,8 @@
   :credential-scope     The Signature v4 credential scope (optional).
   :signature-versions   A list of possible signature versions (optional).
   :protocols            A list of supported protocols."
-  ([service]
-   (resolve* service nil))
-  ([service region]
-   (some #(partition-resolve % service region)
-         (:partitions (resolver)))))
+  [service region]
+  (some #(partition-resolve % service region)
+        (:partitions (resolver))))
 
 (def resolve (memoize resolve*))
