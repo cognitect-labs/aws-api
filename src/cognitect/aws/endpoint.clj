@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.endpoint
-  "Resolve the endpoint for a given service and region."
+  "Impl, don't call directly."
   (:refer-clojure :exclude [resolve])
   (:require [clojure.string :as str]
             [clojure.java.io :as io]

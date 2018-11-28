@@ -5,7 +5,9 @@
   (:require [clojure.core.async :as a]))
 
 (defn with-retry
-  "Calls req-fn, a function that wraps some operation and returns a
+  "For internal use. Do not call directly.
+
+  Calls req-fn, a function that wraps some operation and returns a
   channel. When the response to req-fn is retriable? and backoff
   returns an int, waits backoff ms and retries, otherwise puts
   response on resp-chan."
@@ -25,7 +27,9 @@
   "Returns a function of the num-retries (so far), which returns the
   lesser of max-backoff and an exponentially increasing multiple of
   base, or nil when (>= num-retries max-retries).
-  See with-retry to see how it is used."
+  See with-retry to see how it is used.
+
+  Alpha. Subject to change."
   [base max-backoff max-retries]
   (fn [num-retries]
     (when (< num-retries max-retries)
@@ -37,7 +41,9 @@
 (def default-retriable?
   "A fn of http-response which returns true if http-response contains
   a cognitect.anomalies/category of :cognitect.anomalies/busy or
-  :cognitect.anomalies/unavailable"
+  :cognitect.anomalies/unavailable
+
+  Alpha. Subject to change."
   (fn [http-response]
     (contains? #{:cognitect.anomalies/busy
                  :cognitect.anomalies/unavailable}

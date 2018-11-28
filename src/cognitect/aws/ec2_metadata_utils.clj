@@ -2,6 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.ec2-metadata-utils
+  "Impl, don't call directly"
   (:require [clojure.string :as str]
             [clojure.data.json :as json]
             [clojure.core.async :as a]

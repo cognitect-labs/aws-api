@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.protocols.common
-  "Common functionalities across protocols."
+  "Impl, don't call directly. "
   (:require [clojure.data.json :as json]
             [cognitect.aws.util :as util]))
 

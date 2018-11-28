@@ -2,6 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.service
+  "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.walk :as walk]
             [clojure.java.io :as io]

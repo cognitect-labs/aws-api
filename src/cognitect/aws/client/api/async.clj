@@ -9,24 +9,34 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))
 
-(def validate-requests? (atom {}))
+(def ^:private validate-requests? (atom {}))
 
-(defn validate-requests [client tf]
+(defn validate-requests
+  "For internal use. Don't call directly."
+  [client tf]
   (swap! validate-requests? assoc client tf)
   (when tf
     (service/load-specs (-> client client/-get-info :service)))
   tf)
 
 (def ^:private registry-ref (delay (util/dynaload 'clojure.spec.alpha/registry)))
-(defn registry [& args] (apply @registry-ref args))
+(defn registry
+  "For internal use. Don't call directly."
+  [& args] (apply @registry-ref args))
 
 (def ^:private valid?-ref (delay (util/dynaload 'clojure.spec.alpha/valid?)))
-(defn valid? [& args] (apply @valid?-ref args))
+(defn valid?
+  "For internal use. Don't call directly."
+  [& args] (apply @valid?-ref args))
 
 (def ^:private explain-data-ref (delay (util/dynaload 'clojure.spec.alpha/explain-data)))
-(defn explain-data [& args] (apply @explain-data-ref args))
+(defn explain-data
+  "For internal use. Don't call directly."
+  [& args] (apply @explain-data-ref args))
 
-(defn validate [service {:keys [op request] :or {request {}}}]
+(defn validate
+  "For internal use. Don't call directly."
+  [service {:keys [op request] :or {request {}}}]
   (let [spec (service/request-spec-key service op)]
     (when (contains? (-> (registry) keys set) spec)
       (when-not (valid? spec request)
@@ -39,7 +49,9 @@
 
   Additional supported keys in op-map:
 
-  :ch - optional, channel to deliver the result"
+  :ch - optional, channel to deliver the result
+
+  Alpha. Subject to change."
   [client op-map]
   (let [result-chan                          (or (:ch op-map) (a/promise-chan))
         {:keys [service retriable? backoff]} (client/-get-info client)

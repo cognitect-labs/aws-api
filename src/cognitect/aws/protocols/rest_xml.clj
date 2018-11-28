@@ -2,6 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.protocols.rest-xml
+  "Impl, don't call directly."
   (:require [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]
             [cognitect.aws.protocols.common :as common]

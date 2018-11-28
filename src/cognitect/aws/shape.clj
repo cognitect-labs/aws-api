@@ -2,7 +2,9 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.shape
-  "Functions to leverage the shapes defined in the AWS API descriptions.
+  "Impl, don't call directly.
+
+  Functions to leverage the shapes defined in the AWS API descriptions.
 
   Terminology:
 
@@ -13,8 +15,7 @@
 
   AWS defines 8 primitive shapes: string, timestamp, boolean, blob, integer, long, double, and float
   and 3 composite shapes: structure, list, and map.
-
-  This namespace provides the following features: "
+  "
   (:refer-clojure :exclude [resolve])
   (:require [clojure.data.json :as json]
             [cognitect.aws.util :as util]))

@@ -2,6 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.util
+  "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.xml :as xml]
             [clojure.data.json :as json]

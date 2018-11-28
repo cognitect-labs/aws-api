@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.client
-  "A generic client for Amazon web services."
+  "Impl, don't call directly."
   (:require [clojure.core.async :as a]
             [cognitect.http-client :as http]
             [cognitect.aws.util :as util]

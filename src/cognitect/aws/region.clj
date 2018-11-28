@@ -13,7 +13,9 @@
            [java.io File]))
 
 (defn valid-region
-  "Return the credential region if valid, otherwise nil."
+  "For internal use. Don't call directly.
+
+  Return the credential region if valid, otherwise nil."
   [region]
   ;; TODO: (dchelimsky 2018-07-27) maybe validate this against known regions?
   (when-not (str/blank? region) region))
@@ -31,7 +33,9 @@
 
   Calls each provider in order until one return a non-nil result.
 
-  Returns nil if none of the providers return a region"
+  Returns nil if none of the providers return a region.
+
+  Alpha. Subject to change."
   [providers]
   (reify RegionProvider
     (fetch [_]
@@ -45,7 +49,9 @@
   Look at the following variables:
   * AWS_REGION      required
 
-  Returns nil if any of the required variables is blank."
+  Returns nil if any of the required variables is blank.
+
+  Alpha. Subject to change."
   []
   (reify RegionProvider
     (fetch [_] (valid-region (u/getenv "AWS_REGION")))))
@@ -56,7 +62,9 @@
   Look at the following properties:
   * aws.region  required
 
-  Returns nil the required property is blank."
+  Returns nil the required property is blank.
+
+  Alpha. Subject to change."
   []
   (reify RegionProvider
     (fetch [_] (valid-region (u/getProperty "aws.region")))))
@@ -66,13 +74,14 @@
 
   Arguments:
 
-  f             File    The profile configuration file. (default: ~/.aws/config)
-  profile-name  string  The name of the profile in the file. (default: default)
+    f             File    The profile configuration file. (default: ~/.aws/config)
+    profile-name  string  The name of the profile in the file. (default: default)
 
   Parsed properties:
 
-  region        required
-  "
+    region        required
+
+  Alpha. Subject to change."
   ([]
    (profile-region-provider (or (u/getenv "AWS_PROFILE")
                                 (u/getProperty "aws.profile")
@@ -91,7 +100,9 @@
             (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
 
 (defn instance-region-provider
-  "Return the region from the ec2 instance's metadata service.
+  "For internal use. Do not call directly.
+
+  Return the region from the ec2 instance's metadata service.
 
   Returns nil the required property cannot be reached."
   []
@@ -104,7 +115,10 @@
 
     environment-region-provider
     system-property-region-provider
-    profile-region-provider"
+    profile-region-provider
+    instance-region-provider
+
+  Alpha. Subject to change."
   []
   (chain-region-provider
    [(environment-region-provider)

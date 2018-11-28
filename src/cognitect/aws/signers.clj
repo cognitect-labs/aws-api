@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.signers
-  "Implement the request signers for the AWS services."
+  "Impl, don't call directly."
   (:require [clojure.string :as str]
             [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]

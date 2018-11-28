@@ -2,6 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.protocols.rest-json
+  "Impl, don't call directly."
   (:require [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]
             [cognitect.aws.util :as util]

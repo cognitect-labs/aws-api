@@ -35,7 +35,9 @@
 ;; Credentials subsystem
 
 (defn auto-refresh-fn
-  "Return the function to auto-refresh the `credentials` atom using the given `provider`.
+  "For internal use. Don't call directly.
+
+  Return the function to auto-refresh the `credentials` atom using the given `provider`.
 
   If the credentials return a ::ttl, schedule refresh after ::ttl seconds using `scheduler`.
 
@@ -61,7 +63,9 @@
 
   Call `stop` to stop the auto-refreshing process.
 
-  A ScheduledExecutorService can be provided."
+  A ScheduledExecutorService can be provided.
+
+  Alpha. Subject to change."
   ([provider]
    (auto-refreshing-credentials provider (Executors/newScheduledThreadPool 1)))
   ([provider scheduler]
@@ -72,12 +76,15 @@
      credentials)))
 
 (defn stop
-  "Stop auto-refreshing the credentials."
+  "Stop auto-refreshing the credentials.
+
+  Alpha. Subject to change."
   [credentials]
   (when-let [{:keys [::scheduler]} (meta credentials)]
     (.shutdownNow ^ScheduledExecutorService scheduler)))
 
 (defn valid-credentials
+  "For internal use. Don't call directly."
   ([credentials]
    (valid-credentials credentials nil))
   ([{:keys [aws/access-key-id aws/secret-access-key] :as credentials}
@@ -104,7 +111,9 @@
   Calls each provider in order until one return a non-nil result. This
   provider is then cached for future calls to `fetch`.
 
-  Returns nil if none of the providers return credentials."
+  Returns nil if none of the providers return credentials.
+
+  Alpha. Subject to change."
   [providers]
   (let [cached-provider (atom nil)]
     (reify CredentialsProvider
@@ -130,7 +139,9 @@
   Returns nil if any of the required variables is blank.
 
   Logs error if one required variable is blank but the other
-  is not."
+  is not.
+
+  Alpha. Subject to change."
   []
   (reify CredentialsProvider
     (fetch [_]
@@ -150,7 +161,9 @@
   Returns nil if any of the required properties is blank.
 
   Logs error if one of the required properties is blank but
-  the other is not."
+  the other is not.
+
+  Alpha. Subject to change. "
   []
   (reify CredentialsProvider
     (fetch [_]
@@ -172,7 +185,9 @@
 
     aws_access_key        required
     aws_secret_access_key required
-    aws_session_token     optional"
+    aws_session_token     optional
+
+  Alpha. Subject to change."
   ([]
    (profile-credentials-provider (or (u/getenv "AWS_PROFILE")
                                      (u/getProperty "aws.profile")
@@ -195,7 +210,9 @@
             (log/error t "Error fetching credentials from aws profiles file"))))))))
 
 (defn container-credentials-provider
-  "Return credentials from ECS iff AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set."
+  "Return credentials from ECS iff AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set.
+
+  Alpha. Subject to change."
   []
   (reify CredentialsProvider
     (fetch [_]
@@ -219,8 +236,10 @@
           :aws/session-token (:Token container-creds)})))))
 
 (defn instance-profile-credentials-provider
-  "Return credentials from EC2 metadata service iff
-  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is not set."
+  "For internal use. Do not call directly.
+
+  Return credentials from EC2 metadata service iff
+  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is not set. "
   []
   (reify CredentialsProvider
     (fetch [_]
@@ -239,8 +258,10 @@
     environment-credentials-provider
     system-property-credentials-provider
     profile-credentials-provider
-    container-credentials-provider (Not Yet Implemented)
-    instance-profile-credentials-provider (Not Yet Implemented)"
+    container-credentials-provider
+    instance-profile-credentials-provider
+
+  Alpha. Subject to change. "
   []
   (chain-credentials-provider
    [(environment-credentials-provider)

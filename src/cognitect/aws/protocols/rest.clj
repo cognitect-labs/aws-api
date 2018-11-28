@@ -2,7 +2,9 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.protocols.rest
-  "Common feature across the rest protocols (rest-json, rest-xml)."
+  "Impl, don't call directly.
+
+  Common feature across the rest protocols (rest-json, rest-xml). "
   (:require [clojure.string :as str]
             [cognitect.aws.util :as util]
             [cognitect.aws.protocols.common :as common]

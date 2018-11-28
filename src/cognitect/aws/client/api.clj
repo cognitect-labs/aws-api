@@ -44,7 +44,9 @@
   :backoff              - optional, fn of number of retries so far. Should return
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
-                          Defaults to cognitect.aws.retry/default-backoff."
+                          Defaults to cognitect.aws.retry/default-backoff.
+
+  Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider] :as config}]
   (let [service (service/service-description (name api))
         region  (keyword
@@ -77,32 +79,47 @@
                           See client.
 
   If (cognitect.aws.client.api/validate-requests) is true, validates
-  :request in op-map."
+  :request in op-map.
+
+  Alpha. Subject to change."
   [client op-map]
   (a/<!! (api.async/invoke client op-map)))
 
 (defn validate-requests
+  "Given true, uses clojure.spec to validate all invoke calls on client.
+
+  Alpha. Subject to change."
   ([client]
    (validate-requests client true))
   ([client bool]
    (api.async/validate-requests client bool)))
 
 (defn request-spec-key
-  "Returns the key for the request spec for op."
+  "Returns the key for the request spec for op.
+
+  Alpha. Subject to change."
   [client op]
   (service/request-spec-key (-> client client/-get-info :service) op))
 
 (defn response-spec-key
-  "Returns the key for the response spec for op."
+  "Returns the key for the response spec for op.
+
+  Alpha. Subject to change."
   [client op]
   (service/response-spec-key (-> client client/-get-info :service) op))
 
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
-(defn pprint [& args]
+(defn pprint
+  "For internal use. Don't call directly."
+  [& args]
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
-(defn ops-data [client]
+(defn ops-data
+  "Returns a map of operation name to operation data for this client.
+
+  Alpha. Subject to change."
+  [client]
   (->> client
        client/-get-info
        :service
@@ -110,7 +127,9 @@
 
 (defn doc-str
   "Given data produced by `ops-data` (or similar), returns a string
-  representation."
+  representation.
+
+  Alpha. Subject to change."
   [{:keys [documentation request required response refs] :as doc}]
   (when doc
     (str/join "\n"
@@ -141,7 +160,9 @@
 
 (defn doc
   "Given a client and an operation (keyword), prints documentation
-  for that operation to the current value of *out*. Returns nil."
+  for that operation to the current value of *out*. Returns nil.
+
+  Alpha. Subject to change."
   [client operation]
   (println (or (some-> (ops-data client) operation doc-str)
                (str "No docs for " (name operation)))))
