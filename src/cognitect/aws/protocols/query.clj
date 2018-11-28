@@ -77,7 +77,7 @@
 (defmethod serialize "timestamp"
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (-> util/iso8601-date-format
-                                      (util/format-timestamp (* args 1000))
+                                      (util/format-timestamp args)
                                       util/url-encode)))
 
 (defmethod serialize "boolean"

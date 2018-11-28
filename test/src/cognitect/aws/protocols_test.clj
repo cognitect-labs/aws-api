@@ -13,7 +13,8 @@
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
             [cognitect.aws.protocols.query]
-            [cognitect.aws.protocols.ec2]))
+            [cognitect.aws.protocols.ec2])
+  (:import (java.util Date)))
 
 (defn test-request-method
   [expected {:keys [request-method]}]
@@ -84,6 +85,45 @@
   [_ _ test-case]
   (update-in test-case [:params :Bar] get-bytes))
 
+(defmulti with-timestamp-xforms (fn [protocol description response]
+                                [protocol description]))
+
+(defmethod with-timestamp-xforms :default
+  [_ _ response] response)
+
+(defmethod with-timestamp-xforms ["ec2" "Timestamp values"]
+  [_ _ test-case]
+  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+
+(defmethod with-timestamp-xforms ["query" "Timestamp values"]
+  [_ _ test-case]
+  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+
+(defmethod with-timestamp-xforms ["rest-xml" "Blob and timestamp shapes"]
+  [_ _ test-case]
+  (update-in test-case [:params :StructureParam :t] #(Date. (* % 1000))))
+
+(defmethod with-timestamp-xforms ["rest-xml" "Timestamp in header"]
+  [_ _ test-case]
+  (update-in test-case [:params :TimeArgInHeader] #(Date. (* % 1000))))
+
+(defmethod with-timestamp-xforms ["rest-json" "Timestamp values"]
+  [_ _ test-case]
+  (cond (get-in test-case [:params :TimeArg])
+        (update-in test-case [:params :TimeArg] #(Date. (* % 1000)))
+        (get-in test-case [:params :TimeArgInHeader])
+        (update-in test-case [:params :TimeArgInHeader] #(Date. (* % 1000)))
+        :else
+        test-case))
+
+(defmethod with-timestamp-xforms ["json" "Timestamp values"]
+  [_ _ test-case]
+  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+
+(defmethod with-timestamp-xforms ["rest-json" "Named locations in JSON body"]
+  [_ _ test-case]
+  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+
 (defmulti with-parsed-streams (fn [protocol description response]
                                 [protocol description]))
 
@@ -120,6 +160,27 @@
       (update :BlobMember (comp slurp io/reader))
       (update-in [:StructMember :foo] (comp slurp io/reader))))
 
+(defmulti with-parsed-dates (fn [protocol description response]
+                                [protocol description]))
+
+(defmethod with-parsed-dates :default
+  [_ _ response] response)
+
+(defmethod with-parsed-dates ["query" "Scalar members"]
+  [_ _ response]
+  (-> response
+      (update :Timestamp #(/ (.getTime %) 1000))))
+
+(defmethod with-parsed-dates ["rest-xml" "Scalar members"]
+  [_ _ response]
+  (-> response
+      (update :Timestamp #(/ (.getTime %) 1000))))
+
+(defmethod with-parsed-dates ["rest-xml" "Scalar members in headers"]
+  [_ _ response]
+  (-> response
+      (update :Timestamp #(/ (.getTime %) 1000))))
+
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
 (defmethod test-request-body :default
@@ -155,7 +216,9 @@
 (defmethod run-test "input"
   [_ protocol description service test-case]
   (let [{expected :serialized :keys [given params]}
-        (with-blob-xforms protocol description test-case)]
+        (->> test-case
+             (with-blob-xforms protocol description)
+             (with-timestamp-xforms protocol description))]
     (try
       (let [op-map       {:op (:name given) :request params}
             http-request (client/build-http-request service op-map)]
@@ -181,7 +244,9 @@
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
-      (is (= result (with-parsed-streams protocol description parsed-response))))
+      (is (= result (->> parsed-response
+                         (with-parsed-streams protocol description)
+                         (with-parsed-dates protocol description)))))
     (catch Exception e
       (is (nil?
            {:test-case test-case

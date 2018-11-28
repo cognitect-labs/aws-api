@@ -145,6 +145,10 @@
   [_ data]
   (util/base64-encode data))
 
+(defmethod json-serialize* "timestamp"
+  [_ data]
+  (/ (.getTime data) 1000))
+
 ;; ----------------------------------------------------------------------------------------
 ;; XML Parser & Serializer
 ;; ----------------------------------------------------------------------------------------
@@ -188,7 +192,7 @@
 (defmethod xml-serialize* "timestamp"
   [_ args el-name]
   {:tag el-name
-   :content [(util/format-timestamp util/iso8601-date-format (* 1000 args))]})
+   :content [(util/format-timestamp util/iso8601-date-format args)]})
 
 (defmethod xml-serialize* "structure"
   [shape args el-name]
@@ -353,10 +357,9 @@
 (defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
   [_ nodes]
-  (let [ts (data nodes)
-        msecs (try
-                (util/parse-date util/iso8601-date-format ts)
-                (catch java.text.ParseException pe
-                  ;; S3 has msecs in its dates, but the conformance tests don't
-                  (util/parse-date util/iso8601-msecs-date-format ts)))]
-    (-> msecs (.getTime) (/ 1000))))
+  (let [ts (data nodes)]
+    (try
+      (util/parse-date util/iso8601-date-format ts)
+      (catch java.text.ParseException pe
+        ;; S3 has msecs in its dates, but the conformance tests don't
+        (util/parse-date util/iso8601-msecs-date-format ts)))))

@@ -77,7 +77,7 @@
 (defmethod serialize-header-value :default    [_ args] (str args))
 (defmethod serialize-header-value "boolean"   [_ args] (if args "true" "false"))
 (defmethod serialize-header-value "blob"      [_ args] (util/base64-encode args))
-(defmethod serialize-header-value "timestamp" [_ args] (util/format-date util/rfc822-date-format (Date. (* 1000 args))))
+(defmethod serialize-header-value "timestamp" [_ args] (util/format-date util/rfc822-date-format args))
 
 (defn serialize-headers
   "Serialize the map of arguments into a map of HTTP headers."
@@ -177,7 +177,7 @@
 (defmethod parse-header-value "blob"      [_ data] (util/base64-decode data))
 (defmethod parse-header-value "timestamp"
   [_ data]
-  (-> (util/parse-date util/rfc822-date-format data) (.getTime) (/ 1000)))
+  (util/parse-date util/rfc822-date-format data))
 
 (defn parse-non-payload-attrs
   "Parse HTTP status and headers for response data."

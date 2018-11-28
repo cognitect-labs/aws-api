@@ -40,8 +40,8 @@
 
 (defn format-timestamp
   "Format a timestamp in milliseconds."
-  [fmt ts]
-  (format-date fmt (Date. ^long ts)))
+  [fmt inst]
+  (format-date fmt inst))
 
 (defn parse-date
   [^ThreadLocal fmt s]
