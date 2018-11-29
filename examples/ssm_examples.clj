@@ -11,9 +11,9 @@
 (aws/validate-requests ssm-client true)
 
 ;; what ops are available
-(aws/ops-data ssm-client)
+(aws/ops ssm-client)
 
-(-> (aws/ops-data client) keys sort)
+(-> (aws/ops client) keys sort)
 
 ;; print docs
 (aws/doc ssm-client :PutParameter)

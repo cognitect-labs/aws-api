@@ -15,7 +15,7 @@
 (def ddb-client (aws/client {:api :dynamodb}))
 
 ;; ask what it can do
-(aws/ops-data ddb-client)
+(aws/ops ddb-client)
 
 ;; doc!
 (aws/doc ddb-client :ListTables)

@@ -115,7 +115,7 @@
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
-(defn ops-data
+(defn ops
   "Returns a map of operation name to operation data for this client.
 
   Alpha. Subject to change."
@@ -126,7 +126,7 @@
        service/docs))
 
 (defn doc-str
-  "Given data produced by `ops-data` (or similar), returns a string
+  "Given data produced by `ops`, returns a string
   representation.
 
   Alpha. Subject to change."
@@ -164,5 +164,5 @@
 
   Alpha. Subject to change."
   [client operation]
-  (println (or (some-> (ops-data client) operation doc-str)
+  (println (or (some-> client ops operation doc-str)
                (str "No docs for " (name operation)))))

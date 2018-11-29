@@ -6,9 +6,9 @@
 ;; make a client
 (def client (aws/client {:api :iam}))
 
-(aws/ops-data client)
+(aws/ops client)
 
-(-> (aws/ops-data client) keys sort)
+(-> (aws/ops client) keys sort)
 
 (aws/doc client :ListRoles)
 

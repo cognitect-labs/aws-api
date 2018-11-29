@@ -5,9 +5,9 @@
 
 (def client (aws/client {:api :lambda}))
 
-(aws/ops-data client)
+(aws/ops client)
 
-(-> (aws/ops-data client) keys sort)
+(-> (aws/ops client) keys sort)
 
 (aws/doc client :ListFunctions)
 

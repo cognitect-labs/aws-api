@@ -16,11 +16,11 @@
 (aws/validate-requests s3-client true)
 
 ;; what can it do?
-(aws/ops-data s3-client)
+(aws/ops s3-client)
 ;; op names
-(-> (aws/ops-data s3-client) keys)
+(-> (aws/ops s3-client) keys)
 ;; op doc-data
-(-> (aws/ops-data s3-client) :CreateBucket)
+(-> (aws/ops s3-client) :CreateBucket)
 ;; a little more friendly
 (aws/doc s3-client :CreateBucket)
 
