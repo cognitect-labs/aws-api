@@ -6,6 +6,7 @@
   (:require [clojure.core.async :as a]
             [clojure.string :as str]
             [clojure.walk :as walk]
+            [clojure.core.protocols :refer [Datafiable]]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
@@ -20,6 +21,18 @@
 (deftype Client [info]
   client/ClientSPI
   (-get-info [_] info))
+
+(declare ops)
+
+(extend-protocol Datafiable
+  Client
+  (datafy [c]
+    (-> c
+        client/-get-info
+        (select-keys [:region :endpoint :service])
+        (update :endpoint select-keys [:hostname :protocols :signatureVersions])
+        (update :service select-keys [:metadata])
+        (assoc :ops (ops c)))))
 
 (defn client
   "Given a config map, create a client for specified api. Supported keys
