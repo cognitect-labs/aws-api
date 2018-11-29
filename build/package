@@ -15,8 +15,7 @@ target_name=api-${version}
 
 echo "Packaging..."
 mvn versions:set -DnewVersion=${version}
-mvn install -DcreateChecksum=true
-mvn install:install-file -Dfile=./target/${target_name}.jar -DpomFile=pom.xml -DcreateChecksum=true -DlocalRepositoryPath=./target/package
+mvn clean install -DcreateChecksum=true
 mvn versions:revert
 
 echo "Package done!"
