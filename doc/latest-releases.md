@@ -70,7 +70,7 @@
 | com.cognitect.aws/events | 668.2.364.0 |
 | com.cognitect.aws/firehose | 668.2.364.0 |
 | com.cognitect.aws/fms | 668.2.364.0 |
-| com.cognitect.aws/fsx |  |
+| com.cognitect.aws/fsx | 673.2.365.0  |
 | com.cognitect.aws/gamelift | 668.2.364.0 |
 | com.cognitect.aws/glacier | 668.2.364.0 |
 | com.cognitect.aws/globalaccelerator | 668.2.364.0 |
@@ -142,7 +142,7 @@
 | com.cognitect.aws/sagemaker | 669.2.364.0 |
 | com.cognitect.aws/sdb | 666.2.364.0 |
 | com.cognitect.aws/secretsmanager | 669.2.364.0 |
-| com.cognitect.aws/securityhub |  |
+| com.cognitect.aws/securityhub | 673.2.365.0 |
 | com.cognitect.aws/serverlessrepo | 669.2.364.0 |
 | com.cognitect.aws/servicecatalog | 669.2.364.0 |
 | com.cognitect.aws/servicediscovery | 669.2.364.0 |
