@@ -7,15 +7,15 @@ AWS service descriptions define a number of data types for use in `:request` map
 | structure | map with keyword keys             |                                         |
 | map       | map with arbitrary types for keys |                                         |
 | list      | sequence                          |                                         |
-| string    | String                            |                                         |
-| character | Character                         |                                         |
-| boolean   | Boolean                           |                                         |
-| double    | Double                            |                                         |
-| float     | Double                            |                                         |
-| long      | Long                              |                                         |
-| integer   | Long                              |                                         |
+| string    | string                            |                                         |
+| character | character                         |                                         |
+| boolean   | boolean                           |                                         |
+| double    | double                            |                                         |
+| float     | double                            |                                         |
+| long      | long                              |                                         |
+| integer   | long                              |                                         |
 | blob      | byte[] or java.io.InputStream     | java.io.InputStream                     |
-| timestamp | Long                              |                                         |
+| timestamp | java.util.Date                    |                                         |
 
 You can validate that your request maps conform to these types by enabling `clojure.spec`-backed request validation during development:
 
