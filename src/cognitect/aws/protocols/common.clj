@@ -8,6 +8,7 @@
 
 (def status-codes->anomalies
   {403 :cognitect.anomalies/forbidden
+   404 :cognitect.anomalies/not-found
    503 :cognitect.anomalies/busy
    504 :cognitect.anomalies/unavailable})
 
