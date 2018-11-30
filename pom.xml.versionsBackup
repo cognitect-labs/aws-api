@@ -6,27 +6,6 @@
     <version>DEV</version>
     <packaging>jar</packaging>
     <name>api</name>
-    <description>A Clojure API for the AWS API</description>
-    <url>http://github.com/cognitect-labs/aws-api</url>
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <name>Cognitect</name>
-            <email>labs@cognitect.com</email>
-            <organization>Cognitect</organization>
-            <organizationUrl>http://cognitect.com</organizationUrl>
-        </developer>
-    </developers>
-    <scm>
-        <connection>scm:git:git@github.com:cognitect-labs/aws-api.git </connection>
-        <developerConnection>scm:git:git@github.com:cognitect-labs/aws-api.git </developerConnection>
-        <url>git@github.com:cognitect-labs/aws-api.git</url>
-    </scm>
     <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
