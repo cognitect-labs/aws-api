@@ -43,21 +43,16 @@
   "Send the request to AWS and return a channel which delivers the response."
   [client op-map]
   (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
-        resp-chan (a/chan 1)]
+        {:keys [hostname]} endpoint
+        resp-chan (a/chan 1 (map #(with-meta
+                                    (handle-http-response service op-map %)
+                                    (update % :body util/bbuf->str))))]
     (try
-      (let [{:keys [hostname]} endpoint
-            http-request (-> (build-http-request service op-map)
+      (let [http-request (-> (build-http-request service op-map)
                              (assoc-in [:headers "host"] hostname)
                              (assoc :server-name hostname))
-            http-request (sign-http-request service region http-request @credentials)
-            c (a/chan 1)]
-        (http/submit http-client http-request c)
-        (a/go
-          (let [http-response (a/<! c)]
-            (a/>! resp-chan
-                  (with-meta
-                    (handle-http-response service op-map http-response)
-                    (update http-response :body util/bbuf->str))))))
+            http-request (sign-http-request service region http-request @credentials)]
+        (http/submit http-client http-request resp-chan))
       (catch Throwable t
         (a/put! resp-chan {:cognitect.anomalies/category :cognitect.anomalies/fault
                            ::throwable t})))
