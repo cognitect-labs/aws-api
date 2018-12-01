@@ -59,7 +59,7 @@ generator, and tag `v2.351.0` of aws-sdk-js.
 
 ### prerequisites
 
-* Clojure >= 1.10.RC2
+* Clojure >= 1.10.0-RC2
 * Clojure CLI tools >= 1.9.0.397
     * [https://clojure.org/guides/getting_started](https://clojure.org/guides/getting_started)
 
