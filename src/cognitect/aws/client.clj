@@ -29,7 +29,7 @@
     (get-in service [:metadata :signatureVersion])))
 
 (defn handle-http-response
-  [{:keys [service]} {op-map ::http/meta :as http-response}]
+  [service op-map http-response]
   (try
     (if-let [anomaly-category (:cognitect.anomaly/category http-response)]
       {:cognitect.anomalies/category anomaly-category
@@ -48,18 +48,16 @@
       (let [{:keys [hostname]} endpoint
             http-request (-> (build-http-request service op-map)
                              (assoc-in [:headers "host"] hostname)
-                             (assoc :server-name hostname)
-                             (assoc ::http/meta op-map))
+                             (assoc :server-name hostname))
             http-request (sign-http-request service region http-request @credentials)
             c (a/chan 1)]
         (http/submit http-client http-request c)
         (a/go
           (let [http-response (a/<! c)]
-            (a/put! resp-chan
-                    (with-meta (handle-http-response (-get-info client) http-response)
-                      (-> http-response
-                          (dissoc ::http/meta)
-                          (update :body util/bbuf->str)))))))
+            (a/>! resp-chan
+                  (with-meta
+                    (handle-http-response service op-map http-response)
+                    (update http-response :body util/bbuf->str))))))
       (catch Throwable t
         (a/put! resp-chan {:cognitect.anomalies/category :cognitect.anomalies/fault
                            ::throwable t})))
