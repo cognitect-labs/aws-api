@@ -22,8 +22,8 @@
                                      org.slf4j/slf4j-log4j12     {:mvn/version "1.7.25"}
                                      com.cognitect.aws/endpoints {:mvn/version "1.1.11.457"}
                                      com.cognitect.aws/dynamodb  {:mvn/version "661.2.363.0"}
-                                     com.cognitect.aws/ec2       {:mvn/version "657.2.361.0"}
-                                     com.cognitect.aws/iam       {:mvn/version "661.2.353.0"}
-                                     com.cognitect.aws/lambda    {:mvn/version "657.2.352.0"}
+                                     com.cognitect.aws/ec2       {:mvn/version "668.2.364.0"}
+                                     com.cognitect.aws/iam       {:mvn/version "668.2.357.0"}
+                                     com.cognitect.aws/lambda    {:mvn/version "669.2.359.0"}
                                      com.cognitect.aws/s3        {:mvn/version "661.2.363.0"}
-                                     com.cognitect.aws/ssm       {:mvn/version "657.2.361.0"}}}}}
+                                     com.cognitect.aws/ssm       {:mvn/version "669.2.364.0"}}}}}
