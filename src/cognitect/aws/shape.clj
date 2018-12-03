@@ -147,7 +147,7 @@
 
 (defmethod json-serialize* "timestamp"
   [_ data]
-  (/ (.getTime data) 1000))
+  (long (/ (.getTime data) 1000)))
 
 ;; ----------------------------------------------------------------------------------------
 ;; XML Parser & Serializer
