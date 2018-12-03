@@ -1,8 +1,7 @@
-# Latest releases as of 2018-11-29
+# Latest releases as of 2018-12-03
 
 | lib | version |
 |-|-|
-| com.cognitect.aws/api | 0.8.122 |
 | com.cognitect.aws/endpoints | 1.1.11.457 |
 | com.cognitect.aws/AWSMigrationHub | 668.2.364.0 |
 | com.cognitect.aws/acm | 668.2.364.0 |
@@ -11,6 +10,7 @@
 | com.cognitect.aws/amplify | 668.2.364.0 |
 | com.cognitect.aws/apigateway | 668.2.364.0 |
 | com.cognitect.aws/application-autoscaling | 668.2.364.0 |
+| com.cognitect.aws/appmesh | 675.2.368.0 |
 | com.cognitect.aws/appstream | 668.2.364.0 |
 | com.cognitect.aws/appsync | 668.2.364.0 |
 | com.cognitect.aws/athena | 668.2.364.0 |
@@ -52,8 +52,8 @@
 | com.cognitect.aws/dlm | 668.2.364.0 |
 | com.cognitect.aws/dms | 668.2.364.0 |
 | com.cognitect.aws/ds | 668.2.364.0 |
-| com.cognitect.aws/dynamodb | 661.2.363.0 |
-| com.cognitect.aws/ec2 | 668.2.364.0 |
+| com.cognitect.aws/dynamodb | 675.2.365.0 |
+| com.cognitect.aws/ec2 | 675.2.366.0 |
 | com.cognitect.aws/ecr | 668.2.364.0 |
 | com.cognitect.aws/ecs | 668.2.364.0 |
 | com.cognitect.aws/eks | 668.2.364.0 |
@@ -61,16 +61,16 @@
 | com.cognitect.aws/elasticbeanstalk | 668.2.364.0 |
 | com.cognitect.aws/elasticfilesystem | 668.2.364.0 |
 | com.cognitect.aws/elasticloadbalancing | 668.2.364.0 |
-| com.cognitect.aws/elasticloadbalancingv2 | 668.2.364.0 |
+| com.cognitect.aws/elasticloadbalancingv2 | 675.2.367.0 |
 | com.cognitect.aws/elasticmapreduce | 668.2.364.0 |
 | com.cognitect.aws/elastictranscoder | 668.2.364.0 |
 | com.cognitect.aws/email | 668.2.364.0 |
 | com.cognitect.aws/entitlement-marketplace | 668.2.364.0 |
 | com.cognitect.aws/es | 668.2.364.0 |
-| com.cognitect.aws/events | 668.2.364.0 |
+| com.cognitect.aws/events | 675.2.367.0 |
 | com.cognitect.aws/firehose | 668.2.364.0 |
 | com.cognitect.aws/fms | 668.2.364.0 |
-| com.cognitect.aws/fsx | 673.2.365.0  |
+| com.cognitect.aws/fsx | 673.2.365.0 |
 | com.cognitect.aws/gamelift | 668.2.364.0 |
 | com.cognitect.aws/glacier | 668.2.364.0 |
 | com.cognitect.aws/globalaccelerator | 668.2.364.0 |
@@ -86,6 +86,7 @@
 | com.cognitect.aws/iot-jobs-data | 668.2.357.0 |
 | com.cognitect.aws/iot1click-projects | 668.2.357.0 |
 | com.cognitect.aws/iotanalytics | 669.2.363.0 |
+| com.cognitect.aws/kafka | 675.2.368.0 |
 | com.cognitect.aws/kinesis | 668.2.357.0 |
 | com.cognitect.aws/kinesis-video-archived-media | 668.2.357.0 |
 | com.cognitect.aws/kinesis-video-media | 668.2.357.0 |
@@ -93,9 +94,10 @@
 | com.cognitect.aws/kinesisanalyticsv2 | 669.2.364.0 |
 | com.cognitect.aws/kinesisvideo | 668.2.357.0 |
 | com.cognitect.aws/kms | 669.2.363.0 |
-| com.cognitect.aws/lambda | 669.2.359.0 |
+| com.cognitect.aws/lambda | 675.2.367.0 |
 | com.cognitect.aws/lex-models | 668.2.357.0 |
-| com.cognitect.aws/lightsail | 669.2.359.0 |
+| com.cognitect.aws/license-manager | 675.2.368.0 |
+| com.cognitect.aws/lightsail | 675.2.366.0 |
 | com.cognitect.aws/logs | 669.2.364.0 |
 | com.cognitect.aws/machinelearning | 668.2.357.0 |
 | com.cognitect.aws/macie | 668.2.357.0 |
@@ -125,7 +127,7 @@
 | com.cognitect.aws/pricing | 669.2.364.0 |
 | com.cognitect.aws/quicksight | 669.2.364.0 |
 | com.cognitect.aws/ram | 669.2.364.0 |
-| com.cognitect.aws/rds | 669.2.364.0 |
+| com.cognitect.aws/rds | 675.2.365.0 |
 | com.cognitect.aws/rds-data | 669.2.364.0 |
 | com.cognitect.aws/redshift | 669.2.364.0 |
 | com.cognitect.aws/rekognition | 669.2.364.0 |
@@ -137,15 +139,15 @@
 | com.cognitect.aws/route53resolver | 669.2.364.0 |
 | com.cognitect.aws/runtime-lex | 669.2.364.0 |
 | com.cognitect.aws/runtime-sagemaker | 669.2.364.0 |
-| com.cognitect.aws/s3 | 661.2.363.0 |
+| com.cognitect.aws/s3 | 675.2.368.0 |
 | com.cognitect.aws/s3control | 669.2.364.0 |
-| com.cognitect.aws/sagemaker | 669.2.364.0 |
+| com.cognitect.aws/sagemaker | 675.2.366.0 |
 | com.cognitect.aws/sdb | 666.2.364.0 |
 | com.cognitect.aws/secretsmanager | 669.2.364.0 |
 | com.cognitect.aws/securityhub | 673.2.365.0 |
-| com.cognitect.aws/serverlessrepo | 669.2.364.0 |
+| com.cognitect.aws/serverlessrepo | 675.2.367.0 |
 | com.cognitect.aws/servicecatalog | 669.2.364.0 |
-| com.cognitect.aws/servicediscovery | 669.2.364.0 |
+| com.cognitect.aws/servicediscovery | 675.2.366.0 |
 | com.cognitect.aws/shield | 669.2.364.0 |
 | com.cognitect.aws/signer | 669.2.364.0 |
 | com.cognitect.aws/sms | 669.2.364.0 |
@@ -153,7 +155,7 @@
 | com.cognitect.aws/sns | 669.2.364.0 |
 | com.cognitect.aws/sqs | 669.2.364.0 |
 | com.cognitect.aws/ssm | 669.2.364.0 |
-| com.cognitect.aws/states | 669.2.364.0 |
+| com.cognitect.aws/states | 675.2.367.0 |
 | com.cognitect.aws/storagegateway | 669.2.364.0 |
 | com.cognitect.aws/streams-dynamodb | 669.2.364.0 |
 | com.cognitect.aws/sts | 669.2.364.0 |
@@ -167,4 +169,4 @@
 | com.cognitect.aws/workdocs | 669.2.364.0 |
 | com.cognitect.aws/workmail | 669.2.364.0 |
 | com.cognitect.aws/workspaces | 669.2.364.0 |
-| com.cognitect.aws/xray | 669.2.364.0 |
+| com.cognitect.aws/xray | 675.2.367.0 |
