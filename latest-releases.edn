@@ -1,6 +1,6 @@
 {:releases
  {:api {com.cognitect.aws/api "0.8.122"},
-  :endpoints {com.cognitect.aws/endpoints "1.1.11.457"},
+  :endpoints {com.cognitect.aws/endpoints "1.1.11.462"},
   :services
   {com.cognitect.aws/ssm "669.2.364.0",
    com.cognitect.aws/config "668.2.364.0",
@@ -20,12 +20,12 @@
    com.cognitect.aws/firehose "668.2.364.0",
    com.cognitect.aws/elasticloadbalancing "668.2.364.0",
    com.cognitect.aws/securityhub "673.2.365.0",
-   com.cognitect.aws/storagegateway "669.2.364.0",
+   com.cognitect.aws/storagegateway "678.2.369.0",
    com.cognitect.aws/gamelift "668.2.364.0",
    com.cognitect.aws/datasync "668.2.364.0",
    com.cognitect.aws/kinesis-video-media "668.2.357.0",
    com.cognitect.aws/glue "668.2.364.0",
-   com.cognitect.aws/servicecatalog "669.2.364.0",
+   com.cognitect.aws/servicecatalog "678.2.369.0",
    com.cognitect.aws/appstream "668.2.364.0",
    com.cognitect.aws/rds-data "669.2.364.0",
    com.cognitect.aws/lightsail "675.2.366.0",
@@ -36,7 +36,7 @@
    com.cognitect.aws/sqs "669.2.364.0",
    com.cognitect.aws/mediastore-data "668.2.357.0",
    com.cognitect.aws/datapipeline "668.2.364.0",
-   com.cognitect.aws/mediaconvert "669.2.359.0",
+   com.cognitect.aws/mediaconvert "678.2.369.0",
    com.cognitect.aws/apigateway "668.2.364.0",
    com.cognitect.aws/iot "669.2.363.0",
    com.cognitect.aws/codecommit "668.2.364.0",
@@ -44,7 +44,7 @@
    com.cognitect.aws/chime "668.2.364.0",
    com.cognitect.aws/rds "675.2.365.0",
    com.cognitect.aws/mobileanalytics "669.2.364.0",
-   com.cognitect.aws/devicefarm "668.2.364.0",
+   com.cognitect.aws/devicefarm "678.2.369.0",
    com.cognitect.aws/servicediscovery "675.2.366.0",
    com.cognitect.aws/ecs "668.2.364.0",
    com.cognitect.aws/dms "668.2.364.0",
@@ -168,4 +168,5 @@
    com.cognitect.aws/importexport "668.2.357.0",
    com.cognitect.aws/swf "669.2.364.0",
    com.cognitect.aws/codestar "668.2.364.0",
-   com.cognitect.aws/streams-dynamodb "669.2.364.0"}}}
+   com.cognitect.aws/streams-dynamodb "669.2.364.0"}},
+ :last-updated #inst "2018-12-04T17:45:15.901-00:00"}
