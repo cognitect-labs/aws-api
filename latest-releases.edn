@@ -1,6 +1,6 @@
 {:releases
- {:api {com.cognitect.aws/api "0.8.122"},
-  :endpoints {com.cognitect.aws/endpoints "1.1.11.462"},
+ {com.cognitect.aws/api "0.8.122",
+  com.cognitect.aws/endpoints "1.1.11.462",
   :services
   {com.cognitect.aws/ssm "669.2.364.0",
    com.cognitect.aws/config "668.2.364.0",
