@@ -42,21 +42,28 @@
 (defn send-request
   "Send the request to AWS and return a channel which delivers the response."
   [client op-map]
-  (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
-        {:keys [hostname]} endpoint
-        resp-chan (a/chan 1 (map #(with-meta
-                                    (handle-http-response service op-map %)
-                                    (update % :body util/bbuf->str))))]
+  (let [meta-atom (atom {})]
     (try
-      (let [http-request (-> (build-http-request service op-map)
-                             (assoc-in [:headers "host"] hostname)
-                             (assoc :server-name hostname))
-            http-request (sign-http-request service region http-request @credentials)]
-        (http/submit http-client http-request resp-chan))
+      (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
+            {:keys [hostname]} endpoint
+            http-request       (-> (build-http-request service op-map)
+                                   (assoc-in [:headers "host"] hostname)
+                                   (assoc :server-name hostname))
+            http-request       (sign-http-request service region http-request @credentials)]
+        (swap! meta-atom assoc :http-request (update http-request :body util/bbuf->input-stream))
+        (http/submit http-client http-request
+                     (a/chan 1 (map #(with-meta
+                                       (handle-http-response service op-map %)
+                                       (assoc @meta-atom
+                                              :http-response
+                                              (update % :body util/bbuf->input-stream)))))))
       (catch Throwable t
-        (a/put! resp-chan {:cognitect.anomalies/category :cognitect.anomalies/fault
-                           ::throwable t})))
-    resp-chan))
+        (let [err-ch (a/chan 1)]
+          (a/put! err-ch (with-meta
+                           {:cognitect.anomalies/category :cognitect.anomalies/fault
+                            ::throwable                   t}
+                           @meta-atom))
+          err-ch)))))
 
 (defn stop
   "Stop the client."
