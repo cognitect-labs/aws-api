@@ -263,7 +263,7 @@
     container-credentials-provider
     instance-profile-credentials-provider
 
-  Alpha. Subject to change. "
+  Alpha. Subject to change."
   []
   (chain-credentials-provider
    [(environment-credentials-provider)
@@ -271,3 +271,17 @@
     (profile-credentials-provider)
     (container-credentials-provider)
     (instance-profile-credentials-provider)]))
+
+(defn basic-credentials-provider
+  "Given a map with :access-key-id and :secret-access-key,
+  returns an implementation of CredentialsProvider which returns
+  those credentials on fetch.
+
+  Alpha. Subject to change."
+  [{:keys [access-key-id secret-access-key]}]
+  (assert access-key-id "Missing")
+  (assert secret-access-key "Missing")
+  (reify CredentialsProvider
+    (fetch [_]
+      {:aws/access-key-id     access-key-id
+       :aws/secret-access-key secret-access-key})))

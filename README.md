@@ -121,6 +121,19 @@ The aws-api client looks up credentials the same way the [java
 SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
 does.
 
+To provide an explicit access-key-id/secret-access-key pair,
+you can create a `CredentialsProvider` using the
+`basic-credentials-provider` fn in `cognitect.aws.credentials`, and
+pass that to the client constructor, e.g.
+
+``` clojure
+(require '[cognitect.aws.credentials :as credentials])
+(def c {:api :s3
+        :credentials-provider (credentials/basic-credentials-provider
+                               {:access-key-id "ABC"
+                                :secret-access-key "XYZ"})})
+```
+
 ## Region lookup
 
 The aws-api client looks up the region the same with the [java

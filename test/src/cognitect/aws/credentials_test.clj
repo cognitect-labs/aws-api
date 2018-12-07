@@ -138,5 +138,12 @@
       (is (<= 3 refreshed) "The credentials have been refreshed.")
       (is (= refreshed @cnt) "We stopped the auto-refreshing process."))))
 
+(deftest basic-credentials-provider
+  (is (= {:aws/access-key-id "foo"
+          :aws/secret-access-key "bar"}
+         (credentials/fetch (credentials/basic-credentials-provider
+                             {:access-key-id "foo"
+                              :secret-access-key "bar"})))))
+
 (comment
   (run-tests))
