@@ -88,15 +88,15 @@
   ([credentials]
    (valid-credentials credentials nil))
   ([{:keys [aws/access-key-id aws/secret-access-key] :as credentials}
-    location]
+    credential-source]
    (cond (and (not (str/blank? access-key-id))
               (not (str/blank? secret-access-key)))
          credentials
 
          (or (str/blank? access-key-id) (str/blank? secret-access-key))
          (do
-           (when-not (nil? location)
-             (log/error (str "Error fetching credentials from " location ".")))
+           (when-not (nil? credential-source)
+             (log/debug (str "Unable to fetch credentials from " credential-source ".")))
            nil)
 
          :else
@@ -231,9 +231,10 @@
                                         ec2-metadata-utils/get-data)))
                          (json/read-str :key-fn keyword))]
         (valid-credentials
-         {:aws/access-key-id (:AccessKeyId container-creds)
+         {:aws/access-key-id     (:AccessKeyId container-creds)
           :aws/secret-access-key (:SecretAccessKey container-creds)
-          :aws/session-token (:Token container-creds)})))))
+          :aws/session-token     (:Token container-creds)}
+         "ecs container")))))
 
 (defn instance-profile-credentials-provider
   "For internal use. Do not call directly.
@@ -248,9 +249,10 @@
           (let [creds (some-> (ec2-metadata-utils/get-data-at-path (str ec2-security-credentials-resource cred-name))
                               (json/read-str :key-fn keyword))]
             (valid-credentials
-             {:aws/access-key-id (:AccessKeyId creds)
+             {:aws/access-key-id     (:AccessKeyId creds)
               :aws/secret-access-key (:SecretAccessKey creds)
-              :aws/session-token (:Token creds)})))))))
+              :aws/session-token     (:Token creds)}
+             "ec2 instance")))))))
 
 (defn default-credentials-provider
   "Return a chain-credentials-provider comprising, in order:
