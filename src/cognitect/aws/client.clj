@@ -36,7 +36,7 @@
        ::throwable (::http/throwable http-response)}
       (parse-http-response service op-map http-response))
     (catch Throwable t
-      {:cognitect.anomalies/category :cogniect.anomalies/fault
+      {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
 
 (defn send-request
