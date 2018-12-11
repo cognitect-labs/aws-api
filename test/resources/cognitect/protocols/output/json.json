@@ -1,0 +1,35 @@
+[
+  {
+    "description": "No output",
+    "metadata": {
+      "metadata": {
+        "protocol": "json"
+      },
+      "shapes": {
+        "OutputShape": {
+          "type": "structure",
+          "members": {
+            "StrType": {
+              "shape": "StrType"
+            }
+          }
+        },
+        "StrType": {
+          "type": "string"
+        }
+      },
+      "cases": [
+        {
+          "given": {
+            "name": "OperationName"
+          },
+          "result": {},
+          "response": {
+            "status_code": 200,
+            "headers": {}
+          }
+        }
+      ]
+    }
+  }
+]

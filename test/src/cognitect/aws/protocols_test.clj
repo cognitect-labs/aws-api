@@ -257,12 +257,15 @@
    (test-protocol protocol "input")
    (test-protocol protocol "output"))
   ([protocol input-or-output]
-  (let [filepath (str "botocore/protocols/" input-or-output "/" protocol ".json")]
-    (doseq [test (-> filepath io/resource slurp (json/read-str :key-fn keyword))]
-      (testing (str input-or-output " of " protocol " : " (:description test))
+   (let [filepath       (str "botocore/protocols/" input-or-output "/" protocol ".json")
+         extra-filepath (str "cognitect/protocols/" input-or-output "/" protocol ".json")]
+     (doseq [test (into (-> filepath io/resource slurp (json/read-str :key-fn keyword))
+                        (when (io/resource extra-filepath)
+                          (-> extra-filepath io/resource slurp (json/read-str :key-fn keyword))))]
+       (testing (str input-or-output " of " protocol " : " (:description test))
         (doseq [{:keys [given] :as test-case} (:cases test)
-                :let [service (assoc (select-keys test [:metadata :shapes])
-                                     :operations {(:name given) given})]]
+                :let                          [service (assoc (select-keys test [:metadata :shapes])
+                                                              :operations {(:name given) given})]]
           (run-test input-or-output protocol (:description test) service test-case)))))))
 
 (deftest test-protocols

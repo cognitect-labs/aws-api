@@ -114,7 +114,9 @@
 (defn json-parse
   "Parse the JSON string to return an instance of the shape."
   [shape s]
-  (walk shape (json/read-str s :key-fn keyword) json-parse*))
+  (if shape
+    (walk shape (json/read-str s :key-fn keyword) json-parse*)
+    {}))
 
 
 (defn json-serialize
