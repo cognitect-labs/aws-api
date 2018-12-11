@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## 0.8.146 / 2018-12-10
+
+* Fix bug caused by attempting to parse a response body when no output shape specified. #21
+
 ## 0.8.142 / 2018-12-06
 
 * Add http-request to response metadata.

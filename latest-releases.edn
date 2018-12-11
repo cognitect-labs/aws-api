@@ -1,11 +1,11 @@
 {:releases
- {com.cognitect.aws/api "0.8.122",
+ {com.cognitect.aws/api "0.8.146",
   com.cognitect.aws/endpoints "1.1.11.462",
   :services
   {com.cognitect.aws/AWSMigrationHub "668.2.364.0",
    com.cognitect.aws/acm "668.2.364.0",
    com.cognitect.aws/acm-pca "668.2.364.0",
-   com.cognitect.aws/alexaforbusiness "668.2.364.0",
+   com.cognitect.aws/alexaforbusiness "681.2.373.0",
    com.cognitect.aws/amplify "668.2.364.0",
    com.cognitect.aws/apigateway "668.2.364.0",
    com.cognitect.aws/application-autoscaling "668.2.364.0",
@@ -52,7 +52,7 @@
    com.cognitect.aws/dms "668.2.364.0",
    com.cognitect.aws/ds "668.2.364.0",
    com.cognitect.aws/dynamodb "675.2.365.0",
-   com.cognitect.aws/ec2 "675.2.366.0",
+   com.cognitect.aws/ec2 "681.2.373.0",
    com.cognitect.aws/ecr "668.2.364.0",
    com.cognitect.aws/ecs "668.2.364.0",
    com.cognitect.aws/eks "668.2.364.0",
@@ -77,7 +77,7 @@
    com.cognitect.aws/greengrass "668.2.364.0",
    com.cognitect.aws/guardduty "668.2.364.0",
    com.cognitect.aws/health "680.2.370.0",
-   com.cognitect.aws/iam "668.2.357.0",
+   com.cognitect.aws/iam "681.2.373.0",
    com.cognitect.aws/importexport "668.2.357.0",
    com.cognitect.aws/inspector "668.2.357.0",
    com.cognitect.aws/iot "669.2.363.0",
@@ -145,7 +145,7 @@
    com.cognitect.aws/secretsmanager "669.2.364.0",
    com.cognitect.aws/securityhub "673.2.365.0",
    com.cognitect.aws/serverlessrepo "675.2.367.0",
-   com.cognitect.aws/servicecatalog "678.2.369.0",
+   com.cognitect.aws/servicecatalog "681.2.373.0",
    com.cognitect.aws/servicediscovery "675.2.366.0",
    com.cognitect.aws/shield "669.2.364.0",
    com.cognitect.aws/signer "669.2.364.0",
@@ -169,4 +169,4 @@
    com.cognitect.aws/workmail "669.2.364.0",
    com.cognitect.aws/workspaces "669.2.364.0",
    com.cognitect.aws/xray "675.2.367.0"}},
- :last-updated #inst "2018-12-07T12:47:34.430-00:00"}
+ :last-updated #inst "2018-12-11T01:12:54.532-00:00"}
