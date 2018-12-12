@@ -86,23 +86,27 @@
   [shape args serialized prefix]
   (prefix-assoc serialized prefix args))
 
-(defmethod client/build-http-request "query"
-  [service {:keys [op request]}]
-  (let [operation (get-in service [:operations op])
+(defn build-query-http-request
+  [serialize service {:keys [op request]}]
+  (let [operation   (get-in service [:operations op])
         input-shape (service/shape service (:input operation))
-        params {"Action" (name op)
-                "Version" (get-in service [:metadata :apiVersion])}]
+        params      {"Action"  (name op)
+                     "Version" (get-in service [:metadata :apiVersion])}]
     {:request-method :post
-     :scheme :https
-     :server-port 443
-     :uri "/"
-     :headers {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))
-               "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
-     :body (util/->bbuf
-            (util/query-string
-             (serialize input-shape request params [])))}))
+     :scheme         :https
+     :server-port    443
+     :uri            "/"
+     :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
+                      "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
+     :body           (util/->bbuf
+                      (util/query-string
+                       (serialize input-shape request params [])))})  )
 
-(defmethod client/parse-http-response "query"
+(defmethod client/build-http-request "query"
+  [service req-map]
+  (build-query-http-request serialize service req-map))
+
+(defn build-query-http-response
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}]
   (let [operation (get-in service [:operations op])]
     (if (:cognitect.anomalies/category http-response)
@@ -112,3 +116,7 @@
           (shape/xml-parse output-shape (util/bbuf->str body))
           (util/xml->map (util/xml-read (util/bbuf->str body))))
         (common/xml-parse-error http-response)))))
+
+(defmethod client/parse-http-response "query"
+  [service op-map http-response]
+  (build-query-http-response service op-map http-response))

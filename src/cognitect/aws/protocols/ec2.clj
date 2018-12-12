@@ -47,27 +47,9 @@
             (map-indexed (fn [i member] [(inc i) member]) args))))
 
 (defmethod client/build-http-request "ec2"
-  [service {:keys [op request]}]
-  (let [operation   (get-in service [:operations op])
-        input-shape (service/shape service (:input operation))
-        params      {"Action"  (name op)
-                     "Version" (get-in service [:metadata :apiVersion])}]
-    {:request-method :post
-     :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
-                      "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
-     :scheme         :https
-     :server-port    443
-     :uri            "/"
-     :body           (util/->bbuf
-                      (util/query-string
-                       (serialize input-shape request params [])))}))
+  [service op-map]
+  (query/build-query-http-request serialize service op-map))
 
 (defmethod client/parse-http-response "ec2"
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}]
-  (if (:cognitect.anomalies/category http-response)
-    http-response
-    (let [operation (get-in service [:operations op])
-          output-shape (service/shape service (:output operation))]
-      (if (< status 400)
-        (shape/xml-parse output-shape (util/bbuf->str body))
-        (common/xml-parse-error http-response)))))
+  (query/build-query-http-response service op-map http-response))
