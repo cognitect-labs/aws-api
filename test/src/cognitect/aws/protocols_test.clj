@@ -101,6 +101,10 @@
   [_ _ test-case]
   (update-in test-case [:params :Bar] get-bytes))
 
+(defmethod with-blob-xforms ["query" "URL Encoded values in body"]
+  [_ _ test-case]
+  (update-in test-case [:params :Blob] get-bytes))
+
 (defmulti with-timestamp-xforms (fn [protocol description response]
                                 [protocol description]))
 
@@ -131,6 +135,10 @@
         (update-in test-case [:params :TimeArgInHeader] #(Date. (* % 1000)))
         :else
         test-case))
+
+(defmethod with-timestamp-xforms ["query" "URL Encoded values in body"]
+  [_ _ test-case]
+  (update-in test-case [:params :Timestamp] #(Date. (* 1000 %))))
 
 (defmethod with-timestamp-xforms ["json" "Timestamp values"]
   [_ _ test-case]
@@ -226,6 +234,20 @@
         (is (= expected-json (some-> body-str json/read-str)))
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
+
+(defn parse-query-string [s]
+  (->> (str/split s #"&")
+       (map #(str/split % #"="))
+       (map (fn [[a b]] [a b]))
+       (into {})))
+
+(defmethod test-request-body "query"
+  [_ expected {:keys [body]}]
+  (let [body-str (util/bbuf->str body)]
+    (if (str/blank? expected)
+      (is (nil? body-str))
+      (is (= (parse-query-string expected)
+             (parse-query-string body-str))))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 

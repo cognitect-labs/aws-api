@@ -9,25 +9,55 @@
       "InputShape": {
         "type": "structure",
         "members": {
-          "Foo": {
-            "shape": "StringType"
-          },
-          "Bar": {
+          "Integer": {
             "shape": "IntegerType"
           },
-          "Baz": {
+          "Long": {
+            "shape": "LongType"
+          },
+          "Double": {
+            "shape" : "DoubleType"
+          },
+          "Float": {
+            "shape" : "FloatType"
+          },
+          "String": {
+            "shape": "StringType"
+          },
+          "Boolean": {
             "shape": "BooleanType"
+          },
+          "Timestamp": {
+            "shape" : "TimestampType"
+          },
+          "Blob": {
+            "shape": "BlobType"
           }
         }
-      },
-      "StringType": {
-        "type": "string"
       },
       "IntegerType": {
         "type": "integer"
       },
+      "LongType": {
+        "type": "long"
+      },
+      "DoubleType": {
+        "type": "double"
+      },
+      "FloatType": {
+        "type": "float"
+      },
+      "StringType": {
+        "type": "string"
+      },
       "BooleanType": {
         "type": "boolean"
+      },
+      "TimestampType": {
+        "type": "timestamp"
+      },
+      "BlobType": {
+        "type": "blob"
       }
     },
     "cases": [
@@ -39,16 +69,21 @@
           "name": "OperationName"
         },
         "params": {
-          "Foo": "a+b",
-          "Bar": 22,
-          "Baz": true
+          "Integer": 22,
+          "Long": 37,
+          "Double": 1.2,
+          "Float": 3.4,
+          "String": "a+b",
+          "Boolean": true,
+          "Timestamp": 1422172800,
+          "Blob": "foo"
         },
         "serialized": {
           "uri": "/",
           "headers": {
             "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
           },
-          "body": "Action=OperationName&Version=2014-01-01&Foo=a%2Bb&Bar=22&Baz=true"
+          "body": "Action=OperationName&Version=2014-01-01&Integer=22&Long=37&Double=1.2&Float=3.4&String=a%2Bb&Boolean=true&Timestamp=2015-01-25T08%3A00%3A00Z&Blob=Zm9v"
         }
       }
     ]
