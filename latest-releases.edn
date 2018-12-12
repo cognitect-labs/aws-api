@@ -1,5 +1,5 @@
 {:releases
- {com.cognitect.aws/api "0.8.146",
+ {com.cognitect.aws/api "0.8.149",
   com.cognitect.aws/endpoints "1.1.11.462",
   :services
   {com.cognitect.aws/AWSMigrationHub "668.2.364.0",

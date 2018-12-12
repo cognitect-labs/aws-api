@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## 0.8.149 / 2018-12-12
+
+* URL encode query protocol body params. #22
+
 ## 0.8.146 / 2018-12-10
 
 * Fix bug caused by attempting to parse a response body when no output shape specified. #21
