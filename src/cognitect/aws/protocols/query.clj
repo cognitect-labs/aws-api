@@ -29,7 +29,7 @@
 
 (defmethod serialize :default
   [shape args serialized prefix]
-  (prefix-assoc serialized prefix args))
+  (prefix-assoc serialized prefix (str args)))
 
 (defmethod serialize "structure"
   [shape args serialized prefix]
@@ -81,10 +81,6 @@
 (defmethod serialize "boolean"
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (if args "true" "false")))
-
-(defmethod serialize "integer"
-  [shape args serialized prefix]
-  (prefix-assoc serialized prefix (str args)))
 
 (defn build-query-http-request
   [serialize service {:keys [op request]}]
