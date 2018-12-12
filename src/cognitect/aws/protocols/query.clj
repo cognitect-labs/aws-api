@@ -82,10 +82,6 @@
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (if args "true" "false")))
 
-(defmethod serialize "string"
-  [shape args serialized prefix]
-  (prefix-assoc serialized prefix args))
-
 (defn build-query-http-request
   [serialize service {:keys [op request]}]
   (let [operation   (get-in service [:operations op])
