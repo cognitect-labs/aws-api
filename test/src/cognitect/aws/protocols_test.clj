@@ -7,6 +7,8 @@
             [clojure.test :refer :all]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest]
             [cognitect.aws.util :as util]
             [cognitect.aws.client :as client]
             [cognitect.aws.protocols.json]
@@ -15,6 +17,20 @@
             [cognitect.aws.protocols.query]
             [cognitect.aws.protocols.ec2])
   (:import (java.util Date)))
+
+(s/fdef cognitect.aws.util/query-string
+  :args (s/cat :params (s/or :seq (s/coll-of (s/cat :key (s/or :kw simple-keyword? :str string?)
+                                                    :val string?))
+                             :map (s/map-of (s/or :kw simple-keyword? :str string?) string?))))
+
+(defn instrument-fixture [f]
+  (try
+    (stest/instrument ['cognitect.aws.util/query-string])
+    (f)
+    (finally
+      (stest/unstrument))))
+
+(use-fixtures :once instrument-fixture)
 
 (defn test-request-method
   [expected {:keys [request-method]}]
