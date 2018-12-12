@@ -82,6 +82,10 @@
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (if args "true" "false")))
 
+(defmethod serialize "integer"
+  [shape args serialized prefix]
+  (prefix-assoc serialized prefix (str args)))
+
 (defn build-query-http-request
   [serialize service {:keys [op request]}]
   (let [operation   (get-in service [:operations op])
@@ -96,7 +100,7 @@
                       "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
      :body           (util/->bbuf
                       (util/query-string
-                       (serialize input-shape request params [])))})  )
+                       (serialize input-shape request params [])))}))
 
 (defmethod client/build-http-request "query"
   [service req-map]

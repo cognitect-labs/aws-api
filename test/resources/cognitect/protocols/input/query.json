@@ -11,11 +11,23 @@
         "members": {
           "Foo": {
             "shape": "StringType"
+          },
+          "Bar": {
+            "shape": "IntegerType"
+          },
+          "Baz": {
+            "shape": "BooleanType"
           }
         }
       },
       "StringType": {
         "type": "string"
+      },
+      "IntegerType": {
+        "type": "integer"
+      },
+      "BooleanType": {
+        "type": "boolean"
       }
     },
     "cases": [
@@ -27,14 +39,16 @@
           "name": "OperationName"
         },
         "params": {
-          "Foo": "a+b"
+          "Foo": "a+b",
+          "Bar": 22,
+          "Baz": true
         },
         "serialized": {
           "uri": "/",
           "headers": {
             "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
           },
-          "body": "Action=OperationName&Version=2014-01-01&Foo=a%2Bb"
+          "body": "Action=OperationName&Version=2014-01-01&Foo=a%2Bb&Bar=22&Baz=true"
         }
       }
     ]

@@ -181,7 +181,8 @@
       (.replace "+" "%20")))
 
 (defn query-string
-  "Create a query string from a list of parameters."
+  "Create a query string from a list of parameters. Values must all be
+  strings."
   [params]
   (when-not (empty? params)
     (str/join "&" (map (fn [[k v]]
