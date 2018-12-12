@@ -59,8 +59,8 @@
      :server-port    443
      :uri            "/"
      :body           (util/->bbuf
-                      (str/join "&" (map (fn [[k v]] (str k "=" v))
-                                         (serialize input-shape request params []))))}))
+                      (util/query-string
+                       (serialize input-shape request params [])))}))
 
 (defmethod client/parse-http-response "ec2"
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}]

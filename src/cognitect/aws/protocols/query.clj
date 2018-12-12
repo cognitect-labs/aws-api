@@ -76,12 +76,15 @@
 
 (defmethod serialize "timestamp"
   [_ args serialized prefix]
-  (prefix-assoc serialized prefix (util/url-encode
-                                   (util/format-timestamp util/iso8601-date-format args))))
+  (prefix-assoc serialized prefix (util/format-timestamp util/iso8601-date-format args)))
 
 (defmethod serialize "boolean"
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (if args "true" "false")))
+
+(defmethod serialize "string"
+  [shape args serialized prefix]
+  (prefix-assoc serialized prefix args))
 
 (defmethod client/build-http-request "query"
   [service {:keys [op request]}]
@@ -96,9 +99,8 @@
      :headers {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))
                "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
      :body (util/->bbuf
-             (str/join "&" (map (fn [[k v]]
-                                  (str k "=" v))
-                                (serialize input-shape request params []))))}))
+            (util/query-string
+             (serialize input-shape request params [])))}))
 
 (defmethod client/parse-http-response "query"
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}]

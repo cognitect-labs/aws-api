@@ -172,6 +172,7 @@
           (print (str "</" (name (:tag e)) ">")))
         (print " />")))))
 
+
 (defn url-encode
   "Percent encode the string to put in a URL."
   [^String s]
