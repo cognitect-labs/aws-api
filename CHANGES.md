@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## 0.8.155 / 2018-12-12
+
+* Stringify query protocol body param vals before url encoding them. [#25](https://github.com/cognitect-labs/aws-api/issues/25)
+
 ## 0.8.149 / 2018-12-12
 
 * URL encode query protocol body params. [#22](https://github.com/cognitect-labs/aws-api/issues/22)
