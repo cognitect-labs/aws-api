@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.158 / 2018-12-13
 
 * use signingName when available in service metadata. [#26](https://github.com/cognitect-labs/aws-api/issues/26)
 
