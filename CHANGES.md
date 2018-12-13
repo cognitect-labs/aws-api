@@ -20,3 +20,7 @@
 
 * Add `basic-credentials-provider` helper fn. Thanks to Christian Gonzalez for the suggestion. [#16](https://github.com/cognitect-labs/aws-api/issues/16)
 * log/debug instead of log/error when individual credentials providers can't find credentials. [#17](https://github.com/cognitect-labs/aws-api/issues/17)
+
+## 0.8.122 / 2018-11-30
+
+* Initial release.
