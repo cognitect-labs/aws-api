@@ -38,6 +38,10 @@
   [service]
   (get-in service [:metadata :endpointPrefix]))
 
+(defn signing-name
+  [service]
+  (get-in service [:metadata :signingName]))
+
 (defn service-name [service]
   (-> service :metadata :uid
       (str/replace #"-\d{4}-\d{2}-\d{2}" "")

@@ -142,7 +142,8 @@
    (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
          auth-info      {:access-key-id     access-key-id
                          :secret-access-key secret-access-key
-                         :service           (service/endpoint-prefix service)
+                         :service           (or (service/signing-name service)
+                                                (service/endpoint-prefix service))
                          :region            (name region)}
          req-with-token (-> http-request
                             (update :headers

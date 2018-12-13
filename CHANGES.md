@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* use signingName when available in service metadata. [#26](https://github.com/cognitect-labs/aws-api/issues/26)
+
 ## 0.8.155 / 2018-12-12
 
 * Stringify query protocol body param vals before url encoding them. [#25](https://github.com/cognitect-labs/aws-api/issues/25)
