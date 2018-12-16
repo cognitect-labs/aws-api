@@ -8,9 +8,7 @@
             [clojure.tools.logging :as log]
             [cognitect.aws.util :as u]
             [cognitect.aws.ec2-metadata-utils :as ec2])
-  (:import [java.util.concurrent Executors ScheduledExecutorService]
-           [java.util.concurrent TimeUnit]
-           [java.io File]))
+  (:import [java.io File]))
 
 (defn valid-region
   "For internal use. Don't call directly.

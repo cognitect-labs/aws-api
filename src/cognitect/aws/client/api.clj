@@ -5,7 +5,6 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [clojure.string :as str]
-            [clojure.walk :as walk]
             [clojure.core.protocols :refer [Datafiable]]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
