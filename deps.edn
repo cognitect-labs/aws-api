@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 {:paths ["src"]
- :deps  {org.clojure/clojure       {:mvn/version "1.10.0-RC5"}
+ :deps  {org.clojure/clojure       {:mvn/version "1.10.0"}
          org.clojure/core.async    {:mvn/version "0.4.490"}
          org.clojure/tools.logging {:mvn/version "0.4.0"}
          commons-codec/commons-codec {:mvn/version "1.11"}
