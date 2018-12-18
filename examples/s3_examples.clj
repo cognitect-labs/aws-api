@@ -46,7 +46,11 @@
 ;; http-response is in the metadata
 (meta *1)
 
+;; create a bucket in the us-east-1 region
 (aws/invoke s3-client {:op :CreateBucket :request {:Bucket bucket-name}})
+;; create a bucket in the other regions (see https://stackoverflow.com/a/49174798 for why you need an additional entry) 
+(aws/invoke s3-client {:op :CreateBucket :request {:Bucket bucket-name
+                                                   :CreateBucketConfiguration {:LocationConstraint region-name}}})
 
 ;; now you should see the bucket you just added
 (aws/invoke s3-client {:op :ListBuckets})
