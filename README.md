@@ -109,7 +109,8 @@ Do stuff:
 (aws/invoke s3-client {:op :ListBuckets})
 ;; http-response is in the metadata
 (meta *1)
-(aws/invoke s3-client {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
+(aws/invoke s3-client {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"
+                                                   :CreateBucketConfiguration {:LocationConstraint "us-west-2"}}})
 (aws/invoke s3-client {:op :ListBuckets})
 ```
 
