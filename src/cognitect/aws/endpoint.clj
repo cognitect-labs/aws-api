@@ -50,7 +50,8 @@
         endpoint-key (if (and partitionEndpoint (not isRegionalized))
                        (keyword partitionEndpoint)
                        region-key)]
-    (service-resolve partition (name service-key) service endpoint-key)))
+    (when (contains? (-> partition :regions keys set) (keyword region-key))
+      (service-resolve partition (name service-key) service endpoint-key))))
 
 (defn resolve*
   "Resolves an endpoint for a given service and region.

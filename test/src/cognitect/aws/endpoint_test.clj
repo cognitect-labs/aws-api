@@ -39,11 +39,12 @@
   (testing "resolves global endpoints"
     (with-redefs [endpoint/resolver (constantly endpoints-excerpt)]
       (is (= "iam.amazonaws.com"
-             (:hostname (endpoint/resolve :iam :us-east-1)))))))
+             (:hostname (endpoint/resolve :iam :us-east-1))))))
   (testing "uses defaults to resolve unspecified endpoints"
     (with-redefs [endpoint/resolver (constantly endpoints-excerpt)]
       (is (= "i-do-not-exist.us-east-1.amazonaws.com"
-             (:hostname (endpoint/resolve :i-do-not-exist :us-east-1))))))
+             (:hostname (endpoint/resolve :i-do-not-exist :us-east-1)))))))
+
 
 (comment
   (run-tests)
