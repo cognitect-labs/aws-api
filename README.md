@@ -88,29 +88,29 @@ Fire up a repl using that deps.edn, and then you can do things like this:
 Create a client:
 
 ```clojure
-(def s3-client (aws/client {:api :s3}))
+(def s3 (aws/client {:api :s3}))
 ```
 
 Ask what ops your client can perform:
 
 ``` clojure
-(aws/ops s3-client)
+(aws/ops s3)
 ```
 
 Look up docs for an operation:
 
 ``` clojure
-(aws/doc s3-client :CreateBucket)
+(aws/doc s3 :CreateBucket)
 ```
 
 Do stuff:
 
 ``` clojure
-(aws/invoke s3-client {:op :ListBuckets})
+(aws/invoke s3 {:op :ListBuckets})
 ;; http-response is in the metadata
 (meta *1)
-(aws/invoke s3-client {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
-(aws/invoke s3-client {:op :ListBuckets})
+(aws/invoke s3 {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
+(aws/invoke s3 {:op :ListBuckets})
 ```
 
 See the [examples](examples) directory for more examples.

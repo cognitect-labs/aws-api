@@ -4,12 +4,12 @@
 (require '[cognitect.aws.client.api :as aws])
 
 ;; make a client
-(def client (aws/client {:api :iam}))
+(def iam (aws/client {:api :iam}))
 
-(aws/ops client)
+(aws/ops iam)
 
-(-> (aws/ops client) keys sort)
+(-> (aws/ops iam) keys sort)
 
-(aws/doc client :ListRoles)
+(aws/doc iam :ListRoles)
 
-(aws/invoke client {:op :ListRoles})
+(aws/invoke iam {:op :ListRoles})

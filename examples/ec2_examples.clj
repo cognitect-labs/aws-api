@@ -3,12 +3,12 @@
 
 (require '[cognitect.aws.client.api :as aws])
 
-(def client (aws/client {:api :ec2}))
+(def ec2 (aws/client {:api :ec2}))
 
-(aws/ops client)
+(aws/ops ec2)
 
-(-> (aws/ops client) keys sort)
+(-> (aws/ops ec2) keys sort)
 
-(aws/doc client :DescribeAvailabilityZones)
+(aws/doc ec2 :DescribeAvailabilityZones)
 
-(aws/invoke client {:op :DescribeAvailabilityZones})
+(aws/invoke ec2 {:op :DescribeAvailabilityZones})

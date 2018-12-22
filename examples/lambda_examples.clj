@@ -3,12 +3,12 @@
 
 (require '[cognitect.aws.client.api :as aws])
 
-(def client (aws/client {:api :lambda}))
+(def lambda (aws/client {:api :lambda}))
 
-(aws/ops client)
+(aws/ops lambda)
 
-(-> (aws/ops client) keys sort)
+(-> (aws/ops lambda) keys sort)
 
-(aws/doc client :ListFunctions)
+(aws/doc lambda :ListFunctions)
 
-(aws/invoke client {:op :ListFunctions})
+(aws/invoke lambda {:op :ListFunctions})
