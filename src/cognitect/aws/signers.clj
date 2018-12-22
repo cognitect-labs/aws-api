@@ -144,7 +144,9 @@
                          :secret-access-key secret-access-key
                          :service           (or (service/signing-name service)
                                                 (service/endpoint-prefix service))
-                         :region            (name region)}
+                         :region            (if (-> service :metadata :globalEndpoint)
+                                                "us-east-1"
+                                                (name region))}
          req-with-token (-> http-request
                             (update :headers
                                     #(cond-> % session-token (assoc "x-amz-security-token" session-token))))]
