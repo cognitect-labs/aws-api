@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.166 / 2018-12-22
 
 * use us-east-1 as signing region when service has globalEndpoint [#27](https://github.com/cognitect-labs/aws-api/issues/27)
 
