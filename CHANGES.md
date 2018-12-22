@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* use us-east-1 as signing region when service has globalEndpoint [#27](https://github.com/cognitect-labs/aws-api/issues/27)
+
 ## 0.8.158 / 2018-12-13
 
 * use signingName when available in service metadata. [#26](https://github.com/cognitect-labs/aws-api/issues/26)
