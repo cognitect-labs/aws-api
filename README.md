@@ -53,7 +53,7 @@ We also include the revision of our generator in the version. For example,
 `com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
 generator, and tag `v2.351.0` of aws-sdk-js.
 
-[Latest releases](doc/latest-releases.md)
+[Latest releases](latest-releases.edn)
 
 ## Usage
 
