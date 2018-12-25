@@ -15,17 +15,17 @@ target_name=api-${version}
 
 echo "Releasing..."
 mvn versions:set -DnewVersion=${version}
-mvn clean deploy -DaltDeploymentRepository=cognitect-aws-api::default::s3://aws-api-0cc9/repository
+mvn clean deploy
 mvn versions:revert
 
 echo "Tagging..."
 git tag -a v${version} -m "Release ${version}"
 git push origin v${version}
 
-# echo "Updating README.md versions"
-# sed -i '' "s/[[:digit:]]\{1,2\}\.[[:digit:]]\{1,2\}\.[[:digit:]]\{2,4\}/${version}/g" README.md
-# git commit -m "Update README.md with ${version}" README.md
-# git push
+echo "Updating README.md and latest-versions.edn with ${version}"
+clj -A:update-versions
+git commit -m "Update README and latest-versions.edn with ${version}" README.md
+git push
 
 # echo "Updating gh-pages with new api docs"
 # build/doc

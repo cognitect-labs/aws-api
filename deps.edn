@@ -1,29 +1,31 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-{:paths ["src"]
- :deps  {org.clojure/clojure       {:mvn/version "1.10.0"}
-         org.clojure/core.async    {:mvn/version "0.4.490"}
-         org.clojure/tools.logging {:mvn/version "0.4.0"}
-         commons-codec/commons-codec {:mvn/version "1.11"}
-         org.clojure/data.json       {:mvn/version "0.2.6"}
-         com.cognitect/http-client   {:mvn/version "0.1.87"}}
- :aliases {:test      {:extra-paths ["test/src" "test/resources" "dev/resources"]
-                       :extra-deps  {commons-io/commons-io   {:mvn/version "2.5"}
-                                     org.clojure/test.check  {:mvn/version "0.9.0"}
-                                     org.slf4j/slf4j-log4j12 {:mvn/version "1.7.25"}
-                                     http-kit                {:mvn/version "2.2.0"}}}
-           :run-tests {:extra-paths ["test/src" "test/resources" "dev/resources"]
-                       :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                                :sha     "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}}
-                       :main-opts   ["-m" "cognitect.test-runner"]}
-           :examples  {:extra-paths ["examples" "examples/resources" "dev/resources"]
-                       :extra-deps  {org.clojure/test.check      {:mvn/version "0.9.0"}
-                                     org.slf4j/slf4j-log4j12     {:mvn/version "1.7.25"}
-                                     com.cognitect.aws/endpoints {:mvn/version "1.1.11.457"}
-                                     com.cognitect.aws/dynamodb  {:mvn/version "675.2.365.0"}
-                                     com.cognitect.aws/ec2       {:mvn/version "675.2.366.0"}
-                                     com.cognitect.aws/iam       {:mvn/version "668.2.357.0"}
-                                     com.cognitect.aws/lambda    {:mvn/version "675.2.367.0"}
-                                     com.cognitect.aws/s3        {:mvn/version "675.2.368.0"}
-                                     com.cognitect.aws/ssm       {:mvn/version "669.2.364.0"}}}}}
+{:paths   ["src"]
+ :deps    {org.clojure/clojure         {:mvn/version "1.10.0"}
+           org.clojure/core.async      {:mvn/version "0.4.490"}
+           org.clojure/tools.logging   {:mvn/version "0.4.0"}
+           commons-codec/commons-codec {:mvn/version "1.11"}
+           org.clojure/data.json       {:mvn/version "0.2.6"}
+           com.cognitect/http-client   {:mvn/version "0.1.87"}}
+ :aliases {:update-versions {:extra-paths ["build/src"]
+                             :main-opts   ["-m" "cognitect.aws.release-updater"]}
+           :test            {:extra-paths ["test/src" "test/resources" "dev/resources"]
+                             :extra-deps  {commons-io/commons-io   {:mvn/version "2.5"}
+                                           org.clojure/test.check  {:mvn/version "0.9.0"}
+                                           org.slf4j/slf4j-log4j12 {:mvn/version "1.7.25"}
+                                           http-kit                {:mvn/version "2.2.0"}}}
+           :run-tests       {:extra-paths ["test/src" "test/resources" "dev/resources"]
+                             :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                                                                      :sha     "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}}
+                             :main-opts   ["-m" "cognitect.test-runner"]}
+           :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
+                             :extra-deps  {org.clojure/test.check      {:mvn/version "0.9.0"}
+                                           org.slf4j/slf4j-log4j12     {:mvn/version "1.7.25"}
+                                           com.cognitect.aws/endpoints {:mvn/version "1.1.11.457"}
+                                           com.cognitect.aws/dynamodb  {:mvn/version "675.2.365.0"}
+                                           com.cognitect.aws/ec2       {:mvn/version "675.2.366.0"}
+                                           com.cognitect.aws/iam       {:mvn/version "668.2.357.0"}
+                                           com.cognitect.aws/lambda    {:mvn/version "675.2.367.0"}
+                                           com.cognitect.aws/s3        {:mvn/version "675.2.368.0"}
+                                           com.cognitect.aws/ssm       {:mvn/version "669.2.364.0"}}}}}
