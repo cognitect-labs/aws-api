@@ -144,7 +144,8 @@
                          :secret-access-key secret-access-key
                          :service           (or (service/signing-name service)
                                                 (service/endpoint-prefix service))
-                         :region            (if (-> service :metadata :globalEndpoint)
+                         :region            (if (and (-> service :metadata :globalEndpoint)
+                                                     (not= "s3" (service/service-name service)))
                                                 "us-east-1"
                                                 (name region))}
          req-with-token (-> http-request

@@ -98,17 +98,24 @@
   (doseq [{:keys [name request authorization]} (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))]
     (testing name
       (testing "using endpointPrefix"
-        (let [service        {:metadata {:signatureVersion "v4" :endpointPrefix "service"}}
+        (let [service        {:metadata {:signatureVersion "v4"
+                                         :endpointPrefix   "service"
+                                         :uid              "service-2018-12-28"}}
               signed-request (client/sign-http-request service :us-east-1 request credentials)]
           (is (= (get-in signed-request [:headers "authorization"])
                  authorization))))
       (testing "using signingName"
-        (let [service {:metadata {:signatureVersion "v4" :endpointPrefix "incorrect" :signingName "service"}}
+        (let [service        {:metadata {:signatureVersion "v4"
+                                         :endpointPrefix   "incorrect"
+                                         :signingName      "service"
+                                         :uid              "service-2018-12-28"}}
               signed-request (client/sign-http-request service :us-east-1 request credentials)]
           (is (= (get-in signed-request [:headers "authorization"])
                  authorization))))
       (testing "global endpoint is always signed with us-east-1"
-        (let [service {:metadata {:signatureVersion "v4" :endpointPrefix "service"}}]
+        (let [service {:metadata {:signatureVersion "v4"
+                                  :endpointPrefix   "service"
+                                  :uid              "service-2018-12-28"}}]
           (let [signed-request (client/sign-http-request service :us-west-1 request credentials)]
             (is (not= authorization (get-in signed-request [:headers "authorization"]))))
           (let [signed-request (client/sign-http-request
