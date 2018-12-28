@@ -1,5 +1,11 @@
 # aws-api 0.8
 
+## DEV
+
+* use the configured region as signing region for S3 requests
+  * fixes regression introduced in fixing [#27](https://github.com/cognitect-labs/aws-api/issues/27)
+  * we still need a better solution for [#15](https://github.com/cognitect-labs/aws-api/issues/15)
+
 ## 0.8.166 / 2018-12-22
 
 * use us-east-1 as signing region when service has globalEndpoint [#27](https://github.com/cognitect-labs/aws-api/issues/27)
