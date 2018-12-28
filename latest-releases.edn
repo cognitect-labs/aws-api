@@ -1,5 +1,5 @@
 {:releases
- {com.cognitect.aws/api "0.8.166",
+ {com.cognitect.aws/api "0.8.171",
   com.cognitect.aws/endpoints "1.1.11.475",
   :services
   {com.cognitect.aws/AWSMigrationHub "668.2.364.0",
@@ -171,4 +171,4 @@
    com.cognitect.aws/workmail "669.2.364.0",
    com.cognitect.aws/workspaces "669.2.364.0",
    com.cognitect.aws/xray "675.2.367.0"}},
- :last-updated #inst "2018-12-22T15:58:56.505-00:00"}
+ :last-updated #inst "2018-12-28T22:02:20.860-00:00"}
