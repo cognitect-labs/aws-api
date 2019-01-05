@@ -3,23 +3,16 @@
 
 (ns cognitect.aws.credentials
   "Implement the credentials subsystem."
-  (:require
-    [clojure.data.json :as json]
-    [clojure.java.io :as io]
-    [clojure.string :as str]
-    [clojure.tools.logging :as log]
-    [cognitect.aws.util :as u]
-    [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils])
-  (:import [java.util.concurrent Executors ScheduledExecutorService]
-           [java.util.concurrent TimeUnit]
-           [java.io File]
+  (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
+            [clojure.string :as str]
+            [clojure.tools.logging :as log]
+            [cognitect.aws.util :as u]
+            [cognitect.aws.ec2-metadata-utils :as ec2])
+  (:import (java.util.concurrent Executors ScheduledExecutorService)
+           (java.util.concurrent TimeUnit)
+           (java.io File)
            (java.net URI)))
-
-(def ^:const ecs-container-credentials-path-env-var "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
-(def ^:const ecs-container-credentials-full-uri-env-var "AWS_CONTAINER_CREDENTIALS_FULL_URI")
-(def ^:const ec2-security-credentials-resource "/latest/meta-data/iam/security-credentials/")
-
-(def allowed-hosts #{"127.0.0.1" "localhost"})
 
 (defprotocol CredentialsProvider
   (fetch [_]
@@ -199,60 +192,50 @@
    (reify CredentialsProvider
      (fetch [_]
        (when (.exists f)
-        (try
-          (let [profile (get (u/config->profiles f) profile-name)]
-            (valid-credentials
-             {:aws/access-key-id     (get profile "aws_access_key_id")
-              :aws/secret-access-key (get profile "aws_secret_access_key")
-              :aws/session-token     (get profile "aws_session_token")}
-             "aws profiles file"))
-          (catch Throwable t
-            (log/error t "Error fetching credentials from aws profiles file"))))))))
+         (try
+           (let [profile (get (u/config->profiles f) profile-name)]
+             (valid-credentials
+              {:aws/access-key-id     (get profile "aws_access_key_id")
+               :aws/secret-access-key (get profile "aws_secret_access_key")
+               :aws/session-token     (get profile "aws_session_token")}
+              "aws profiles file"))
+           (catch Throwable t
+             (log/error t "Error fetching credentials from aws profiles file"))))))))
 
 (defn container-credentials-provider
-  "Return credentials from ECS iff AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is set.
+  "Return credentials from ECS iff one of
+  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
+  AWS_CONTAINER_CREDENTIALS_FULL_URI is set.
 
   Alpha. Subject to change."
   []
   (reify CredentialsProvider
     (fetch [_]
-      (when-let [container-creds
-                 (some-> (or (when-let [relative-uri (u/getenv ecs-container-credentials-path-env-var)]
-                               (some->> (ec2-metadata-utils/get-items-at-path relative-uri)
-                                        first
-                                        (str relative-uri)
-                                        ec2-metadata-utils/get-data-at-path))
-
-                             (when-let [full-uri (u/getenv ecs-container-credentials-full-uri-env-var)]
-                               (some->> (ec2-metadata-utils/get-items full-uri {})
-                                        first
-                                        (str full-uri)
-                                        (URI.)
-                                        ec2-metadata-utils/get-data)))
-                         (json/read-str :key-fn keyword))]
+      (when-let [creds (ec2/container-credentials)]
         (valid-credentials
-         {:aws/access-key-id     (:AccessKeyId container-creds)
-          :aws/secret-access-key (:SecretAccessKey container-creds)
-          :aws/session-token     (:Token container-creds)}
+         {:aws/access-key-id     (:AccessKeyId creds)
+          :aws/secret-access-key (:SecretAccessKey creds)
+          :aws/session-token     (:Token creds)}
          "ecs container")))))
 
 (defn instance-profile-credentials-provider
   "For internal use. Do not call directly.
 
-  Return credentials from EC2 metadata service iff
-  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI is not set. "
+  Return credentials from EC2 metadata service iff neither of
+  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
+  AWS_CONTAINER_CREDENTIALS_FULL_URI
+  is set.
+
+  Alpha. Subject to change."
   []
   (reify CredentialsProvider
     (fetch [_]
-      (when-not (u/getenv ecs-container-credentials-path-env-var)
-        (when-let [cred-name (first (ec2-metadata-utils/get-items-at-path ec2-security-credentials-resource))]
-          (let [creds (some-> (ec2-metadata-utils/get-data-at-path (str ec2-security-credentials-resource cred-name))
-                              (json/read-str :key-fn keyword))]
-            (valid-credentials
-             {:aws/access-key-id     (:AccessKeyId creds)
-              :aws/secret-access-key (:SecretAccessKey creds)
-              :aws/session-token     (:Token creds)}
-             "ec2 instance")))))))
+      (when-let [creds (ec2/instance-credentials)]
+        (valid-credentials
+         {:aws/access-key-id     (:AccessKeyId creds)
+          :aws/secret-access-key (:SecretAccessKey creds)
+          :aws/session-token     (:Token creds)}
+         "ec2 instance")))))
 
 (defn default-credentials-provider
   "Return a chain-credentials-provider comprising, in order:

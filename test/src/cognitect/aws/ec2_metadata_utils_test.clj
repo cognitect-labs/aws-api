@@ -12,6 +12,7 @@
 
 (defn test-fixture
   [f]
+  ;; NOTE: starting w/ 0 generates a random port
   (let [server-stop-fn (ec2-metadata-utils-server/start 0)
         test-server-port (-> server-stop-fn meta :local-port)]
     (try
@@ -35,4 +36,6 @@
     (is (nil? (ec2-metadata-utils/get-ec2-instance-region)))))
 
 (comment
-  (run-tests))
+  (run-tests)
+
+  )

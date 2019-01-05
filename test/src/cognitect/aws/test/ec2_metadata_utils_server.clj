@@ -66,6 +66,8 @@
   (http-server/run-server handler {:ip "127.0.0.1" :port port}))
 
 (comment
-  (def s (start 0))
+  (def stop-fn (start 0))
 
-  (s))
+  (stop-fn)
+
+  )

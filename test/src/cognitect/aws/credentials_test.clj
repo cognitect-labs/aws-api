@@ -5,6 +5,7 @@
   (:require [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
+            [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
             [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
@@ -108,8 +109,16 @@
 
 (deftest container-credentials-provider-test
   (testing "The provider reads container metadata correctly."
-    (with-redefs [u/getenv (tu/stub-getenv {credentials/ecs-container-credentials-path-env-var
-                                            "/latest/meta-data/iam/security-credentials/"})]
+    (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-relative-uri-env-var
+                                            ec2-metadata-utils/security-credentials-path})]
+      (is (= {:aws/access-key-id "foobar"
+              :aws/secret-access-key "it^s4$3cret!"
+              :aws/session-token "norealvalue"}
+             (credentials/fetch (credentials/container-credentials-provider)))))
+    (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-full-uri-env-var
+                                            (str "http://localhost:"
+                                                 ec2-metadata-utils-test/*test-server-port*
+                                                 ec2-metadata-utils/security-credentials-path)})]
       (is (= {:aws/access-key-id "foobar"
               :aws/secret-access-key "it^s4$3cret!"
               :aws/session-token "norealvalue"}
@@ -146,4 +155,6 @@
                               :secret-access-key "bar"})))))
 
 (comment
-  (run-tests))
+  (run-tests)
+
+  )
