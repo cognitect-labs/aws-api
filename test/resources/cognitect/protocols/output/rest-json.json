@@ -31,5 +31,54 @@
         }
       ]
     }
+  },
+  {
+    "description": "Named locations in JSON body",
+    "metadata": {
+      "protocol": "rest-json"
+    },
+    "shapes": {
+      "OutputShape": {
+        "type": "structure",
+        "payload": "Data",
+        "members": {
+          "Data": {
+            "shape": "BodyStructure"
+          }
+        }
+      },
+      "BodyStructure": {
+        "type": "structure",
+        "members": {
+          "Foo": {
+              "shape": "StringType",
+              "locationName": "FOO"
+          }
+        }
+      },
+      "StringType": {
+        "type": "string"
+      }
+    },
+    "cases": [
+      {
+        "given": {
+          "output": {
+            "shape": "OutputShape"
+          },
+          "name": "OperationName"
+        },
+        "result": {
+          "Data": {
+            "Foo": "abc"
+          }
+        },
+        "response": {
+          "status_code": 200,
+          "headers": {},
+          "body": "{\"FOO\": \"abc\"}"
+        }
+      }
+    ]
   }
 ]
