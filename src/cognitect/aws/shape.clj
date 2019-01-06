@@ -68,41 +68,63 @@
 
 (defmulti walk
   "Walk a nested instance structure in parallel with the shape structure
-  and calls (f shape data) for each primitive shape."
-  (fn [shape data f] (:type shape)))
+  and calls (f shape data) for each primitive shape.
+
+  operation can be one of :serialize or :parse, and is necessary because
+  locationName works differently when parsing than when serializing.
+  "
+  (fn [shape data operation f] (:type shape)))
 
 (defmethod walk :default
-  [shape data f]
+  [shape data operation f]
   (f shape data))
 
 (defmethod walk "structure"
-  [shape data f]
+  [shape data operation f]
   (when data
-    (reduce-kv (fn [m k v]
-                 (if-let [member-shape (member-shape shape k)]
-                   (assoc m
-                     (or (keyword (:locationName member-shape))
-                         k)
-                     (walk member-shape v f))
-                   m))
-               {}
-               data)))
+    (if (= :serialize operation)
+      ;; when serializing, we iterate over the data and use locationName
+      ;; as the key in the output
+      (reduce-kv (fn [m k v]
+                   (if-let [member-shape (member-shape shape k)]
+                     (assoc m
+                            (or (keyword (:locationName member-shape))
+                                k)
+                            (walk member-shape v operation f))
+                     m))
+                 {}
+                 data)
+      ;; when parsing, we iterate over the spec and use locationName
+      ;; as the key to get data from the input
+      (reduce (fn [m k]
+                (let [member-shape (member-shape shape k)
+                      location-name (or (keyword (:locationName member-shape)) k)]
+                  (if (contains? data location-name)
+                    (assoc m
+                           k
+                           (walk member-shape
+                                 (get data location-name)
+                                 operation
+                                 f))
+                    m)))
+              {}
+              (-> shape :members keys)))))
 
 (defmethod walk "map"
-  [shape data f]
+  [shape data operation f]
   (when data
     (let [key-shape (key-shape shape)
           value-shape (value-shape shape)]
       (reduce-kv (fn [m k v]
-                   (assoc m (walk key-shape k f) (walk value-shape v f)))
+                   (assoc m (walk key-shape k operation f) (walk value-shape v operation f)))
                  {}
                  data))))
 
 (defmethod walk "list"
-  [shape data f]
+  [shape data operation f]
   (when data
     (let [member-shape (list-member-shape shape)]
-      (mapv #(walk member-shape % f)
+      (mapv #(walk member-shape % operation f)
             data))))
 
 ;; ----------------------------------------------------------------------------------------
@@ -115,7 +137,7 @@
   "Parse the JSON string to return an instance of the shape."
   [shape s]
   (if shape
-    (walk shape (json/read-str s :key-fn keyword) json-parse*)
+    (walk shape (json/read-str s :key-fn keyword) :parse json-parse*)
     {}))
 
 
@@ -123,7 +145,7 @@
   "Serialize the shape's instance into a JSON string."
   [shape instance]
   (json/write-str
-   (walk shape instance json-serialize*)))
+   (walk shape instance :serialize json-serialize*)))
 
 (defmulti json-parse*
   (fn [shape data] (:type shape)))
