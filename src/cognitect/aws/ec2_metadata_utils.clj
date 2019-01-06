@@ -28,18 +28,12 @@
   (or (u/getenv container-credentials-relative-uri-env-var)
       (u/getenv container-credentials-full-uri-env-var)))
 
-(defprotocol URIAble
-  (->uri [v]))
-
-(extend-protocol URIAble
-  URI
-  (->uri [uri] uri)
-
-  String
-  (->uri [s] (URI. s)))
-
 (defn build-path [& components]
   (str/replace (str/join \/ components) #"\/\/+" (constantly "/")))
+
+(defn- build-uri
+  [host path]
+  (str host "/" (cond-> path (str/starts-with? path "/") (subs 1))))
 
 (defn get-host-address
   "Gets the EC2 (or ECS) metadata host address"
@@ -47,10 +41,6 @@
   (or (u/getProperty ec2-metadata-service-override-system-property)
       (when (in-container?) ecs-metadata-host)
       ec2-metadata-host))
-
-(defn- build-uri
-  [host path]
-  (->uri (str host "/" (cond-> path (str/starts-with? path "/") (subs 1)))))
 
 (defn- request-map
   [^URI uri]
@@ -63,7 +53,7 @@
 
 (defn get-data [uri]
   (let [response (a/<!! (retry/with-retry
-                          #(http/submit (http/create {}) (request-map (->uri uri)))
+                          #(http/submit (http/create {}) (request-map (URI. uri)))
                           (a/promise-chan)
                           retry/default-retriable?
                           retry/default-backoff))]
