@@ -66,86 +66,26 @@
   [shape]
   (resolve shape (:member shape)))
 
-(defmulti walk
-  "Walk a nested instance structure in parallel with the shape structure
-  and calls (f shape data) for each primitive shape.
-
-  operation can be one of :serialize or :parse, and is necessary because
-  locationName works differently when parsing than when serializing.
-  "
-  (fn [shape data operation f] (:type shape)))
-
-(defmethod walk :default
-  [shape data operation f]
-  (f shape data))
-
-(defmethod walk "structure"
-  [shape data operation f]
-  (when data
-    (if (= :serialize operation)
-      ;; when serializing, we iterate over the data and use locationName
-      ;; as the key in the output
-      (reduce-kv (fn [m k v]
-                   (if-let [member-shape (member-shape shape k)]
-                     (assoc m
-                            (or (keyword (:locationName member-shape))
-                                k)
-                            (walk member-shape v operation f))
-                     m))
-                 {}
-                 data)
-      ;; when parsing, we iterate over the spec and use locationName
-      ;; as the key to get data from the input
-      (reduce (fn [m k]
-                (let [member-shape (member-shape shape k)
-                      location-name (or (keyword (:locationName member-shape)) k)]
-                  (if (contains? data location-name)
-                    (assoc m
-                           k
-                           (walk member-shape
-                                 (get data location-name)
-                                 operation
-                                 f))
-                    m)))
-              {}
-              (-> shape :members keys)))))
-
-(defmethod walk "map"
-  [shape data operation f]
-  (when data
-    (let [key-shape (key-shape shape)
-          value-shape (value-shape shape)]
-      (reduce-kv (fn [m k v]
-                   (assoc m (walk key-shape k operation f) (walk value-shape v operation f)))
-                 {}
-                 data))))
-
-(defmethod walk "list"
-  [shape data operation f]
-  (when data
-    (let [member-shape (list-member-shape shape)]
-      (mapv #(walk member-shape % operation f)
-            data))))
-
 ;; ----------------------------------------------------------------------------------------
 ;; JSON Parser & Serializer
 ;; ----------------------------------------------------------------------------------------
 
-(declare json-parse* json-serialize*)
+;; shared data structure handlers
 
-(defn json-parse
-  "Parse the JSON string to return an instance of the shape."
-  [shape s]
-  (if shape
-    (walk shape (json/read-str s :key-fn keyword) :parse json-parse*)
-    {}))
+(defn handle-map [shape data f]
+  (when data
+    (let [key-shape   (key-shape shape)
+          value-shape (value-shape shape)]
+      (reduce-kv (fn [m k v] (assoc m (f key-shape k) (f value-shape v)))
+                 {}
+                 data))))
 
+(defn handle-list [shape data f]
+  (when data
+    (let [member-shape (list-member-shape shape)]
+      (mapv #(f member-shape %) data))))
 
-(defn json-serialize
-  "Serialize the shape's instance into a JSON string."
-  [shape instance]
-  (json/write-str
-   (walk shape instance :serialize json-serialize*)))
+;; parser
 
 (defmulti json-parse*
   (fn [shape data] (:type shape)))
@@ -157,6 +97,28 @@
 (defmethod json-parse* "blob"
   [_ data]
   (util/base64-decode data))
+
+(defmethod json-parse* "structure"
+  [shape data]
+  (when data
+    (reduce (fn [m k]
+              (let [member-shape (member-shape shape k)
+                    location-name (or (keyword (:locationName member-shape)) k)]
+                (if (contains? data location-name)
+                  (assoc m k (json-parse* member-shape (get data location-name)))
+                  m)))
+            {}
+            (-> shape :members keys))))
+
+(defmethod json-parse* "map"
+  [shape data]
+  (handle-map shape data json-parse*))
+
+(defmethod json-parse* "list"
+  [shape data]
+  (handle-list shape data json-parse*))
+
+;; serializer
 
 (defmulti json-serialize*
   (fn [shape instance] (:type shape)))
@@ -172,6 +134,39 @@
 (defmethod json-serialize* "timestamp"
   [_ data]
   (long (/ (.getTime data) 1000)))
+
+(defmethod json-serialize* "structure"
+  [shape data]
+  (when data
+    (reduce-kv (fn [m k v]
+                 (if-let [member-shape (member-shape shape k)]
+                   (assoc m
+                          (or (keyword (:locationName member-shape))
+                              k)
+                          (json-serialize* member-shape v))
+                   m))
+               {}
+               data)))
+
+(defmethod json-serialize* "map"
+  [shape data]
+  (handle-map shape data json-serialize*))
+
+(defmethod json-serialize* "list"
+  [shape data]
+  (handle-list shape data json-serialize*))
+
+;; entry point fns
+
+(defn json-parse
+  "Parse the JSON string to return an instance of the shape."
+  [shape s]
+  (json-parse* shape (json/read-str s :key-fn keyword)))
+
+(defn json-serialize
+  "Serialize the shape's instance into a JSON string."
+  [shape instance]
+  (json/write-str (json-serialize* shape instance)))
 
 ;; ----------------------------------------------------------------------------------------
 ;; XML Parser & Serializer
