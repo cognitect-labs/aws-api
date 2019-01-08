@@ -222,17 +222,17 @@
 
 (defn parse-body
   "Parse the HTTP response body for response data."
-  [output-shape body parse]
+  [output-shape body parse-fn]
   (if-let [payload-name (:payload output-shape)]
     (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
       (condp = (:type body-shape)
         "blob" {(keyword payload-name) (util/bbuf->input-stream body)}
         "string" (util/bbuf->str body)
-        {(keyword payload-name) (parse body-shape (util/bbuf->str body))}))
+        {(keyword payload-name) (parse-fn body-shape (util/bbuf->str body))}))
     ;; No payload
     (let [body-str (util/bbuf->str body)]
       (when-not (str/blank? body-str)
-        (parse output-shape body-str)))))
+        (parse-fn output-shape body-str)))))
 
 (defn parse-http-response
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}
