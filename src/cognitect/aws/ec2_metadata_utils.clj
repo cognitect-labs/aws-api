@@ -80,17 +80,10 @@
   (:region (get-ec2-instance-data)))
 
 (defn container-credentials []
-  (some-> (or (when-let [path (u/getenv container-credentials-relative-uri-env-var)]
-                (some->> (get-listing-at-path path)
-                         first
-                         (str path)
-                         get-data-at-path))
-              (when-let [uri (u/getenv container-credentials-full-uri-env-var)]
-                (some->> (get-listing uri)
-                         first
-                         (str uri)
-                         get-data)))
-          (json/read-str :key-fn keyword)))
+  (let [endpoint (or (when-let [path (u/getenv container-credentials-relative-uri-env-var)]
+                       (str (get-host-address) path))
+                     (u/getenv container-credentials-full-uri-env-var))]
+    (some-> endpoint get-data (json/read-str :key-fn keyword))))
 
 (defn instance-credentials []
   (when (not (in-container?))
