@@ -4,6 +4,8 @@
 (ns cognitect.aws.test.ec2-metadata-utils-server
   "Modeled after com.amazonaws.util.EC2MetadataUtilsServer"
   (:require [clojure.string :as str]
+            [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
+            [cognitect.aws.util :as u]
             [org.httpkit.server :as http-server]
             [clojure.data.json :as json]));
 
@@ -49,6 +51,8 @@
   [uri]
   (cond
     (= uri "/latest/meta-data/iam/info") iam-info
+    (or (u/getenv ec2-metadata-utils/container-credentials-relative-uri-env-var)
+        (u/getenv ec2-metadata-utils/container-credentials-full-uri-env-var)) iam-cred
     (= uri "/latest/meta-data/iam/security-credentials/") iam-cred-list
     (re-find #"/latest/meta-data/iam/security-credentials/.+" uri) iam-cred
     (= uri "/latest/dynamic/instance-identity/document") instance-info
