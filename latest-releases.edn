@@ -1,6 +1,6 @@
 {:releases
  {com.cognitect.aws/api "0.8.171",
-  com.cognitect.aws/endpoints "1.1.11.475",
+  com.cognitect.aws/endpoints "1.1.11.479",
   :services
   {com.cognitect.aws/AWSMigrationHub "668.2.364.0",
    com.cognitect.aws/acm "668.2.364.0",
@@ -46,7 +46,7 @@
    com.cognitect.aws/datapipeline "668.2.364.0",
    com.cognitect.aws/datasync "668.2.364.0",
    com.cognitect.aws/dax "668.2.364.0",
-   com.cognitect.aws/devicefarm "678.2.369.0",
+   com.cognitect.aws/devicefarm "692.2.384.0",
    com.cognitect.aws/devices "668.2.364.0",
    com.cognitect.aws/directconnect "668.2.364.0",
    com.cognitect.aws/discovery "668.2.364.0",
@@ -56,7 +56,7 @@
    com.cognitect.aws/dynamodb "684.2.382.0",
    com.cognitect.aws/ec2 "684.2.380.0",
    com.cognitect.aws/ecr "684.2.378.0",
-   com.cognitect.aws/ecs "683.2.374.0",
+   com.cognitect.aws/ecs "692.2.384.0",
    com.cognitect.aws/eks "683.2.375.0",
    com.cognitect.aws/elasticache "668.2.364.0",
    com.cognitect.aws/elasticbeanstalk "684.2.379.0",
@@ -86,7 +86,7 @@
    com.cognitect.aws/iot-data "668.2.357.0",
    com.cognitect.aws/iot-jobs-data "668.2.357.0",
    com.cognitect.aws/iot1click-projects "668.2.357.0",
-   com.cognitect.aws/iotanalytics "669.2.363.0",
+   com.cognitect.aws/iotanalytics "692.2.383.0",
    com.cognitect.aws/kafka "675.2.368.0",
    com.cognitect.aws/kinesis "668.2.357.0",
    com.cognitect.aws/kinesis-video-archived-media "668.2.357.0",
@@ -118,7 +118,7 @@
    com.cognitect.aws/mturk-requester "669.2.364.0",
    com.cognitect.aws/neptune "669.2.364.0",
    com.cognitect.aws/opsworks "669.2.364.0",
-   com.cognitect.aws/opsworkscm "669.2.364.0",
+   com.cognitect.aws/opsworkscm "692.2.383.0",
    com.cognitect.aws/organizations "684.2.376.0",
    com.cognitect.aws/pi "669.2.364.0",
    com.cognitect.aws/pinpoint "669.2.364.0",
@@ -171,4 +171,4 @@
    com.cognitect.aws/workmail "669.2.364.0",
    com.cognitect.aws/workspaces "669.2.364.0",
    com.cognitect.aws/xray "675.2.367.0"}},
- :last-updated #inst "2018-12-28T22:02:20.860-00:00"}
+ :last-updated #inst "2019-01-09T05:41:26.860-00:00"}
