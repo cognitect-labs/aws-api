@@ -2,6 +2,8 @@
 
 ## DEV
 
+* extend Datafiable via metadata (allows use with clojure-1.9)
+
 * fix edge case bug parsing json with locationNames
 
 * use the correct metadata endpoint when running in ECS [#33](https://github.com/cognitect-labs/aws-api/issues/33)
