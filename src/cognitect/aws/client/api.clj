@@ -23,16 +23,6 @@
 
 (declare ops)
 
-(extend-protocol Datafiable
-  Client
-  (datafy [c]
-    (-> c
-        client/-get-info
-        (select-keys [:region :endpoint :service])
-        (update :endpoint select-keys [:hostname :protocols :signatureVersions])
-        (update :service select-keys [:metadata])
-        (assoc :ops (ops c)))))
-
 (defn client
   "Given a config map, create a client for specified api. Supported keys
   in config are:
@@ -67,17 +57,25 @@
                       (or region-provider
                           (region/default-region-provider)))))]
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
-    (->Client
-     {:service     service
-      :region      region
-      :endpoint    (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
+    (with-meta
+      (->Client
+        {:service service
+         :region region
+         :endpoint (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
                        (throw (ex-info "No known endpoint." {:service api :region region})))
-      :retriable?  (or retriable? retry/default-retriable?)
-      :backoff     (or backoff retry/default-backoff)
-      :http-client (http/create {:trust-all true}) ;; FIX :trust-all
-      :credentials (credentials/auto-refreshing-credentials
-                    (or credentials-provider
-                        (credentials/default-credentials-provider)))})))
+         :retriable? (or retriable? retry/default-retriable?)
+         :backoff (or backoff retry/default-backoff)
+         :http-client (http/create {:trust-all true}) ;; FIX :trust-all
+         :credentials (credentials/auto-refreshing-credentials
+                        (or credentials-provider
+                            (credentials/default-credentials-provider)))})
+      {'clojure.core.protocols.Datafiable/datafy (fn [c]
+                                                   (-> c
+                                                     client/-get-info
+                                                     (select-keys [:region :endpoint :service])
+                                                     (update :endpoint select-keys [:hostname :protocols :signatureVersions])
+                                                     (update :service select-keys [:metadata])
+                                                     (assoc :ops (ops c))))})))
 
 (defn invoke
   "Package and send a request to AWS and return the result.
