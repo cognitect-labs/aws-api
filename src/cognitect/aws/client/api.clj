@@ -16,7 +16,11 @@
             [cognitect.aws.signers] ;; implements multimethods
             [cognitect.aws.util :as util]))
 
-(deftype Client [info]
+(deftype Client [client-meta info]
+  clojure.lang.IObj
+  (meta [_] @client-meta)
+  (withMeta [this m] (swap! client-meta merge m) this)
+
   client/ClientSPI
   (-get-info [_] info))
 
@@ -58,23 +62,24 @@
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (with-meta
       (->Client
-        {:service service
-         :region region
-         :endpoint (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
-                       (throw (ex-info "No known endpoint." {:service api :region region})))
-         :retriable? (or retriable? retry/default-retriable?)
-         :backoff (or backoff retry/default-backoff)
-         :http-client (http/create {:trust-all true}) ;; FIX :trust-all
-         :credentials (credentials/auto-refreshing-credentials
-                        (or credentials-provider
-                            (credentials/default-credentials-provider)))})
-      {'clojure.core.protocols.Datafiable/datafy (fn [c]
-                                                   (-> c
-                                                     client/-get-info
-                                                     (select-keys [:region :endpoint :service])
-                                                     (update :endpoint select-keys [:hostname :protocols :signatureVersions])
-                                                     (update :service select-keys [:metadata])
-                                                     (assoc :ops (ops c))))})))
+       (atom {})
+       {:service     service
+        :region      region
+        :endpoint    (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
+                         (throw (ex-info "No known endpoint." {:service api :region region})))
+        :retriable?  (or retriable? retry/default-retriable?)
+        :backoff     (or backoff retry/default-backoff)
+        :http-client (http/create {:trust-all true}) ;; FIX :trust-all
+        :credentials (credentials/auto-refreshing-credentials
+                      (or credentials-provider
+                          (credentials/default-credentials-provider)))})
+      {'clojure.core.protocols/datafy (fn [c]
+                                        (-> c
+                                            client/-get-info
+                                            (select-keys [:region :endpoint :service])
+                                            (update :endpoint select-keys [:hostname :protocols :signatureVersions])
+                                            (update :service select-keys [:metadata])
+                                            (assoc :ops (ops c))))})))
 
 (defn invoke
   "Package and send a request to AWS and return the result.
