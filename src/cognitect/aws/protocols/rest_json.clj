@@ -22,6 +22,10 @@
            not-empty
            (shape/json-serialize shape)))
 
+(defmethod serialize "timestamp"
+  [_ shape data]
+  (shape/format-date shape data))
+
 (defmethod client/build-http-request "rest-json"
   [service op-map]
   (rest/build-http-request service

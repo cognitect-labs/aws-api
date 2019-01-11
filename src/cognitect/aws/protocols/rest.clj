@@ -70,6 +70,14 @@
     (mapcat #(serialize-qs-args (shape/list-member-shape shape) % param-name)
             args)))
 
+(defmethod serialize-qs-args "timestamp"
+  [shape args param-name]
+  (when-not (nil? args)
+    (let [param-name (or (:locationName shape) param-name)]
+      [[param-name
+        (shape/format-date shape args
+                           (partial util/format-date util/iso8601-date-format))]])))
+
 (defmulti serialize-header-value
   "Serialize a primitive shape in a HTTP header."
   (fn [shape args] (:type shape)))
@@ -77,7 +85,9 @@
 (defmethod serialize-header-value :default    [_ args] (str args))
 (defmethod serialize-header-value "boolean"   [_ args] (if args "true" "false"))
 (defmethod serialize-header-value "blob"      [_ args] (util/base64-encode args))
-(defmethod serialize-header-value "timestamp" [_ args] (util/format-date util/rfc822-date-format args))
+(defmethod serialize-header-value "timestamp" [shape args]
+  (shape/format-date shape args
+                     (partial util/format-date util/rfc822-date-format)))
 
 (defn serialize-headers
   "Serialize the map of arguments into a map of HTTP headers."

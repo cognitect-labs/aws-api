@@ -6,6 +6,7 @@
   (:require [clojure.string :as str]
             [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [clojure.xml :as xml]
             [clojure.data.json :as json]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
@@ -105,6 +106,21 @@
   [_ _ test-case]
   (update-in test-case [:params :Blob] get-bytes))
 
+(defn timestamp->date [secs]
+  (Date. (* secs 1000)))
+
+(defn xform-timestamp-params [test-case ks]
+  (update test-case
+          :params
+          #(reduce (fn [m k]
+                     (if (contains? (set ks) k)
+                       (if (sequential? k)
+                         (update-in m k timestamp->date)
+                         (update m k timestamp->date))
+                       m))
+                   %
+                   ks)))
+
 (defmulti with-timestamp-xforms (fn [protocol description response]
                                 [protocol description]))
 
@@ -113,28 +129,45 @@
 
 (defmethod with-timestamp-xforms ["ec2" "Timestamp values"]
   [_ _ test-case]
-  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
 
 (defmethod with-timestamp-xforms ["query" "Timestamp values"]
   [_ _ test-case]
-  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
 
 (defmethod with-timestamp-xforms ["rest-xml" "Blob and timestamp shapes"]
   [_ _ test-case]
-  (update-in test-case [:params :StructureParam :t] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [[:StructureParam :t]]))
 
 (defmethod with-timestamp-xforms ["rest-xml" "Timestamp in header"]
   [_ _ test-case]
-  (update-in test-case [:params :TimeArgInHeader] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [:TimeArgInHeader]))
+
+(defmethod with-timestamp-xforms ["rest-xml" "Timestamp shapes"]
+  [_ _ test-case]
+  (xform-timestamp-params test-case
+                          [:TimeArg
+                           :TimeArgInQuery
+                           :TimeArgInHeader
+                           :TimeCustom
+                           :TimeCustomInQuery
+                           :TimeCustomInHeader
+                           :TimeFormat
+                           :TimeFormatInQuery
+                           :TimeFormatInHeader]))
 
 (defmethod with-timestamp-xforms ["rest-json" "Timestamp values"]
   [_ _ test-case]
-  (cond (get-in test-case [:params :TimeArg])
-        (update-in test-case [:params :TimeArg] #(Date. (* % 1000)))
-        (get-in test-case [:params :TimeArgInHeader])
-        (update-in test-case [:params :TimeArgInHeader] #(Date. (* % 1000)))
-        :else
-        test-case))
+  (xform-timestamp-params test-case
+                          [:TimeArg
+                           :TimeArgInQuery
+                           :TimeArgInHeader
+                           :TimeCustom
+                           :TimeCustomInQuery
+                           :TimeCustomInHeader
+                           :TimeFormat
+                           :TimeFormatInQuery
+                           :TimeFormatInHeader]))
 
 (defmethod with-timestamp-xforms ["query" "URL Encoded values in body"]
   [_ _ test-case]
@@ -142,11 +175,11 @@
 
 (defmethod with-timestamp-xforms ["json" "Timestamp values"]
   [_ _ test-case]
-  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
 
 (defmethod with-timestamp-xforms ["rest-json" "Named locations in JSON body"]
   [_ _ test-case]
-  (update-in test-case [:params :TimeArg] #(Date. (* % 1000))))
+  (xform-timestamp-params test-case [:TimeArg]))
 
 (defmulti with-parsed-streams (fn [protocol description response]
                                 [protocol description]))
@@ -221,7 +254,7 @@
 
 (defmethod test-request-body "rest-xml"
   [_ expected http-request]
-  (is (= (not-empty expected)
+  (is (= (some-> expected not-empty)
          (some-> http-request :body util/bbuf->str))))
 
 (defmethod test-request-body "rest-json"
@@ -301,10 +334,10 @@
                         (when (io/resource extra-filepath)
                           (-> extra-filepath io/resource slurp (json/read-str :key-fn keyword))))]
        (testing (str input-or-output " of " protocol " : " (:description test))
-        (doseq [{:keys [given] :as test-case} (:cases test)
-                :let                          [service (assoc (select-keys test [:metadata :shapes])
-                                                              :operations {(:name given) given})]]
-          (run-test input-or-output protocol (:description test) service test-case)))))))
+         (doseq [{:keys [given] :as test-case} (:cases test)
+                 :let                          [service (assoc (select-keys test [:metadata :shapes])
+                                                               :operations {(:name given) given})]]
+           (run-test input-or-output protocol (:description test) service test-case)))))))
 
 (deftest test-protocols
   (with-redefs [util/gen-idempotency-token (constantly "00000000-0000-4000-8000-000000000000")]

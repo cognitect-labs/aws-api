@@ -66,6 +66,16 @@
   [shape]
   (resolve shape (:member shape)))
 
+(defn format-date
+  ([shape data]
+   (format-date shape data util/format-timestamp))
+  ([shape data default-format-fn]
+   (condp = (:timestampFormat shape)
+     "rfc822"        (util/format-date util/rfc822-date-format data)
+     "iso8601"       (util/format-date util/iso8601-date-format data)
+     "unixTimestamp" (util/format-timestamp data)
+     (default-format-fn data))))
+
 ;; ----------------------------------------------------------------------------------------
 ;; JSON Parser & Serializer
 ;; ----------------------------------------------------------------------------------------
@@ -132,8 +142,8 @@
   (util/base64-encode data))
 
 (defmethod json-serialize* "timestamp"
-  [_ data]
-  (long (/ (.getTime data) 1000)))
+  [shape data]
+  (format-date shape data (comp read-string util/format-timestamp)))
 
 (defmethod json-serialize* "structure"
   [shape data]
@@ -209,9 +219,9 @@
    :content [(util/base64-encode args)]})
 
 (defmethod xml-serialize* "timestamp"
-  [_ args el-name]
+  [shape args el-name]
   {:tag el-name
-   :content [(util/format-timestamp util/iso8601-date-format args)]})
+   :content [(format-date shape args (partial util/format-date util/iso8601-date-format))]})
 
 (defmethod xml-serialize* "structure"
   [shape args el-name]

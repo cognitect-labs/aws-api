@@ -40,8 +40,8 @@
 
 (defn format-timestamp
   "Format a timestamp in milliseconds."
-  [fmt inst]
-  (format-date fmt inst))
+  [inst]
+  (str (long (/ (.getTime ^Date inst) 1000))))
 
 (defn parse-date
   [^ThreadLocal fmt s]
@@ -214,7 +214,10 @@
   (base64-encode [ba] (Base64/encodeBase64String ba))
 
   java.io.InputStream
-  (base64-encode [is] (base64-encode (input-stream->byte-array is))))
+  (base64-encode [is] (base64-encode (input-stream->byte-array is)))
+
+  java.lang.String
+  (base64-encode [s] (base64-encode (.getBytes s))))
 
 (defn base64-decode
   "base64 decode a base64-encoded string to an input stream"

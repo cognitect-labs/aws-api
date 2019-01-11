@@ -74,9 +74,10 @@
   [shape args serialized prefix]
   (prefix-assoc serialized prefix (util/base64-encode args)))
 
-(defmethod serialize "timestamp"
-  [_ args serialized prefix]
-  (prefix-assoc serialized prefix (util/format-timestamp util/iso8601-date-format args)))
+(defmethod serialize "timestamp" [shape args serialized prefix]
+  (prefix-assoc serialized prefix (shape/format-date shape
+                                                     args
+                                                     (partial util/format-date util/iso8601-date-format))))
 
 (defmethod serialize "boolean"
   [shape args serialized prefix]
