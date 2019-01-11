@@ -54,7 +54,7 @@
   (date-format "yyyyMMdd"))
 
 (def ^ThreadLocal iso8601-date-format
-  (date-format "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+  (date-format "yyyy-MM-dd'T'HH:mm:ssXXX"))
 
 (def ^ThreadLocal iso8601-msecs-date-format
   (date-format "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))

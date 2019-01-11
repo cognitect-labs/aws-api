@@ -76,6 +76,23 @@
      "unixTimestamp" (util/format-timestamp data)
      (default-format-fn data))))
 
+(defn parse-date
+  [shape data]
+  (condp = (:timestampFormat shape)
+    "rfc822"  (util/parse-date util/rfc822-date-format data)
+    "iso8601" (util/parse-date util/iso8601-date-format data)
+    (cond (int? data)
+          (java.util.Date. (* 1000 data))
+          (re-matches #"^\d+$" data)
+          (java.util.Date. (* 1000 (read-string data)))
+          :else
+          (->> [util/iso8601-date-format
+                util/iso8601-msecs-date-format
+                util/rfc822-date-format]
+               (map #(try (util/parse-date % data) (catch java.text.ParseException _ nil)))
+               (filter identity)
+               first))))
+
 ;; ----------------------------------------------------------------------------------------
 ;; JSON Parser & Serializer
 ;; ----------------------------------------------------------------------------------------
@@ -127,6 +144,10 @@
 (defmethod json-parse* "list"
   [shape data]
   (handle-list shape data json-parse*))
+
+(defmethod json-parse* "timestamp"
+  [shape data]
+  (parse-date shape data))
 
 ;; serializer
 
@@ -385,10 +406,6 @@
 (defmethod xml-parse* "integer"   [_ nodes] (Long. (data nodes)))
 (defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
-  [_ nodes]
+  [shape nodes]
   (let [ts (data nodes)]
-    (try
-      (util/parse-date util/iso8601-date-format ts)
-      (catch java.text.ParseException pe
-        ;; S3 has msecs in its dates, but the conformance tests don't
-        (util/parse-date util/iso8601-msecs-date-format ts)))))
+    (parse-date shape (data nodes))))

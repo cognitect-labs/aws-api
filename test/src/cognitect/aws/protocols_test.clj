@@ -217,6 +217,8 @@
       (update :BlobMember (comp slurp io/reader))
       (update-in [:StructMember :foo] (comp slurp io/reader))))
 
+(defn date->ms [d] (when d (int (/ (.getTime d) 1000))))
+
 (defmulti with-parsed-dates (fn [protocol description response]
                                 [protocol description]))
 
@@ -225,18 +227,72 @@
 
 (defmethod with-parsed-dates ["query" "Scalar members"]
   [_ _ response]
-  (-> response
-      (update :Timestamp #(/ (.getTime %) 1000))))
+  (update response :Timestamp date->ms))
 
 (defmethod with-parsed-dates ["rest-xml" "Scalar members"]
   [_ _ response]
-  (-> response
-      (update :Timestamp #(/ (.getTime %) 1000))))
+  (update response :Timestamp date->ms))
 
 (defmethod with-parsed-dates ["rest-xml" "Scalar members in headers"]
   [_ _ response]
+  (update response :Timestamp date->ms))
+
+(defmethod with-parsed-dates ["ec2" "Timestamp members"]
+  [_ _ response]
   (-> response
-      (update :Timestamp #(/ (.getTime %) 1000))))
+      (update :TimeArg date->ms)
+      (update :TimeCustom date->ms)
+      (update :TimeFormat date->ms)
+      (update-in [:StructMember :foo] date->ms)
+      (update-in [:StructMember :bar] date->ms)))
+
+(defmethod with-parsed-dates ["query" "Timestamp members"]
+  [_ _ response]
+  (-> response
+      (update :TimeArg date->ms)
+      (update :TimeCustom date->ms)
+      (update :TimeFormat date->ms)
+      (update-in [:StructMember :foo] date->ms)
+      (update-in [:StructMember :bar] date->ms)))
+
+(defmethod with-parsed-dates ["json" "Timestamp members"]
+  [_ _ response]
+  (-> response
+      (update :TimeArg date->ms)
+      (update :TimeCustom date->ms)
+      (update :TimeFormat date->ms)
+      (update-in [:StructMember :foo] date->ms)
+      (update-in [:StructMember :bar] date->ms)))
+
+(defmethod with-parsed-dates ["rest-xml" "Timestamp members"]
+  [_ _ response]
+  (-> response
+      (update :TimeArg date->ms)
+      (update :TimeArgInHeader date->ms)
+      (update :TimeCustom date->ms)
+      (update :TimeCustomInHeader date->ms)
+      (update :TimeFormat date->ms)
+      (update :TimeFormatInHeader date->ms)
+      (update-in [:StructMember :foo] date->ms)
+      (update-in [:StructMember :bar] date->ms)))
+
+(defmethod with-parsed-dates ["rest-json" "Timestamp members"]
+  [_ _ response]
+  (-> response
+      (update :TimeArg date->ms)
+      (update :TimeArgInHeader date->ms)
+      (update :TimeCustom date->ms)
+      (update :TimeCustomInHeader date->ms)
+      (update :TimeFormat date->ms)
+      (update :TimeFormatInHeader date->ms)
+      (update-in [:StructMember :foo] date->ms)
+      (update-in [:StructMember :bar] date->ms)))
+
+(defmethod with-parsed-dates ["rest-json" "Complex Map Values"]
+  [_ _ response]
+  (-> response
+      (update-in [:MapMember :a] date->ms)
+      (update-in [:MapMember :b] date->ms)))
 
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
@@ -347,6 +403,8 @@
                       "rest-xml"
                       "rest-json"]]
       (test-protocol protocol))))
+
+
 
 (comment
   (run-tests)

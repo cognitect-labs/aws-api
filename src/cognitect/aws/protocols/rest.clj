@@ -186,8 +186,8 @@
 (defmethod parse-header-value "integer"   [_ data] (Long. data))
 (defmethod parse-header-value "blob"      [_ data] (util/base64-decode data))
 (defmethod parse-header-value "timestamp"
-  [_ data]
-  (util/parse-date util/rfc822-date-format data))
+  [shape data]
+  (shape/parse-date shape data))
 
 (defn parse-non-payload-attrs
   "Parse HTTP status and headers for response data."
