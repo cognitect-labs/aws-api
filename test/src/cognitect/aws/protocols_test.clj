@@ -51,6 +51,22 @@
 
 (defn get-bytes [s] (.getBytes s))
 
+(defn update-many [data paths fn]
+  (if (empty? paths)
+    data
+    (let [path (first paths)
+          path (if (sequential? path)
+                 path
+                 [path])]
+      (update-many (if (get-in data path)
+                     (update-in data path fn)
+                     data)
+                   (rest paths)
+                   fn))))
+
+(defn update-params [data paths fn]
+  (update data :params update-many paths fn))
+
 (defmulti with-blob-xforms
   "The botocore tests we're taking advantage of here all assume that
   we accept strings for blob types, but this library does not.  Use
@@ -64,35 +80,34 @@
 
 (defmethod with-blob-xforms ["ec2" "Base64 encoded Blobs"]
   [_ _ test-case]
-  (update-in test-case [:params :BlobArg] get-bytes))
+  (update-params test-case [:BlobArg] get-bytes))
 
 (defmethod with-blob-xforms ["query" "Base64 encoded Blobs"]
   [_ _ test-case]
-  (update-in test-case [:params :BlobArg] get-bytes))
+  (update-params test-case [:BlobArg] get-bytes))
 
 (defmethod with-blob-xforms ["json" "Base64 encoded Blobs"]
   [_ _ test-case]
-  (if (get-in test-case [:params :BlobArg])
-    (update-in test-case [:params :BlobArg] get-bytes)
-    (-> test-case
-        (update-in [:params :BlobMap :key1] get-bytes)
-        (update-in [:params :BlobMap :key2] get-bytes))))
+  (update-params test-case
+                 [:BlobArg
+                  [:BlobMap :key1]
+                  [:BlobMap :key2]]
+                 get-bytes))
 
 (defmethod with-blob-xforms ["json" "Nested blobs"]
   [_ _ test-case]
-  (-> test-case
-      (update-in [:params :ListParam 0] get-bytes)
-      (update-in [:params :ListParam 1] get-bytes)))
+  (update-params test-case
+                 [[:ListParam 0]
+                  [:ListParam 1]]
+                 get-bytes))
 
 (defmethod with-blob-xforms ["rest-xml" "Blob and timestamp shapes"]
   [_ _ test-case]
-  (update-in test-case [:params :StructureParam :b] get-bytes))
+  (update-params test-case [[:StructureParam :b]] get-bytes))
 
 (defmethod with-blob-xforms ["rest-xml" "Blob payload"]
   [_ _ test-case]
-  (if (get-in test-case [:params :foo])
-    (update-in test-case [:params :foo] get-bytes)
-    test-case))
+  (update-params test-case [:foo] get-bytes))
 
 (defmethod with-blob-xforms ["rest-json" "Blob and timestamp shapes"]
   [_ _ test-case]
@@ -110,16 +125,7 @@
   (Date. (* secs 1000)))
 
 (defn xform-timestamp-params [test-case ks]
-  (update test-case
-          :params
-          #(reduce (fn [m k]
-                     (if (contains? (set ks) k)
-                       (if (sequential? k)
-                         (update-in m k timestamp->date)
-                         (update m k timestamp->date))
-                       m))
-                   %
-                   ks)))
+  (update-params test-case ks timestamp->date))
 
 (defmulti with-timestamp-xforms (fn [protocol description response]
                                 [protocol description]))
@@ -129,93 +135,99 @@
 
 (defmethod with-timestamp-xforms ["ec2" "Timestamp values"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
+  (update-params test-case [:TimeArg :TimeCustom :TimeFormat] timestamp->date))
 
 (defmethod with-timestamp-xforms ["query" "Timestamp values"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
+  (update-params test-case [:TimeArg :TimeCustom :TimeFormat] timestamp->date))
 
 (defmethod with-timestamp-xforms ["rest-xml" "Blob and timestamp shapes"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [[:StructureParam :t]]))
+  (update-params test-case [[:StructureParam :t]] timestamp->date))
 
 (defmethod with-timestamp-xforms ["rest-xml" "Timestamp in header"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [:TimeArgInHeader]))
+  (update-params test-case [:TimeArgInHeader] timestamp->date))
 
 (defmethod with-timestamp-xforms ["rest-xml" "Timestamp shapes"]
   [_ _ test-case]
-  (xform-timestamp-params test-case
-                          [:TimeArg
-                           :TimeArgInQuery
-                           :TimeArgInHeader
-                           :TimeCustom
-                           :TimeCustomInQuery
-                           :TimeCustomInHeader
-                           :TimeFormat
-                           :TimeFormatInQuery
-                           :TimeFormatInHeader]))
+  (update-params test-case
+                 [:TimeArg
+                  :TimeArgInQuery
+                  :TimeArgInHeader
+                  :TimeCustom
+                  :TimeCustomInQuery
+                  :TimeCustomInHeader
+                  :TimeFormat
+                  :TimeFormatInQuery
+                  :TimeFormatInHeader]
+                 timestamp->date))
 
 (defmethod with-timestamp-xforms ["rest-json" "Timestamp values"]
   [_ _ test-case]
-  (xform-timestamp-params test-case
-                          [:TimeArg
-                           :TimeArgInQuery
-                           :TimeArgInHeader
-                           :TimeCustom
-                           :TimeCustomInQuery
-                           :TimeCustomInHeader
-                           :TimeFormat
-                           :TimeFormatInQuery
-                           :TimeFormatInHeader]))
+  (update-params test-case
+                 [:TimeArg
+                  :TimeArgInQuery
+                  :TimeArgInHeader
+                  :TimeCustom
+                  :TimeCustomInQuery
+                  :TimeCustomInHeader
+                  :TimeFormat
+                  :TimeFormatInQuery
+                  :TimeFormatInHeader]
+                 timestamp->date))
 
 (defmethod with-timestamp-xforms ["query" "URL Encoded values in body"]
   [_ _ test-case]
-  (update-in test-case [:params :Timestamp] #(Date. (* 1000 %))))
+  (update-params test-case [:Timestamp] timestamp->date))
 
 (defmethod with-timestamp-xforms ["json" "Timestamp values"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [:TimeArg :TimeCustom :TimeFormat]))
+  (update-params test-case [:TimeArg :TimeCustom :TimeFormat] timestamp->date))
 
 (defmethod with-timestamp-xforms ["rest-json" "Named locations in JSON body"]
   [_ _ test-case]
-  (xform-timestamp-params test-case [:TimeArg]))
+  (update-params test-case [:TimeArg] timestamp->date))
 
 (defmulti with-parsed-streams (fn [protocol description response]
                                 [protocol description]))
+
+(def read-blob (comp slurp io/reader))
 
 (defmethod with-parsed-streams :default
   [_ _ response] response)
 
 (defmethod with-parsed-streams ["rest-xml" "Streaming payload"]
-  [_ _ response] (update response :Stream (comp slurp io/reader)))
+  [_ _ response] (update response :Stream read-blob))
 
 (defmethod with-parsed-streams ["rest-json" "Streaming payload"]
-  [_ _ response] (update response :Stream (comp slurp io/reader)))
+  [_ _ response] (update response :Stream read-blob))
 
 (defmethod with-parsed-streams ["rest-xml" "Blob"]
   [_ _ response]
-  (update response :Blob (comp slurp io/reader)))
+  (update response :Blob read-blob))
 
 (defmethod with-parsed-streams ["query" "Blob"]
   [_ _ response]
-  (update response :Blob (comp slurp io/reader)))
+  (update response :Blob read-blob))
 
 (defmethod with-parsed-streams ["ec2" "Blob"]
   [_ _ response]
-  (update response :Blob (comp slurp io/reader)))
+  (update response :Blob read-blob))
 
 (defmethod with-parsed-streams ["rest-json" "Blob members"]
   [_ _ response]
-  (-> response
-      (update :BlobMember (comp slurp io/reader))
-      (update-in [:StructMember :foo] (comp slurp io/reader))))
+  (update-many response
+               [:BlobMember
+                [:StructMember :foo]]
+               read-blob))
 
 (defmethod with-parsed-streams ["json" "Blob members"]
   [_ _ response]
-  (-> response
-      (update :BlobMember (comp slurp io/reader))
-      (update-in [:StructMember :foo] (comp slurp io/reader))))
+  (update-many response
+               [:BlobMember
+                [:StructMember :foo]]
+               read-blob))
 
 (defn date->ms [d] (when d (int (/ (.getTime d) 1000))))
 
@@ -239,60 +251,61 @@
 
 (defmethod with-parsed-dates ["ec2" "Timestamp members"]
   [_ _ response]
-  (-> response
-      (update :TimeArg date->ms)
-      (update :TimeCustom date->ms)
-      (update :TimeFormat date->ms)
-      (update-in [:StructMember :foo] date->ms)
-      (update-in [:StructMember :bar] date->ms)))
+  (update-many response [:TimeArg
+                         :TimeCustom
+                         :TimeFormat
+                         [:StructMember :foo]
+                         [:StructMember :bar] ]
+               date->ms))
 
 (defmethod with-parsed-dates ["query" "Timestamp members"]
   [_ _ response]
-  (-> response
-      (update :TimeArg date->ms)
-      (update :TimeCustom date->ms)
-      (update :TimeFormat date->ms)
-      (update-in [:StructMember :foo] date->ms)
-      (update-in [:StructMember :bar] date->ms)))
+  (update-many response [:TimeArg
+                         :TimeCustom
+                         :TimeFormat
+                         [:StructMember :foo]
+                         [:StructMember :bar] ]
+               date->ms))
 
 (defmethod with-parsed-dates ["json" "Timestamp members"]
   [_ _ response]
-  (-> response
-      (update :TimeArg date->ms)
-      (update :TimeCustom date->ms)
-      (update :TimeFormat date->ms)
-      (update-in [:StructMember :foo] date->ms)
-      (update-in [:StructMember :bar] date->ms)))
+  (update-many response [:TimeArg
+                         :TimeCustom
+                         :TimeFormat
+                         [:StructMember :foo]
+                         [:StructMember :bar] ]
+               date->ms))
 
 (defmethod with-parsed-dates ["rest-xml" "Timestamp members"]
   [_ _ response]
-  (-> response
-      (update :TimeArg date->ms)
-      (update :TimeArgInHeader date->ms)
-      (update :TimeCustom date->ms)
-      (update :TimeCustomInHeader date->ms)
-      (update :TimeFormat date->ms)
-      (update :TimeFormatInHeader date->ms)
-      (update-in [:StructMember :foo] date->ms)
-      (update-in [:StructMember :bar] date->ms)))
+  (update-many response [:TimeArg
+                         :TimeArgInHeader
+                         :TimeCustom
+                         :TimeCustomInHeader
+                         :TimeFormat
+                         :TimeFormatInHeader
+                         [:StructMember :foo]
+                         [:StructMember :bar] ]
+               date->ms))
 
 (defmethod with-parsed-dates ["rest-json" "Timestamp members"]
   [_ _ response]
-  (-> response
-      (update :TimeArg date->ms)
-      (update :TimeArgInHeader date->ms)
-      (update :TimeCustom date->ms)
-      (update :TimeCustomInHeader date->ms)
-      (update :TimeFormat date->ms)
-      (update :TimeFormatInHeader date->ms)
-      (update-in [:StructMember :foo] date->ms)
-      (update-in [:StructMember :bar] date->ms)))
+  (update-many response [:TimeArg
+                         :TimeArgInHeader
+                         :TimeCustom
+                         :TimeCustomInHeader
+                         :TimeFormat
+                         :TimeFormatInHeader
+                         [:StructMember :foo]
+                         [:StructMember :bar] ]
+               date->ms))
 
 (defmethod with-parsed-dates ["rest-json" "Complex Map Values"]
   [_ _ response]
-  (-> response
-      (update-in [:MapMember :a] date->ms)
-      (update-in [:MapMember :b] date->ms)))
+  (update-many response
+               [[:MapMember :a]
+                [:MapMember :b]]
+               date->ms))
 
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
@@ -406,8 +419,6 @@
                       "rest-xml"
                       "rest-json"]]
       (test-protocol protocol))))
-
-
 
 (comment
   (run-tests)
