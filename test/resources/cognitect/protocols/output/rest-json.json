@@ -80,5 +80,55 @@
         }
       }
     ]
+  },
+  {
+    "description": "HAL Response",
+    "metadata": {
+      "protocol": "rest-json"
+    },
+    "shapes": {
+      "OutputShape": {
+        "shape": "FooStructure"
+      },
+      "FooStructure": {
+        "type": "structure",
+        "members": {
+          "bar": {
+            "shape": "BarStructure"
+          }
+        }
+      },
+      "BarStructure": {
+        "type": "structure",
+        "members": {
+          "baz": {
+            "shape": "StringType"
+          }
+        }
+      },
+      "StringType": {
+        "type": "string"
+      }
+    },
+    "cases": [
+      {
+        "given": {
+          "output": {
+            "shape": "OutputShape"
+          },
+          "name": "OperationName"
+        },
+        "result": {
+          "foo": {
+            "bar": "baz"
+          }
+        },
+        "response": {
+          "status_code": 200,
+          "headers": {"content-type": "application/hal+json"},
+          "body": "{\"_links\":{},\"_embedded\":{\"foo\":{\"bar\":\"baz\"}}}"
+        }
+      }
+    ]
   }
 ]

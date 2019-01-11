@@ -366,7 +366,10 @@
           parsed-response (client/parse-http-response service
                                                       op-map
                                                       {:status  (:status_code response)
-                                                       :headers (:headers response)
+                                                       :headers (reduce-kv (fn [m k v]
+                                                                             (assoc m (name k) v))
+                                                                           {}
+                                                                           (:headers response))
                                                        :body    (util/->bbuf (:body response))})]
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
