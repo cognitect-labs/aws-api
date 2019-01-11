@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.198 / 2019-01-11
 
 * support HAL responses [#30](https://github.com/cognitect-labs/aws-api/issues/30)
 
