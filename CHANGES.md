@@ -2,6 +2,8 @@
 
 ## DEV
 
+* support HAL responses [#30](https://github.com/cognitect-labs/aws-api/issues/30)
+
 * extend Datafiable via metadata (allows use with clojure-1.9)
 
 * fix edge case bug parsing json with locationNames
