@@ -83,6 +83,8 @@
     "iso8601" (util/parse-date util/iso8601-date-format data)
     (cond (int? data)
           (java.util.Date. (* 1000 data))
+          (double? data)
+          (java.util.Date. (* 1000 (long data)))
           (re-matches #"^\d+$" data)
           (java.util.Date. (* 1000 (read-string data)))
           :else

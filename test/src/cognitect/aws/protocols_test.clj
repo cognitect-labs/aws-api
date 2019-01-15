@@ -276,6 +276,10 @@
                          [:StructMember :bar] ]
                date->ms))
 
+(defmethod with-parsed-dates ["json" "Timestamp members with doubles"]
+  [_ _ response]
+  (update-many response [:TimeArg] date->ms))
+
 (defmethod with-parsed-dates ["rest-xml" "Timestamp members"]
   [_ _ response]
   (update-many response [:TimeArg
