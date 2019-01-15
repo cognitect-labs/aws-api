@@ -97,6 +97,12 @@ Look up docs for an operation:
 (aws/doc s3 :CreateBucket)
 ```
 
+Tell the client to let you know when you get the args wrong:
+
+``` clojure
+(aws/validate-requests s3 true)
+```
+
 Do stuff:
 
 ``` clojure
