@@ -8,6 +8,7 @@
             [clojure.string :as str]
             [clojure.tools.logging :as log]
             [cognitect.aws.util :as u]
+            [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import (java.util.concurrent Executors ScheduledExecutorService)
            (java.util.concurrent TimeUnit)
@@ -193,7 +194,7 @@
      (fetch [_]
        (when (.exists f)
          (try
-           (let [profile (get (u/config->profiles f) profile-name)]
+           (let [profile (get (config/parse f) profile-name)]
              (valid-credentials
               {:aws/access-key-id     (get profile "aws_access_key_id")
                :aws/secret-access-key (get profile "aws_secret_access_key")

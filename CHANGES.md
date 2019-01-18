@@ -2,6 +2,7 @@
 
 ## DEV
 
+* support nested values in config [#42](https://github.com/cognitect-labs/aws-api/issues/42)
 * handle doubles when parsing timestamps [#36](https://github.com/cognitect-labs/aws-api/issues/36)
 
 ## 0.8.198 / 2019-01-11

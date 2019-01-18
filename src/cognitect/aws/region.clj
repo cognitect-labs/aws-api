@@ -7,6 +7,7 @@
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [cognitect.aws.util :as u]
+            [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import [java.io File]))
 
@@ -92,7 +93,7 @@
      (fetch [_]
        (when (.exists f)
         (try
-          (let [profile (get (u/config->profiles f) profile-name)]
+          (let [profile (get (config/parse f) profile-name)]
             (valid-region (get profile "region")))
           (catch Throwable t
             (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))

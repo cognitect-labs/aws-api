@@ -256,25 +256,6 @@
           (or data {})
           (:members shape)))
 
-(defn config->profiles
-  "Return the profiles in the configuration file."
-  [file]
-  (->> file
-       slurp
-       str/split-lines
-       (map str/trim)
-       (remove #(or (str/blank? %) (.startsWith ^String % "#")))
-       (reduce (fn [m ^String line]
-                 (if (.startsWith line "[")
-                   (assoc m :current (second (re-find #"\[(?:profile)?\s*(.+)\]" line)))
-                   (if-let [current (:current m)]
-                     (let [[k v] (-> line (str/split #"="))]
-                       (update-in m [:profiles current] assoc (str/trim k) (str/trim v)))
-                     (throw (Exception. "Invalid format")))))
-               {:profiles {}
-                :current  nil})
-       :profiles))
-
 (defonce ^:private dynalock (Object.))
 
 (defn dynaload
