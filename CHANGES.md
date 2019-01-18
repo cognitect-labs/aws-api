@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.204 / 2019-01-18
 
 * support nested values in config [#42](https://github.com/cognitect-labs/aws-api/issues/42)
 * handle doubles when parsing timestamps [#36](https://github.com/cognitect-labs/aws-api/issues/36)
