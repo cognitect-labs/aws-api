@@ -16,7 +16,7 @@
   (str/starts-with? s "["))
 
 (defn start-nested? [s]
-  (re-find #"=$" s))
+  (re-find #"^[\w-_]+\s*=$" s))
 
 (defn add-profile-kv? [s]
   (re-find #"^[\w-_]+\s*=.*\w+" s))

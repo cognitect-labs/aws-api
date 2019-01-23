@@ -17,7 +17,9 @@
            (get config "nested")))
     (is (re-matches
          #"^awsprocesscreds.*specialness$"
-         (get-in config ["waterbear" "credential_process"])))))
+         (get-in config ["waterbear" "credential_process"])))
+    (is (= "FQoG/Ehj40mh/xf0TR+xLl+cp/xGWC+haIy+fJh6/fD+LFW="
+           (get-in config ["temp-credentials" "aws_session_token"])))))
 
 (comment
  (run-tests)
