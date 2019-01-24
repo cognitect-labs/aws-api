@@ -67,7 +67,7 @@
 (aws/invoke s3 {:op :GetObject :request {:Bucket bucket-name :Key "hello.txt"}})
 
 ;; check it!
-(slurp (io/reader (:Body *1)))
+(slurp (:Body *1))
 
 (aws/invoke s3 {:op :DeleteObject :request {:Bucket bucket-name :Key "hello.txt"}})
 
