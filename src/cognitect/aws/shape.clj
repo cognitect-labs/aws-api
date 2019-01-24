@@ -111,8 +111,9 @@
 
 (defn handle-list [shape data f]
   (when data
-    (let [member-shape (list-member-shape shape)]
-      (mapv #(f member-shape %) data))))
+    (mapv #(f (list-member-shape shape) %)
+          ;; sometimes the spec says list, but AWS sends a scalar
+          (if (sequential? data) data [data]))))
 
 ;; parser
 
