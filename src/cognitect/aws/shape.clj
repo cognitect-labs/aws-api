@@ -368,8 +368,8 @@
     (reduce (fn [parsed entry]
               (let [tag->children (group-by :tag (:content entry))]
                 (assoc parsed
-                  (keyword (xml-parse* key-shape (tag->children (keyword key-name))))
-                  (xml-parse* value-shape (tag->children (keyword value-name))))))
+                       (xml-parse* key-shape (tag->children (keyword key-name)))
+                       (xml-parse* value-shape (tag->children (keyword value-name))))))
             {}
             entries)))
 

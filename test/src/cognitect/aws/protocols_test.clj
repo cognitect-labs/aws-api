@@ -8,6 +8,7 @@
             [clojure.java.io :as io]
             [clojure.xml :as xml]
             [clojure.data.json :as json]
+            [clojure.walk :as walk]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [cognitect.aws.util :as util]
@@ -311,6 +312,20 @@
                 [:MapMember :b]]
                date->ms))
 
+(defn stringify-keys [m] (reduce-kv (fn [m k v] (assoc m (name k) v)) {} m))
+(defmulti with-string-keyed-maps (fn [protocol description response] [protocol description]))
+(defmethod with-string-keyed-maps :default [_ _ response] response)
+(defmethod with-string-keyed-maps ["ec2" "Normal map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["ec2" "Flattened map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["ec2" "Named map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["query" "Normal map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["query" "Flattened map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["query" "Flattened map in shape definition"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["query" "Named map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["rest-xml" "Normal map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["rest-xml" "Flattened map"] [_ _ response] (update response :Map stringify-keys))
+(defmethod with-string-keyed-maps ["rest-xml" "Named map"] [_ _ response] (update response :Map stringify-keys))
+
 (defmulti test-request-body (fn [protocol expected request] protocol))
 
 (defmethod test-request-body :default
@@ -391,9 +406,11 @@
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
-      (is (= result (->> parsed-response
-                         (with-parsed-streams protocol description)
-                         (with-parsed-dates protocol description)))))
+      (is (= (->> result
+                  (with-string-keyed-maps protocol description))
+             (->> parsed-response
+                  (with-parsed-streams protocol description)
+                  (with-parsed-dates protocol description)))))
     (catch Exception e
       (is (nil?
            {:test-case test-case
