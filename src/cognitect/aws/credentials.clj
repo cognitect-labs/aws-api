@@ -256,6 +256,8 @@
     (container-credentials-provider)
     (instance-profile-credentials-provider)]))
 
+(def global-provider (delay (default-credentials-provider)))
+
 (defn basic-credentials-provider
   "Given a map with :access-key-id and :secret-access-key,
   returns an implementation of CredentialsProvider which returns

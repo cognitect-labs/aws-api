@@ -70,9 +70,7 @@
         :retriable?  (or retriable? retry/default-retriable?)
         :backoff     (or backoff retry/default-backoff)
         :http-client (http/create {:trust-all true}) ;; FIX :trust-all
-        :credentials (credentials/auto-refreshing-credentials
-                      (or credentials-provider
-                          (credentials/default-credentials-provider)))})
+        :credentials (or credentials-provider @credentials/global-provider)})
       {'clojure.core.protocols/datafy (fn [c]
                                         (-> c
                                             client/-get-info
