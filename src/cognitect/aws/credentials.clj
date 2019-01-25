@@ -13,7 +13,8 @@
   (:import (java.util.concurrent Executors ScheduledExecutorService)
            (java.util.concurrent TimeUnit)
            (java.io File)
-           (java.net URI)))
+           (java.net URI)
+           (java.time Duration Instant)))
 
 (defprotocol CredentialsProvider
   (fetch [_]
@@ -203,6 +204,13 @@
            (catch Throwable t
              (log/error t "Error fetching credentials from aws profiles file"))))))))
 
+(defn calculate-ttl
+  [credentials]
+  (if-let [expiration (some-> credentials :Expiration Instant/parse)]
+    (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
+         60)
+    3600))
+
 (defn container-credentials-provider
   "Return credentials from ECS iff one of
   AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
@@ -216,7 +224,8 @@
         (valid-credentials
          {:aws/access-key-id     (:AccessKeyId creds)
           :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)}
+          :aws/session-token     (:Token creds)
+          ::ttl                  (calculate-ttl creds)}
          "ecs container")))))
 
 (defn instance-profile-credentials-provider
@@ -235,7 +244,8 @@
         (valid-credentials
          {:aws/access-key-id     (:AccessKeyId creds)
           :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)}
+          :aws/session-token     (:Token creds)
+          ::ttl                  (calculate-ttl creds)}
          "ec2 instance")))))
 
 (defn default-credentials-provider
