@@ -27,6 +27,12 @@
     :aws/session-token                      string  optional
     :cognitect.aws.credentials/ttl          number  optional  Time-to-live in seconds"))
 
+(defprotocol Stoppable
+  (-stop [_]))
+
+(extend-protocol Stoppable
+  Object
+  (-stop [_]))
 
 ;; Credentials subsystem
 
@@ -67,17 +73,21 @@
   ([provider scheduler]
    (let [credentials (atom nil)
          auto-refresh! (auto-refresh-fn credentials provider scheduler)]
-     (auto-refresh!)
-     (alter-meta! credentials assoc ::scheduler scheduler)
-     credentials)))
+     (reify
+       CredentialsProvider
+       (fetch [_] (or @credentials (auto-refresh!)))
+       Stoppable
+       (-stop [_]
+         (-stop provider)
+         (.shutdownNow ^ScheduledExecutorService scheduler))))))
 
 (defn stop
   "Stop auto-refreshing the credentials.
 
   Alpha. Subject to change."
   [credentials]
-  (when-let [{:keys [::scheduler]} (meta credentials)]
-    (.shutdownNow ^ScheduledExecutorService scheduler)))
+  (-stop credentials)
+  nil)
 
 (defn valid-credentials
   "For internal use. Don't call directly."
@@ -112,7 +122,8 @@
   Alpha. Subject to change."
   [providers]
   (let [cached-provider (atom nil)]
-    (reify CredentialsProvider
+    (reify
+      CredentialsProvider
       (fetch [_]
         (valid-credentials
          (if @cached-provider
@@ -122,7 +133,9 @@
                      (reset! cached-provider provider)
                      creds))
                  providers))
-         "any source")))))
+         "any source"))
+      Stoppable
+      (-stop [_] (run! -stop providers)))))
 
 (defn environment-credentials-provider
   "Return the credentials from the environment variables.
@@ -219,15 +232,16 @@
 
   Alpha. Subject to change."
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (when-let [creds (ec2/container-credentials)]
-        (valid-credentials
-         {:aws/access-key-id     (:AccessKeyId creds)
-          :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)
-          ::ttl                  (calculate-ttl creds)}
-         "ecs container")))))
+  (auto-refreshing-credentials
+   (reify CredentialsProvider
+     (fetch [_]
+       (when-let [creds (ec2/container-credentials)]
+         (valid-credentials
+          {:aws/access-key-id     (:AccessKeyId creds)
+           :aws/secret-access-key (:SecretAccessKey creds)
+           :aws/session-token     (:Token creds)
+           ::ttl                  (calculate-ttl creds)}
+          "ecs container"))))))
 
 (defn instance-profile-credentials-provider
   "For internal use. Do not call directly.
@@ -239,15 +253,16 @@
 
   Alpha. Subject to change."
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (when-let [creds (ec2/instance-credentials)]
-        (valid-credentials
-         {:aws/access-key-id     (:AccessKeyId creds)
-          :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)
-          ::ttl                  (calculate-ttl creds)}
-         "ec2 instance")))))
+  (auto-refreshing-credentials
+   (reify CredentialsProvider
+     (fetch [_]
+       (when-let [creds (ec2/instance-credentials)]
+         (valid-credentials
+          {:aws/access-key-id     (:AccessKeyId creds)
+           :aws/secret-access-key (:SecretAccessKey creds)
+           :aws/session-token     (:Token creds)
+           ::ttl                  (calculate-ttl creds)}
+          "ec2 instance"))))))
 
 (defn default-credentials-provider
   "Return a chain-credentials-provider comprising, in order:

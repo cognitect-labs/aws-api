@@ -49,7 +49,7 @@
             http-request       (-> (build-http-request service op-map)
                                    (assoc-in [:headers "host"] hostname)
                                    (assoc :server-name hostname))
-            http-request       (sign-http-request service region http-request @credentials)]
+            http-request       (sign-http-request service region http-request (credentials/fetch credentials))]
         (swap! meta-atom assoc :http-request (update http-request :body util/bbuf->input-stream))
         (http/submit http-client http-request
                      (a/chan 1 (map #(with-meta
