@@ -54,7 +54,8 @@
           (.schedule ^ScheduledExecutorService scheduler
                      ^Runnable refresh!
                      ^long ttl
-                     TimeUnit/SECONDS)))
+                     TimeUnit/SECONDS))
+        new-creds)
       (catch Throwable t
         (log/error t "Error fetching the credentials.")))))
 
