@@ -111,25 +111,31 @@
   (testing "The provider reads container metadata correctly."
     (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-relative-uri-env-var
                                             ec2-metadata-utils/security-credentials-path})]
-      (is (= {:aws/access-key-id "foobar"
-              :aws/secret-access-key "it^s4$3cret!"
-              :aws/session-token "norealvalue"}
-             (credentials/fetch (credentials/container-credentials-provider)))))
+      (let [creds (credentials/fetch (credentials/container-credentials-provider))]
+        (is (= {:aws/access-key-id "foobar"
+                :aws/secret-access-key "it^s4$3cret!"
+                :aws/session-token "norealvalue"}
+               (dissoc creds ::credentials/ttl)))
+        (is (integer? (::credentials/ttl creds)))))
     (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-full-uri-env-var
                                             (str "http://localhost:"
                                                  ec2-metadata-utils-test/*test-server-port*
                                                  ec2-metadata-utils/security-credentials-path)})]
-      (is (= {:aws/access-key-id "foobar"
-              :aws/secret-access-key "it^s4$3cret!"
-              :aws/session-token "norealvalue"}
-             (credentials/fetch (credentials/container-credentials-provider)))))))
+      (let [creds (credentials/fetch (credentials/container-credentials-provider))]
+        (is (= {:aws/access-key-id "foobar"
+                :aws/secret-access-key "it^s4$3cret!"
+                :aws/session-token "norealvalue"}
+               (dissoc creds ::credentials/ttl)))
+        (is (integer? (::credentials/ttl creds)))))))
 
 (deftest instance-profile-credentials-provider-test
   (testing "The provider reads ec2 metadata correctly."
-    (is (= {:aws/access-key-id "foobar"
-            :aws/secret-access-key "it^s4$3cret!"
-            :aws/session-token "norealvalue"}
-           (credentials/fetch (credentials/instance-profile-credentials-provider))))))
+    (let [creds (credentials/fetch (credentials/instance-profile-credentials-provider))]
+      (is (= {:aws/access-key-id "foobar"
+              :aws/secret-access-key "it^s4$3cret!"
+              :aws/session-token "norealvalue"}
+             (dissoc creds ::credentials/ttl)))
+      (is (integer? (::credentials/ttl creds))))))
 
 (deftest auto-refresh-test
   (let [cnt (atom 0)
@@ -140,6 +146,7 @@
                :aws/secret-access-key "secret"
                ::credentials/ttl 1}))
         creds (credentials/auto-refreshing-credentials p)]
+    (credentials/fetch creds)
     (Thread/sleep 5000)
     (let [refreshed @cnt]
       (credentials/stop creds)
@@ -153,6 +160,25 @@
          (credentials/fetch (credentials/basic-credentials-provider
                              {:access-key-id "foo"
                               :secret-access-key "bar"})))))
+
+(defn minutes-from-now
+  [m]
+  (-> (java.time.Instant/now)
+      (.plusSeconds (* m 60))
+      (.with java.time.temporal.ChronoField/NANO_OF_SECOND 0)
+      str))
+
+(deftest ttl-calculation
+  (testing "expiration defaults to an hour"
+    (is (= 3600 (credentials/calculate-ttl {}))))
+  (testing "refreshes in exp - 5 minutes"
+    (let [c {:Expiration (minutes-from-now 60)}]
+      (is (< (- (* 55 60) 5)
+             (credentials/calculate-ttl c)
+             (+ (* 55 60) 5)))))
+  (testing "short expiration minimum is one minute"
+    (let [c {:Expiration (minutes-from-now 3)}]
+      (is (= 60 (credentials/calculate-ttl c))))))
 
 (comment
   (run-tests)

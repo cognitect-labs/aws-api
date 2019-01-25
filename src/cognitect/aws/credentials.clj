@@ -13,7 +13,8 @@
   (:import (java.util.concurrent Executors ScheduledExecutorService)
            (java.util.concurrent TimeUnit)
            (java.io File)
-           (java.net URI)))
+           (java.net URI)
+           (java.time Duration Instant)))
 
 (defprotocol CredentialsProvider
   (fetch [_]
@@ -24,7 +25,14 @@
     :aws/access-key-id                      string  required
     :aws/secret-access-key                  string  required
     :aws/session-token                      string  optional
-    :cognitect.aws.core.credentials/ttl   number  optional  Time-to-live in seconds"))
+    :cognitect.aws.credentials/ttl          number  optional  Time-to-live in seconds"))
+
+(defprotocol Stoppable
+  (-stop [_]))
+
+(extend-protocol Stoppable
+  Object
+  (-stop [_]))
 
 ;; Credentials subsystem
 
@@ -46,7 +54,8 @@
           (.schedule ^ScheduledExecutorService scheduler
                      ^Runnable refresh!
                      ^long ttl
-                     TimeUnit/SECONDS)))
+                     TimeUnit/SECONDS))
+        new-creds)
       (catch Throwable t
         (log/error t "Error fetching the credentials.")))))
 
@@ -65,17 +74,21 @@
   ([provider scheduler]
    (let [credentials (atom nil)
          auto-refresh! (auto-refresh-fn credentials provider scheduler)]
-     (auto-refresh!)
-     (alter-meta! credentials assoc ::scheduler scheduler)
-     credentials)))
+     (reify
+       CredentialsProvider
+       (fetch [_] (or @credentials (auto-refresh!)))
+       Stoppable
+       (-stop [_]
+         (-stop provider)
+         (.shutdownNow ^ScheduledExecutorService scheduler))))))
 
 (defn stop
   "Stop auto-refreshing the credentials.
 
   Alpha. Subject to change."
   [credentials]
-  (when-let [{:keys [::scheduler]} (meta credentials)]
-    (.shutdownNow ^ScheduledExecutorService scheduler)))
+  (-stop credentials)
+  nil)
 
 (defn valid-credentials
   "For internal use. Don't call directly."
@@ -110,7 +123,8 @@
   Alpha. Subject to change."
   [providers]
   (let [cached-provider (atom nil)]
-    (reify CredentialsProvider
+    (reify
+      CredentialsProvider
       (fetch [_]
         (valid-credentials
          (if @cached-provider
@@ -120,7 +134,9 @@
                      (reset! cached-provider provider)
                      creds))
                  providers))
-         "any source")))))
+         "any source"))
+      Stoppable
+      (-stop [_] (run! -stop providers)))))
 
 (defn environment-credentials-provider
   "Return the credentials from the environment variables.
@@ -203,6 +219,14 @@
            (catch Throwable t
              (log/error t "Error fetching credentials from aws profiles file"))))))))
 
+(defn calculate-ttl
+  "For internal use. Don't call directly."
+  [credentials]
+  (if-let [expiration (some-> credentials :Expiration Instant/parse)]
+    (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
+         60)
+    3600))
+
 (defn container-credentials-provider
   "Return credentials from ECS iff one of
   AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
@@ -210,14 +234,16 @@
 
   Alpha. Subject to change."
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (when-let [creds (ec2/container-credentials)]
-        (valid-credentials
-         {:aws/access-key-id     (:AccessKeyId creds)
-          :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)}
-         "ecs container")))))
+  (auto-refreshing-credentials
+   (reify CredentialsProvider
+     (fetch [_]
+       (when-let [creds (ec2/container-credentials)]
+         (valid-credentials
+          {:aws/access-key-id     (:AccessKeyId creds)
+           :aws/secret-access-key (:SecretAccessKey creds)
+           :aws/session-token     (:Token creds)
+           ::ttl                  (calculate-ttl creds)}
+          "ecs container"))))))
 
 (defn instance-profile-credentials-provider
   "For internal use. Do not call directly.
@@ -229,14 +255,16 @@
 
   Alpha. Subject to change."
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (when-let [creds (ec2/instance-credentials)]
-        (valid-credentials
-         {:aws/access-key-id     (:AccessKeyId creds)
-          :aws/secret-access-key (:SecretAccessKey creds)
-          :aws/session-token     (:Token creds)}
-         "ec2 instance")))))
+  (auto-refreshing-credentials
+   (reify CredentialsProvider
+     (fetch [_]
+       (when-let [creds (ec2/instance-credentials)]
+         (valid-credentials
+          {:aws/access-key-id     (:AccessKeyId creds)
+           :aws/secret-access-key (:SecretAccessKey creds)
+           :aws/session-token     (:Token creds)
+           ::ttl                  (calculate-ttl creds)}
+          "ec2 instance"))))))
 
 (defn default-credentials-provider
   "Return a chain-credentials-provider comprising, in order:
@@ -255,6 +283,8 @@
     (profile-credentials-provider)
     (container-credentials-provider)
     (instance-profile-credentials-provider)]))
+
+(def global-provider (delay (default-credentials-provider)))
 
 (defn basic-credentials-provider
   "Given a map with :access-key-id and :secret-access-key,
