@@ -1,5 +1,13 @@
 # aws-api 0.8
 
+## DEV
+
+* support endpoint-override [#43](https://github.com/cognitect-labs/aws-api/issues/43)
+* parse "map" shapes using their key spec instead of assuming keyword keys [#50](https://github.com/cognitect-labs/aws-api/issues/50)
+* wrap non-sequential values when the spec calls for a list [#45](https://github.com/cognitect-labs/aws-api/issues/45)
+* config parsing bug fixes [#46](https://github.com/cognitect-labs/aws-api/issues/46), [#48](https://github.com/cognitect-labs/aws-api/issues/48)
+* support refreshing credentials [#49](https://github.com/cognitect-labs/aws-api/issues/49)
+
 ## 0.8.204 / 2019-01-18
 
 * support nested values in config [#42](https://github.com/cognitect-labs/aws-api/issues/42)
