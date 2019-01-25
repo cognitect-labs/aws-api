@@ -220,6 +220,7 @@
              (log/error t "Error fetching credentials from aws profiles file"))))))))
 
 (defn calculate-ttl
+  "For internal use. Don't call directly."
   [credentials]
   (if-let [expiration (some-> credentials :Expiration Instant/parse)]
     (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)

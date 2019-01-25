@@ -161,6 +161,25 @@
                              {:access-key-id "foo"
                               :secret-access-key "bar"})))))
 
+(defn minutes-from-now
+  [m]
+  (-> (java.time.Instant/now)
+      (.plusSeconds (* m 60))
+      (.with java.time.temporal.ChronoField/NANO_OF_SECOND 0)
+      str))
+
+(deftest ttl-calculation
+  (testing "expiration defaults to an hour"
+    (is (= 3600 (credentials/calculate-ttl {}))))
+  (testing "refreshes in exp - 5 minutes"
+    (let [c {:Expiration (minutes-from-now 60)}]
+      (is (< (- (* 55 60) 5)
+             (credentials/calculate-ttl c)
+             (+ (* 55 60) 5)))))
+  (testing "short expiration minimum is one minute"
+    (let [c {:Expiration (minutes-from-now 3)}]
+      (is (= 60 (credentials/calculate-ttl c))))))
+
 (comment
   (run-tests)
 

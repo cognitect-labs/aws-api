@@ -18,7 +18,7 @@
                                            http-kit                {:mvn/version "2.3.0"}}}
            :run-tests       {:extra-paths ["test/src" "test/resources" "dev/resources"]
                              :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                                      :sha     "028a6d41ac9ac5d5c405dfc38e4da6b4cc1255d5"}}
+                                                                      :sha     "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
                              :main-opts   ["-m" "cognitect.test-runner"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
                              :extra-deps  {org.clojure/test.check      {:mvn/version "0.9.0"}
