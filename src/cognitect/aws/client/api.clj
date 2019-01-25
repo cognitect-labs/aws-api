@@ -38,6 +38,10 @@
                           cognitect.aws.credentials/CredentialsProvider
                           protocol, defaults to
                           cognitect.aws.credentials/default-credentials-provider
+  :endpoint-override    - optional, overrides the configured endpoint. If the endpoint
+                          includes an AWS region, be sure use the same region for
+                          the client (either via out of process configuration or the :region key
+                          passed to this fn).
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                           protocol, defaults to cognitect.aws.region/default-region-provider
   :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
@@ -52,7 +56,7 @@
                           Defaults to cognitect.aws.retry/default-backoff.
 
   Alpha. Subject to change."
-  [{:keys [api region region-provider retriable? backoff credentials-provider] :as config}]
+  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override] :as config}]
   (let [service (service/service-description (name api))
         region  (keyword
                  (or region
@@ -65,7 +69,9 @@
        (atom {})
        {:service     service
         :region      region
-        :endpoint    (or (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
+        :endpoint    (or (cond-> (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
+                           endpoint-override
+                           (assoc :hostname endpoint-override))
                          (throw (ex-info "No known endpoint." {:service api :region region})))
         :retriable?  (or retriable? retry/default-retriable?)
         :backoff     (or backoff retry/default-backoff)
