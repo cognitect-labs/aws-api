@@ -13,7 +13,8 @@
     (is (= {"s3"     {"max_concurrent_requests" "10"
                       "max_queue_size"          "1000"
                       "s3_key"                  "s3_val"}
-            "region" "eu-west-1"}
+            "region" "eu-west-1"
+            "foo.bar" "baz"}
            (get config "nested")))
     (is (re-matches
          #"^awsprocesscreds.*specialness$"

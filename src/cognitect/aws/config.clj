@@ -16,13 +16,13 @@
   (str/starts-with? s "["))
 
 (defn start-nested? [s]
-  (re-find #"^[\w-_]+\s*=$" s))
+  (re-find #"^[\w-_\.]+\s*=$" s))
 
 (defn add-profile-kv? [s]
-  (re-find #"^[\w-_]+\s*=.*\w+" s))
+  (re-find #"^[\w-_\.]+\s*=.*\w+" s))
 
 (defn add-nested-kv? [s]
-  (re-find #"^\s+[\w-_]+\s*=.*\w+" s))
+  (re-find #"^\s+[\w-_\.]+\s*=.*\w+" s))
 
 ;;; helpers
 
