@@ -25,7 +25,8 @@
     :aws/access-key-id                      string  required
     :aws/secret-access-key                  string  required
     :aws/session-token                      string  optional
-    :cognitect.aws.core.credentials/ttl   number  optional  Time-to-live in seconds"))
+    :cognitect.aws.credentials/ttl          number  optional  Time-to-live in seconds"))
+
 
 ;; Credentials subsystem
 
