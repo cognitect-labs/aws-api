@@ -5,11 +5,11 @@ services from your Clojure program.
 
 ## Rationale
 
-AWS APIs are data oriented. Not only in the "send data, get data back"
-sense, but all of the operations and data structures for every service
-are, themselves, described in data which can be used to generate
-mechanical transformations from application data to wire data and
-back. This is exactly what we want from a Clojure API.
+AWS APIs are data-oriented in both the "send data, get data back"
+sense, and the fact that all of the operations and data structures for
+every service are, themselves, described in data which can be used to
+generate mechanical transformations from application data to wire data
+and back. This is exactly what we want from a Clojure API.
 
 Using the AWS Java SDK directly via interop requires knowledge of
 OO hierarchies of what are basically data classes, and while the
@@ -60,7 +60,7 @@ generator, and tag `v2.351.0` of aws-sdk-js.
 ### deps
 
 To use aws-api in your application, you depend on
-`com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service
+`com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service(s)
 of your choice, e.g. `com.cognitect.aws/s3`.
 
 To use, for example, the s3 api, add the following to deps.edn
@@ -107,7 +107,7 @@ Do stuff:
 
 ``` clojure
 (aws/invoke s3 {:op :ListBuckets})
-;; http-response is in the metadata
+;; http-request and http-response are in the metadata
 (meta *1)
 (aws/invoke s3 {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
 (aws/invoke s3 {:op :ListBuckets})
