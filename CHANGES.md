@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.223 / 2019-01-25
 
 * support endpoint-override [#43](https://github.com/cognitect-labs/aws-api/issues/43)
 * parse "map" shapes using their key spec instead of assuming keyword keys [#50](https://github.com/cognitect-labs/aws-api/issues/50)
