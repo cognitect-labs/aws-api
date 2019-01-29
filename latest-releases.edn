@@ -56,7 +56,7 @@
    com.cognitect.aws/docdb "697.2.391.0",
    com.cognitect.aws/ds "697.2.391.0",
    com.cognitect.aws/dynamodb "697.2.391.0",
-   com.cognitect.aws/ec2 "697.2.391.0",
+   com.cognitect.aws/ec2 "698.2.395.0",
    com.cognitect.aws/ecr "697.2.391.0",
    com.cognitect.aws/ecs "697.2.391.0",
    com.cognitect.aws/eks "697.2.391.0",
@@ -170,7 +170,8 @@
    com.cognitect.aws/waf "697.2.391.0",
    com.cognitect.aws/waf-regional "697.2.391.0",
    com.cognitect.aws/workdocs "697.2.391.0",
+   com.cognitect.aws/worklink "697.2.395.0",
    com.cognitect.aws/workmail "697.2.391.0",
    com.cognitect.aws/workspaces "697.2.391.0",
    com.cognitect.aws/xray "697.2.391.0"}},
- :last-updated #inst "2019-01-26T02:43:10.759-00:00"}
+ :last-updated #inst "2019-01-29T15:38:32.410-00:00"}
