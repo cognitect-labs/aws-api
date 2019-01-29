@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.protocols.rest-json
+(ns ^:skip-wiki cognitect.aws.protocols.rest-json
   "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.data.json :as json]

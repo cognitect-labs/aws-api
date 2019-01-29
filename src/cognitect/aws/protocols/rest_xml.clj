@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.protocols.rest-xml
+(ns ^:skip-wiki cognitect.aws.protocols.rest-xml
   "Impl, don't call directly."
   (:require [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]

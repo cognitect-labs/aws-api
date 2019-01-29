@@ -5,7 +5,7 @@
     <artifactId>api</artifactId>
     <version>DEV</version>
     <packaging>jar</packaging>
-    <name>api</name>
+    <name>aws-api</name>
     <description>A Clojure API for the AWS API</description>
     <url>http://github.com/cognitect-labs/aws-api</url>
     <licenses>
@@ -28,37 +28,43 @@
         <url>git@github.com:cognitect-labs/aws-api.git</url>
     </scm>
     <dependencies>
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>clojure</artifactId>
-      <version>1.10.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>core.async</artifactId>
-      <version>0.4.490</version>
-    </dependency>
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>tools.logging</artifactId>
-      <version>0.4.0</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.11</version>
-    </dependency>
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>data.json</artifactId>
-      <version>0.2.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cognitect</groupId>
-      <artifactId>http-client</artifactId>
-      <version>0.1.87</version>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.10.0-RC5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>core.async</artifactId>
+            <version>0.4.490</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>tools.logging</artifactId>
+            <version>0.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>data.json</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cognitect</groupId>
+            <artifactId>http-client</artifactId>
+            <version>0.1.87</version>
+        </dependency>
+        <dependency>
+            <groupId>autodoc</groupId>
+            <artifactId>autodoc</artifactId>
+            <version>0.9.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <build>
         <resources>
             <resource>
@@ -79,6 +85,20 @@
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>
         <plugins>
+            <plugin>
+                <groupId>com.theoryinpractise</groupId>
+                <artifactId>clojure-maven-plugin</artifactId>
+                <version>1.7.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <sourceDirectories>
+                        <sourceDirectory>src</sourceDirectory>
+                    </sourceDirectories>
+                    <testSourceDirectories>
+                        <testSourceDirectory>test</testSourceDirectory>
+                    </testSourceDirectories>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -153,12 +173,13 @@
                 <version>1.0</version>
             </extension>
         </extensions>
-    <sourceDirectory>src</sourceDirectory>
-  </build>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
     <repositories>
-    <repository>
-      <id>clojars</id>
-      <url>https://repo.clojars.org/</url>
-    </repository>
-  </repositories>
+        <repository>
+            <id>clojars</id>
+            <url>https://repo.clojars.org/</url>
+        </repository>
+
+    </repositories>
 </project>

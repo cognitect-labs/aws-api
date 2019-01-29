@@ -79,16 +79,17 @@
 
 (defn invoke
   "Package and send a request to AWS and return the result.
+
   Supported keys in op-map:
 
   :op                   - required, keyword, the op to perform
-  :request              - required only for ops that require them
+  :request              - required only for ops that require them.
   :retriable?           - optional, defaults to :retriable? on the client.
                           See client.
   :backoff              - optional, defaults to :backoff on the client.
                           See client.
 
-  If (cognitect.aws.client.api/validate-requests) is true, validates
+  After invoking (cognitect.aws.client.api/validate-requests true), validates
   :request in op-map.
 
   Alpha. Subject to change."
@@ -119,7 +120,7 @@
   (service/response-spec-key (-> client client/-get-info :service) op))
 
 (def ^:private pprint-ref (delay (util/dynaload 'clojure.pprint/pprint)))
-(defn pprint
+(defn ^:skip-wiki pprint
   "For internal use. Don't call directly."
   [& args]
   (binding [*print-namespace-maps* false]

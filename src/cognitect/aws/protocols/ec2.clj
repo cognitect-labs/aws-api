@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.protocols.ec2
+(ns ^:skip-wiki cognitect.aws.protocols.ec2
   "Impl, don't call directly."
   (:require [clojure.string :as str]
             [cognitect.aws.util :as util]

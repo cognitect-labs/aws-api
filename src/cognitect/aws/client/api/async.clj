@@ -11,7 +11,7 @@
 
 (def ^:private validate-requests? (atom {}))
 
-(defn validate-requests
+(defn ^:skip-wiki validate-requests
   "For internal use. Don't call directly."
   [client tf]
   (swap! validate-requests? assoc client tf)
@@ -20,21 +20,21 @@
   tf)
 
 (def ^:private registry-ref (delay (util/dynaload 'clojure.spec.alpha/registry)))
-(defn registry
+(defn ^:skip-wiki registry
   "For internal use. Don't call directly."
   [& args] (apply @registry-ref args))
 
 (def ^:private valid?-ref (delay (util/dynaload 'clojure.spec.alpha/valid?)))
-(defn valid?
+(defn ^:skip-wiki valid?
   "For internal use. Don't call directly."
   [& args] (apply @valid?-ref args))
 
 (def ^:private explain-data-ref (delay (util/dynaload 'clojure.spec.alpha/explain-data)))
-(defn explain-data
+(defn ^:skip-wiki explain-data
   "For internal use. Don't call directly."
   [& args] (apply @explain-data-ref args))
 
-(defn validate
+(defn ^:skip-wiki validate
   "For internal use. Don't call directly."
   [service {:keys [op request] :or {request {}}}]
   (let [spec (service/request-spec-key service op)]
@@ -44,7 +44,7 @@
                :cognitect.anomalies/category :cognitect.anomalies/incorrect)))))
 
 (defn invoke
-  "Just like cognitect.aws.client.api.async/invoke, except it returns
+  "Async version of cognitect.aws.client.api/invoke. Returns
   a core.async channel which delivers the result.
 
   Additional supported keys in op-map:

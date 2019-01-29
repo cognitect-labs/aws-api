@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.protocols.rest
+(ns ^:skip-wiki cognitect.aws.protocols.rest
   "Impl, don't call directly.
 
   Common feature across the rest protocols (rest-json, rest-xml). "

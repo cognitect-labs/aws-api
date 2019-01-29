@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.region
-  "Implements the region subsystem."
+  "Region providers. Primarily for internal use, and subject to change."
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
@@ -11,7 +11,7 @@
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import [java.io File]))
 
-(defn valid-region
+(defn ^:skip-wiki valid-region
   "For internal use. Don't call directly.
 
   Return the credential region if valid, otherwise nil."
@@ -20,12 +20,7 @@
   (when-not (str/blank? region) region))
 
 (defprotocol RegionProvider
-  (fetch [_]
-    "Return the region found by this provider, or nil.
-
-    Return a map with the following keys:
-
-    :aws/region                        string  required "))
+  (fetch [_] "Returns the region found by this provider, or nil."))
 
 (defn chain-region-provider
   "Chain together multiple region providers.
@@ -43,12 +38,7 @@
                           {:providers (map class providers)}))))))
 
 (defn environment-region-provider
-  "Return the credentials from the environment variables.
-
-  Look at the following variables:
-  * AWS_REGION      required
-
-  Returns nil if any of the required variables is blank.
+  "Return the region from the AWS_REGION env var, or nil if not present.
 
   Alpha. Subject to change."
   []
@@ -56,12 +46,7 @@
     (fetch [_] (valid-region (u/getenv "AWS_REGION")))))
 
 (defn system-property-region-provider
-  "Return the region from the system properties.
-
-  Look at the following properties:
-  * aws.region  required
-
-  Returns nil the required property is blank.
+  "Return the region from the aws.region system property, or nil if not present.
 
   Alpha. Subject to change."
   []
@@ -99,11 +84,10 @@
             (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
 
 (defn instance-region-provider
-  "For internal use. Do not call directly.
+  "Return the region from the ec2 instance's metadata service,
+  or nil if the service can not be found.
 
-  Return the region from the ec2 instance's metadata service.
-
-  Returns nil the required property cannot be reached."
+  Alpha. Subject to change."
   []
   (reify RegionProvider
     (fetch [_] (valid-region (ec2/get-ec2-instance-region)))))

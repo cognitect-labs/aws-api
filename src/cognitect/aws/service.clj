@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.service
+(ns ^:skip-wiki cognitect.aws.service
   "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.walk :as walk]

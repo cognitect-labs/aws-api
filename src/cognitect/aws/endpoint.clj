@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.endpoint
+(ns ^:skip-wiki cognitect.aws.endpoint
   "Impl, don't call directly."
   (:refer-clojure :exclude [resolve])
   (:require [clojure.string :as str]

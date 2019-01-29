@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.protocols.json
+(ns ^:skip-wiki cognitect.aws.protocols.json
   "Impl, don't call directly."
   (:require [cognitect.aws.service :as service]
             [cognitect.aws.client :as client]

@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.shape
+(ns ^:skip-wiki cognitect.aws.shape
   "Impl, don't call directly.
 
   Functions to leverage the shapes defined in the AWS API descriptions.

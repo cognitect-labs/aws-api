@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.config
+(ns ^:skip-wiki cognitect.aws.config
   (:require [clojure.string :as str]
             [clojure.java.io :as io]))
 
