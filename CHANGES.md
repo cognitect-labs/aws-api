@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* fix signing bug (query-string ordering) [#52](https://github.com/cognitect-labs/aws-api/issues/52)
+
 ## 0.8.223 / 2019-01-25
 
 * support endpoint-override [#43](https://github.com/cognitect-labs/aws-api/issues/43)
