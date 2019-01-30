@@ -124,6 +124,12 @@
             (is (= authorization (get-in signed-request [:headers "authorization"])))))))))
 
 (deftest test-canonical-query-string
+  (testing "ordering"
+    (is (= "q=Red&q.parser=lucene"
+           (#'signers/canonical-query-string {:query-string "q=Red&q.parser=lucene"})
+           (#'signers/canonical-query-string {:query-string "q.parser=lucene&q=Red"})
+           (#'signers/canonical-query-string {:uri "path?q=Red&q.parser=lucene"})
+           (#'signers/canonical-query-string {:uri "path?q.parser=lucene&q=Red"}))))
   (testing "key with no value"
     (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
 

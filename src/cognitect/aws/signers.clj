@@ -63,20 +63,19 @@
 
 (defn- canonical-query-string
   [{:keys [uri query-string]}]
-  (let [query (or query-string
-                  (second (str/split uri #"\?")))]
-   (when-not (str/blank? query)
-     (->> (str/split query #"&")
-          (map #(let [[k v] (str/split % #"=" 2)]
-                  ;; decode first because sometimes it's already been url encoded
-                  (str (uri-encode (URLDecoder/decode k))
-                       "="
-                       ;; edge case: sometimes there is no value, e.g.
-                       ;; s3 PutBucketPolicy, whose uri is "<bucket-name>?policy". In
-                       ;; this case we want "policy=".
-                       (some-> v URLDecoder/decode uri-encode))))
-          sort
-          (str/join "&")))))
+  (let [qs (or query-string (second (str/split uri #"\?")))]
+    (when-not (str/blank? qs)
+      (->> (str/split qs #"&")
+           (map #(str/split % #"=" 2))
+           ;; TODO (dchelimsky 2019-01-30) decoding first because sometimes
+           ;; it's already been encoding. Look into avoiding that!
+           (map (fn [kv] (map #(uri-encode (URLDecoder/decode %)) kv)))
+           (sort (fn [[k1 v1] [k2 v2]]
+                   (if (= k1 k2)
+                     (compare v1 v2)
+                     (compare k1 k2))))
+           (map (fn [[k v]] (str k "=" v)))
+           (str/join "&")))))
 
 (defn- canonical-headers
   [{:keys [headers]}]
