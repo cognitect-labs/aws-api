@@ -175,12 +175,42 @@ https://github.com/cognitect-labs/aws-api/issues.
 
 ## Troubleshooting
 
+### General
+
+#### nodename nor servname provided, or not known
+
+This indicates that the configured endpoint is incorrect for the service/op
+you are trying to perform.
+
+Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html)
+the proper endpoint and use the `:endpoint-override` key when creating a client,
+e.g.
+
+``` clojure
+(def s3-control {:api :s3control})
+(aws/client {:api :s3control
+             :endpoint-override (str my-account-id ".s3-control.us-east-1.amazonaws.com")})
+```
+
+#### No known endpoint.
+
+This indicates that the data in the `com.cognitect.aws/endpoints` lib
+(which is derived from
+[endpoints.json](https://github.com/aws/aws-sdk-java/blob/master/aws-java-sdk-core/src/main/resources/com/amazonaws/partitions/endpoints.json))
+does not support the `:api`/`:region` combination you are trying to
+access.
+
+Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html),
+and supply the correct endpoint as described in [nodename nor servname provided, or not known](#nodename-nor-servname-provided-or-not-known), above.
+
 ### S3 Issues
 
 #### "Invalid 'Location' header: null"
 
 This indicates that you are trying to access an S3 resource (bucket or object)
 that resides in a different region from the client's region.
+
+Remedy: create a new s3 client in the same region you are trying to access.
 
 ## Copyright and License
 
