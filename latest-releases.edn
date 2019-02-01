@@ -172,5 +172,4 @@
   com.cognitect.aws/worklink                     "697.2.395.0",
   com.cognitect.aws/workmail                     "697.2.391.0",
   com.cognitect.aws/workspaces                   "697.2.391.0",
-  com.cognitect.aws/xray                         "697.2.391.0"}},
-:last-updated #inst "2019-01-29T15:38:32.410-00:00"
+  com.cognitect.aws/xray                         "697.2.391.0"}}
