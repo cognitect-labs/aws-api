@@ -53,7 +53,8 @@ We also include the revision of our generator in the version. For example,
 `com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
 generator, and tag `v2.351.0` of aws-sdk-js.
 
-[Latest releases](latest-releases.edn)
+Check [latest releases](latest-releases.edn) for a list of releases of
+`api`, `endpoints`, and all of the supported services.
 
 ## Usage
 
@@ -70,6 +71,9 @@ To use, for example, the s3 api, add the following to deps.edn
         com.cognitect.aws/endpoints {:mvn/version "1.1.11.481"}
         com.cognitect.aws/s3        {:mvn/version "697.2.391.0"}}}
 ```
+
+Check [latest releases](latest-releases.edn) for a list of releases of
+`api`, `endpoints`, and all of the supported services.
 
 ### explore!
 
