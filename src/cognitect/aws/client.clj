@@ -13,6 +13,14 @@
 (defprotocol ClientSPI
   (-get-info [_] "Intended for internal use only"))
 
+(deftype Client [client-meta info]
+  clojure.lang.IObj
+  (meta [_] @client-meta)
+  (withMeta [this m] (swap! client-meta merge m) this)
+
+  ClientSPI
+  (-get-info [_] info))
+
 (defmulti build-http-request
   "AWS request -> HTTP request."
   (fn [service op-map]

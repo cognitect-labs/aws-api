@@ -16,14 +16,6 @@
             [cognitect.aws.signers] ;; implements multimethods
             [cognitect.aws.util :as util]))
 
-(deftype Client [client-meta info]
-  clojure.lang.IObj
-  (meta [_] @client-meta)
-  (withMeta [this m] (swap! client-meta merge m) this)
-
-  client/ClientSPI
-  (-get-info [_] info))
-
 (declare ops)
 
 (defn client
@@ -65,7 +57,7 @@
                           (region/default-region-provider)))))]
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (with-meta
-      (->Client
+      (client/->Client
        (atom {})
        {:service     service
         :region      region
