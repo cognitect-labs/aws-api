@@ -115,24 +115,36 @@ Do stuff:
 
 See the [examples](examples) directory for more examples.
 
-## Credentials lookup
+## Credentials
 
-The aws-api client looks up credentials the same way the [java
-SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
+The aws-api client implicitly looks up credentials the same way the
+[java SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html)
 does.
 
-To provide an explicit access-key-id/secret-access-key pair,
-you can create a `CredentialsProvider` using the
-`basic-credentials-provider` fn in `cognitect.aws.credentials`, and
-pass that to the client constructor, e.g.
+To provide credentials explicitly, you pass an implementation
+of `cognitect.aws.credentials/CredentialsProvider` to the
+client constructor fn, .e.g
 
 ``` clojure
-(require '[cognitect.aws.credentials :as credentials])
-(def c {:api :s3
-        :credentials-provider (credentials/basic-credentials-provider
-                               {:access-key-id "ABC"
-                                :secret-access-key "XYZ"})})
+(require '[cognitect.aws.client.api :as aws])
+(def kms (aws/client {:api :kms :credentials-provider my-custom-provider}))
 ```
+
+If you're supplying a known access-key/secret pair, you can use
+the `basic-credentials-provider` helper fn:
+
+``` clojure
+(require '[cognitect.aws.client.api :as aws]
+         '[cognitect.aws.credentials :as credentials])
+
+(def kms (aws/client {:api                  :kms
+                      :credentials-provider (credentials/basic-credentials-provider
+                                             {:access-key-id     "ABC"
+                                              :secret-access-key "XYZ"})}))
+```
+
+See the [assume role example](./examples/assume_role_example.clj) for a more
+involved example using AWS STS.
 
 ## Region lookup
 
