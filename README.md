@@ -109,7 +109,18 @@ Do stuff:
 (aws/invoke s3 {:op :ListBuckets})
 ;; http-request and http-response are in the metadata
 (meta *1)
+
+;; create a bucket in the same region as the client
 (aws/invoke s3 {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
+
+;; create a bucket in a region other than us-east-1
+(aws/invoke s3 {:op :CreateBucket :request {:Bucket "my-unique-bucket-name-in-us-west-1"
+                                            :CreateBucketConfiguration
+                                            {:LocationConstraint "us-west-1"}}})
+
+;; NOTE: be sure to create a client with region "us-west-1" when accessing that
+;; bucket.
+
 (aws/invoke s3 {:op :ListBuckets})
 ```
 
@@ -161,6 +172,15 @@ this it into products and client projects, we do not accept pull
 requests or patches. We do, however, want to know how we can make it
 better, so please file issues at
 https://github.com/cognitect-labs/aws-api/issues.
+
+## Troubleshooting
+
+### S3 Issues
+
+#### "Invalid 'Location' header: null"
+
+This indicates that you are trying to access an S3 resource (bucket or object)
+that resides in a different region from the client's region.
 
 ## Copyright and License
 
