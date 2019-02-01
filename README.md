@@ -3,6 +3,8 @@
 aws-api is a Clojure library which provides programmatic access to AWS
 services from your Clojure program.
 
+* [API Docs](https://cognitect-labs.github.io/aws-api/)
+
 ## Rationale
 
 AWS APIs are data-oriented in both the "send data, get data back"
@@ -53,8 +55,9 @@ We also include the revision of our generator in the version. For example,
 `com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
 generator, and tag `v2.351.0` of aws-sdk-js.
 
-Check [latest releases](latest-releases.edn) for a list of releases of
-`api`, `endpoints`, and all of the supported services.
+* See [Versioning](/doc/versioning.md) for more about how we version releases.
+* See [latest releases](latest-releases.edn) for a list of the latest releases of
+`api`, `endpoints`, and all supported services.
 
 ## Usage
 
@@ -72,8 +75,8 @@ To use, for example, the s3 api, add the following to deps.edn
         com.cognitect.aws/s3        {:mvn/version "697.2.391.0"}}}
 ```
 
-Check [latest releases](latest-releases.edn) for a list of releases of
-`api`, `endpoints`, and all of the supported services.
+* See [latest releases](latest-releases.edn) for a list of the latest releases of
+`api`, `endpoints`, and all supported services.
 
 ### explore!
 
