@@ -56,10 +56,7 @@
       (spit f
             (with-out-str
               (clojure.pprint/pprint
-               (-> data
-                   (assoc :last-updated (Date.))
-                   (assoc-in [:releases 'com.cognitect.aws/api] version)
-                   (update-in [:releases :services] #(into (sorted-map) %)))))))))
+               (assoc-in data [:api 'com.cognitect.aws/api] version)))))))
 
 (defn -main []
   (let [v (version)]
