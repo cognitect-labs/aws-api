@@ -1,4 +1,4 @@
-{:api {com.cognitect.aws/api "0.8.223"},
+{:api {com.cognitect.aws/api "0.8.243"},
  :endpoints {com.cognitect.aws/endpoints "1.1.11.490"},
  :services
  {com.cognitect.aws/docdb "697.2.391.0",
@@ -172,6 +172,4 @@
   com.cognitect.aws/importexport "697.2.391.0",
   com.cognitect.aws/swf "697.2.391.0",
   com.cognitect.aws/codestar "697.2.391.0",
-  com.cognitect.aws/streams-dynamodb "697.2.391.0"},
- :last-updated #inst "2019-02-02T01:08:18.891-00:00",
- :releases {com.cognitect.aws/api "0.8.243", :services {}}}
+  com.cognitect.aws/streams-dynamodb "697.2.391.0"}}
