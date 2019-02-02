@@ -2,6 +2,7 @@
 
 ## DEV
 
+* fix signing bug (double slashes in constructed uris) [#53](https://github.com/cognitect-labs/aws-api/issues/53)
 * fix signing bug (query-string ordering) [#52](https://github.com/cognitect-labs/aws-api/issues/52)
 
 ## 0.8.223 / 2019-01-25

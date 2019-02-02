@@ -17,6 +17,9 @@
 ;; Serializer
 ;; ----------------------------------------------------------------------------------------
 
+(defn- remove-leading-slash [s]
+  (str/replace s #"^/" ""))
+
 (defn serialize-uri
   "Take a URI template and a map of values and replace the parameters by their values.
 
@@ -30,10 +33,12 @@
                                (get (keyword (.substring param 0 (dec (count param)))))
                                util/url-encode
                                (.replace "%2F" "/")
-                               (.replace "%7E" "~"))
+                               (.replace "%7E" "~")
+                               remove-leading-slash)
                        (some-> args
                                (get (keyword param))
-                               util/url-encode))
+                               util/url-encode
+                               remove-leading-slash))
                      ""))))
 
 (defmulti serialize-qs-args
@@ -157,7 +162,7 @@
       (let [location->args (partition-args input-shape request)
             body-args (:body location->args)]
         (-> http-request
-            (update :uri serialize-uri (location->args :uri))
+            (update :uri serialize-uri (:uri location->args))
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))
