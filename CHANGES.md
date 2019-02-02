@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.243 / 2019-02-01
 
 * fix signing bug (double slashes in constructed uris) [#53](https://github.com/cognitect-labs/aws-api/issues/53)
 * fix signing bug (query-string ordering) [#52](https://github.com/cognitect-labs/aws-api/issues/52)
