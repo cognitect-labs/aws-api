@@ -28,7 +28,7 @@ git commit -m "Update README.md, CHANGES.md, and latest-releases.edn with ${vers
     README.md CHANGES.md latest-releases.edn
 git push
 
-# echo "Updating gh-pages with new api docs"
-# build/doc
+echo "Updating gh-pages with new api docs"
+build/doc
 
 echo "Release done!"
