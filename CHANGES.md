@@ -1,5 +1,10 @@
 # aws-api 0.8
 
+## DEV
+
+* ensure keyword keys for errors in json protocols [#55](https://github.com/cognitect-labs/aws-api/issues/55)
+* add stop fn to release resources [#54](https://github.com/cognitect-labs/aws-api/issues/54)
+
 ## 0.8.243 / 2019-02-01
 
 * fix signing bug (double slashes in constructed uris) [#53](https://github.com/cognitect-labs/aws-api/issues/53)
