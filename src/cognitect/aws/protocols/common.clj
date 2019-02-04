@@ -29,4 +29,4 @@
 
 (defn json-parse-error
   [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body util/bbuf->str json/read-str)))
+  (parse-error* http-response (some-> body util/bbuf->str (json/read-str :key-fn keyword))))
