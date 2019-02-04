@@ -72,9 +72,3 @@
                             ::throwable                   t}
                            @meta-atom))
           err-ch)))))
-
-(defn stop
-  "Stop the client."
-  [client]
-  (http/stop (:http-client client))
-  (credentials/stop (:credentials client)))
