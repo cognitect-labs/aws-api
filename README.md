@@ -174,11 +174,11 @@ and before it checks your aws configuration.
 
 ## Contributing
 
-This library is open source, developed at Cognitect. As we incorporate
-this it into products and client projects, we do not accept pull
-requests or patches. We do, however, want to know how we can make it
-better, so please file issues at
-https://github.com/cognitect-labs/aws-api/issues.
+This library is open source, developed internally by Cognitect.
+Issues can be filed using GitHub issues for this project. Because
+aws-api is incorporated into products and client projects, we prefer
+to do development internally and are not accepting pull requests or
+patches.
 
 ## Troubleshooting
 
