@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.253 / 2019-02-08
 
 * fixed URI generation bug [#56](https://github.com/cognitect-labs/aws-api/issues/56)
 * ensure keyword keys for errors in json protocols [#55](https://github.com/cognitect-labs/aws-api/issues/55)

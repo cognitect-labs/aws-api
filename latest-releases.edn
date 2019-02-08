@@ -1,4 +1,4 @@
-{:api {com.cognitect.aws/api "0.8.243"},
+{:api {com.cognitect.aws/api "0.8.253"},
  :endpoints {com.cognitect.aws/endpoints "1.1.11.490"},
  :services
  {com.cognitect.aws/AWSMigrationHub "697.2.391.0",
