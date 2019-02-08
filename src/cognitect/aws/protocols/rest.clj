@@ -21,10 +21,9 @@
   (str/replace s #"^/" ""))
 
 (defn serialize-uri
-  "Take a URI template and a map of values and replace the parameters by their values.
-
-  Example: (serialize-uri \"/{foo}\" {:foo \"bar\"}) -> \"/bar\""
-  [uri-template args]
+  "Take a URI template, an input-shape, and a map of values and replace the parameters by their values.
+  Throws if args is missing any keys that are required in input-shape."
+  [uri-template {:keys [required] :as input-shape} args]
   (str/replace uri-template
                #"\{([^}]+)\}"
                (fn [[_ param]]
@@ -39,6 +38,13 @@
                                (get (keyword param))
                                util/url-encode
                                remove-leading-slash))
+                     ;; TODO (dchelimsky 2019-02-08) it's possible that 100% of
+                     ;; params in templated URIs are required, in which case
+                     ;; we don't need this extra test.
+                     (let [raw-param (str/replace param #"\+" "")]
+                       (when (contains? (set required) raw-param)
+                         (throw (ex-info "Required key missing from request. Check the docs for this operation."
+                                         {:required (mapv keyword required)}))))
                      ""))))
 
 (defmulti serialize-qs-args
@@ -162,7 +168,7 @@
       (let [location->args (partition-args input-shape request)
             body-args (:body location->args)]
         (-> http-request
-            (update :uri serialize-uri (:uri location->args))
+            (update :uri serialize-uri input-shape (:uri location->args))
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))

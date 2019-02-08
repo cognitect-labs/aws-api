@@ -2,6 +2,7 @@
 
 ## DEV
 
+* fixed URI generation bug [#56](https://github.com/cognitect-labs/aws-api/issues/56)
 * ensure keyword keys for errors in json protocols [#55](https://github.com/cognitect-labs/aws-api/issues/55)
 * add stop fn to release resources [#54](https://github.com/cognitect-labs/aws-api/issues/54)
 
