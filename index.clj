@@ -119,6 +119,18 @@
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/response-spec-key"}
   {:raw-source-url nil,
+   :name "stop",
+   :file "src/cognitect/aws/client/api.clj",
+   :source-url nil,
+   :line 181,
+   :var-type "function",
+   :arglists ([client]),
+   :doc
+   "Shuts down the http-client and auto-refreshing credentials (if\nused), releasing resources.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.client.api",
+   :wiki-url
+   "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/stop"}
+  {:raw-source-url nil,
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
