@@ -133,6 +133,15 @@ Do stuff:
 
 See the [examples](examples) directory for more examples.
 
+## Responses, success, failure
+
+Barring client side exceptions, every operation on every service will
+return a map. If the operation is successful, the map will be in the
+shape described by `(-> client aws/ops op :response)`.  If AWS
+indicates failure with an HTTP status code >= 400, the map will
+include a `:cognitect.anomalies/category` key, so you can check for
+the absence/presence of that key to determine success/failure.
+
 ## Credentials
 
 The aws-api client implicitly looks up credentials the same way the
