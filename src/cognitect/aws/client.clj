@@ -54,10 +54,10 @@
     (try
       (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
             {:keys [hostname]} endpoint
-            http-request       (-> (build-http-request service op-map)
-                                   (assoc-in [:headers "host"] hostname)
-                                   (assoc :server-name hostname))
-            http-request       (sign-http-request service region http-request (credentials/fetch credentials))]
+            http-request       (sign-http-request service region (credentials/fetch credentials)
+                                                  (-> (build-http-request service op-map)
+                                                      (assoc-in [:headers "host"] hostname)
+                                                      (assoc :server-name hostname)))]
         (swap! meta-atom assoc :http-request (update http-request :body util/bbuf->input-stream))
         (http/submit http-client http-request
                      (a/chan 1 (map #(with-meta
