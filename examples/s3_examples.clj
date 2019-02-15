@@ -71,6 +71,8 @@
 
 (aws/invoke s3 {:op :DeleteObject :request {:Bucket bucket-name :Key "hello.txt"}})
 
+(aws/invoke s3 {:op :DeleteObjects, :request {:Delete {:Objects [{:Key "hello.txt"}]}, :Bucket bucket-name}})
+
 ;; poof, the object is gone!
 (aws/invoke s3 {:op :ListObjects :request {:Bucket bucket-name}})
 

@@ -18,7 +18,8 @@
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream]
            [java.net URLEncoder]
-           [org.apache.commons.codec.binary Base64]))
+           [org.apache.commons.codec.binary Base64]
+           [org.apache.commons.codec.digest DigestUtils]))
 
 (set! *warn-on-reflection* true)
 
@@ -239,6 +240,19 @@
       io/reader
       slurp
       (json/read-str :key-fn keyword)))
+
+(defprotocol MD5able
+  (md5 [data]))
+
+(extend-protocol MD5able
+  (class (byte-array 0))
+  (md5 [ba] (DigestUtils/md5 #^bytes ba))
+
+  java.lang.String
+  (md5 [s] (DigestUtils/md5 s))
+
+  java.io.InputStream
+  (md5 [is] (md5 (slurp is))))
 
 (defn gen-idempotency-token []
   (UUID/randomUUID))

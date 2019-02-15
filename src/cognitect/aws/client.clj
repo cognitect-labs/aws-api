@@ -6,6 +6,7 @@
   (:require [clojure.core.async :as a]
             [cognitect.http-client :as http]
             [cognitect.aws.util :as util]
+            [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.credentials :as credentials]))
 
 (set! *warn-on-reflection* true)
@@ -57,7 +58,8 @@
             http-request       (sign-http-request service region (credentials/fetch credentials)
                                                   (-> (build-http-request service op-map)
                                                       (assoc-in [:headers "host"] hostname)
-                                                      (assoc :server-name hostname)))]
+                                                      (assoc :server-name hostname)
+                                                      ((partial interceptors/modify-http-request service op-map))))]
         (swap! result-meta assoc :http-request http-request)
         (http/submit http-client
                      (update http-request :body util/->bbuf)
