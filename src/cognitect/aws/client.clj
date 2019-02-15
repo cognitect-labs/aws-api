@@ -50,7 +50,7 @@
 (defn send-request
   "Send the request to AWS and return a channel which delivers the response."
   [client op-map]
-  (let [meta-atom (atom {})]
+  (let [result-meta (atom {})]
     (try
       (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
             {:keys [hostname]} endpoint
@@ -58,11 +58,11 @@
                                                   (-> (build-http-request service op-map)
                                                       (assoc-in [:headers "host"] hostname)
                                                       (assoc :server-name hostname)))]
-        (swap! meta-atom assoc :http-request (update http-request :body util/bbuf->input-stream))
+        (swap! result-meta assoc :http-request (update http-request :body util/bbuf->input-stream))
         (http/submit http-client http-request
                      (a/chan 1 (map #(with-meta
                                        (handle-http-response service op-map %)
-                                       (assoc @meta-atom
+                                       (assoc @result-meta
                                               :http-response
                                               (update % :body util/bbuf->input-stream)))))))
       (catch Throwable t
@@ -70,5 +70,5 @@
           (a/put! err-ch (with-meta
                            {:cognitect.anomalies/category :cognitect.anomalies/fault
                             ::throwable                   t}
-                           @meta-atom))
+                           @result-meta))
           err-ch)))))
