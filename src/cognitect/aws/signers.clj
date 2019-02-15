@@ -116,7 +116,7 @@
     (str/join "\n" ["AWS4-HMAC-SHA256"
                     (get-in request [:headers "x-amz-date"])
                     (credential-scope auth-info request)
-                    (util/hex-encode (util/sha-256 bytes (alength bytes)))])))
+                    (util/hex-encode (util/sha-256 bytes))])))
 
 (defn signing-key
   [request {:keys [secret-access-key region service] :as auth-info}]

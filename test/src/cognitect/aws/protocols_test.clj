@@ -330,29 +330,32 @@
 
 (defmethod test-request-body :default
   [_ expected {:keys [body]}]
-  (let [body-str (util/bbuf->str body)]
-    (if (str/blank? expected)
-      (is (nil? body-str))
-      (is (= expected body-str)))))
+  (if (str/blank? expected)
+    (is (nil? body))
+    (is (= expected body))))
 
 (defmethod test-request-body "json"
   [_ expected http-request]
   (is (= (some-> expected json/read-str)
-         (some-> http-request :body util/bbuf->str json/read-str))))
+         (some-> http-request :body json/read-str))))
 
 (defmethod test-request-body "rest-xml"
-  [_ expected http-request]
+  [_ expected {:keys [body]}]
   (is (= (some-> expected not-empty)
-         (some-> http-request :body util/bbuf->str))))
+         ;; TODO (dchelimsky 2019-02-15) there is only one case
+         ;; in which body is a byte array. This may change if/when
+         ;; we expose build-http-request as an API and settle on
+         ;; a type for body.
+         (if (bytes? body) (slurp body) body))))
 
 (defmethod test-request-body "rest-json"
   [_ expected http-request]
-  (let [body-str (some-> http-request :body util/bbuf->str)]
+  (let [body-str (some-> http-request :body)]
     (if (str/blank? expected)
       (is (nil? body-str))
       (if-let [expected-json (try (json/read-str expected)
                                   (catch Throwable t))]
-        (is (= expected-json (some-> body-str json/read-str)))
+        (is (= expected-json (json/read-str body-str)))
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
 
@@ -364,11 +367,10 @@
 
 (defmethod test-request-body "query"
   [_ expected {:keys [body]}]
-  (let [body-str (util/bbuf->str body)]
-    (if (str/blank? expected)
-      (is (nil? body-str))
-      (is (= (parse-query-string expected)
-             (parse-query-string body-str))))))
+  (if (str/blank? expected)
+    (is (nil? body))
+    (is (= (parse-query-string expected)
+           (parse-query-string body)))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 
@@ -412,9 +414,7 @@
                   (with-parsed-streams protocol description)
                   (with-parsed-dates protocol description)))))
     (catch Exception e
-      (is (nil?
-           {:test-case test-case
-            :exception e})))))
+      (is (nil? {:test-case test-case :exception e})))))
 
 (defn test-protocol
   ([protocol]

@@ -58,7 +58,7 @@
                                 (into [] (line-seq rdr)))
         [headers [empty-line & rest]] (split-with (complement empty?) rest)
         body (str/join "\n" rest)]
-    (merge {:body (java.nio.ByteBuffer/wrap (.getBytes ^String body "UTF-8"))}
+    (merge {:body (.getBytes ^String body "UTF-8")}
            (parse-request-line request-line)
            (parse-headers headers))))
 

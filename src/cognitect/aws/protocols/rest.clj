@@ -172,9 +172,7 @@
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))
-            (assoc :body
-                   (util/->bbuf
-                    (serialize-body input-shape-name input-shape body-args serialize-body-args))))))))
+            (assoc :body (serialize-body input-shape-name input-shape body-args serialize-body-args)))))))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Parser

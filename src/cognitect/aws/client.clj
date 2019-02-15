@@ -58,8 +58,9 @@
                                                   (-> (build-http-request service op-map)
                                                       (assoc-in [:headers "host"] hostname)
                                                       (assoc :server-name hostname)))]
-        (swap! result-meta assoc :http-request (update http-request :body util/bbuf->input-stream))
-        (http/submit http-client http-request
+        (swap! result-meta assoc :http-request http-request)
+        (http/submit http-client
+                     (update http-request :body util/->bbuf)
                      (a/chan 1 (map #(with-meta
                                        (handle-http-response service op-map %)
                                        (assoc @result-meta

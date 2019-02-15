@@ -66,23 +66,33 @@
   [#^bytes bytes]
   (String. (Hex/encodeHex bytes true)))
 
-(defn sha-256
-  "Compute the sha-256 hash of `data`.
+(defn #^bytes input-stream->byte-array
+  "Copies is to a byte-array, leaving the input-stream's mark intact.
 
-  `data` can be:
-  * a ByteBuffer,
-  * an array of bytes, then `length` is required
-  * nil, return the sha-256 of the empty string."
-  ([data]
-   (sha-256 data nil))
-  ([data length]
-   (let [digest (MessageDigest/getInstance "SHA-256")]
-     (if (instance? ByteBuffer data)
-       (do (.update digest ^ByteBuffer data)
-           (.rewind ^ByteBuffer data))
-       (when data
-         (.update digest data 0 length)))
-     (.digest digest))))
+  is must support .mark and .reset (e.g. BufferedInputStream)"
+  [^InputStream is]
+  (assert (.markSupported is))
+  (with-open [os (java.io.ByteArrayOutputStream.)]
+    (.mark is 0)
+    (io/copy is os)
+    (let [res (.toByteArray os)]
+      (.reset is)
+      res)))
+
+(defn sha-256
+  "Returns the sha-256 hash of data, which can be a byte-array, an
+  input-stream, or nil, in which case returns the sha-256 of the empty
+  string."
+  [data]
+  (cond (instance? InputStream data)
+        (sha-256 (input-stream->byte-array data))
+        (string? data)
+        (sha-256 (.getBytes ^String data "UTF-8"))
+        :else
+        (let [digest (MessageDigest/getInstance "SHA-256")]
+          (when data
+            (.update digest data 0 (alength #^bytes data)))
+          (.digest digest))))
 
 (defn hmac-sha-256
   [key ^String data]
@@ -108,10 +118,6 @@
   [^ByteBuffer bbuf]
   (when bbuf
     (io/input-stream (bbuf->bytes bbuf))))
-
-(defn #^bytes input-stream->byte-array [is]
-  (doto (byte-array (.available ^InputStream is))
-    (#(.read ^InputStream is %))))
 
 (defprotocol BBuffable
   (->bbuf [data]))

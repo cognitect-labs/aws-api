@@ -95,9 +95,8 @@
      :uri            "/"
      :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
                       "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
-     :body           (util/->bbuf
-                      (util/query-string
-                       (serialize input-shape request params [])))}))
+     :body           (util/query-string
+                      (serialize input-shape request params []))}))
 
 (defmethod client/build-http-request "query"
   [service req-map]

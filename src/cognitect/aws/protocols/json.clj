@@ -26,8 +26,7 @@
   [service {:keys [op request]}]
   (let [{:keys [jsonVersion targetPrefix]} (:metadata service)
         operation                          (get-in service [:operations op])
-        input-shape                        (service/shape service (:input operation))
-        body                               (serialize nil input-shape (or request {}))]
+        input-shape                        (service/shape service (:input operation))]
     {:request-method :post
      :scheme         :https
      :server-port    443
@@ -35,7 +34,7 @@
      :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
                       "x-amz-target" (str targetPrefix "." (:name operation))
                       "content-type" (str "application/x-amz-json-" jsonVersion)}
-     :body           (some-> body util/->bbuf)}))
+     :body           (serialize nil input-shape (or request {}))}))
 
 (defmethod client/parse-http-response "json"
   [service {:keys [op] :as op-map} {:keys [status headers body] :as http-response}]
