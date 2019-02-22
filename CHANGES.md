@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.266 / 2019-02-22
 
 * add Content-MD5 header for some S3 ops [#40](https://github.com/cognitect-labs/aws-api/issues/40)
 * require clojure.edn [#60](https://github.com/cognitect-labs/aws-api/issues/60)
