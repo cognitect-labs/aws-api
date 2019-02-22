@@ -64,10 +64,10 @@
   (date-format "EEE, dd MMM yyyy HH:mm:ss z"))
 
 (defn hex-encode
-  [#^bytes bytes]
+  [^bytes bytes]
   (String. (Hex/encodeHex bytes true)))
 
-(defn #^bytes input-stream->byte-array
+(defn ^bytes input-stream->byte-array
   "Copies is to a byte-array, leaving the input-stream's mark intact.
 
   is must support .mark and .reset (e.g. BufferedInputStream)"
@@ -113,7 +113,7 @@
    The encoding is fixed to UTF-8."
   [^ByteBuffer bbuf]
   (when-let [bytes (bbuf->bytes bbuf)]
-    (String. #^bytes bytes "UTF-8")))
+    (String. ^bytes bytes "UTF-8")))
 
 (defn bbuf->input-stream
   [^ByteBuffer bbuf]
