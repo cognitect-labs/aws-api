@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* require clojure.edn [#60](https://github.com/cognitect-labs/aws-api/issues/60)
+
 ## 0.8.253 / 2019-02-08
 
 * fixed URI generation bug [#56](https://github.com/cognitect-labs/aws-api/issues/56)
