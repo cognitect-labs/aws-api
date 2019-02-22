@@ -11,6 +11,7 @@
            [java.util Date TimeZone]
            [java.util UUID]
            [java.io InputStream]
+           [java.nio.charset Charset]
            [java.security MessageDigest]
            [org.apache.commons.codec.binary Hex]
            [javax.crypto Mac]
@@ -18,8 +19,7 @@
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream]
            [java.net URLEncoder]
-           [org.apache.commons.codec.binary Base64]
-           [org.apache.commons.codec.digest DigestUtils]))
+           [org.apache.commons.codec.binary Base64]))
 
 (set! *warn-on-reflection* true)
 
@@ -92,7 +92,7 @@
         :else
         (let [digest (MessageDigest/getInstance "SHA-256")]
           (when data
-            (.update digest data 0 (alength #^bytes data)))
+            (.update digest data 0 (alength ^bytes data)))
           (.digest digest))))
 
 (defn hmac-sha-256
@@ -241,18 +241,19 @@
       slurp
       (json/read-str :key-fn keyword)))
 
-(defprotocol MD5able
-  (md5 [data]))
+(def ^Charset UTF8 (Charset/forName "UTF-8"))
 
-(extend-protocol MD5able
-  (class (byte-array 0))
-  (md5 [ba] (DigestUtils/md5 #^bytes ba))
+(defn md5
+  "returns hash as byte array"
+  [data]
+  (let [ba (cond
+             (bytes? data) data
+             (string? data) (.getBytes ^String data UTF8)
+             (instance? java.io.InputStream data) (input-stream->byte-array data))
+        hasher (MessageDigest/getInstance "MD5")]
+    (.update hasher ^bytes ba)
+    (.digest hasher)))
 
-  java.lang.String
-  (md5 [s] (DigestUtils/md5 s))
-
-  java.io.InputStream
-  (md5 [is] (md5 (slurp is))))
 
 (defn gen-idempotency-token []
   (UUID/randomUUID))
