@@ -19,7 +19,7 @@
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream]
            [java.net URLEncoder]
-           [org.apache.commons.codec.binary Base64]))
+           [java.util Base64]))
 
 (set! *warn-on-reflection* true)
 
@@ -218,7 +218,7 @@
 
 (extend-protocol Base64Encodable
   (class (byte-array 0))
-  (base64-encode [ba] (Base64/encodeBase64String ba))
+  (base64-encode [ba] (.encodeToString (Base64/getEncoder) ba))
 
   java.io.InputStream
   (base64-encode [is] (base64-encode (input-stream->byte-array is)))
@@ -229,10 +229,10 @@
 (defn base64-decode
   "base64 decode a base64-encoded string to an input stream"
   [s]
-  (io/input-stream (Base64/decodeBase64 ^String s)))
+  (io/input-stream (.decode (Base64/getDecoder) ^String s)))
 
 (defn encode-jsonvalue [data]
-  (Base64/encodeBase64String (.getBytes ^String (json/write-str data))))
+  (base64-encode (.getBytes ^String (json/write-str data))))
 
 (defn parse-jsonvalue [data]
   (-> data
