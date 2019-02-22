@@ -13,7 +13,7 @@
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import (java.util.concurrent Executors ScheduledExecutorService)
-           (java.util.concurrent TimeUnit)
+           (java.util.concurrent TimeUnit ThreadFactory)
            (java.io File)
            (java.net URI)
            (java.time Duration Instant)))
@@ -68,11 +68,18 @@
 
   Call `stop` to stop the auto-refreshing process.
 
-  A ScheduledExecutorService can be provided.
+  The default ScheduledExecutorService uses a ThreadFactory
+  that spawns daemon threads. You can override this by
+  providing your own ScheduledExecutorService.
 
   Alpha. Subject to change."
   ([provider]
-   (auto-refreshing-credentials provider (Executors/newScheduledThreadPool 1)))
+   (auto-refreshing-credentials
+    provider
+    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
+                                          (newThread [_ r]
+                                            (doto (Thread. r)
+                                              (.setDaemon true)))))))
   ([provider scheduler]
    (let [credentials (atom nil)
          auto-refresh! (auto-refresh-fn credentials provider scheduler)]

@@ -179,11 +179,9 @@
                (str "No docs for " (name operation)))))
 
 (defn stop
-  "Shuts down the http-client and auto-refreshing credentials (if
-  used), releasing resources.
+  "Shuts down the http-client, releasing resources.
 
   Alpha. Subject to change."
   [client]
   (let [{:keys [http-client credentials]} (client/-get-info client)]
-    (http/stop http-client)
-    (credentials/stop credentials)))
+    (http/stop http-client)))
