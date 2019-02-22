@@ -5,6 +5,7 @@
   "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.walk :as walk]
+            [clojure.edn :as edn]
             [clojure.java.io :as io]
             [cognitect.aws.shape :as shape]))
 
@@ -22,7 +23,7 @@
   "Return service description readerable source (anything supported by
   clojure.java.io/reader)."
   [readerable]
-  (clojure.edn/read-string (slurp readerable)))
+  (edn/read-string (slurp readerable)))
 
 (defn service-description [service-name]
   (if-let [resource (descriptor-resource service-name)]
@@ -62,10 +63,6 @@
   (require (spec-ns service)))
 
 (defonce svc-docs (atom {}))
-
-(comment
-  (swap! svc-docs empty)
-  )
 
 (defn with-ref-meta [m op doc]
   (let [ref-atom    (atom nil)

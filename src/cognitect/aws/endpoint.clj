@@ -6,6 +6,7 @@
   (:refer-clojure :exclude [resolve])
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.edn :as edn]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))
 
@@ -13,7 +14,7 @@
 
 (defn read-endpoints-description []
   (if-let [resource (io/resource (descriptor-resource-path))]
-    (clojure.edn/read-string (slurp resource))
+    (edn/read-string (slurp resource))
     (throw (ex-info (str "Cannot find resource " (descriptor-resource-path) ".") {}))))
 
 (defn resolver
