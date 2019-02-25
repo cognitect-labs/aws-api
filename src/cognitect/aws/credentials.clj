@@ -79,6 +79,7 @@
     (Executors/newScheduledThreadPool 1 (reify ThreadFactory
                                           (newThread [_ r]
                                             (doto (Thread. r)
+                                              (.setName "cognitect.aws-api.credentials.refresh")
                                               (.setDaemon true)))))))
   ([provider scheduler]
    (let [credentials (atom nil)
