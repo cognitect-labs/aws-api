@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.271 / 2019-02-25
 
 * daemonize the credentials auto-refresh thread [#57](https://github.com/cognitect-labs/aws-api/issues/57)
 
