@@ -126,7 +126,7 @@
    :var-type "function",
    :arglists ([client]),
    :doc
-   "Shuts down the http-client and auto-refreshing credentials (if\nused), releasing resources.\n\nAlpha. Subject to change.",
+   "Shuts down the http-client, releasing resources.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/stop"}
@@ -150,7 +150,7 @@
    :var-type "function",
    :arglists ([provider] [provider scheduler]),
    :doc
-   "Create auto-refreshing credentials using the specified provider.\n\nReturn a derefable containing the credentials.\n\nCall `stop` to stop the auto-refreshing process.\n\nA ScheduledExecutorService can be provided.\n\nAlpha. Subject to change.",
+   "Create auto-refreshing credentials using the specified provider.\n\nReturn a derefable containing the credentials.\n\nCall `stop` to stop the auto-refreshing process.\n\nThe default ScheduledExecutorService uses a ThreadFactory\nthat spawns daemon threads. You can override this by\nproviding your own ScheduledExecutorService.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/auto-refreshing-credentials"}
@@ -158,7 +158,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 291,
+   :line 299,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -170,7 +170,7 @@
    :name "chain-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 117,
+   :line 125,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -182,7 +182,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 232,
+   :line 240,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -194,7 +194,7 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 271,
+   :line 279,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -206,7 +206,7 @@
    :name "environment-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 143,
+   :line 151,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -229,7 +229,7 @@
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 250,
+   :line 258,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -241,7 +241,7 @@
    :name "profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 187,
+   :line 195,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -253,7 +253,7 @@
    :name "stop",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 87,
+   :line 95,
    :var-type "function",
    :arglists ([credentials]),
    :doc
@@ -265,7 +265,7 @@
    :name "system-property-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 166,
+   :line 174,
    :var-type "function",
    :arglists ([]),
    :doc
