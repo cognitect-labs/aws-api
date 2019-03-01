@@ -57,6 +57,9 @@
         {:keys [service retriable? backoff]} (client/-get-info client)
         validation-error                     (and (get @validate-requests? client)
                                                   (validate service op-map))]
+    (when-not (contains? (:operations service) (:op op-map))
+      (throw (ex-info "Operation not supported" {:service (keyword (service/service-name service))
+                                                 :operation (:op op-map)})))
     (if validation-error
       (do
         (a/put! result-chan validation-error)

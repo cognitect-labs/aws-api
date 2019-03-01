@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* friendly error when op not supported [#62](https://github.com/cognitect-labs/aws-api/issues/62)
+
 ## 0.8.271 / 2019-02-25
 
 * daemonize the credentials auto-refresh thread [#57](https://github.com/cognitect-labs/aws-api/issues/57)
