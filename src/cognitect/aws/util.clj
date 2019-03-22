@@ -72,7 +72,8 @@
 
   is must support .mark and .reset (e.g. BufferedInputStream)"
   [^InputStream is]
-  (assert (.markSupported is))
+  (when-not (.markSupported is)
+    (throw (ex-info "InputStream does not support .mark and .reset." {:class (class is)})))
   (with-open [os (java.io.ByteArrayOutputStream.)]
     (.mark is 0)
     (io/copy is os)

@@ -228,6 +228,17 @@ that resides in a different region from the client's region.
 
 Remedy: create a new s3 client in the same region you are trying to access.
 
+### InputStream does not support .mark and .reset.
+
+aws-api does not yet support `InputStream`s that are backed by data
+larger than memory, but we do plan to in the future.  With that in
+mind, we accept a byte array or `java.io.InputStream` for any request
+attribute specified as a `blob`, however, for now, the `InputStream`
+must be a `.markSupported` `InputStream` for now (see [Data
+Types](doc/types.md)).
+
+Remedy: supply a `.markSupported` `InputStream` or a byte array.
+
 ## Copyright and License
 
 Copyright © 2015 Cognitect
