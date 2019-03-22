@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* only parse json response body when output-shape is specified [#66](https://github.com/cognitect-labs/aws-api/issues/66)
+
 ## 0.8.273 / 2019-03-01
 
 * friendly error when op not supported [#62](https://github.com/cognitect-labs/aws-api/issues/62)

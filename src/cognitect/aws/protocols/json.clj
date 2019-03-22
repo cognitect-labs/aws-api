@@ -44,5 +44,7 @@
           output-shape (service/shape service (:output operation))]
       (let [body-str (util/bbuf->str body)]
         (if (< status 400)
-          (shape/json-parse output-shape body-str)
+          (if output-shape
+            (shape/json-parse output-shape body-str)
+            {})
           (common/json-parse-error http-response))))))
