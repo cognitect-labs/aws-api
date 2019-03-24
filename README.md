@@ -181,6 +181,43 @@ does, with an additional check for a System property named
 "aws.region" after it checks for the AWS_REGION environment variable
 and before it checks your aws configuration.
 
+## Endpoint Override
+
+Most of the time you can create a client and it figures out the correct endpoint for you,
+but there are exceptions. You may want to use a proxy server or connect to a local dynamodb,
+or perhaps you've found a bug that you could work around if you could supply the correct
+endpoint. All of this can be accomplished by supplying an `:endpoint-override` map
+to the `client` constructor:
+
+``` clojure
+(def ddb (aws/client {:api :dynamodb
+                      :endpoint-override {:protocol :http
+                                          :hostname "localhost"
+                                          :port     8000}}))
+```
+
+### PostToConnection
+
+AWS recently introduced support for WebSockets, including a descriptor
+for an `apigatewaymanagementapi` client with a `:PostToConnection`
+function. As of this writing, it does not work as specified, but you
+can get around it using `:endpoint-override`:
+
+``` clojure
+(def client (aws/client {:api :apigatewaymanagementapi
+                         :endpoint-override {:hostname "..."
+                                             :path "..."}}))
+```
+
+See [https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html)
+for guidance on the values for `:hostname` and `:path`.
+
+Note that the `:PostToConnection` docs say that `:ConnectionId` is
+required in the request map, however it ends up being overridden by
+the `:path` in the `:endpoint-override`. You can exclude it from the
+request map, but you'll need to have it as a placeholder if you have
+request map validation enabled.
+
 ## Contributing
 
 This library is open source, developed internally by Cognitect.
@@ -205,7 +242,7 @@ e.g.
 ``` clojure
 (def s3-control {:api :s3control})
 (aws/client {:api :s3control
-             :endpoint-override (str my-account-id ".s3-control.us-east-1.amazonaws.com")})
+             :endpoint-override {:hostname (str my-account-id ".s3-control.us-east-1.amazonaws.com")}})
 ```
 
 #### No known endpoint.
