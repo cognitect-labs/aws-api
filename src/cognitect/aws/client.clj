@@ -48,18 +48,28 @@
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
 
+(defn with-endpoint [req {:keys [protocol
+                                 hostname
+                                 port
+                                 path]
+                          :as   endpoint}]
+  (cond-> (-> req
+              (assoc-in [:headers "host"] hostname)
+              (assoc :server-name hostname))
+    protocol (assoc :scheme protocol)
+    port     (assoc :server-port port)
+    path     (assoc :uri path)))
+
 (defn send-request
   "Send the request to AWS and return a channel which delivers the response."
   [client op-map]
   (let [result-meta (atom {})]
     (try
       (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
-            {:keys [hostname]} endpoint
-            http-request       (sign-http-request service region (credentials/fetch credentials)
-                                                  (-> (build-http-request service op-map)
-                                                      (assoc-in [:headers "host"] hostname)
-                                                      (assoc :server-name hostname)
-                                                      ((partial interceptors/modify-http-request service op-map))))]
+            http-request (sign-http-request service region (credentials/fetch credentials)
+                                            (-> (build-http-request service op-map)
+                                                (with-endpoint endpoint)
+                                                ((partial interceptors/modify-http-request service op-map))))]
         (swap! result-meta assoc :http-request http-request)
         (http/submit http-client
                      (update http-request :body util/->bbuf)

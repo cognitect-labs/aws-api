@@ -4,6 +4,7 @@
 (ns cognitect.aws.client.api
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
+            [clojure.tools.logging :as log]
             [clojure.string :as str]
             [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
@@ -30,10 +31,17 @@
                           cognitect.aws.credentials/CredentialsProvider
                           protocol, defaults to
                           cognitect.aws.credentials/default-credentials-provider
-  :endpoint-override    - optional, overrides the configured endpoint. If the endpoint
-                          includes an AWS region, be sure use the same region for
-                          the client (either via out of process configuration or the :region key
-                          passed to this fn).
+  :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
+                            :protocol     - :http or :https
+                            :hostname     - string
+                            :port         - int
+                            :path         - string
+                          If the hostname includes an AWS region, be sure use the same
+                          region for the client (either via out of process configuration
+                          or the :region key supplied to this fn).
+                          Also supports a string representing just the hostname, though
+                          support for a string is deprectated and may be removed in the
+                          future.
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                           protocol, defaults to cognitect.aws.region/default-region-provider
   :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
@@ -48,23 +56,31 @@
                           Defaults to cognitect.aws.retry/default-backoff.
 
   Alpha. Subject to change."
-  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override] :as config}]
-  (let [service (service/service-description (name api))
-        region  (keyword
-                 (or region
-                     (region/fetch
-                      (or region-provider
-                          (region/default-region-provider)))))]
+  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override]
+    :or {endpoint-override {}}
+    :as config}]
+  (when (string? endpoint-override)
+    (log/warn
+     (format
+      "DEPRECATION NOTICE: :endpoint-override string is deprecated.\nUse {:endpoint-override {:hostname \"%s\"}} instead."
+      endpoint-override)))
+  (let [service   (service/service-description (name api))
+        region    (keyword
+                   (or region
+                       (region/fetch
+                        (or region-provider
+                            (region/default-region-provider)))))]
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (with-meta
       (client/->Client
        (atom {})
        {:service     service
         :region      region
-        :endpoint    (or (cond-> (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)
-                           endpoint-override
-                           (assoc :hostname endpoint-override))
-                         (throw (ex-info "No known endpoint." {:service api :region region})))
+        :endpoint    (if-let [ep (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)]
+                       (merge ep (if (string? endpoint-override)
+                                   {:hostname endpoint-override}
+                                   endpoint-override))
+                       (throw (ex-info "No known endpoint." {:service api :region region})))
         :retriable?  (or retriable? retry/default-retriable?)
         :backoff     (or backoff retry/default-backoff)
         :http-client (http/create {:trust-all true}) ;; FIX :trust-all
