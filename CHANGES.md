@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.280 / 2019-03-25
 
 * support endpoint-override map [#59](https://github.com/cognitect-labs/aws-api/issues/59), [#61](https://github.com/cognitect-labs/aws-api/issues/61), [#64](https://github.com/cognitect-labs/aws-api/issues/64)
 * only parse json response body when output-shape is specified [#66](https://github.com/cognitect-labs/aws-api/issues/66)
