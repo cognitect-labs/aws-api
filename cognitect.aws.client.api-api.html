@@ -97,7 +97,7 @@ namespace.
   <hr />
   <h2 id="cognitect.aws.client.api/client">client</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint-override], :as config})
+  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override], :or {endpoint-override {}}, :as config})
 </pre>
   <pre id="var-docstr">Given a config map, create a client for specified api. Supported keys
 in config are:
@@ -110,10 +110,17 @@ in config are:
                         cognitect.aws.credentials/CredentialsProvider
                         protocol, defaults to
                         cognitect.aws.credentials/default-credentials-provider
-:endpoint-override    - optional, overrides the configured endpoint. If the endpoint
-                        includes an AWS region, be sure use the same region for
-                        the client (either via out of process configuration or the :region key
-                        passed to this fn).
+:endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
+                          :protocol     - :http or :https
+                          :hostname     - string
+                          :port         - int
+                          :path         - string
+                        If the hostname includes an AWS region, be sure use the same
+                        region for the client (either via out of process configuration
+                        or the :region key supplied to this fn).
+                        Also supports a string representing just the hostname, though
+                        support for a string is deprectated and may be removed in the
+                        future.
 :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                         protocol, defaults to cognitect.aws.region/default-region-provider
 :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
