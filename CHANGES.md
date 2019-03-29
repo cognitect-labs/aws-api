@@ -1,5 +1,9 @@
 # aws-api 0.8
 
+## DEV
+
+* fix signing bug introduced in 0.8.283
+
 ## 0.8.283 / 2019-03-29
 
 * read input-stream once [#67](https://github.com/cognitect-labs/aws-api/issues/67)
