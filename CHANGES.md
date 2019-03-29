@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.289 / 2019-03-29
 
 * fix signing bug introduced in 0.8.283
 
