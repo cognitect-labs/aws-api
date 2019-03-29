@@ -17,7 +17,7 @@
            [javax.crypto Mac]
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
-           [java.io ByteArrayInputStream]
+           [java.io ByteArrayInputStream ByteArrayOutputStream]
            [java.net URLEncoder]
            [java.util Base64]))
 
@@ -89,8 +89,9 @@
     (.doFinal mac (.getBytes data "UTF-8"))))
 
 (defn ^bytes input-stream->byte-array [is]
-  (doto (byte-array (.available ^InputStream is))
-    (#(.read ^InputStream is %))))
+  (let [os (ByteArrayOutputStream.)]
+    (io/copy is os)
+    (.toByteArray os)))
 
 (defn bbuf->bytes
   [^ByteBuffer bbuf]
