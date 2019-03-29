@@ -1,8 +1,13 @@
 # aws-api 0.8
 
+## DEV
+
+* read input-stream once [#67](https://github.com/cognitect-labs/aws-api/issues/67)
+
 ## 0.8.280 / 2019-03-25
 
-* support endpoint-override map [#59](https://github.com/cognitect-labs/aws-api/issues/59), [#61](https://github.com/cognitect-labs/aws-api/issues/61), [#64](https://github.com/cognitect-labs/aws-api/issues/64)
+* support `:endpoint-override` map [#59](https://github.com/cognitect-labs/aws-api/issues/59), [#61](https://github.com/cognitect-labs/aws-api/issues/61), [#64](https://github.com/cognitect-labs/aws-api/issues/64)
+  * DEPRECATED support for `:endoint-override` string
 * only parse json response body when output-shape is specified [#66](https://github.com/cognitect-labs/aws-api/issues/66)
 
 ## 0.8.273 / 2019-03-01

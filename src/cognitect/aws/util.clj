@@ -67,40 +67,29 @@
   [^bytes bytes]
   (String. (Hex/encodeHex bytes true)))
 
-(defn ^bytes input-stream->byte-array
-  "Copies is to a byte-array, leaving the input-stream's mark intact.
-
-  is must support .mark and .reset (e.g. BufferedInputStream)"
-  [^InputStream is]
-  (when-not (.markSupported is)
-    (throw (ex-info "InputStream does not support .mark and .reset." {:class (class is)})))
-  (with-open [os (java.io.ByteArrayOutputStream.)]
-    (.mark is 0)
-    (io/copy is os)
-    (let [res (.toByteArray os)]
-      (.reset is)
-      res)))
-
 (defn sha-256
   "Returns the sha-256 hash of data, which can be a byte-array, an
   input-stream, or nil, in which case returns the sha-256 of the empty
   string."
   [data]
-  (cond (instance? InputStream data)
-        (sha-256 (input-stream->byte-array data))
-        (string? data)
-        (sha-256 (.getBytes ^String data "UTF-8"))
-        :else
-        (let [digest (MessageDigest/getInstance "SHA-256")]
-          (when data
-            (.update digest data 0 (alength ^bytes data)))
-          (.digest digest))))
+  (if (string? data)
+    (sha-256 (.getBytes ^String data "UTF-8"))
+    (let [digest (MessageDigest/getInstance "SHA-256")]
+      (when data
+        (if (instance? ByteBuffer data)
+          (.update digest ^ByteBuffer data)
+          (.update digest ^bytes data)))
+      (.digest digest))))
 
 (defn hmac-sha-256
   [key ^String data]
   (let [mac (Mac/getInstance "HmacSHA256")]
     (.init mac (SecretKeySpec. key "HmacSHA256"))
     (.doFinal mac (.getBytes data "UTF-8"))))
+
+(defn ^bytes input-stream->byte-array [is]
+  (doto (byte-array (.available ^InputStream is))
+    (#(.read ^InputStream is %))))
 
 (defn bbuf->bytes
   [^ByteBuffer bbuf]
@@ -131,8 +120,11 @@
   String
   (->bbuf [s] (->bbuf (.getBytes s "UTF-8")))
 
-  java.io.InputStream
+  InputStream
   (->bbuf [is] (->bbuf (input-stream->byte-array is)))
+
+  ByteBuffer
+  (->bbuf [bb] bb)
 
   nil
   (->bbuf [_]))
@@ -221,8 +213,8 @@
   (class (byte-array 0))
   (base64-encode [ba] (.encodeToString (Base64/getEncoder) ba))
 
-  java.io.InputStream
-  (base64-encode [is] (base64-encode (input-stream->byte-array is)))
+  ByteBuffer
+  (base64-encode [bb] (base64-encode (.array bb)))
 
   java.lang.String
   (base64-encode [s] (base64-encode (.getBytes s))))
@@ -244,17 +236,13 @@
 
 (def ^Charset UTF8 (Charset/forName "UTF-8"))
 
-(defn md5
-  "returns hash as byte array"
-  [data]
-  (let [ba (cond
-             (bytes? data) data
-             (string? data) (.getBytes ^String data UTF8)
-             (instance? java.io.InputStream data) (input-stream->byte-array data))
+(defn ^bytes md5
+  "returns an MD5 hash of the content of bb as a byte array"
+  [^ByteBuffer bb]
+  (let [ba     (.array bb)
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)
     (.digest hasher)))
-
 
 (defn gen-idempotency-token []
   (UUID/randomUUID))

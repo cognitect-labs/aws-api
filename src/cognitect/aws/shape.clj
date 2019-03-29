@@ -399,7 +399,6 @@
   [nodes]
   (-> nodes first :content first))
 
-;; TODO (dchelimsky 2017-04-22) validate enum membership?
 (defmethod xml-parse* "string"    [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "character" [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "boolean"   [_ nodes] (= (data nodes) "true"))

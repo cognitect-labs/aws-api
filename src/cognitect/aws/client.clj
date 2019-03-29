@@ -69,10 +69,11 @@
             http-request (sign-http-request service region (credentials/fetch credentials)
                                             (-> (build-http-request service op-map)
                                                 (with-endpoint endpoint)
+                                                (update :body util/->bbuf)
                                                 ((partial interceptors/modify-http-request service op-map))))]
         (swap! result-meta assoc :http-request http-request)
         (http/submit http-client
-                     (update http-request :body util/->bbuf)
+                     http-request
                      (a/chan 1 (map #(with-meta
                                        (handle-http-response service op-map %)
                                        (assoc @result-meta
