@@ -23,4 +23,8 @@
   (testing "accepts string, byte array, or ByteBuffer"
     (is (= (seq (util/sha-256 "hi"))
            (seq (util/sha-256 (.getBytes "hi")))
-           (seq (util/sha-256 (ByteBuffer/wrap (.getBytes "hi"))))))))
+           (seq (util/sha-256 (ByteBuffer/wrap (.getBytes "hi")))))))
+  (testing "does not consume a ByteBuffer"
+    (let [bb (ByteBuffer/wrap (.getBytes "hi"))]
+      (util/sha-256 bb)
+      (is (= "hi" (util/bbuf->str bb))))))

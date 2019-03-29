@@ -68,18 +68,19 @@
   (String. (Hex/encodeHex bytes true)))
 
 (defn sha-256
-  "Returns the sha-256 hash of data, which can be a byte-array, an
-  input-stream, or nil, in which case returns the sha-256 of the empty
-  string."
+  "Returns the sha-256 digest (bytes) of data, which can be a
+  byte-array, an input-stream, or nil, in which case returns the
+  sha-256 of the empty string."
   [data]
-  (if (string? data)
-    (sha-256 (.getBytes ^String data "UTF-8"))
-    (let [digest (MessageDigest/getInstance "SHA-256")]
-      (when data
-        (if (instance? ByteBuffer data)
-          (.update digest ^ByteBuffer data)
-          (.update digest ^bytes data)))
-      (.digest digest))))
+  (cond (string? data)
+        (sha-256 (.getBytes ^String data "UTF-8"))
+        (instance? ByteBuffer data)
+        (sha-256 (.array ^ByteBuffer data))
+        :else
+        (let [digest (MessageDigest/getInstance "SHA-256")]
+          (when data
+            (.update digest ^bytes data))
+          (.digest digest))))
 
 (defn hmac-sha-256
   [key ^String data]
