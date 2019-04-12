@@ -23,3 +23,8 @@
            (:body http-request))
     (update http-request :headers assoc "Content-MD5" (-> http-request :body util/md5 util/base64-encode))
     http-request))
+
+(defmethod modify-http-request "apigatewaymanagementapi" [service op-map http-request]
+  (if (= :PostToConnection (:op op-map))
+    (update http-request :uri #(str % (-> op-map :request :ConnectionId)))
+    http-request))

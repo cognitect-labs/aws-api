@@ -198,25 +198,21 @@ to the `client` constructor:
 
 ### PostToConnection
 
-AWS recently introduced support for WebSockets, including a descriptor
-for an `apigatewaymanagementapi` client with a `:PostToConnection`
-function. As of this writing, it does not work as specified, but you
-can get around it using `:endpoint-override`:
+The `:PostToConnection` operation on the `apigatewaymanagementapi`
+client requires that you specify the API endpoint as follows:
 
 ``` clojure
 (def client (aws/client {:api :apigatewaymanagementapi
-                         :endpoint-override {:hostname "..."
-                                             :path "..."}}))
+                         :endpoint-override {:hostname "{hostname}"
+                                             :path "/{stage}/@connections/"}}))
 ```
 
-See [https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html)
-for guidance on the values for `:hostname` and `:path`.
+Replace `{hostname}` and `{stage}` with the hostname and the stage of
+the connection to which you're posting (see
+[https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html)).
 
-Note that the `:PostToConnection` docs say that `:ConnectionId` is
-required in the request map, however it ends up being overridden by
-the `:path` in the `:endpoint-override`. You can exclude it from the
-request map, but you'll need to have it as a placeholder if you have
-request map validation enabled.
+The client will append the `:ConnectionId` in the `:request` map to
+the `:path` in the `:endpoint-override` map.
 
 ## Contributing
 
