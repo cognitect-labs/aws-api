@@ -37,7 +37,7 @@
   (fn [service region credentials http-request]
     (get-in service [:metadata :signatureVersion])))
 
-(defn handle-http-response
+(defn ^:private handle-http-response
   [service op-map http-response]
   (try
     (if-let [anomaly-category (:cognitect.anomaly/category http-response)]
@@ -48,11 +48,11 @@
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
 
-(defn with-endpoint [req {:keys [protocol
-                                 hostname
-                                 port
-                                 path]
-                          :as   endpoint}]
+(defn ^:private with-endpoint [req {:keys [protocol
+                                           hostname
+                                           port
+                                           path]
+                                    :as   endpoint}]
   (cond-> (-> req
               (assoc-in [:headers "host"] hostname)
               (assoc :server-name hostname))
