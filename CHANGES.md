@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.292 / 2019-04-12
 
 * improved support for apigatewaymanagementapi `:PostToConnection`
   * see [https://github.com/cognitect-labs/aws-api/#posttoconnection](https://github.com/cognitect-labs/aws-api/#posttoconnection)
