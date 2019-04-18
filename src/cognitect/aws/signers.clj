@@ -27,9 +27,9 @@
           builder (StringBuilder.)]
       (doseq [b (.getBytes s "UTF-8")]
         (.append builder
-                 (if (or (<= (byte \A) b (byte \Z))
-                         (<= (byte \a) b (byte \z))
-                         (<= (byte \0) b (byte \9))
+                 (if (or (<= (int \A) b (int \Z))
+                         (<= (int \a) b (int \z))
+                         (<= (int \0) b (int \9))
                          (contains? safe-chars b))
                    (char b)
                    (format "%%%02X" b))))
