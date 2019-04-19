@@ -18,19 +18,22 @@
   Letters, digits, and the characters `_-~.` are never encoded.
 
   The optional `extra-chars` specifies extra characters to not encode."
-  [^String s & extra-chars]
-  (when s
-    (let [safe-chars (->> extra-chars
-                          (into #{\_ \- \~ \.})
-                          (into #{} (map int)))
-          builder    (StringBuilder.)]
-      (doseq [b (.getBytes s "UTF-8")]
-        (.append builder
-                 (if (or (Character/isLetterOrDigit ^int b)
-                         (contains? safe-chars b))
-                   (char b)
-                   (format "%%%02X" b))))
-      (.toString builder))))
+  ([^String s]
+   (when s
+     (uri-encode s "")))
+  ([^String s extra-chars]
+   (when s
+     (let [safe-chars (->> extra-chars
+                           (into #{\_ \- \~ \.})
+                           (into #{} (map int)))
+           builder    (StringBuilder.)]
+       (doseq [b (.getBytes s "UTF-8")]
+         (.append builder
+                  (if (or (Character/isLetterOrDigit ^int b)
+                          (contains? safe-chars b))
+                    (char b)
+                    (format "%%%02X" b))))
+       (.toString builder)))))
 
 (defn credential-scope
   [{:keys [region service] :as auth-info} request]
@@ -53,7 +56,7 @@
                          (URI.)
                          (.normalize)
                          (.getPath)
-                         (uri-encode \/))]
+                         (uri-encode "/"))]
     (if (.isEmpty ^String encoded-path)
       "/"
       encoded-path)))
