@@ -7,7 +7,9 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
-            [cognitect.aws.signers :as signers])
+            [cognitect.aws.signers :as signers]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as stest])
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
 
@@ -132,6 +134,25 @@
            (#'signers/canonical-query-string {:uri "path?q.parser=lucene&q=Red"}))))
   (testing "key with no value"
     (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
+
+(s/fdef signers/uri-encode
+  :args (s/cat :string (s/and string? not-empty) :extra-chars string?)
+  :ret string?)
+
+(deftest test-uri-encode
+  (testing "with *unchecked-math* true"
+    (set! *unchecked-math* true)
+    (require '[cognitect.aws.signers :as signers] :reload)
+    (let [res (first (stest/check `signers/uri-encode))]
+      (is (true? (-> res :clojure.spec.test.check/ret :result))
+          res)))
+
+  (testing "with *unchecked-math* false (default)"
+    (set! *unchecked-math* false)
+    (require '[cognitect.aws.signers :as signers] :reload)
+    (let [res (first (stest/check `signers/uri-encode))]
+      (is (true? (-> res :clojure.spec.test.check/ret :result))
+          res))))
 
 (comment
   (run-tests)
