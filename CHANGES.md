@@ -1,5 +1,10 @@
 # aws-api 0.8
 
+## DEV
+
+* fix bug generating default idempotencyToken [#72](https://github.com/cognitect-labs/aws-api/issues/72)
+* fix uri-encoding bug when `*unchecked-math*` is true [#71](https://github.com/cognitect-labs/aws-api/issues/71)
+
 ## 0.8.292 / 2019-04-12
 
 * improved support for apigatewaymanagementapi `:PostToConnection`
