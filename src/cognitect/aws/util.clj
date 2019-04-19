@@ -246,8 +246,10 @@
     (.update hasher ^bytes ba)
     (.digest hasher)))
 
-(defn gen-idempotency-token []
-  (UUID/randomUUID))
+(defn uuid-string
+  "returns a string representation of a randomly generated UUID"
+  []
+  (str (UUID/randomUUID)))
 
 (defn with-defaults
   "Given a shape and data of that shape, add defaults for the
@@ -261,7 +263,7 @@
               m
 
               (:idempotencyToken member-spec)
-              (assoc m member-name (gen-idempotency-token))
+              (assoc m member-name (uuid-string))
 
               :else
               m))

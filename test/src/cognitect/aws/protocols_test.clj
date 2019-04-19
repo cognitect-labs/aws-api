@@ -433,7 +433,7 @@
            (run-test input-or-output protocol (:description test) service test-case)))))))
 
 (deftest test-protocols
-  (with-redefs [util/gen-idempotency-token (constantly "00000000-0000-4000-8000-000000000000")]
+  (with-redefs [util/uuid-string (constantly "00000000-0000-4000-8000-000000000000")]
     (doseq [protocol ["ec2"
                       "query"
                       "json"
