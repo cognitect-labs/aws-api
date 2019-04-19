@@ -136,7 +136,7 @@
     (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
 
 (s/fdef signers/uri-encode
-  :args (s/cat :string (s/and string? not-empty) :extra-chars string?)
+  :args (s/cat :string (s/and string? not-empty) :extra-chars (s/? char?))
   :ret string?)
 
 (deftest test-uri-encode
