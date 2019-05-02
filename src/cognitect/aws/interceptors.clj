@@ -28,3 +28,7 @@
   (if (= :PostToConnection (:op op-map))
     (update http-request :uri #(str % (-> op-map :request :ConnectionId)))
     http-request))
+
+;; See https://github.com/aws/aws-sdk-java-v2/blob/985ec92c0dfac868b33791fe4623296c68e2feab/services/glacier/src/main/java/software/amazon/awssdk/services/glacier/internal/GlacierExecutionInterceptor.java#L40
+(defmethod modify-http-request "glacier" [service op-map http-request]
+  (assoc-in http-request [:headers "x-amz-glacier-version"] (get-in service [:metadata :apiVersion])))
