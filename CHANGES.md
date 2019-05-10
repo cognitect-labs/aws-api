@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.305 / 2019-05-10
 
 * add x-amz-glacier-version header to glacier requests [#74](https://github.com/cognitect-labs/aws-api/issues/74)
 
