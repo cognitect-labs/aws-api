@@ -6,7 +6,6 @@
   (:require [clojure.string :as str]
             [clojure.test :refer :all]
             [clojure.java.io :as io]
-            [clojure.xml :as xml]
             [clojure.data.json :as json]
             [clojure.walk :as walk]
             [clojure.spec.alpha :as s]
