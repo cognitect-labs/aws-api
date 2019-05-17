@@ -4,7 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.util
   "Impl, don't call directly."
   (:require [clojure.string :as str]
-            [clojure.xml :as xml]
+            [clojure.data.xml :as xml]
             [clojure.data.json :as json]
             [clojure.java.io :as io])
   (:import [java.text SimpleDateFormat]
@@ -134,7 +134,8 @@
 (defn xml-read
   "Parse the UTF-8 XML string."
   [s]
-  (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))))
+  (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))
+             :namespace-aware false))
 
 (defn xml->map [element]
   (cond
