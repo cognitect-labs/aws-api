@@ -142,8 +142,8 @@
     (nil? element)        nil
     (string? element)     element
     (sequential? element) (if (> (count element) 1)
-                            (reduce into {} (map xml->map element))
-                            (xml->map  (first element)))
+                            (into {} (map xml->map) element)
+                            (xml->map (first element)))
     (map? element)
     (cond
       (empty? element) {}

@@ -4,6 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.signers
   "Impl, don't call directly."
   (:require [clojure.string :as str]
+            [clojure.set :as set]
             [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])

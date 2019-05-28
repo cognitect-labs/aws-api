@@ -27,12 +27,11 @@
 ;;; helpers
 
 (defn split-lines [s]
-  (transduce (comp (map str/trimr)
-                   (remove str/blank?)
-                   (remove comment?))
-             conj
-             []
-             (str/split-lines s)))
+  (into []
+        (comp (map str/trimr)
+              (remove str/blank?)
+              (remove comment?))
+        (str/split-lines s)))
 
 (defn split-kv [s]
   (->> (str/split s #"=" 2)
