@@ -47,47 +47,51 @@
                                          {:required (mapv keyword required)}))))
                      ""))))
 
-(defmulti serialize-qs-args
-  "Return a list of key-value pairs to serialize in the query string."
-  (fn [shape args param-name] (:type shape)))
+(declare serialize-qs-args)
 
 (defn append-querystring
   "Append the map of arguments args to the uri's querystring."
   [uri shape args]
   (if-let [qs (util/query-string (mapcat (fn [[k v]]
                                            (when-let [member-shape (shape/member-shape shape k)]
-                                             (serialize-qs-args member-shape v (name k))))
+                                             (serialize-qs-args member-shape
+                                                                (or (:locationName member-shape)
+                                                                    (name k))
+                                                                v)))
                                          args))]
     (str uri (if (.contains uri "?") "&" "?") qs)
     uri))
 
+(defmulti serialize-qs-args
+  "Return a list of key-value pairs to serialize in the query string."
+  (fn [shape param-name args] (:type shape)))
+
 (defmethod serialize-qs-args :default
-  [shape args param-name]
+  [shape param-name args]
   (when-not (nil? args)
-    (let [param-name (or (:locationName shape) param-name)]
-      [[param-name (str args)]])))
-
-(defmethod serialize-qs-args "map"
-  [shape args param-name]
-  (let [key-shape (shape/key-shape shape)
-        value-shape (shape/value-shape shape)]
-    (mapcat (fn [[k v]]
-              (serialize-qs-args value-shape v (name k)))
-            args)))
-
-(defmethod serialize-qs-args "list"
-  [shape args param-name]
-  (let [param-name (or (:locationName shape) param-name)]
-    (mapcat #(serialize-qs-args (shape/list-member-shape shape) % param-name)
-            args)))
+    [[param-name (str args)]]))
 
 (defmethod serialize-qs-args "timestamp"
-  [shape args param-name]
+  [shape param-name args]
   (when-not (nil? args)
-    (let [param-name (or (:locationName shape) param-name)]
-      [[param-name
-        (shape/format-date shape args
-                           (partial util/format-date util/iso8601-date-format))]])))
+    [[param-name (shape/format-date shape
+                                    args
+                                    (partial util/format-date util/iso8601-date-format))]]))
+
+(defmethod serialize-qs-args "list"
+  [shape param-name args]
+  (mapcat #(serialize-qs-args (shape/list-member-shape shape)
+                              param-name
+                              %)
+          args))
+
+(defmethod serialize-qs-args "map"
+  [shape _ args]
+  (mapcat (fn [[k v]]
+            (serialize-qs-args (shape/value-shape shape)
+                               (name k)
+                               v))
+          args))
 
 (defmulti serialize-header-value
   "Serialize a primitive shape in a HTTP header."
