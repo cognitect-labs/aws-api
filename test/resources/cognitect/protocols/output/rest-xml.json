@@ -1,0 +1,36 @@
+[
+    {
+        "description": "Single text node",
+        "metadata": {"protocol": "rest-xml"},
+        "shapes": {
+            "OutputShape": {
+                "type": "structure",
+                "members": {
+                    "LocationConstraint": {
+                        "shape": "StringType"
+                    }
+                }
+            },
+            "StringType": {
+                "type": "string"
+            }
+        },
+        "cases": [
+            {
+                "given": {
+                    "output": {
+                        "shape": "OutputShape"
+                    },
+                    "name": "OperationName"
+                },
+                "result": {
+                    "LocationConstraint": "us-west-1"
+                },
+                "response": {
+                    "status_code": 200,
+                    "body": "<LocationConstraint>us-west-1</LocationConstraint>"
+                }
+            }
+        ]
+    }
+]

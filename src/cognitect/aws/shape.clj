@@ -293,44 +293,36 @@
 (defmulti xml-parse*
   (fn [shape nodes] (:type shape)))
 
-(defn- text-node? [nodes]
-  (and (= 1 (count nodes))
-       (string? (first (:content (first nodes))))))
-
-(defn- only [coll]
-  (assert (= 1 (count coll))
-          (str "Expected (= 1 (count coll)), got " coll))
-  (first coll))
-
 (defmethod xml-parse* "structure"
   [shape nodes]
-  (if (text-node? nodes)
-    (let [member-key (->> shape :members only key)]
-      {member-key (xml-parse* (member-shape shape member-key) nodes)})
-    (let [data          (first nodes)
-          tag->children (group-by :tag (:content data))]
-      (reduce-kv (fn [parsed member-key member-shape-ref]
-                   (let [member-shape (member-shape shape member-key)]
-                     (if (contains? member-shape :location)
-                       ;; Skip non-payload attributes
-                       parsed
-                       (let [member-name (keyword (or (when (:flattened member-shape)
-                                                        (get (list-member-shape member-shape) :locationName))
-                                                      (get member-shape :locationName (name member-key))))]
-                         (cond
-                           ;; The member's value is in the attributes of the current XML element.
-                           (:xmlAttribute member-shape)
-                           (assoc parsed member-key (get (:attrs data) member-name))
+  (let [data          (first nodes)
+        tag->children (group-by :tag (:content data))]
+    (reduce-kv (fn [parsed member-key _]
+                 (let [member-shape (member-shape shape member-key)]
+                   (if (contains? member-shape :location)
+                     ;; Skip non-payload attributes
+                     parsed
+                     (let [member-name (keyword (or (when (:flattened member-shape)
+                                                      (get (list-member-shape member-shape) :locationName))
+                                                    (get member-shape :locationName (name member-key))))]
+                       (cond
+                         ;; The member's value is in the attributes of the current XML element.
+                         (:xmlAttribute member-shape)
+                         (assoc parsed member-key (get (:attrs data) member-name))
 
+                         ;; The member's value is a child node(s).
+                         (contains? tag->children member-name)
+                         (assoc parsed member-key (xml-parse* member-shape (tag->children member-name)))
 
-                           ;; The member's value is a child node(s).
-                           (contains? tag->children member-name)
-                           (assoc parsed member-key (xml-parse* member-shape (tag->children member-name)))
+                         ;; Content is a single text node
+                         (and (= 1 (count (:members shape)))
+                              (= "string" (:type member-shape)))
+                         (assoc parsed member-key (xml-parse* member-shape nodes))
 
-                           :else
-                           parsed)))))
-                 {}
-                 (:members shape)))))
+                         :else
+                         parsed)))))
+               {}
+               (:members shape))))
 
 ;;   Normal map:
 ;;
