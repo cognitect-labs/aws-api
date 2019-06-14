@@ -11,13 +11,12 @@
            com.cognitect/http-client   {:mvn/version "0.1.87"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.release-updater"]}
-           :dev             {:extra-paths ["dev/src" "dev/resources"]}
-           :test            {:extra-paths ["test/src" "test/resources"]
+           :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io   {:mvn/version "2.5"}
                                            org.clojure/test.check  {:mvn/version "0.9.0"}
                                            org.slf4j/slf4j-log4j12 {:mvn/version "1.7.25"}
                                            http-kit                {:mvn/version "2.3.0"}}}
-           :run-tests       {:extra-paths ["test/src" "test/resources" "dev/resources"]
+           :test            {:extra-paths ["test/src" "test/resources" "dev/resources"]
                              :extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                                                       :sha     "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
                              :main-opts   ["-m" "cognitect.test-runner"]}
