@@ -6,11 +6,11 @@
   (:require [clojure.core.async :as a]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
-            [cognitect.http-client :as http]
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
+            [cognitect.aws.http :as http]
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
@@ -56,7 +56,8 @@
                           Defaults to cognitect.aws.retry/default-backoff.
 
   Alpha. Subject to change."
-  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override]
+  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
+           http-client]
     :or {endpoint-override {}}
     :as config}]
   (when (string? endpoint-override)
@@ -83,7 +84,7 @@
                        (throw (ex-info "No known endpoint." {:service api :region region})))
         :retriable?  (or retriable? retry/default-retriable?)
         :backoff     (or backoff retry/default-backoff)
-        :http-client (http/create {:trust-all true}) ;; FIX :trust-all
+        :http-client (http/resolve-http-client http-client)
         :credentials (or credentials-provider @credentials/global-provider)})
       {'clojure.core.protocols/datafy (fn [c]
                                         (-> c
@@ -200,4 +201,4 @@
   Alpha. Subject to change."
   [client]
   (let [{:keys [http-client credentials]} (client/-get-info client)]
-    (http/stop http-client)))
+    (http/-stop http-client)))

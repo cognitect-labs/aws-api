@@ -4,7 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.client
   "Impl, don't call directly."
   (:require [clojure.core.async :as a]
-            [cognitect.http-client :as http]
+            [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.credentials :as credentials]))
@@ -37,6 +37,7 @@
   (fn [service region credentials http-request]
     (get-in service [:metadata :signatureVersion])))
 
+;; TODO convey throwable back from impl
 (defn ^:private handle-http-response
   [service op-map http-response]
   (try
