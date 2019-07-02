@@ -8,8 +8,7 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]
             [cognitect.aws.util :as util]
-            [cognitect.aws.protocols.common :as common])
-  (:import [java.util Date]))
+            [cognitect.aws.protocols.common :as common]))
 
 ; ----------------------------------------------------------------------------------------
 ;; Serializer
@@ -93,8 +92,7 @@
      :scheme         :https
      :server-port    443
      :uri            "/"
-     :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
-                      "content-type" "application/x-www-form-urlencoded; charset=utf-8"}
+     :headers        (common/headers service operation)
      :body           (util/query-string
                       (serialize input-shape request params []))}))
 

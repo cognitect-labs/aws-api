@@ -7,8 +7,7 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.util :as util]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.common :as common])
-  (:import [java.util Date]))
+            [cognitect.aws.protocols.common :as common]))
 
 (defmulti serialize
   (fn [_ shape data] (:type shape)))
@@ -31,9 +30,7 @@
      :scheme         :https
      :server-port    443
      :uri            "/"
-     :headers        {"x-amz-date"   (util/format-date util/x-amz-date-format (Date.))
-                      "x-amz-target" (str targetPrefix "." (:name operation))
-                      "content-type" (str "application/x-amz-json-" jsonVersion)}
+     :headers        (common/headers service operation)
      :body           (serialize nil input-shape (or request {}))}))
 
 (defmethod client/parse-http-response "json"

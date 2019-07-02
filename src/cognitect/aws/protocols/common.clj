@@ -4,7 +4,8 @@
 (ns ^:skip-wiki cognitect.aws.protocols.common
   "Impl, don't call directly. "
   (:require [clojure.data.json :as json]
-            [cognitect.aws.util :as util]))
+            [cognitect.aws.util :as util])
+  (:import (java.util Date)))
 
 (def status-codes->anomalies
   {403 :cognitect.anomalies/forbidden
@@ -17,6 +18,15 @@
       (if (<= 400 code 499)
         :cognitect.anomalies/incorrect
         :cognitect.anomalies/fault)))
+
+(defn headers [service operation]
+  (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
+    (cond-> {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}
+      (contains? #{"json" "rest-json"} protocol)
+      (assoc "x-amz-target" (str targetPrefix "." (:name operation))
+             "content-type" (str "application/x-amz-json-" jsonVersion))
+      (contains? #{"query" "ec2"} protocol)
+      (assoc "content-type" "application/x-www-form-urlencoded; charset=utf-8"))))
 
 (defn parse-error*
   [{:keys [status] :as http-response} response-body]

@@ -10,8 +10,7 @@
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.service :as service]
             [cognitect.aws.client :as client]
-            [cognitect.aws.shape :as shape])
-  (:import [java.util Date]))
+            [cognitect.aws.shape :as shape]))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Serializer
@@ -159,18 +158,18 @@
 
 (defn build-http-request
   [{:keys [shapes operations metadata] :as service} {:keys [op request] :as op-map} serialize-body-args]
-  (let [operation (get operations op)
+  (let [operation        (get operations op)
         input-shape-name (-> operation :input :shape)
-        input-shape (service/shape service (:input operation))
-        http-request {:request-method (-> operation :http :method str/lower-case keyword)
-                      :scheme :https
-                      :server-port 443
-                      :uri (get-in operation [:http :requestUri])
-                      :headers {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}}]
+        input-shape      (service/shape service (:input operation))
+        http-request     {:request-method (-> operation :http :method str/lower-case keyword)
+                          :scheme         :https
+                          :server-port    443
+                          :uri            (get-in operation [:http :requestUri])
+                          :headers        (common/headers service operation)}]
     (if-not input-shape
       http-request
       (let [location->args (partition-args input-shape request)
-            body-args (:body location->args)]
+            body-args      (:body location->args)]
         (-> http-request
             (update :uri serialize-uri input-shape (:uri location->args))
             (update :uri append-querystring input-shape (:querystring location->args))
