@@ -9,10 +9,6 @@
    :name "cognitect.aws.credentials",
    :wiki-url "cognitect.aws.credentials-api.html",
    :source-url nil}
-  {:doc nil,
-   :name "cognitect.aws.http.cognitect",
-   :wiki-url "cognitect.aws.http.cognitect-api.html",
-   :source-url nil}
   {:doc
    "Region providers. Primarily for internal use, and subject to change.",
    :name "cognitect.aws.region",
