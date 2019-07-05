@@ -20,4 +20,7 @@
                           #"missing"
                           (protocols.rest/serialize-uri "/{Bucket}/{Key+}" {:required ["Bucket" "Key"]} {:Bucket "foo"})))))
 
-(run-tests)
+(comment
+  (run-tests)
+
+  )
