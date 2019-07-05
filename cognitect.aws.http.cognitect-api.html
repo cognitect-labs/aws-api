@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.http - aws-api API documentation</title>
+    <title>cognitect.aws.http.cognitect - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.http-api.html">cognitect.aws.http</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.http.cognitect-api.html">cognitect.aws.http.cognitect</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -51,77 +51,24 @@ namespace.
   <h1 class="nopad">Table of Contents</h1>
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
-    <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.http/-stop">-stop</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.http/-submit">-submit</a>
-    </div>
+    
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.http</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.http.cognitect</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.http</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.http.cognitect</span>
 <p></p>
 <h2>Overview</h2>
-<pre id="namespace-docstr">Impl, don't call directly.</pre>
+<pre id="namespace-docstr"></pre>
 
 
 <br />
 <h2>Public Variables and Functions</h2>
-<div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.http/-stop">-stop</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (-stop _)
-</pre>
-  <pre id="var-docstr">Stops the client, releasing resources</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.http/-submit">-submit</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (-submit _ request channel)
-</pre>
-  <pre id="var-docstr">Submit an http request, channel will be filled with response. Returns ch.
 
-Request map:
-
-:scheme                 :http or :https
-:server-name            string
-:server-port            integer
-:uri                    string
-:query-string           string, optional
-:request-method         :get/:post/:put/:head/:delete
-:headers                map from downcased string to string
-:body                   ByteBuffer, optional
-:timeout-msec           opt, total request send/receive timeout
-:meta                   opt, data to be added to the response map
-
-content-type must be specified in the headers map
-content-length is derived from the ByteBuffer passed to body
-
-Response map:
-
-:status            integer HTTP status code
-:body              ByteBuffer, optional
-:headers           map from downcased string to string
-:meta              opt, data from the request
-
-On error, response map is per cognitect.anomalies.
-
-Alpha. This will absolutely change.</pre>
-  
-  
-  
-</div>
 
 
 </div>

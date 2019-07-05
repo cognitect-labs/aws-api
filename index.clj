@@ -9,9 +9,9 @@
    :name "cognitect.aws.credentials",
    :wiki-url "cognitect.aws.credentials-api.html",
    :source-url nil}
-  {:doc "Impl, don't call directly.",
-   :name "cognitect.aws.http",
-   :wiki-url "cognitect.aws.http-api.html",
+  {:doc nil,
+   :name "cognitect.aws.http.cognitect",
+   :wiki-url "cognitect.aws.http.cognitect-api.html",
    :source-url nil}
   {:doc
    "Region providers. Primarily for internal use, and subject to change.",
@@ -29,25 +29,6 @@
    :source-url nil}),
  :vars
  ({:raw-source-url nil,
-   :name "-stop",
-   :file nil,
-   :source-url nil,
-   :var-type "function",
-   :arglists ([_]),
-   :doc "Stops the client, releasing resources",
-   :namespace "cognitect.aws.http",
-   :wiki-url "/cognitect.aws.http-api.html#cognitect.aws.http/-stop"}
-  {:raw-source-url nil,
-   :name "-submit",
-   :file nil,
-   :source-url nil,
-   :var-type "function",
-   :arglists ([_ request channel]),
-   :doc
-   "Submit an http request, channel will be filled with response. Returns ch.\n\nRequest map:\n\n:scheme                 :http or :https\n:server-name            string\n:server-port            integer\n:uri                    string\n:query-string           string, optional\n:request-method         :get/:post/:put/:head/:delete\n:headers                map from downcased string to string\n:body                   ByteBuffer, optional\n:timeout-msec           opt, total request send/receive timeout\n:meta                   opt, data to be added to the response map\n\ncontent-type must be specified in the headers map\ncontent-length is derived from the ByteBuffer passed to body\n\nResponse map:\n\n:status            integer HTTP status code\n:body              ByteBuffer, optional\n:headers           map from downcased string to string\n:meta              opt, data from the request\n\nOn error, response map is per cognitect.anomalies.\n\nAlpha. This will absolutely change.",
-   :namespace "cognitect.aws.http",
-   :wiki-url "/cognitect.aws.http-api.html#cognitect.aws.http/-submit"}
-  {:raw-source-url nil,
    :name "capped-exponential-backoff",
    :file "src/cognitect/aws/retry.clj",
    :source-url nil,
