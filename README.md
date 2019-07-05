@@ -218,10 +218,11 @@ the `:path` in the `:endpoint-override` map.
 
 The aws-api client uses an http-client to send requests to AWS,
 including any operations you invoke _and_ fetching the region and
-credentials when you're running in EC2. By default, each aws-api
-client creates its own http-client, which, in turn, manages its own
-resources. Invoke `cognitect.aws.client.api/stop` on the client if you
-want it to shut down any resources it and its http-client are using.
+credentials when you're running in EC2 or ECS. By default, each
+aws-api client creates its own http-client, which, in turn, manages
+its own resources. Invoke `cognitect.aws.client.api/stop` on the
+client if you want it to shut down any resources it and its
+http-client are using.
 
 If you're creating multiple aws-api clients, you can, optionally,
 create a single http-client and share it across aws-api clients e.g.

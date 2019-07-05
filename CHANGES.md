@@ -1,5 +1,15 @@
 # aws-api 0.8
 
+## DEV
+
+* use clojure.data.xml instead of clojure.xml
+  * resolves Illegal Reflective Access warnings in java 11 [#19](https://github.com/cognitect-labs/aws-api/issues/19)
+* upgrade cognitect http-client
+  * upgrades jetty to 9.4 [#81](https://github.com/cognitect-labs/aws-api/issues/81)
+  * resolves Illegal Reflective Access warnings in java 11 [#19](https://github.com/cognitect-labs/aws-api/issues/19)
+* share http-client across aws-api clients [#80](https://github.com/cognitect-labs/aws-api/issues/80)
+* add Content-Type header for rest-json requests [#84](https://github.com/cognitect-labs/aws-api/issues/84)
+
 ## 0.8.305 / 2019-05-10
 
 * add x-amz-glacier-version header to glacier requests [#74](https://github.com/cognitect-labs/aws-api/issues/74)
