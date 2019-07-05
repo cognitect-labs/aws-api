@@ -7,7 +7,7 @@
     "Submit an http request, channel will be filled with response. Returns ch.
 
      Request map:
-     
+
      :protocol               :http or :https
      :server-name            string
      :server-port            integer
