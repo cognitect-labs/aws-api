@@ -13,7 +13,7 @@
             [clojure.test :refer :all]
             [clojure.java.io :as io]))
 
-(use-fixtures :once ec2-metadata-utils-test/test-fixture)
+(use-fixtures :once ec2-metadata-utils-test/test-server)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; tests

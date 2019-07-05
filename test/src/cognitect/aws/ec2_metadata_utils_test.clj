@@ -11,7 +11,7 @@
 (def ^:dynamic *test-server-port*)
 (def ^:dynamic *http-client*)
 
-(defn test-fixture
+(defn test-server
   [f]
   ;; NOTE: starting w/ 0 generates a random port
   (let [server-stop-fn (ec2-metadata-utils-server/start 0)
@@ -21,15 +21,13 @@
                           (str "http://localhost:" test-server-port))
       (binding [*test-server-port* test-server-port
                 *http-client* (http/resolve-http-client 'cognitect.aws.http.cognitect/create)]
-        (f))
+        (f)
+        (http/stop *http-client*))
       (finally
         (server-stop-fn)
         (System/clearProperty ec2-metadata-utils/ec2-metadata-service-override-system-property)))))
 
-(use-fixtures :once test-fixture)
-
-(deftest get-ec2-instance-region
-  (is (= "us-east-1" (ec2-metadata-utils/get-ec2-instance-region *http-client*))))
+(use-fixtures :once test-server)
 
 (deftest returns-nil-after-retries
   (with-redefs [http/submit (constantly

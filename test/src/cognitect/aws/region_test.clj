@@ -7,9 +7,9 @@
             [cognitect.aws.region :as region]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
-            [cognitect.aws.ec2-metadata-utils-test :as ec2]))
+            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]))
 
-(use-fixtures :once ec2/test-fixture)
+(use-fixtures :once ec2-metadata-utils-test/test-server)
 
 (deftest chain-region-provider-test
   (let [r  "us-east-1"
@@ -41,7 +41,7 @@
 
 (deftest instance-region-provider-test
   (testing "The provider obtains the region from the instance metadata correctly."
-    (is (= "us-east-1" (region/fetch (region/instance-region-provider ec2/*http-client*))))))
+    (is (= "us-east-1" (region/fetch (region/instance-region-provider ec2-metadata-utils-test/*http-client*))))))
 
 (comment
   (run-tests)
