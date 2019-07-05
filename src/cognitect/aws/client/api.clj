@@ -20,8 +20,8 @@
 (declare ops)
 
 (defn client
-  "Given a config map, create a client for specified api. Supported keys
-  in config are:
+  "Given a config map, create a client for specified api. Supported keys:
+
   :api                  - required, this or api-descriptor required, the name of the api
                           you want to interact with e.g. :s3, :cloudformation, etc
   :region               - optional, the aws region serving the API endpoints you
@@ -31,6 +31,10 @@
                           cognitect.aws.credentials/CredentialsProvider
                           protocol, defaults to
                           cognitect.aws.credentials/default-credentials-provider
+  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
+                          protocol, defaults to cognitect.aws.region/default-region-provider
+  :http-client          - optional, to share http-clients across aws-clients.
+                          See default-http-client.
   :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                             :protocol     - :http or :https
                             :hostname     - string
@@ -42,8 +46,6 @@
                           Also supports a string representing just the hostname, though
                           support for a string is deprectated and may be removed in the
                           future.
-  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                          protocol, defaults to cognitect.aws.region/default-region-provider
   :retriable?           - optional, fn of http-response (see cognitect.aws.http/submit).
                           Should return a boolean telling the client whether or
                           not the request is retriable.  The default,
@@ -95,6 +97,11 @@
                                             (update :endpoint select-keys [:hostname :protocols :signatureVersions])
                                             (update :service select-keys [:metadata])
                                             (assoc :ops (ops c))))})))
+
+(defn default-http-client
+  "Create an http-client to share across multiple aws-api clients."
+  []
+  (http/resolve-http-client nil))
 
 (defn invoke
   "Package and send a request to AWS and return the result.
@@ -199,6 +206,9 @@
 
 (defn stop
   "Shuts down the http-client, releasing resources.
+
+  NOTE: you may not want to do this if you're sharing http-clients across
+  aws-api clients.
 
   Alpha. Subject to change."
   [client]
