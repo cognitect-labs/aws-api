@@ -1,4 +1,4 @@
-(ns cognitect.aws.http.cognitect
+(ns ^:skip-wiki cognitect.aws.http.cognitect
   (:require [cognitect.http-client :as impl]
             [cognitect.aws.http :as aws]))
 
