@@ -214,6 +214,29 @@ the connection to which you're posting (see
 The client will append the `:ConnectionId` in the `:request` map to
 the `:path` in the `:endpoint-override` map.
 
+## http-client
+
+The aws-api client uses an http-client to send requests to AWS,
+including any operations you invoke _and_ fetching the region and
+credentials when you're running in EC2. By default, each aws-api
+client creates its own http-client, which, in turn, manages its own
+resources. Invoke `cognitect.aws.client.api/stop` on the client if you
+want it to shut down any resources it and its http-client are using.
+
+If you're creating multiple aws-api clients, you can, optionally,
+create a single http-client and share it across aws-api clients e.g.
+
+``` clojure
+(require '[cognitect.aws.client.api :as aws])
+(def http-client (aws/default-http-client))
+(def s3-client (aws/client {:api :s3 :http-client http-client}))
+(def ssm-client (aws/client {:api :ssm :http-client http-client}))
+;; etc
+```
+
+If you call `stop` on `s3-client` or `ssm-client` in this example, the
+single http-client gets shut down for both.
+
 ## Contributing
 
 This library is open source, developed internally by Cognitect.
