@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.335 / 2019-07-05
 
 * use clojure.data.xml instead of clojure.xml
   * resolves Illegal Reflective Access warnings in java 11 [#19](https://github.com/cognitect-labs/aws-api/issues/19)
