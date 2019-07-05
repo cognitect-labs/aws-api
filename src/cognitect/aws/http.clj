@@ -1,4 +1,5 @@
 (ns cognitect.aws.http
+  "Impl, don't call directly."
   (:require [clojure.edn :as edn]
             [clojure.core.async :as a]))
 
@@ -8,17 +9,16 @@
 
      Request map:
 
-     :protocol               :http or :https
+     :scheme                 :http or :https
      :server-name            string
      :server-port            integer
-     :path                   string
+     :uri                    string
      :query-string           string, optional
      :request-method         :get/:post/:put/:head/:delete
      :headers                map from downcased string to string
      :body                   ByteBuffer, optional
      :timeout-msec           opt, total request send/receive timeout
      :meta                   opt, data to be added to the response map
-     :response-chunk-size TBD
 
      content-type must be specified in the headers map
      content-length is derived from the ByteBuffer passed to body
@@ -30,7 +30,9 @@
      :headers           map from downcased string to string
      :meta              opt, data from the request
 
-     On error, response map is per cognitect.anomalies")
+     On error, response map is per cognitect.anomalies.
+
+     Alpha. This will absolutely change.")
   (-stop [_] "Stops the client, releasing resources"))
 
 (defn submit
@@ -47,6 +49,7 @@
   [url]
   (-> url slurp edn/read-string))
 
+;; TODO consider providing config arguments to http constructor
 (defn dynaload-client
   []
   (let [cl (.. Thread currentThread getContextClassLoader)
@@ -67,5 +70,3 @@
       (throw (ex-info "not an http client" {:provided http-client
                                             :resolved c})))
     c))
-
-;; TODO consider providing config arguments to http constructor
