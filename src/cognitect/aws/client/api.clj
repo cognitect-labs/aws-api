@@ -205,10 +205,11 @@
                (str "No docs for " (name operation)))))
 
 (defn stop
-  "Shuts down the http-client, releasing resources.
+  "Shuts down the underlying http-client, releasing resources.
 
-  NOTE: you may not want to do this if you're sharing http-clients across
-  aws-api clients.
+  NOTE: if you're sharing an http-client across aws-api clients,
+  this will shut down the shared client for all aws-api clients
+  that are using it.
 
   Alpha. Subject to change."
   [client]
