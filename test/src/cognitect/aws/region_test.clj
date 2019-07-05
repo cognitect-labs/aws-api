@@ -41,7 +41,9 @@
 
 (deftest instance-region-provider-test
   (testing "The provider obtains the region from the instance metadata correctly."
-    (is (= "us-east-1" (region/fetch (region/instance-region-provider))))))
+    (is (= "us-east-1" (region/fetch (region/instance-region-provider ec2/*http-client*))))))
 
 (comment
-  (run-tests))
+  (run-tests)
+
+  )

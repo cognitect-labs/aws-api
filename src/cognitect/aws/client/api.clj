@@ -44,7 +44,7 @@
                           future.
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                           protocol, defaults to cognitect.aws.region/default-region-provider
-  :retriable?           - optional, fn of http-response (see cognitect.http-client/submit).
+  :retriable?           - optional, fn of http-response (see cognitect.aws.http/submit).
                           Should return a boolean telling the client whether or
                           not the request is retriable.  The default,
                           cognitect.aws.retry/default-retriable?, returns
@@ -66,11 +66,13 @@
       "DEPRECATION NOTICE: :endpoint-override string is deprecated.\nUse {:endpoint-override {:hostname \"%s\"}} instead."
       endpoint-override)))
   (let [service   (service/service-description (name api))
+        http-client (http/resolve-http-client http-client)
         region    (keyword
                    (or region
                        (region/fetch
                         (or region-provider
-                            (region/default-region-provider)))))]
+                            (region/default-region-provider http-client)))))]
+
     (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (with-meta
       (client/->Client
@@ -84,8 +86,8 @@
                        (throw (ex-info "No known endpoint." {:service api :region region})))
         :retriable?  (or retriable? retry/default-retriable?)
         :backoff     (or backoff retry/default-backoff)
-        :http-client (http/resolve-http-client http-client)
-        :credentials (or credentials-provider @credentials/global-provider)})
+        :http-client http-client
+        :credentials (or credentials-provider (credentials/default-credentials-provider http-client))})
       {'clojure.core.protocols/datafy (fn [c]
                                         (-> c
                                             client/-get-info

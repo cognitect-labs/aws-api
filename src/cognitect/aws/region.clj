@@ -88,9 +88,9 @@
   or nil if the service can not be found.
 
   Alpha. Subject to change."
-  []
+  [http-client]
   (reify RegionProvider
-    (fetch [_] (valid-region (ec2/get-ec2-instance-region)))))
+    (fetch [_] (valid-region (ec2/get-ec2-instance-region http-client)))))
 
 
 (defn default-region-provider
@@ -102,9 +102,9 @@
     instance-region-provider
 
   Alpha. Subject to change."
-  []
+  [http-client]
   (chain-region-provider
    [(environment-region-provider)
     (system-property-region-provider)
     (profile-region-provider)
-    (instance-region-provider)]))
+    (instance-region-provider http-client)]))

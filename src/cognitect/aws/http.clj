@@ -1,5 +1,6 @@
 (ns cognitect.aws.http
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [clojure.core.async :as a]))
 
 (defprotocol HttpClient
   (-submit [_ request channel]
@@ -18,23 +19,25 @@
      :timeout-msec           opt, total request send/receive timeout
      :meta                   opt, data to be added to the response map
      :response-chunk-size TBD
-     
+
      content-type must be specified in the headers map
      content-length is derived from the ByteBuffer passed to body
-     
+
      Response map:
-     
+
      :status            integer HTTP status code
      :body              ByteBuffer, optional
      :headers           map from downcased string to string
      :meta              opt, data from the request
-     
+
      On error, response map is per cognitect.anomalies")
   (-stop [_] "Stops the client, releasing resources"))
 
 (defn submit
-  [client request channel]
-  (-submit client request channel))
+  ([client request]
+   (-submit client request (a/chan 1)))
+  ([client request channel]
+   (-submit client request channel)))
 
 (defn client?
   [c]

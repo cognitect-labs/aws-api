@@ -6,7 +6,7 @@
   (:require [clojure.string :as str]
             [clojure.data.json :as json]
             [clojure.core.async :as a]
-            [cognitect.http-client :as http]
+            [cognitect.aws.http :as http]
             [cognitect.aws.util :as u]
             [cognitect.aws.retry :as retry])
   (:import (java.net URI)))
@@ -51,9 +51,9 @@
    :request-method :get
    :headers {:accept "*/*"}})
 
-(defn get-data [uri]
+(defn get-data [uri http-client]
   (let [response (a/<!! (retry/with-retry
-                          #(http/submit (http/create {}) (request-map (URI. uri)))
+                          #(http/submit http-client (request-map (URI. uri)))
                           (a/promise-chan)
                           retry/default-retriable?
                           retry/default-backoff))]
@@ -61,32 +61,32 @@
     (when (= 200 (:status response))
       (u/bbuf->str (:body response)))))
 
-(defn get-data-at-path [path]
-  (get-data (build-uri (get-host-address) path)))
+(defn get-data-at-path [path http-client]
+  (get-data (build-uri (get-host-address) path) http-client))
 
-(defn get-listing [uri]
-  (some-> (get-data uri) str/split-lines))
+(defn get-listing [uri http-client]
+  (some-> (get-data uri http-client) str/split-lines))
 
-(defn get-listing-at-path [path]
-  (get-listing (build-uri (get-host-address) path)))
+(defn get-listing-at-path [path http-client]
+  (get-listing (build-uri (get-host-address) path) http-client))
 
-(defn get-ec2-instance-data []
+(defn get-ec2-instance-data [http-client]
   (some-> (build-path dynamic-data-root instance-identity-document)
-          get-data-at-path
+          (get-data-at-path http-client)
           (json/read-str :key-fn keyword)))
 
 (defn get-ec2-instance-region
-  []
-  (:region (get-ec2-instance-data)))
+  [http-client]
+  (:region (get-ec2-instance-data http-client)))
 
-(defn container-credentials []
+(defn container-credentials [http-client]
   (let [endpoint (or (when-let [path (u/getenv container-credentials-relative-uri-env-var)]
                        (str (get-host-address) path))
                      (u/getenv container-credentials-full-uri-env-var))]
-    (some-> endpoint get-data (json/read-str :key-fn keyword))))
+    (some-> endpoint (get-data http-client) (json/read-str :key-fn keyword))))
 
-(defn instance-credentials []
+(defn instance-credentials [http-client]
   (when (not (in-container?))
-    (when-let [cred-name (first (get-listing-at-path security-credentials-path))]
-      (some-> (get-data-at-path (str security-credentials-path cred-name))
+    (when-let [cred-name (first (get-listing-at-path security-credentials-path http-client))]
+      (some-> (get-data-at-path (str security-credentials-path cred-name) http-client)
               (json/read-str :key-fn keyword)))))

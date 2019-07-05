@@ -238,16 +238,18 @@
     3600))
 
 (defn container-credentials-provider
-  "Return credentials from ECS iff one of
+  "For internal use. Do not call directly.
+
+  Return credentials from ECS iff one of
   AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
   AWS_CONTAINER_CREDENTIALS_FULL_URI is set.
 
   Alpha. Subject to change."
-  []
+  [http-client]
   (auto-refreshing-credentials
    (reify CredentialsProvider
      (fetch [_]
-       (when-let [creds (ec2/container-credentials)]
+       (when-let [creds (ec2/container-credentials http-client)]
          (valid-credentials
           {:aws/access-key-id     (:AccessKeyId creds)
            :aws/secret-access-key (:SecretAccessKey creds)
@@ -264,11 +266,11 @@
   is set.
 
   Alpha. Subject to change."
-  []
+  [http-client]
   (auto-refreshing-credentials
    (reify CredentialsProvider
      (fetch [_]
-       (when-let [creds (ec2/instance-credentials)]
+       (when-let [creds (ec2/instance-credentials http-client)]
          (valid-credentials
           {:aws/access-key-id     (:AccessKeyId creds)
            :aws/secret-access-key (:SecretAccessKey creds)
@@ -286,15 +288,13 @@
     instance-profile-credentials-provider
 
   Alpha. Subject to change."
-  []
+  [http-client]
   (chain-credentials-provider
    [(environment-credentials-provider)
     (system-property-credentials-provider)
     (profile-credentials-provider)
-    (container-credentials-provider)
-    (instance-profile-credentials-provider)]))
-
-(def global-provider (delay (default-credentials-provider)))
+    (container-credentials-provider http-client)
+    (instance-profile-credentials-provider http-client)]))
 
 (defn basic-credentials-provider
   "Given a map with :access-key-id and :secret-access-key,

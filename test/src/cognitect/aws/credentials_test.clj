@@ -111,7 +111,8 @@
   (testing "The provider reads container metadata correctly."
     (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-relative-uri-env-var
                                             ec2-metadata-utils/security-credentials-path})]
-      (let [creds (credentials/fetch (credentials/container-credentials-provider))]
+      (let [creds (credentials/fetch (credentials/container-credentials-provider
+                                      ec2-metadata-utils-test/*http-client*))]
         (is (= {:aws/access-key-id "foobar"
                 :aws/secret-access-key "it^s4$3cret!"
                 :aws/session-token "norealvalue"}
@@ -121,7 +122,8 @@
                                             (str "http://localhost:"
                                                  ec2-metadata-utils-test/*test-server-port*
                                                  ec2-metadata-utils/security-credentials-path)})]
-      (let [creds (credentials/fetch (credentials/container-credentials-provider))]
+      (let [creds (credentials/fetch (credentials/container-credentials-provider
+                                      ec2-metadata-utils-test/*http-client*))]
         (is (= {:aws/access-key-id "foobar"
                 :aws/secret-access-key "it^s4$3cret!"
                 :aws/session-token "norealvalue"}
@@ -130,7 +132,8 @@
 
 (deftest instance-profile-credentials-provider-test
   (testing "The provider reads ec2 metadata correctly."
-    (let [creds (credentials/fetch (credentials/instance-profile-credentials-provider))]
+    (let [creds (credentials/fetch (credentials/instance-profile-credentials-provider
+                                    ec2-metadata-utils-test/*http-client*))]
       (is (= {:aws/access-key-id "foobar"
               :aws/secret-access-key "it^s4$3cret!"
               :aws/session-token "norealvalue"}
