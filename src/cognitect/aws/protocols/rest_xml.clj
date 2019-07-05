@@ -6,8 +6,7 @@
   (:require [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]
             [cognitect.aws.protocols.common :as common]
-            [cognitect.aws.protocols.rest :as rest])
-  (:import [java.util Date]))
+            [cognitect.aws.protocols.rest :as rest]))
 
 (defmethod client/build-http-request "rest-xml"
   [{:keys [shapes operations metadata] :as service} op-map]

@@ -9,8 +9,7 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]
             [cognitect.aws.protocols.common :as common]
-            [cognitect.aws.protocols.query :as query])
-  (:import (java.util Date)))
+            [cognitect.aws.protocols.query :as query]))
 
 (defn serialized-name
   [shape default]
