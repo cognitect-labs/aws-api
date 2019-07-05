@@ -41,6 +41,10 @@
   ([client request channel]
    (-submit client request channel)))
 
+(defn stop
+  [client]
+  (-stop client))
+
 (defn client?
   [c]
   (satisfies? HttpClient c))
