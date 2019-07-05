@@ -1,4 +1,4 @@
-(ns cognitect.aws.http
+(ns ^:skip-wiki cognitect.aws.http
   "Impl, don't call directly."
   (:require [clojure.edn :as edn]
             [clojure.core.async :as a]))
