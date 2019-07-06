@@ -1,6 +1,6 @@
 # aws-api 0.8
 
-## DEV
+## 0.8.342 / 2019-07-06
 
 * skip whitespace when reading XML [#85](https://github.com/cognitect-labs/aws-api/issues/85)
 
