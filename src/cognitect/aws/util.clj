@@ -135,7 +135,8 @@
   "Parse the UTF-8 XML string."
   [s]
   (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))
-             :namespace-aware false))
+             :namespace-aware false
+             :skip-whitespace true))
 
 (defn xml->map [element]
   (cond
@@ -174,7 +175,6 @@
             (xml-write c))
           (print (str "</" (name (:tag e)) ">")))
         (print " />")))))
-
 
 (defn url-encode
   "Percent encode the string to put in a URL."

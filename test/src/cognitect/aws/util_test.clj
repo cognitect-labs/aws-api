@@ -28,3 +28,21 @@
     (let [bb (ByteBuffer/wrap (.getBytes "hi"))]
       (util/sha-256 bb)
       (is (= "hi" (util/bbuf->str bb))))))
+
+(deftest test-xml-read
+  (testing "removes whitespace-only nodes, preserving whitespace in single text nodes"
+    (let [parsed (util/xml-read "<outer>
+                                  outer-value
+                                  <inner>
+                                     inner-value
+                                  </inner>
+                                </outer>")]
+      (is (= 2 (count (-> parsed :content))))
+      (is (re-matches #"\n\s+outer-value\s+" (-> parsed :content first)))
+      (is (= 1 (count (-> parsed :content last :content))))
+      (is (re-matches #"\n\s+inner-value\s+" (-> parsed :content last :content first))))))
+
+(comment
+  (run-tests)
+
+  )
