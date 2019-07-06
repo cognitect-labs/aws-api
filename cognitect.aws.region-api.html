@@ -51,7 +51,21 @@ namespace.
   <h1 class="nopad">Table of Contents</h1>
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
-    
+    <div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/chain-region-provider">chain-region-provider</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/default-region-provider">default-region-provider</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/environment-region-provider">environment-region-provider</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/fetch">fetch</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/instance-region-provider">instance-region-provider</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/profile-region-provider">profile-region-provider</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/system-property-region-provider">system-property-region-provider</a>
+    </div>
     <br />
   </div>
 </div>
@@ -68,7 +82,117 @@ namespace.
 
 <br />
 <h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/chain-region-provider">chain-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (chain-region-provider providers)
+</pre>
+  <pre id="var-docstr">Chain together multiple region providers.
 
+Calls each provider in order until one return a non-nil result.
+
+Returns nil if none of the providers return a region.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/default-region-provider">default-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (default-region-provider http-client)
+</pre>
+  <pre id="var-docstr">Return a chain-region-provider comprising, in order:
+
+  environment-region-provider
+  system-property-region-provider
+  profile-region-provider
+  instance-region-provider
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/environment-region-provider">environment-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (environment-region-provider)
+</pre>
+  <pre id="var-docstr">Return the region from the AWS_REGION env var, or nil if not present.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/fetch">fetch</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (fetch _)
+</pre>
+  <pre id="var-docstr">Returns the region found by this provider, or nil.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/instance-region-provider">instance-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (instance-region-provider http-client)
+</pre>
+  <pre id="var-docstr">Return the region from the ec2 instance's metadata service,
+or nil if the service can not be found.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/profile-region-provider">profile-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (profile-region-provider)
+       (profile-region-provider profile-name)
+       (profile-region-provider profile-name f)
+</pre>
+  <pre id="var-docstr">Return the region in a AWS configuration profile.
+
+Arguments:
+
+  f             File    The profile configuration file. (default: ~/.aws/config)
+  profile-name  string  The name of the profile in the file. (default: default)
+
+Parsed properties:
+
+  region        required
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.region/system-property-region-provider">system-property-region-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (system-property-region-provider)
+</pre>
+  <pre id="var-docstr">Return the region from the aws.region system property, or nil if not present.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div>
 
 
 </div>

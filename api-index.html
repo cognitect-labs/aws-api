@@ -77,35 +77,50 @@ Shortcuts:<br />
 <div id="index-body">
   <h2 id="A"><span id="section-head">A</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/auto-refreshing-credentials">auto-refreshing-credentials</a><span id="line-content">  function      cognitect.aws.credentials Create auto-refreshing credentials using th...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="B"><span id="section-head">B</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/basic-credentials-provider">basic-credentials-provider</a><span id="line-content">   function      cognitect.aws.credentials Given a map with :access-key-id and :secret...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="C"><span id="section-head">C</span></h2>
   <pre>
 <span id="section-content"> <a href="cognitect.aws.retry-api.html#cognitect.aws.retry/capped-exponential-backoff">capped-exponential-backoff</a><span id="line-content">   function      cognitect.aws.retry Returns a function of the num-retries (so far), w...
+</span></span><span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/chain-credentials-provider">chain-credentials-provider</a><span id="line-content">   function      cognitect.aws.credentials Chain together multiple credentials provide...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/chain-region-provider">chain-region-provider</a><span id="line-content">        function      cognitect.aws.region Chain together multiple region providers.  Calls...
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/client">client</a><span id="line-content">                       function      cognitect.aws.client.api Given a config map, create a client for spec...
+</span></span><span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/container-credentials-provider">container-credentials-provider</a><span id="line-content"> function    cognitect.aws.credentials For internal use. Do not call directly.  Re...
 </span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="D"><span id="section-head">D</span></h2>
   <pre>
 <span id="section-content"> <a href="cognitect.aws.retry-api.html#cognitect.aws.retry/default-backoff">default-backoff</a><span id="line-content">              var           cognitect.aws.retry Returns (capped-exponential-backoff 100 20000 3)....
+</span></span><span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/default-credentials-provider">default-credentials-provider</a><span id="line-content"> function      cognitect.aws.credentials Return a chain-credentials-provider compris...
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/default-http-client">default-http-client</a><span id="line-content">          function      cognitect.aws.client.api Create an http-client to share across multip...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/default-region-provider">default-region-provider</a><span id="line-content">      function      cognitect.aws.region Return a chain-region-provider comprising, in or...
 </span></span><span id="section-content"> <a href="cognitect.aws.retry-api.html#cognitect.aws.retry/default-retriable?">default-retriable?</a><span id="line-content">           var           cognitect.aws.retry A fn of http-response which returns true if http-...
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc">doc</a><span id="line-content">                          function      cognitect.aws.client.api Given a client and an operation (keyword), p...
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc-str">doc-str</a><span id="line-content">                      function      cognitect.aws.client.api Given data produced by `ops`, returns a stri...
 </span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="E"><span id="section-head">E</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/environment-credentials-provider">environment-credentials-provider</a><span id="line-content"> function  cognitect.aws.credentials Return the credentials from the environment...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/environment-region-provider">environment-region-provider</a><span id="line-content">  function      cognitect.aws.region Return the region from the AWS_REGION env var, o...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="F"><span id="section-head">F</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch">fetch</a><span id="line-content">                        function      cognitect.aws.credentials Return the credentials found by this provid...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/fetch">fetch</a><span id="line-content">                        function      cognitect.aws.region Returns the region found by this provider, or ni...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="G"><span id="section-head">G</span></h2>
@@ -120,7 +135,10 @@ Shortcuts:<br />
 </div><div id="index-body">
   <h2 id="I"><span id="section-head">I</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-credentials-provider">instance-profile-credentials-provider</a><span id="line-content"> function cognitect.aws.credentials For internal use. Do not call directly.  Re...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/instance-region-provider">instance-region-provider</a><span id="line-content">     function      cognitect.aws.region Return the region from the ec2 instance's metada...
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke">invoke</a><span id="line-content">                       function      cognitect.aws.client.api Package and send a request to AWS and return...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="J"><span id="section-head">J</span></h2>
@@ -150,12 +168,15 @@ Shortcuts:<br />
 </div><div id="index-body">
   <h2 id="O"><span id="section-head">O</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/ops">ops</a><span id="line-content">                          function      cognitect.aws.client.api Returns a map of operation name to operation...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="P"><span id="section-head">P</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/profile-credentials-provider">profile-credentials-provider</a><span id="line-content"> function      cognitect.aws.credentials Return credentials in an AWS configuration ...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/profile-region-provider">profile-region-provider</a><span id="line-content">      function      cognitect.aws.region Return the region in a AWS configuration profile...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="Q"><span id="section-head">Q</span></h2>
@@ -165,12 +186,18 @@ Shortcuts:<br />
 </div><div id="index-body">
   <h2 id="R"><span id="section-head">R</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/request-spec-key">request-spec-key</a><span id="line-content">             function      cognitect.aws.client.api Returns the key for the request spec for op....
+</span></span><span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/response-spec-key">response-spec-key</a><span id="line-content">            function      cognitect.aws.client.api Returns the key for the response spec for op...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="S"><span id="section-head">S</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/stop">stop</a><span id="line-content">                         function      cognitect.aws.client.api Shuts down the underlying http-client, relea...
+</span></span><span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/stop">stop</a><span id="line-content">                         function      cognitect.aws.credentials Stop auto-refreshing the credentials.  Alph...
+</span></span><span id="section-content"> <a href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/system-property-credentials-provider">system-property-credentials-provider</a><span id="line-content"> function cognitect.aws.credentials Return the credentials from the system prop...
+</span></span><span id="section-content"> <a href="cognitect.aws.region-api.html#cognitect.aws.region/system-property-region-provider">system-property-region-provider</a><span id="line-content"> function   cognitect.aws.region Return the region from the aws.region system pro...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="T"><span id="section-head">T</span></h2>
@@ -185,7 +212,8 @@ Shortcuts:<br />
 </div><div id="index-body">
   <h2 id="V"><span id="section-head">V</span></h2>
   <pre>
-
+<span id="section-content"> <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/validate-requests">validate-requests</a><span id="line-content">            function      cognitect.aws.client.api Given true, uses clojure.spec to validate al...
+</span></span>
   </pre>
 </div><div id="index-body">
   <h2 id="W"><span id="section-head">W</span></h2>
