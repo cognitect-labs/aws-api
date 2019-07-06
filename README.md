@@ -70,7 +70,7 @@ of your choice, e.g. `com.cognitect.aws/s3`.
 To use, for example, the s3 api, add the following to deps.edn
 
 ``` clojure
-{:deps {com.cognitect.aws/api       {:mvn/version "0.8.342"}
+{:deps {com.cognitect.aws/api       {:mvn/version "0.8.345"}
         com.cognitect.aws/endpoints {:mvn/version "1.1.11.586"}
         com.cognitect.aws/s3        {:mvn/version "726.2.488.0"}}}
 ```
