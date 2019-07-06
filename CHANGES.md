@@ -1,6 +1,10 @@
 # aws-api 0.8
 
-## 0.8.342 / 2019-07-06
+## DEV
+
+Update pom.xml [#86](https://github.com/cognitect-labs/aws-api/issues/86)
+
+## ~~0.8.342 / 2019-07-06~~
 
 * skip whitespace when reading XML [#85](https://github.com/cognitect-labs/aws-api/issues/85)
 
