@@ -53,24 +53,41 @@
   [url]
   (-> url slurp edn/read-string))
 
-;; TODO consider providing config arguments to http constructor
-(defn dynaload-client
-  []
-  (let [cl (.. Thread currentThread getContextClassLoader)
-        found (enumeration-seq (.getResources cl "cognitect_aws_http.edn"))]
-    (case (count found)
-      0 (throw (ex-info "no clients found" {}))
-      1 ((requiring-resolve (-> found first read-config :constructor-var)))
+(defonce ^:private dynalock (Object.))
 
-      (throw (ex-info "too many http clients, pick one" {:found found})))))
+(defn- dynaload
+  [s]
+  (let [ns (namespace s)]
+    (assert ns)
+    (locking dynalock
+      (require (symbol ns)))
+    (if-let [v (resolve s)]
+      @v
+      (throw (RuntimeException. (str "Var " s " is not on the classpath"))))))
+
+;; TODO consider providing config arguments to http constructor
+(defn- configured-client
+  "If a single cognitect_aws_http.edn is found on the classpath,
+  returns the symbol bound to :constructor-var.
+
+  Throws if 0 or > 1 cognitect_aws_http.edn files are found.
+  "
+  []
+  (let [cl   (.. Thread currentThread getContextClassLoader)
+        cfgs (enumeration-seq (.getResources cl "cognitect_aws_http.edn"))]
+    (case (count cfgs)
+      0 (throw (RuntimeException. "Could not find cognitect_aws_http.edn on classpath."))
+      1 (-> cfgs first read-config :constructor-var)
+
+      (throw (ex-info "Found too many http-client cfgs. Pick one." {:config cfgs})))))
 
 (defn resolve-http-client
-  [http-client]
-  (let [c (or (when (symbol? http-client)
-                ((requiring-resolve http-client)))
-              http-client
-              (dynaload-client))]
+  [http-client-or-sym]
+  (let [c (or (when (symbol? http-client-or-sym)
+                ((dynaload http-client-or-sym)))
+              http-client-or-sym
+              ((dynaload (configured-client))))]
     (when-not (client? c)
-      (throw (ex-info "not an http client" {:provided http-client
+      (throw (ex-info "not an http client" {:provided http-client-or-sym
                                             :resolved c})))
     c))
