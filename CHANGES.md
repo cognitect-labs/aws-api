@@ -1,8 +1,13 @@
 # aws-api 0.8
 
+### DEV
+
+* Use custom dynaload for http-client [#88](https://github.com/cognitect-labs/aws-api/issues/88)
+  * Restores compatibility with Clojure-1.9
+
 ## 0.8.345 / 2019-07-06
 
-Update pom.xml [#86](https://github.com/cognitect-labs/aws-api/issues/86)
+* Update pom.xml [#86](https://github.com/cognitect-labs/aws-api/issues/86)
 
 ## ~~0.8.342 / 2019-07-06~~
 
