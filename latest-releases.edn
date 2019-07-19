@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.345"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.590"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.592"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -22,7 +22,7 @@
  {:mvn/version "701.2.393.0",
   :aws/serviceFullName "AmazonApiGatewayManagementApi"},
  com.cognitect.aws/apigatewayv2
- {:mvn/version "726.2.483.0",
+ {:mvn/version "736.2.493.0",
   :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/application-autoscaling
  {:mvn/version "711.2.412.0",
@@ -39,7 +39,7 @@
  com.cognitect.aws/athena
  {:mvn/version "707.2.409.0", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/autoscaling
- {:mvn/version "712.2.426.0", :aws/serviceFullName "Auto Scaling"},
+ {:mvn/version "736.2.494.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
  {:mvn/version "711.2.413.0",
   :aws/serviceFullName "AWS Auto Scaling Plans"},
@@ -82,7 +82,7 @@
  com.cognitect.aws/codecommit
  {:mvn/version "726.2.483.0", :aws/serviceFullName "AWS CodeCommit"},
  com.cognitect.aws/codedeploy
- {:mvn/version "719.2.463.0", :aws/serviceFullName "AWS CodeDeploy"},
+ {:mvn/version "736.2.495.0", :aws/serviceFullName "AWS CodeDeploy"},
  com.cognitect.aws/codepipeline
  {:mvn/version "718.2.456.0", :aws/serviceFullName "AWS CodePipeline"},
  com.cognitect.aws/codestar
@@ -97,13 +97,13 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Cognito Sync"},
  com.cognitect.aws/comprehend
- {:mvn/version "718.2.455.0",
+ {:mvn/version "736.2.495.0",
   :aws/serviceFullName "Amazon Comprehend"},
  com.cognitect.aws/comprehendmedical
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Comprehend Medical"},
  com.cognitect.aws/config
- {:mvn/version "729.2.490.0", :aws/serviceFullName "AWS Config"},
+ {:mvn/version "736.2.494.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Connect Service"},
@@ -133,7 +133,7 @@
  {:mvn/version "722.2.465.0",
   :aws/serviceFullName "Amazon Data Lifecycle Manager"},
  com.cognitect.aws/dms
- {:mvn/version "712.2.423.0",
+ {:mvn/version "736.2.494.0",
   :aws/serviceFullName "AWS Database Migration Service"},
  com.cognitect.aws/docdb
  {:mvn/version "726.2.486.0",
@@ -153,13 +153,13 @@
  {:mvn/version "701.2.394.0",
   :aws/serviceFullName "Amazon EC2 Container Registry"},
  com.cognitect.aws/ecs
- {:mvn/version "722.2.470.0",
+ {:mvn/version "736.2.495.0",
   :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
  {:mvn/version "726.2.482.0",
   :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elasticache
- {:mvn/version "723.2.475.0",
+ {:mvn/version "736.2.495.0",
   :aws/serviceFullName "Amazon ElastiCache"},
  com.cognitect.aws/elasticbeanstalk
  {:mvn/version "712.2.419.0",
@@ -186,7 +186,7 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Marketplace Entitlement Service"},
  com.cognitect.aws/es
- {:mvn/version "704.2.399.0",
+ {:mvn/version "736.2.493.0",
   :aws/serviceFullName "Amazon Elasticsearch Service"},
  com.cognitect.aws/eventbridge
  {:mvn/version "729.2.492.0",
@@ -222,7 +222,7 @@
  {:mvn/version "726.2.479.0",
   :aws/serviceFullName "AWS Health APIs and Notifications"},
  com.cognitect.aws/iam
- {:mvn/version "726.2.480.0",
+ {:mvn/version "736.2.493.0",
   :aws/serviceFullName "AWS Identity and Access Management"},
  com.cognitect.aws/importexport
  {:mvn/version "697.2.391.0",
@@ -244,7 +244,7 @@
  {:mvn/version "722.2.466.0",
   :aws/serviceFullName "AWS IoT Analytics"},
  com.cognitect.aws/iotevents
- {:mvn/version "722.2.470.0", :aws/serviceFullName "AWS IoT Events"},
+ {:mvn/version "736.2.496.0", :aws/serviceFullName "AWS IoT Events"},
  com.cognitect.aws/iotevents-data
  {:mvn/version "726.2.479.0",
   :aws/serviceFullName "AWS IoT Events Data"},
@@ -395,7 +395,7 @@
  {:mvn/version "726.2.481.0",
   :aws/serviceFullName "AWS Resource Groups Tagging API"},
  com.cognitect.aws/robomaker
- {:mvn/version "726.2.477.0", :aws/serviceFullName "AWS RoboMaker"},
+ {:mvn/version "736.2.493.0", :aws/serviceFullName "AWS RoboMaker"},
  com.cognitect.aws/route53
  {:mvn/version "718.2.442.0", :aws/serviceFullName "Amazon Route 53"},
  com.cognitect.aws/route53domains
@@ -449,7 +449,7 @@
  {:mvn/version "718.2.444.0",
   :aws/serviceFullName "Amazon Simple Notification Service"},
  com.cognitect.aws/sqs
- {:mvn/version "697.2.391.0",
+ {:mvn/version "736.2.496.0",
   :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
  {:mvn/version "726.2.481.0",
