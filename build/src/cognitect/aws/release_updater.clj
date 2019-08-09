@@ -6,6 +6,8 @@
             [clojure.java.shell :as shell])
   (:import (java.util Date)))
 
+(set! *print-namespace-maps* false)
+
 (defn version-prefix []
   (read-string (slurp (io/file "VERSION_PREFIX"))))
 
@@ -17,11 +19,6 @@
 (defn version []
   (str (version-prefix) "." (git-revision)))
 
-(defn update-version-in-line [version line]
-  (if (re-find (re-pattern (str "com.cognitect.aws\\/api")) line)
-    (str/replace-first line (re-pattern "\\d+.\\d+.\\d+") version)
-    line))
-
 (defn update-file [fname ext xform]
   (let [f  (io/file (str fname "." ext))
         cp (java.io.File/createTempFile fname (str "." ext))]
@@ -32,12 +29,25 @@
         (.write w (xform l))
         (.newLine w)))))
 
-(defn update-readme [version]
-  (update-file "README"
-               "md"
-               #(if (re-find (re-pattern (str "com.cognitect.aws\\/api")) %)
-                  (str/replace-first % (re-pattern "\\d+.\\d+.\\d+") version)
-                  %)))
+(defn latest-releases []
+  (-> (io/file "latest-releases.edn")
+      slurp
+      edn/read-string))
+
+(defn update-version-in-readme [latest libname]
+  (let [version (get-in latest [(symbol "com.cognitect.aws" libname) :mvn/version])]
+    version
+    (update-file "README"
+                 "md"
+                 #(if (re-find (re-pattern (str "com.cognitect.aws\\/" libname "\\s+\\{:mvn\\/version")) %)
+                    (str/replace-first % (re-pattern "\\d+(.\\d+)+") version)
+                    %))))
+
+(defn update-versions-in-readme []
+  (let [latest (latest-releases)]
+    (update-version-in-readme latest "api")
+    (update-version-in-readme latest "endpoints")
+    (update-version-in-readme latest "s3")))
 
 (defn update-changelog [version]
   (update-file "CHANGES"
@@ -48,7 +58,7 @@
                                      (str version " / " (.format (java.text.SimpleDateFormat. "yyyy-MM-dd") (Date.))))
                   %)))
 
-(defn update-latest-releases [version]
+(defn update-api-version-in-latest-releases [version]
   (let [f    (io/file "latest-releases.edn")
         data (edn/read-string (slurp f))]
     (binding [*print-namespace-maps* false
@@ -56,13 +66,31 @@
       (spit f
             (with-out-str
               (clojure.pprint/pprint
-               (-> data
-                   (assoc-in [:api 'com.cognitect.aws/api] version)
-                   (update :services #(into (sorted-map) %)))))))))
+               (->> (assoc-in data ['com.cognitect.aws/api :mvn/version] version)
+                    (into (sorted-map-by (-> (fn [a b]
+                                               (cond (= "api" (name a)) -1
+                                                     (= "api" (name b)) 1
+                                                     :else              0))
+                                             (.thenComparing
+                                              (fn [a b]
+                                                (cond (= "endpoints" (name a)) -1
+                                                      (= "endpoints" (name b)) 1
+                                                      :else                    (compare a b))))))))))))))
 
-(defn -main []
-  (let [v (version)]
-    (update-readme v)
-    (update-changelog v)
-    (update-latest-releases v))
+(defn -main [& argv]
+  (let [args (set argv)
+        v (version)]
+    (when (contains? args "--update-latest-releases")
+      (update-api-version-in-latest-releases v))
+    (when (contains? args "--update-changelog")
+      (update-changelog v))
+    (when (contains? args "--update-readme")
+      (update-versions-in-readme)))
   (System/exit 0))
+
+(comment
+  (version)
+
+  (git-revision)
+
+  )

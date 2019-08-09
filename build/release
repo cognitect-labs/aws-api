@@ -23,7 +23,7 @@ git tag -a v${version} -m "Release ${version}"
 git push origin v${version}
 
 echo "Updating README.md, CHANGES.md, and latest-releases.edn with ${version}"
-clj -A:update-versions
+clj -A:update-versions --update-latest-releases --update-changelog --update-readme
 git commit -m "Update README.md, CHANGES.md, and latest-releases.edn with ${version}" \
     README.md CHANGES.md latest-releases.edn
 git push
