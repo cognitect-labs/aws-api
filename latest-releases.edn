@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.352"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.607"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.631"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -11,7 +11,7 @@
   :aws/serviceFullName
   "AWS Certificate Manager Private Certificate Authority"},
  com.cognitect.aws/alexaforbusiness
- {:mvn/version "726.2.485.0",
+ {:mvn/version "742.2.514.0",
   :aws/serviceFullName "Alexa For Business"},
  com.cognitect.aws/amplify
  {:mvn/version "729.2.490.0", :aws/serviceFullName "AWS Amplify"},
@@ -19,27 +19,27 @@
  {:mvn/version "726.2.481.0",
   :aws/serviceFullName "Amazon API Gateway"},
  com.cognitect.aws/apigatewaymanagementapi
- {:mvn/version "701.2.393.0",
+ {:mvn/version "742.2.521.0",
   :aws/serviceFullName "AmazonApiGatewayManagementApi"},
  com.cognitect.aws/apigatewayv2
  {:mvn/version "736.2.493.0",
   :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/application-autoscaling
- {:mvn/version "711.2.412.0",
+ {:mvn/version "742.2.520.0",
   :aws/serviceFullName "Application Auto Scaling"},
  com.cognitect.aws/application-insights
  {:mvn/version "741.2.505.0",
   :aws/serviceFullName "Amazon CloudWatch Application Insights"},
  com.cognitect.aws/appmesh
- {:mvn/version "723.2.475.0", :aws/serviceFullName "AWS App Mesh"},
+ {:mvn/version "742.2.525.0", :aws/serviceFullName "AWS App Mesh"},
  com.cognitect.aws/appstream
- {:mvn/version "726.2.487.0", :aws/serviceFullName "Amazon AppStream"},
+ {:mvn/version "742.2.525.0", :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
- {:mvn/version "717.2.451.0", :aws/serviceFullName "AWS AppSync"},
+ {:mvn/version "742.2.509.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/athena
- {:mvn/version "707.2.409.0", :aws/serviceFullName "Amazon Athena"},
+ {:mvn/version "742.2.511.0", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/autoscaling
- {:mvn/version "736.2.494.0", :aws/serviceFullName "Auto Scaling"},
+ {:mvn/version "742.2.508.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
  {:mvn/version "711.2.413.0",
   :aws/serviceFullName "AWS Auto Scaling Plans"},
@@ -80,11 +80,11 @@
  com.cognitect.aws/codebuild
  {:mvn/version "741.2.506.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecommit
- {:mvn/version "738.2.502.0", :aws/serviceFullName "AWS CodeCommit"},
+ {:mvn/version "742.2.511.0", :aws/serviceFullName "AWS CodeCommit"},
  com.cognitect.aws/codedeploy
  {:mvn/version "736.2.495.0", :aws/serviceFullName "AWS CodeDeploy"},
  com.cognitect.aws/codepipeline
- {:mvn/version "718.2.456.0", :aws/serviceFullName "AWS CodePipeline"},
+ {:mvn/version "742.2.520.0", :aws/serviceFullName "AWS CodePipeline"},
  com.cognitect.aws/codestar
  {:mvn/version "697.2.391.0", :aws/serviceFullName "AWS CodeStar"},
  com.cognitect.aws/cognito-identity
@@ -103,18 +103,18 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Comprehend Medical"},
  com.cognitect.aws/config
- {:mvn/version "736.2.494.0", :aws/serviceFullName "AWS Config"},
+ {:mvn/version "742.2.527.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/cur
- {:mvn/version "711.2.411.0",
+ {:mvn/version "742.2.513.0",
   :aws/serviceFullName "AWS Cost and Usage Report Service"},
  com.cognitect.aws/datapipeline
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Data Pipeline"},
  com.cognitect.aws/datasync
- {:mvn/version "741.2.504.0", :aws/serviceFullName "AWS DataSync"},
+ {:mvn/version "742.2.516.0", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/dax
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
@@ -144,7 +144,7 @@
  com.cognitect.aws/dynamodb
  {:mvn/version "726.2.484.0", :aws/serviceFullName "Amazon DynamoDB"},
  com.cognitect.aws/ec2
- {:mvn/version "741.2.504.0",
+ {:mvn/version "742.2.528.0",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "726.2.488.0",
@@ -153,13 +153,13 @@
  {:mvn/version "737.2.500.0",
   :aws/serviceFullName "Amazon EC2 Container Registry"},
  com.cognitect.aws/ecs
- {:mvn/version "736.2.495.0",
+ {:mvn/version "742.2.522.0",
   :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
- {:mvn/version "726.2.482.0",
+ {:mvn/version "742.2.523.0",
   :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elasticache
- {:mvn/version "736.2.495.0",
+ {:mvn/version "742.2.520.0",
   :aws/serviceFullName "Amazon ElastiCache"},
  com.cognitect.aws/elasticbeanstalk
  {:mvn/version "712.2.419.0",
@@ -171,16 +171,16 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticloadbalancingv2
- {:mvn/version "714.2.430.0",
+ {:mvn/version "742.2.528.0",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticmapreduce
- {:mvn/version "715.2.433.0",
+ {:mvn/version "742.2.512.0",
   :aws/serviceFullName "Amazon Elastic MapReduce"},
  com.cognitect.aws/elastictranscoder
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Elastic Transcoder"},
  com.cognitect.aws/email
- {:mvn/version "722.2.470.0",
+ {:mvn/version "742.2.527.0",
   :aws/serviceFullName "Amazon Simple Email Service"},
  com.cognitect.aws/entitlement-marketplace
  {:mvn/version "697.2.391.0",
@@ -200,17 +200,23 @@
  com.cognitect.aws/fms
  {:mvn/version "712.2.428.0",
   :aws/serviceFullName "Firewall Management Service"},
+ com.cognitect.aws/forecast
+ {:mvn/version "742.2.528.0",
+  :aws/serviceFullName "Amazon Forecast Service"},
+ com.cognitect.aws/forecastquery
+ {:mvn/version "742.2.528.0",
+  :aws/serviceFullName "Amazon Forecast Query Service"},
  com.cognitect.aws/fsx
  {:mvn/version "726.2.481.0", :aws/serviceFullName "Amazon FSx"},
  com.cognitect.aws/gamelift
- {:mvn/version "729.2.490.0", :aws/serviceFullName "Amazon GameLift"},
+ {:mvn/version "742.2.522.0", :aws/serviceFullName "Amazon GameLift"},
  com.cognitect.aws/glacier
  {:mvn/version "729.2.491.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
- {:mvn/version "697.2.391.0",
+ {:mvn/version "742.2.519.0",
   :aws/serviceFullName "AWS Global Accelerator"},
  com.cognitect.aws/glue
- {:mvn/version "741.2.506.0", :aws/serviceFullName "AWS Glue"},
+ {:mvn/version "742.2.511.0", :aws/serviceFullName "AWS Glue"},
  com.cognitect.aws/greengrass
  {:mvn/version "738.2.501.0", :aws/serviceFullName "AWS Greengrass"},
  com.cognitect.aws/groundstation
@@ -263,7 +269,7 @@
  {:mvn/version "726.2.480.0",
   :aws/serviceFullName "Amazon Kinesis Video Streams Media"},
  com.cognitect.aws/kinesisanalytics
- {:mvn/version "718.2.452.0",
+ {:mvn/version "742.2.525.0",
   :aws/serviceFullName "Amazon Kinesis Analytics"},
  com.cognitect.aws/kinesisanalyticsv2
  {:mvn/version "718.2.452.0",
@@ -278,7 +284,7 @@
  {:mvn/version "741.2.507.0",
   :aws/serviceFullName "AWS Lake Formation"},
  com.cognitect.aws/lambda
- {:mvn/version "718.2.454.0", :aws/serviceFullName "AWS Lambda"},
+ {:mvn/version "742.2.520.0", :aws/serviceFullName "AWS Lambda"},
  com.cognitect.aws/lex-models
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Lex Model Building Service"},
@@ -299,21 +305,21 @@
  {:mvn/version "718.2.457.0",
   :aws/serviceFullName "Amazon Managed Blockchain"},
  com.cognitect.aws/marketplacecommerceanalytics
- {:mvn/version "697.2.391.0",
+ {:mvn/version "742.2.525.0",
   :aws/serviceFullName "AWS Marketplace Commerce Analytics"},
  com.cognitect.aws/mediaconnect
- {:mvn/version "738.2.501.0", :aws/serviceFullName "AWS MediaConnect"},
+ {:mvn/version "742.2.527.0", :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
- {:mvn/version "741.2.507.0",
+ {:mvn/version "742.2.519.0",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "737.2.500.0",
+ {:mvn/version "742.2.528.0",
   :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "726.2.480.0",
   :aws/serviceFullName "AWS Elemental MediaPackage"},
  com.cognitect.aws/mediapackage-vod
- {:mvn/version "722.2.470.0",
+ {:mvn/version "742.2.517.0",
   :aws/serviceFullName "AWS Elemental MediaPackage VOD"},
  com.cognitect.aws/mediastore
  {:mvn/version "726.2.487.0",
@@ -332,10 +338,10 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Mobile Analytics"},
  com.cognitect.aws/monitoring
- {:mvn/version "729.2.490.0",
+ {:mvn/version "742.2.508.0",
   :aws/serviceFullName "Amazon CloudWatch"},
  com.cognitect.aws/mq
- {:mvn/version "737.2.497.0", :aws/serviceFullName "AmazonMQ"},
+ {:mvn/version "742.2.521.0", :aws/serviceFullName "AmazonMQ"},
  com.cognitect.aws/mturk-requester
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "Amazon Mechanical Turk"},
@@ -346,7 +352,7 @@
  com.cognitect.aws/opsworkscm
  {:mvn/version "741.2.506.0", :aws/serviceFullName "AWS OpsWorks CM"},
  com.cognitect.aws/organizations
- {:mvn/version "726.2.486.0",
+ {:mvn/version "742.2.519.0",
   :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/personalize
  {:mvn/version "723.2.476.0",
@@ -355,7 +361,7 @@
  {:mvn/version "723.2.476.0",
   :aws/serviceFullName "Amazon Personalize Events"},
  com.cognitect.aws/personalize-runtime
- {:mvn/version "723.2.476.0",
+ {:mvn/version "742.2.515.0",
   :aws/serviceFullName "Amazon Personalize Runtime"},
  com.cognitect.aws/pi
  {:mvn/version "697.2.391.0",
@@ -373,6 +379,11 @@
  com.cognitect.aws/pricing
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Price List Service"},
+ com.cognitect.aws/qldb
+ {:mvn/version "742.2.528.0", :aws/serviceFullName "Amazon QLDB"},
+ com.cognitect.aws/qldb-session
+ {:mvn/version "742.2.528.0",
+  :aws/serviceFullName "Amazon QLDB Session"},
  com.cognitect.aws/quicksight
  {:mvn/version "729.2.491.0",
   :aws/serviceFullName "Amazon QuickSight"},
@@ -380,7 +391,7 @@
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rds
- {:mvn/version "726.2.488.0",
+ {:mvn/version "742.2.527.0",
   :aws/serviceFullName "Amazon Relational Database Service"},
  com.cognitect.aws/rds-data
  {:mvn/version "722.2.466.0",
@@ -388,16 +399,16 @@
  com.cognitect.aws/redshift
  {:mvn/version "741.2.507.0", :aws/serviceFullName "Amazon Redshift"},
  com.cognitect.aws/rekognition
- {:mvn/version "712.2.419.0",
+ {:mvn/version "742.2.515.0",
   :aws/serviceFullName "Amazon Rekognition"},
  com.cognitect.aws/resource-groups
  {:mvn/version "716.2.441.0",
   :aws/serviceFullName "AWS Resource Groups"},
  com.cognitect.aws/resourcegroupstaggingapi
- {:mvn/version "726.2.481.0",
+ {:mvn/version "742.2.522.0",
   :aws/serviceFullName "AWS Resource Groups Tagging API"},
  com.cognitect.aws/robomaker
- {:mvn/version "736.2.493.0", :aws/serviceFullName "AWS RoboMaker"},
+ {:mvn/version "742.2.525.0", :aws/serviceFullName "AWS RoboMaker"},
  com.cognitect.aws/route53
  {:mvn/version "738.2.503.0", :aws/serviceFullName "Amazon Route 53"},
  com.cognitect.aws/route53domains
@@ -418,7 +429,7 @@
  com.cognitect.aws/s3control
  {:mvn/version "718.2.446.0", :aws/serviceFullName "AWS S3 Control"},
  com.cognitect.aws/sagemaker
- {:mvn/version "723.2.473.0",
+ {:mvn/version "742.2.515.0",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sdb
  {:mvn/version "697.2.391.0", :aws/serviceFullName "Amazon SimpleDB"},
@@ -426,7 +437,7 @@
  {:mvn/version "737.2.498.0",
   :aws/serviceFullName "AWS Secrets Manager"},
  com.cognitect.aws/securityhub
- {:mvn/version "726.2.481.0", :aws/serviceFullName "AWS SecurityHub"},
+ {:mvn/version "742.2.518.0", :aws/serviceFullName "AWS SecurityHub"},
  com.cognitect.aws/serverlessrepo
  {:mvn/version "712.2.420.0",
   :aws/serviceFullName "AWSServerlessApplicationRepository"},
@@ -451,16 +462,16 @@
  {:mvn/version "718.2.444.0",
   :aws/serviceFullName "Amazon Simple Notification Service"},
  com.cognitect.aws/sqs
- {:mvn/version "736.2.496.0",
+ {:mvn/version "742.2.519.0",
   :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
- {:mvn/version "737.2.498.0",
+ {:mvn/version "742.2.518.0",
   :aws/serviceFullName "Amazon Simple Systems Manager (SSM)"},
  com.cognitect.aws/states
- {:mvn/version "707.2.409.0",
+ {:mvn/version "742.2.527.0",
   :aws/serviceFullName "AWS Step Functions"},
  com.cognitect.aws/storagegateway
- {:mvn/version "722.2.468.0",
+ {:mvn/version "742.2.526.0",
   :aws/serviceFullName "AWS Storage Gateway"},
  com.cognitect.aws/streams-dynamodb
  {:mvn/version "697.2.391.0",
@@ -476,10 +487,10 @@
  com.cognitect.aws/textract
  {:mvn/version "718.2.442.0", :aws/serviceFullName "Amazon Textract"},
  com.cognitect.aws/transcribe
- {:mvn/version "722.2.464.0",
+ {:mvn/version "742.2.523.0",
   :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transfer
- {:mvn/version "718.2.445.0",
+ {:mvn/version "742.2.514.0",
   :aws/serviceFullName "AWS Transfer for SFTP"},
  com.cognitect.aws/translate
  {:mvn/version "697.2.391.0", :aws/serviceFullName "Amazon Translate"},
@@ -493,6 +504,9 @@
  {:mvn/version "719.2.461.0", :aws/serviceFullName "Amazon WorkLink"},
  com.cognitect.aws/workmail
  {:mvn/version "718.2.449.0", :aws/serviceFullName "Amazon WorkMail"},
+ com.cognitect.aws/workmailmessageflow
+ {:mvn/version "742.2.528.0",
+  :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
  {:mvn/version "726.2.485.0",
   :aws/serviceFullName "Amazon WorkSpaces"},
