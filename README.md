@@ -175,7 +175,7 @@ involved example using AWS STS.
 
 ## Region lookup
 
-The aws-api client looks up the region the same with the [java
+The aws-api client looks up the region the same way the [java
 SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html)
 does, with an additional check for a System property named
 "aws.region" after it checks for the AWS_REGION environment variable
