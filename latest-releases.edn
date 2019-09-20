@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.352"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.631"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.632"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "697.2.391.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -37,7 +37,7 @@
  com.cognitect.aws/appsync
  {:mvn/version "742.2.509.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/athena
- {:mvn/version "742.2.511.0", :aws/serviceFullName "Amazon Athena"},
+ {:mvn/version "744.2.530.0", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/autoscaling
  {:mvn/version "742.2.508.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
@@ -153,7 +153,7 @@
  {:mvn/version "737.2.500.0",
   :aws/serviceFullName "Amazon EC2 Container Registry"},
  com.cognitect.aws/ecs
- {:mvn/version "742.2.522.0",
+ {:mvn/version "744.2.532.0",
   :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
  {:mvn/version "742.2.523.0",
@@ -355,7 +355,7 @@
  {:mvn/version "742.2.519.0",
   :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/personalize
- {:mvn/version "723.2.476.0",
+ {:mvn/version "744.2.530.0",
   :aws/serviceFullName "Amazon Personalize"},
  com.cognitect.aws/personalize-events
  {:mvn/version "723.2.476.0",
@@ -388,7 +388,7 @@
  {:mvn/version "729.2.491.0",
   :aws/serviceFullName "Amazon QuickSight"},
  com.cognitect.aws/ram
- {:mvn/version "697.2.391.0",
+ {:mvn/version "744.2.531.0",
   :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rds
  {:mvn/version "742.2.527.0",
@@ -497,7 +497,7 @@
  com.cognitect.aws/waf
  {:mvn/version "729.2.490.0", :aws/serviceFullName "AWS WAF"},
  com.cognitect.aws/waf-regional
- {:mvn/version "729.2.490.0", :aws/serviceFullName "AWS WAF Regional"},
+ {:mvn/version "744.2.531.0", :aws/serviceFullName "AWS WAF Regional"},
  com.cognitect.aws/workdocs
  {:mvn/version "707.2.408.0", :aws/serviceFullName "Amazon WorkDocs"},
  com.cognitect.aws/worklink
