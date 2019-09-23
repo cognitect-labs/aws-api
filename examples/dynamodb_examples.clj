@@ -20,7 +20,7 @@
 ;; doc!
 (aws/doc ddb :ListTables)
 (aws/doc ddb :CreateTable)
-(aws/doc ddb :Scan) ;; this one has references in the request/response
+(aws/doc ddb :Scan) ;; this one has a Given section with shape/AttributeValue
 
 ;; 1. Create Example Tables
 
