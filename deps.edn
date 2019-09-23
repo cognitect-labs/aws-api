@@ -23,10 +23,10 @@
                              :extra-deps  {org.clojure/test.check      {:mvn/version "0.10.0"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.25"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.11.586"}
-                                           com.cognitect.aws/dynamodb  {:mvn/version "726.2.484.0"}
-                                           com.cognitect.aws/ec2       {:mvn/version "726.2.488.0"}
-                                           com.cognitect.aws/iam       {:mvn/version "726.2.480.0"}
-                                           com.cognitect.aws/lambda    {:mvn/version "718.2.454.0"}
-                                           com.cognitect.aws/s3        {:mvn/version "726.2.488.0"}
+                                           com.cognitect.aws/dynamodb  {:mvn/version "746.2.533.0"}
+                                           com.cognitect.aws/ec2       {:mvn/version "746.2.533.0"}
+                                           com.cognitect.aws/iam       {:mvn/version "746.2.533.0"}
+                                           com.cognitect.aws/lambda    {:mvn/version "746.2.533.0"}
+                                           com.cognitect.aws/s3        {:mvn/version "746.2.533.0"}
                                            com.cognitect.aws/ssm       {:mvn/version "726.2.481.0"}
                                            com.cognitect.aws/sts       {:mvn/version "722.2.464.0"}}}}}
