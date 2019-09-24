@@ -213,7 +213,7 @@
  com.cognitect.aws/glacier
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
- {:mvn/version "742.2.519.0",
+ {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Global Accelerator"},
  com.cognitect.aws/glue
  {:mvn/version "747.2.533.0", :aws/serviceFullName "AWS Glue"},
@@ -325,7 +325,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Elemental MediaStore"},
  com.cognitect.aws/mediastore-data
- {:mvn/version "719.2.463.0",
+ {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Elemental MediaStore Data Plane"},
  com.cognitect.aws/mediatailor
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS MediaTailor"},
@@ -432,7 +432,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sdb
- {:mvn/version "697.2.391.0", :aws/serviceFullName "Amazon SimpleDB"},
+ {:mvn/version "747.2.533.0", :aws/serviceFullName "Amazon SimpleDB"},
  com.cognitect.aws/secretsmanager
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Secrets Manager"},
@@ -482,7 +482,7 @@
  com.cognitect.aws/support
  {:mvn/version "747.2.533.0", :aws/serviceFullName "AWS Support"},
  com.cognitect.aws/swf
- {:mvn/version "726.2.488.0",
+ {:mvn/version "747.2.533.0",
   :aws/serviceFullName "Amazon Simple Workflow Service"},
  com.cognitect.aws/textract
  {:mvn/version "747.2.533.0", :aws/serviceFullName "Amazon Textract"},
