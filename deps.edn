@@ -28,5 +28,5 @@
                                            com.cognitect.aws/iam       {:mvn/version "746.2.533.0"}
                                            com.cognitect.aws/lambda    {:mvn/version "746.2.533.0"}
                                            com.cognitect.aws/s3        {:mvn/version "747.2.533.0"}
-                                           com.cognitect.aws/ssm       {:mvn/version "726.2.481.0"}
-                                           com.cognitect.aws/sts       {:mvn/version "722.2.464.0"}}}}}
+                                           com.cognitect.aws/ssm       {:mvn/version "747.2.533.0"}
+                                           com.cognitect.aws/sts       {:mvn/version "747.2.533.0"}}}}}
