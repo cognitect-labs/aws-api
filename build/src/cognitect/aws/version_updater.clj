@@ -1,4 +1,4 @@
-(ns cognitect.aws.release-updater
+(ns cognitect.aws.version-updater
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.edn :as edn]
@@ -19,8 +19,9 @@
 (defn version []
   (str (version-prefix) "." (git-revision)))
 
-(defn update-file [fname ext xform]
-  (let [f  (io/file (str fname "." ext))
+(defn update-file [fname* xform]
+  (let [[fname ext] (str/split fname* #"\.")
+        f  (io/file fname*)
         cp (java.io.File/createTempFile fname (str "." ext))]
     (io/copy f cp)
     (with-open [r (io/reader cp)
@@ -34,24 +35,26 @@
       slurp
       edn/read-string))
 
-(defn update-version-in-readme [latest libname]
+(defn update-version-in [fname latest libname]
   (let [version (get-in latest [(symbol "com.cognitect.aws" libname) :mvn/version])]
     version
-    (update-file "README"
-                 "md"
+    (update-file fname
                  #(if (re-find (re-pattern (str "com.cognitect.aws\\/" libname "\\s+\\{:mvn\\/version")) %)
                     (str/replace-first % (re-pattern "\\d+(.\\d+)+") version)
                     %))))
 
 (defn update-versions-in-readme []
   (let [latest (latest-releases)]
-    (update-version-in-readme latest "api")
-    (update-version-in-readme latest "endpoints")
-    (update-version-in-readme latest "s3")))
+    (doseq [svc ["api" "endpoints" "s3"]]
+      (update-version-in "README.md" latest svc))))
+
+(defn update-versions-in-deps []
+  (let [latest (latest-releases)]
+    (doseq [svc ["endpoints" "dynamodb" "ec2" "iam" "lambda" "s3" "ssm" "sts"]]
+      (update-version-in "deps.edn" latest svc))))
 
 (defn update-changelog [version]
-  (update-file "CHANGES"
-               "md"
+  (update-file "CHANGES.md"
                #(if (re-find (re-pattern "## DEV") %)
                   (str/replace-first %
                                      (re-pattern "DEV")
@@ -81,11 +84,17 @@
   (let [args (set argv)
         v (version)]
     (when (contains? args "--update-latest-releases")
+      (prn "Updating api version in latest releases")
       (update-api-version-in-latest-releases v))
     (when (contains? args "--update-changelog")
+      (println "Updating changelog")
       (update-changelog v))
     (when (contains? args "--update-readme")
-      (update-versions-in-readme)))
+      (println "Updating README")
+      (update-versions-in-readme))
+    (when (contains? args "--update-deps")
+      (println "Updating deps.edn")
+      (update-versions-in-deps)))
   (System/exit 0))
 
 (comment

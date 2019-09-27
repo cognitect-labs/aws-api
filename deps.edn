@@ -10,7 +10,7 @@
            org.clojure/data.xml        {:mvn/version "0.2.0-alpha6"}
            com.cognitect/http-client   {:mvn/version "0.1.99"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
-                             :main-opts   ["-m" "cognitect.aws.release-updater"]}
+                             :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io   {:mvn/version "2.5"}
                                            org.clojure/test.check  {:mvn/version "0.10.0"}
