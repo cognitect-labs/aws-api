@@ -1,7 +1,8 @@
 (ns ^:skip-wiki cognitect.aws.http
   "Impl, don't call directly."
   (:require [clojure.edn :as edn]
-            [clojure.core.async :as a]))
+            [clojure.core.async :as a]
+            [cognitect.aws.dynaload :as dynaload]))
 
 (defprotocol HttpClient
   (-submit [_ request channel]
@@ -53,18 +54,6 @@
   [url]
   (-> url slurp edn/read-string))
 
-(defonce ^:private dynalock (Object.))
-
-(defn- dynaload
-  [s]
-  (let [ns (namespace s)]
-    (assert ns)
-    (locking dynalock
-      (require (symbol ns)))
-    (if-let [v (resolve s)]
-      @v
-      (throw (RuntimeException. (str "Var " s " is not on the classpath"))))))
-
 ;; TODO consider providing config arguments to http constructor
 (defn- configured-client
   "If a single cognitect_aws_http.edn is found on the classpath,
@@ -84,9 +73,11 @@
 (defn resolve-http-client
   [http-client-or-sym]
   (let [c (or (when (symbol? http-client-or-sym)
-                ((dynaload http-client-or-sym)))
+                (let [ctor @(dynaload/load-var http-client-or-sym)]
+                  (ctor)))
               http-client-or-sym
-              ((dynaload (configured-client))))]
+              (let [ctor @(dynaload/load-var (configured-client))]
+                (ctor)))]
     (when-not (client? c)
       (throw (ex-info "not an http client" {:provided http-client-or-sym
                                             :resolved c})))

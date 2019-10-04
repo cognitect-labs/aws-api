@@ -6,6 +6,7 @@
   (:require [clojure.core.async :as a]
             [clojure.tools.logging :as log]
             [clojure.string :as str]
+            [cognitect.aws.dynaload :as dynaload]
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.credentials :as credentials]
@@ -74,8 +75,7 @@
                        (region/fetch
                         (or region-provider
                             (region/default-region-provider http-client)))))]
-
-    (require (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
+    (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (client/->Client
      (atom {'clojure.core.protocols/datafy (fn [c]
                                              (-> c
