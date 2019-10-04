@@ -3,6 +3,7 @@
 ### DEV
 
 * Include service full names in latest-releases.edn [#32](https://github.com/cognitect-labs/aws-api/issues/32)
+* Wrap dynamic require of protocol ns in locking form [#92](https://github.com/cognitect-labs/aws-api/issues/92)
 
 ### 0.8.352 / 2019-07-26
 
