@@ -63,13 +63,20 @@
       <artifactId>http-client</artifactId>
       <version>0.1.99</version>
     </dependency>
-    <dependency>
-        <groupId>autodoc</groupId>
-        <artifactId>autodoc</artifactId>
-        <version>0.9.0</version>
-        <scope>test</scope>
-    </dependency>
   </dependencies>
+  <profiles>
+      <profile>
+          <id>autodoc</id>
+          <dependencies>
+              <dependency>
+                  <groupId>autodoc</groupId>
+                  <artifactId>autodoc</artifactId>
+                  <version>0.9.0</version>
+                  <scope>test</scope>
+              </dependency>
+          </dependencies>
+      </profile>
+  </profiles>
     <build>
         <resources>
             <resource>

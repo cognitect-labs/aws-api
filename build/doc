@@ -4,7 +4,7 @@ set -e
 
 echo "Building docs...\n"
 rm -rf ./target/autodoc
-mvn clojure:autodoc
+mvn -Pautodoc clojure:autodoc
 
 echo -e "Checking out gh-pages branch\n"
 rm -rf gh-pages
