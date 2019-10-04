@@ -28,48 +28,48 @@
         <url>git@github.com:cognitect-labs/aws-api.git</url>
     </scm>
     <dependencies>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure</artifactId>
-            <version>1.10.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>core.async</artifactId>
-            <version>0.4.490</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>tools.logging</artifactId>
-            <version>0.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>data.json</artifactId>
-            <version>0.2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>data.xml</artifactId>
-            <version>0.2.0-alpha6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cognitect</groupId>
-            <artifactId>http-client</artifactId>
-            <version>0.1.99</version>
-        </dependency>
-        <dependency>
-            <groupId>autodoc</groupId>
-            <artifactId>autodoc</artifactId>
-            <version>0.9.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>1.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>core.async</artifactId>
+      <version>0.4.500</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>tools.logging</artifactId>
+      <version>0.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.13</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>data.json</artifactId>
+      <version>0.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>data.xml</artifactId>
+      <version>0.2.0-alpha6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.cognitect</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.1.99</version>
+    </dependency>
+    <dependency>
+        <groupId>autodoc</groupId>
+        <artifactId>autodoc</artifactId>
+        <version>0.9.0</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
     <build>
         <resources>
             <resource>
@@ -181,10 +181,9 @@
         <sourceDirectory>src</sourceDirectory>
     </build>
     <repositories>
-        <repository>
-            <id>clojars</id>
-            <url>https://repo.clojars.org/</url>
-        </repository>
-
-    </repositories>
+    <repository>
+      <id>clojars</id>
+      <url>https://repo.clojars.org/</url>
+    </repository>
+  </repositories>
 </project>
