@@ -1,11 +1,11 @@
-# aws-api 0.8
+# aws-api
 
-### 0.8.378 / 2019-10-19
+## 0.8.378 / 2019-10-19
 
 * Include service full names in latest-releases.edn [#32](https://github.com/cognitect-labs/aws-api/issues/32)
 * Wrap dynamic require of protocol ns in locking form [#92](https://github.com/cognitect-labs/aws-api/issues/92)
 
-### 0.8.352 / 2019-07-26
+## 0.8.352 / 2019-07-26
 
 * Use custom dynaload for http-client [#88](https://github.com/cognitect-labs/aws-api/issues/88)
   * Restores compatibility with Clojure-1.9
