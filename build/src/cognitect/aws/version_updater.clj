@@ -8,6 +8,20 @@
 
 (set! *print-namespace-maps* false)
 
+(defn release-log-map []
+  (sorted-map-by (-> (fn [a b]
+                       (cond (= "api" (name a) (name b)) 0
+                             (= "api" (name a)) -1
+                             (= "api" (name b)) 1
+                             :else              0))
+                     (.thenComparing
+                      (fn [a b]
+                        (cond (= "endpoints" (name a) (name b)) 0
+                              (= "endpoints" (name a)) -1
+                              (= "endpoints" (name b)) 1
+                              :else 0)))
+                     (.thenComparing compare))))
+
 (defn version-prefix []
   (read-string (slurp (io/file "VERSION_PREFIX"))))
 
@@ -69,16 +83,8 @@
       (spit f
             (with-out-str
               (clojure.pprint/pprint
-               (->> (assoc-in data ['com.cognitect.aws/api :mvn/version] version)
-                    (into (sorted-map-by (-> (fn [a b]
-                                               (cond (= "api" (name a)) -1
-                                                     (= "api" (name b)) 1
-                                                     :else              0))
-                                             (.thenComparing
-                                              (fn [a b]
-                                                (cond (= "endpoints" (name a)) -1
-                                                      (= "endpoints" (name b)) 1
-                                                      :else                    (compare a b))))))))))))))
+               (into (release-log-map)
+                     (assoc-in data ['com.cognitect.aws/api :mvn/version] version))))))))
 
 (defn -main [& argv]
   (let [args (set argv)
