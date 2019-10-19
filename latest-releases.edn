@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.352"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.651"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.655"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -46,7 +46,7 @@
  com.cognitect.aws/backup
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Backup"},
  com.cognitect.aws/batch
- {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Batch"},
+ {:mvn/version "758.2.552.0", :aws/serviceFullName "AWS Batch"},
  com.cognitect.aws/budgets
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
@@ -258,12 +258,12 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS IoT Things Graph"},
  com.cognitect.aws/kafka
- {:mvn/version "757.2.546.0",
+ {:mvn/version "758.2.551.0",
   :aws/serviceFullName "Managed Streaming for Kafka"},
  com.cognitect.aws/kinesis
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon Kinesis"},
  com.cognitect.aws/kinesis-video-archived-media
- {:mvn/version "746.2.533.0",
+ {:mvn/version "758.2.550.0",
   :aws/serviceFullName "Amazon Kinesis Video Streams Archived Media"},
  com.cognitect.aws/kinesis-video-media
  {:mvn/version "746.2.533.0",
@@ -305,7 +305,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "Amazon Managed Blockchain"},
  com.cognitect.aws/marketplacecommerceanalytics
- {:mvn/version "747.2.533.0",
+ {:mvn/version "758.2.551.0",
   :aws/serviceFullName "AWS Marketplace Commerce Analytics"},
  com.cognitect.aws/mediaconnect
  {:mvn/version "747.2.532.0", :aws/serviceFullName "AWS MediaConnect"},
@@ -338,7 +338,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "Amazon Mobile Analytics"},
  com.cognitect.aws/monitoring
- {:mvn/version "746.2.533.0",
+ {:mvn/version "758.2.553.0",
   :aws/serviceFullName "Amazon CloudWatch"},
  com.cognitect.aws/mq
  {:mvn/version "757.2.539.0", :aws/serviceFullName "AmazonMQ"},
@@ -355,7 +355,7 @@
  {:mvn/version "757.2.545.0",
   :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/personalize
- {:mvn/version "746.2.533.0",
+ {:mvn/version "758.2.549.0",
   :aws/serviceFullName "Amazon Personalize"},
  com.cognitect.aws/personalize-events
  {:mvn/version "746.2.533.0",
@@ -391,7 +391,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rds
- {:mvn/version "757.2.539.0",
+ {:mvn/version "758.2.552.0",
   :aws/serviceFullName "Amazon Relational Database Service"},
  com.cognitect.aws/rds-data
  {:mvn/version "747.2.533.0",
@@ -408,7 +408,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS Resource Groups Tagging API"},
  com.cognitect.aws/robomaker
- {:mvn/version "747.2.533.0", :aws/serviceFullName "AWS RoboMaker"},
+ {:mvn/version "758.2.551.0", :aws/serviceFullName "AWS RoboMaker"},
  com.cognitect.aws/route53
  {:mvn/version "747.2.533.0", :aws/serviceFullName "Amazon Route 53"},
  com.cognitect.aws/route53domains
@@ -508,7 +508,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
- {:mvn/version "746.2.533.0",
+ {:mvn/version "758.2.549.0",
   :aws/serviceFullName "Amazon WorkSpaces"},
  com.cognitect.aws/xray
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS X-Ray"}}
