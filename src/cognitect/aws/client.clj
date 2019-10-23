@@ -8,7 +8,7 @@
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.credentials :as credentials])
-  (:import [java.util.concurrent Executors ThreadFactory]))
+  (:import [java.util.concurrent Callable ExecutorService Executors ThreadFactory]))
 
 (set! *warn-on-reflection* true)
 
@@ -105,5 +105,6 @@
   "Send the request to AWS and return a channel which delivers the response."
   [client op-map]
   (let [ch (a/chan 1)]
-    (.submit @send-pool #(a/>!! ch (a/<!! (send-request* client op-map))))
+    (.submit ^ExecutorService @send-pool
+             ^Callable #(a/>!! ch (a/<!! (send-request* client op-map))))
     ch))
