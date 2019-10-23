@@ -7,10 +7,10 @@
 (defn ^:skip-wiki with-retry
   "For internal use. Do not call directly.
 
-  Calls req-fn, a function that wraps some operation and returns a
-  channel. When the response to req-fn is retriable? and backoff
-  returns an int, waits backoff ms and retries, otherwise puts
-  response on resp-chan."
+  Calls req-fn, a *non-blocking* function that wraps some operation
+  and returns a channel. When the response to req-fn is retriable?
+  and backoff returns an int, waits backoff ms and retries, otherwise
+  puts response on resp-chan."
   [req-fn resp-chan retriable? backoff]
   (a/go-loop [retries 0]
     (let [resp (a/<! (req-fn))]

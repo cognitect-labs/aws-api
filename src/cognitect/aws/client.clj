@@ -7,7 +7,8 @@
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials])
+  (:import [java.util.concurrent Executors ThreadFactory]))
 
 (set! *warn-on-reflection* true)
 
@@ -61,8 +62,8 @@
     port     (assoc :server-port port)
     path     (assoc :uri path)))
 
-(defn send-request
-  "Send the request to AWS and return a channel which delivers the response."
+(defn- send-request*
+  "*Blocking* helper, call only from send-request."
   [client op-map]
   (let [result-meta (atom {})]
     (try
@@ -87,3 +88,22 @@
                             ::throwable                   t}
                            @result-meta))
           err-ch)))))
+
+(defonce send-pool
+  (delay
+   (let [idx (atom 0)]
+     (Executors/newFixedThreadPool
+      4
+      (reify ThreadFactory
+             (newThread
+              [_ runnable]
+              (doto (.newThread (Executors/defaultThreadFactory) runnable)
+                (.setName (str "cognitect-aws-send-" (swap! idx inc)))
+                (.setDaemon true))))))))
+
+(defn send-request
+  "Send the request to AWS and return a channel which delivers the response."
+  [client op-map]
+  (let [ch (a/chan 1)]
+    (.submit @send-pool #(a/>!! ch (a/<!! (send-request* client op-map))))
+    ch))
