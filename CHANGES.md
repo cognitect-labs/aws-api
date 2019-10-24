@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Make http calls to fetch credentials async / non-blocking.
+
 ## 0.8.378 / 2019-10-19
 
 * Include service full names in latest-releases.edn [#32](https://github.com/cognitect-labs/aws-api/issues/32)
