@@ -1,4 +1,4 @@
-{com.cognitect.aws/api {:mvn/version "0.8.378"},
+{com.cognitect.aws/api {:mvn/version "0.8.383"},
  com.cognitect.aws/endpoints {:mvn/version "1.1.11.655"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "746.2.533.0",

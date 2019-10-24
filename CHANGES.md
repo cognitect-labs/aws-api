@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.383 / 2019-10-24
 
 * Make http calls to fetch credentials async / non-blocking.
 
