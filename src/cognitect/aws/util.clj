@@ -271,20 +271,6 @@
           (or data {})
           (:members shape)))
 
-(defonce ^:private dynalock (Object.))
-
-(defn dynaload
-  [s]
-  (let [ns (namespace s)]
-    (assert ns)
-    (locking dynalock
-      (require (symbol ns)))
-    (let [v (resolve s)]
-      (if v
-        @v
-        (throw (RuntimeException. (str "Var " s " is not on the classpath")))))))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Wrappers - here to support testing with-redefs since
 ;;;;            we can't redef static methods

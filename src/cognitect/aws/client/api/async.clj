@@ -7,7 +7,7 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.service :as service]
-            [cognitect.aws.util :as util]))
+            [cognitect.aws.dynaload :as dynaload]))
 
 (def ^:private validate-requests? (atom {}))
 
@@ -19,17 +19,17 @@
     (service/load-specs (-> client client/-get-info :service)))
   tf)
 
-(def ^:private registry-ref (delay (util/dynaload 'clojure.spec.alpha/registry)))
+(def ^:private registry-ref (delay (dynaload/load-var 'clojure.spec.alpha/registry)))
 (defn ^:skip-wiki registry
   "For internal use. Don't call directly."
   [& args] (apply @registry-ref args))
 
-(def ^:private valid?-ref (delay (util/dynaload 'clojure.spec.alpha/valid?)))
+(def ^:private valid?-ref (delay (dynaload/load-var 'clojure.spec.alpha/valid?)))
 (defn ^:skip-wiki valid?
   "For internal use. Don't call directly."
   [& args] (apply @valid?-ref args))
 
-(def ^:private explain-data-ref (delay (util/dynaload 'clojure.spec.alpha/explain-data)))
+(def ^:private explain-data-ref (delay (dynaload/load-var 'clojure.spec.alpha/explain-data)))
 (defn ^:skip-wiki explain-data
   "For internal use. Don't call directly."
   [& args] (apply @explain-data-ref args))
