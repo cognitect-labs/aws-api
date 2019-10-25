@@ -4,6 +4,7 @@
 
 * Fix: S3 HeadObject fails with large files [#97](https://github.com/cognitect-labs/aws-api/issues/97)
   * This was fixed in cognitect/http-client 0.1.101
+* Fix concurrency 4 limit introduced in 0.8.383
 
 ## 0.8.383 / 2019-10-24
 
