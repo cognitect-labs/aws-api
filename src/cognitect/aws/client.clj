@@ -64,8 +64,8 @@
 
 (defn- send-request*
   "*Blocking* helper, call only from send-request."
-  [client op-map]
-  (let [result-meta (atom {})]
+  [ch client op-map]
+  (let [err-meta (atom {})]
     (try
       (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
             http-request (sign-http-request service region (credentials/fetch credentials)
@@ -73,21 +73,21 @@
                                                 (with-endpoint endpoint)
                                                 (update :body util/->bbuf)
                                                 ((partial interceptors/modify-http-request service op-map))))]
-        (swap! result-meta assoc :http-request http-request)
-        (http/submit http-client
-                     http-request
-                     (a/chan 1 (map #(with-meta
-                                       (handle-http-response service op-map %)
-                                       (assoc @result-meta
-                                              :http-response
-                                              (update % :body util/bbuf->input-stream)))))))
+        (swap! err-meta assoc :http-request http-request)
+        (a/take!
+         (http/submit http-client http-request)
+         (fn [response]
+           (a/put! ch (with-meta
+                        (handle-http-response service op-map response)
+                        {:http-request  http-request
+                         :http-response (update response :body util/bbuf->input-stream)}))))
+        ch)
       (catch Throwable t
-        (let [err-ch (a/chan 1)]
-          (a/put! err-ch (with-meta
-                           {:cognitect.anomalies/category :cognitect.anomalies/fault
-                            ::throwable                   t}
-                           @result-meta))
-          err-ch)))))
+        (a/put! ch (with-meta
+                     {:cognitect.anomalies/category :cognitect.anomalies/fault
+                      ::throwable                   t}
+                     (assoc @err-meta :op-map op-map)))
+        ch))))
 
 (defonce send-pool
   (delay
@@ -106,5 +106,5 @@
   [client op-map]
   (let [ch (a/chan 1)]
     (.submit ^ExecutorService @send-pool
-             ^Callable #(a/>!! ch (a/<!! (send-request* client op-map))))
+             ^Callable #(send-request* ch client op-map))
     ch))
