@@ -6,7 +6,7 @@
   * This was fixed in cognitect/http-client 0.1.101
 * Fix concurrency 4 limit introduced in 0.8.383
 
-## 0.8.383 / 2019-10-24
+## ~~0.8.383 / 2019-10-24~~
 
 * Make http calls to fetch credentials async / non-blocking.
 
