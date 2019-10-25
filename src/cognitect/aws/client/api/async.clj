@@ -61,12 +61,10 @@
       (throw (ex-info "Operation not supported" {:service (keyword (service/service-name service))
                                                  :operation (:op op-map)})))
     (if validation-error
-      (do
-        (a/put! result-chan validation-error)
-        result-chan)
-      (let [send          #(client/send-request client op-map)
-            retriable?    (or (:retriable? op-map) retriable?)
-            backoff       (or (:backoff op-map) backoff)
-            response-chan (retry/with-retry send (a/promise-chan) retriable? backoff)]
-        (a/take! response-chan (partial a/put! result-chan))
-        result-chan))))
+      (a/put! result-chan validation-error)
+      (retry/with-retry
+        #(client/send-request client op-map)
+        result-chan
+        (or (:retriable? op-map) retriable?)
+        (or (:backoff op-map) backoff)))
+    result-chan))
