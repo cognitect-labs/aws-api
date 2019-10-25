@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.383"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.655"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.658"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -31,7 +31,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon CloudWatch Application Insights"},
  com.cognitect.aws/appmesh
- {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS App Mesh"},
+ {:mvn/version "759.2.556.0", :aws/serviceFullName "AWS App Mesh"},
  com.cognitect.aws/appstream
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
@@ -53,7 +53,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS Cost Explorer Service"},
  com.cognitect.aws/chime
- {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon Chime"},
+ {:mvn/version "759.2.556.0", :aws/serviceFullName "Amazon Chime"},
  com.cognitect.aws/cloud9
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Cloud9"},
  com.cognitect.aws/clouddirectory
@@ -105,7 +105,7 @@
  com.cognitect.aws/config
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "746.2.533.0",
+ {:mvn/version "759.2.555.0",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/cur
  {:mvn/version "746.2.533.0",
@@ -144,7 +144,7 @@
  com.cognitect.aws/dynamodb
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon DynamoDB"},
  com.cognitect.aws/ec2
- {:mvn/version "757.2.547.0",
+ {:mvn/version "759.2.556.0",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "747.2.533.0",
@@ -209,7 +209,7 @@
  com.cognitect.aws/fsx
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon FSx"},
  com.cognitect.aws/gamelift
- {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon GameLift"},
+ {:mvn/version "759.2.556.0", :aws/serviceFullName "Amazon GameLift"},
  com.cognitect.aws/glacier
  {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
@@ -250,7 +250,7 @@
  {:mvn/version "757.2.547.0",
   :aws/serviceFullName "AWS IoT Analytics"},
  com.cognitect.aws/iotevents
- {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS IoT Events"},
+ {:mvn/version "759.2.554.0", :aws/serviceFullName "AWS IoT Events"},
  com.cognitect.aws/iotevents-data
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS IoT Events Data"},
@@ -350,7 +350,7 @@
  com.cognitect.aws/opsworks
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS OpsWorks"},
  com.cognitect.aws/opsworkscm
- {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS OpsWorks CM"},
+ {:mvn/version "759.2.554.0", :aws/serviceFullName "AWS OpsWorks CM"},
  com.cognitect.aws/organizations
  {:mvn/version "757.2.545.0",
   :aws/serviceFullName "AWS Organizations"},
@@ -375,7 +375,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon Pinpoint SMS and Voice Service"},
  com.cognitect.aws/polly
- {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon Polly"},
+ {:mvn/version "759.2.555.0", :aws/serviceFullName "Amazon Polly"},
  com.cognitect.aws/pricing
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS Price List Service"},
@@ -429,7 +429,7 @@
  com.cognitect.aws/s3control
  {:mvn/version "747.2.533.0", :aws/serviceFullName "AWS S3 Control"},
  com.cognitect.aws/sagemaker
- {:mvn/version "757.2.536.0",
+ {:mvn/version "759.2.556.0",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sdb
  {:mvn/version "747.2.533.0", :aws/serviceFullName "Amazon SimpleDB"},
