@@ -394,10 +394,10 @@
 (defmethod xml-parse* "string"    [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "character" [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "boolean"   [_ nodes] (= (data nodes) "true"))
-(defmethod xml-parse* "double"    [_ nodes] (Double. ^String (data nodes)))
-(defmethod xml-parse* "float"     [_ nodes] (Double. ^String (data nodes)))
-(defmethod xml-parse* "long"      [_ nodes] (Long. ^String (data nodes)))
-(defmethod xml-parse* "integer"   [_ nodes] (Long. ^String (data nodes)))
+(defmethod xml-parse* "double"    [_ nodes] (Double/parseDouble ^String (data nodes)))
+(defmethod xml-parse* "float"     [_ nodes] (Double/parseDouble ^String (data nodes)))
+(defmethod xml-parse* "long"      [_ nodes] (Long/parseLong ^String (data nodes)))
+(defmethod xml-parse* "integer"   [_ nodes] (Long/parseLong ^String (data nodes)))
 (defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
   [shape nodes]
