@@ -82,11 +82,11 @@
     "rfc822"  (util/parse-date util/rfc822-date-format data)
     "iso8601" (util/parse-date util/iso8601-date-format data)
     (cond (int? data)
-          (java.util.Date. (* 1000 data))
+          (java.util.Date. (* 1000 ^int data))
           (double? data)
           (java.util.Date. (* 1000 (long data)))
           (re-matches #"^\d+$" data)
-          (java.util.Date. (* 1000 (read-string data)))
+          (java.util.Date. (* 1000 (long (read-string data))))
           :else
           (->> [util/iso8601-date-format
                 util/iso8601-msecs-date-format
@@ -394,10 +394,10 @@
 (defmethod xml-parse* "string"    [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "character" [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "boolean"   [_ nodes] (= (data nodes) "true"))
-(defmethod xml-parse* "double"    [_ nodes] (Double. (data nodes)))
-(defmethod xml-parse* "float"     [_ nodes] (Double. (data nodes)))
-(defmethod xml-parse* "long"      [_ nodes] (Long. (data nodes)))
-(defmethod xml-parse* "integer"   [_ nodes] (Long. (data nodes)))
+(defmethod xml-parse* "double"    [_ nodes] (Double. ^String (data nodes)))
+(defmethod xml-parse* "float"     [_ nodes] (Double. ^String (data nodes)))
+(defmethod xml-parse* "long"      [_ nodes] (Long. ^String (data nodes)))
+(defmethod xml-parse* "integer"   [_ nodes] (Long. ^String (data nodes)))
 (defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
   [shape nodes]
