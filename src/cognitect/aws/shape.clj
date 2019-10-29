@@ -20,6 +20,8 @@
   (:require [clojure.data.json :as json]
             [cognitect.aws.util :as util]))
 
+(set! *warn-on-reflection* true)
+
 ;; ----------------------------------------------------------------------------------------
 ;; Helpers to navigate shapes
 ;; ----------------------------------------------------------------------------------------
