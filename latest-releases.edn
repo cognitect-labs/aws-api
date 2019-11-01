@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.391"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.658"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.664"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "AWS Migration Hub"},
@@ -14,7 +14,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Alexa For Business"},
  com.cognitect.aws/amplify
- {:mvn/version "757.2.538.0", :aws/serviceFullName "AWS Amplify"},
+ {:mvn/version "762.2.561.0", :aws/serviceFullName "AWS Amplify"},
  com.cognitect.aws/apigateway
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon API Gateway"},
@@ -33,7 +33,7 @@
  com.cognitect.aws/appmesh
  {:mvn/version "759.2.556.0", :aws/serviceFullName "AWS App Mesh"},
  com.cognitect.aws/appstream
- {:mvn/version "746.2.533.0", :aws/serviceFullName "Amazon AppStream"},
+ {:mvn/version "762.2.559.0", :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
  {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/athena
@@ -55,7 +55,7 @@
  com.cognitect.aws/chime
  {:mvn/version "759.2.556.0", :aws/serviceFullName "Amazon Chime"},
  com.cognitect.aws/cloud9
- {:mvn/version "746.2.533.0", :aws/serviceFullName "AWS Cloud9"},
+ {:mvn/version "762.2.559.0", :aws/serviceFullName "AWS Cloud9"},
  com.cognitect.aws/clouddirectory
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon CloudDirectory"},
@@ -150,7 +150,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
- {:mvn/version "746.2.533.0",
+ {:mvn/version "762.2.557.0",
   :aws/serviceFullName "Amazon EC2 Container Registry"},
  com.cognitect.aws/ecs
  {:mvn/version "757.2.538.0",
@@ -159,7 +159,7 @@
  {:mvn/version "746.2.533.0",
   :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elasticache
- {:mvn/version "757.2.546.0",
+ {:mvn/version "762.2.560.0",
   :aws/serviceFullName "Amazon ElastiCache"},
  com.cognitect.aws/elasticbeanstalk
  {:mvn/version "746.2.533.0",
@@ -424,7 +424,7 @@
  {:mvn/version "747.2.533.0",
   :aws/serviceFullName "Amazon SageMaker Runtime"},
  com.cognitect.aws/s3
- {:mvn/version "747.2.533.0",
+ {:mvn/version "762.2.558.0",
   :aws/serviceFullName "Amazon Simple Storage Service"},
  com.cognitect.aws/s3control
  {:mvn/version "747.2.533.0", :aws/serviceFullName "AWS S3 Control"},
