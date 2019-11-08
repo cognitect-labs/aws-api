@@ -16,8 +16,10 @@ e.g.
 ## Description with failing test case
 
 Please describe what you are trying to do, what you expect to see, and
-what you're seeing instead. Include a code example that we can paste
-as/is into a REPL, execute, and watch fail.
+what you're seeing instead.
+
+*Important*: Please include a complete minimal code example that we
+can paste as/is into a REPL, execute, and watch fail.
 
 ## Stack traces
 
