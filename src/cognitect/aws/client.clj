@@ -42,7 +42,7 @@
 (defn ^:private handle-http-response
   [service op-map http-response]
   (try
-    (if-let [anomaly-category (:cognitect.anomaly/category http-response)]
+    (if-let [anomaly-category (:cognitect.anomalies/category http-response)]
       {:cognitect.anomalies/category anomaly-category
        ::throwable (::http/throwable http-response)}
       (parse-http-response service op-map http-response))
