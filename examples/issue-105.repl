@@ -1,0 +1,31 @@
+(require '[clojure.core.async :as a]
+         '[clojure.spec.alpha :as s]
+         '[clojure.spec.gen.alpha :as gen]
+         '[clojure.java.io :as io]
+         '[cognitect.aws.client.api :as aws]
+         '[cognitect.aws.client.api.async :as aws.async])
+
+(require '[cognitect.aws.client :as client]
+         '[cognitect.aws.endpoint :as endpoint]
+
+         )
+
+(def sts-gov (aws/client {:api :sts :region "us-gov-west-1"}))
+(def sts-default (aws/client {:api :sts}))
+
+(def sts-us-west (aws/client {:api :sts :region "us-west-1"}))
+
+(->> (endpoint/resolver)
+     :partitions
+     (map #(dissoc % :services :regions))
+     )
+
+;; ("aws" "aws-cn" "aws-us-gov" "aws-iso" "aws-iso-b")
+
+(aws/invoke sts-gov {:op :GetCallerIdentity})
+(aws/invoke sts-default {:op :GetCallerIdentity})
+(aws/invoke sts-us-west {:op :GetCallerIdentity})
+
+(meta *1)
+
+(def )

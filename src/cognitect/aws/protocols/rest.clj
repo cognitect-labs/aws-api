@@ -192,10 +192,10 @@
     :else              data))
 (defmethod parse-header-value "character" [_ data] (or data ""))
 (defmethod parse-header-value "boolean"   [_ data] (= data "true"))
-(defmethod parse-header-value "double"    [_ data] (Double. data))
-(defmethod parse-header-value "float"     [_ data] (Double. data))
-(defmethod parse-header-value "long"      [_ data] (Long. data))
-(defmethod parse-header-value "integer"   [_ data] (Long. data))
+(defmethod parse-header-value "double"    [_ data] (Double/parseDouble ^String data))
+(defmethod parse-header-value "float"     [_ data] (Double/parseDouble ^String data))
+(defmethod parse-header-value "long"      [_ data] (Long/parseLong ^String data))
+(defmethod parse-header-value "integer"   [_ data] (Long/parseLong ^String data))
 (defmethod parse-header-value "blob"      [_ data] (util/base64-decode data))
 (defmethod parse-header-value "timestamp"
   [shape data]
