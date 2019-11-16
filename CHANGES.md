@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Reduce noise from reflection warnings in java 9+ [#106](https://github.com/cognitect-labs/aws-api/issues/106)
+
 ## 0.8.391 / 2019-10-25
 
 * Fix: S3 HeadObject fails with large files [#97](https://github.com/cognitect-labs/aws-api/issues/97)
