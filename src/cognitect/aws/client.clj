@@ -35,7 +35,7 @@
 
 (defmulti sign-http-request
   "Sign the HTTP request."
-  (fn [service region credentials http-request]
+  (fn [service endpoint credentials http-request]
     (get-in service [:metadata :signatureVersion])))
 
 ;; TODO convey throwable back from impl
@@ -68,7 +68,8 @@
   (let [err-meta (atom {})]
     (try
       (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
-            http-request (sign-http-request service region (credentials/fetch credentials)
+            http-request (sign-http-request service endpoint
+                                            (credentials/fetch credentials)
                                             (-> (build-http-request service op-map)
                                                 (with-endpoint endpoint)
                                                 (update :body util/->bbuf)

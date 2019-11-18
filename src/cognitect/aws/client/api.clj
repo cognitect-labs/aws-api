@@ -86,7 +86,8 @@
                                                  (assoc :ops (ops c))))})
      {:service     service
       :region      region
-      :endpoint    (if-let [ep (endpoint/resolve (-> service :metadata :endpointPrefix keyword) region)]
+      :endpoint    (if-let [ep (endpoint/resolve (keyword (get-in service [:metadata :endpointPrefix]))
+                                                 (keyword region))]
                      (merge ep (if (string? endpoint-override)
                                  {:hostname endpoint-override}
                                  endpoint-override))

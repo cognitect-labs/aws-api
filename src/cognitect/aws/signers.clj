@@ -135,16 +135,14 @@
                       (string-to-sign request auth-info))))
 
 (defn v4-sign-http-request
-  [service region credentials http-request & {:keys [content-sha256-header?]}]
+  [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
   (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
         auth-info      {:access-key-id     access-key-id
                         :secret-access-key secret-access-key
                         :service           (or (service/signing-name service)
                                                (service/endpoint-prefix service))
-                        :region            (if (and (-> service :metadata :globalEndpoint)
-                                                    (not= "s3" (service/service-name service)))
-                                             "us-east-1"
-                                             (name region))}
+                        :region            (or (get-in endpoint [:credentialScope :region])
+                                               (:region endpoint))}
         req (cond-> http-request
               session-token          (assoc-in [:headers "x-amz-security-token"] session-token)
               content-sha256-header? (assoc-in [:headers "x-amz-content-sha256"] (hashed-body http-request)))]
@@ -157,13 +155,13 @@
                       (signature auth-info req)))))
 
 (defmethod client/sign-http-request "v4"
-  [service region credentials http-request]
-  (v4-sign-http-request service region credentials http-request))
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request))
 
 (defmethod client/sign-http-request "s3"
-  [service region credentials http-request]
-  (v4-sign-http-request service region credentials http-request :content-sha256-header? true))
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
 
 (defmethod client/sign-http-request "s3v4"
-  [service region credentials http-request]
-  (v4-sign-http-request service region credentials http-request :content-sha256-header? true))
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
