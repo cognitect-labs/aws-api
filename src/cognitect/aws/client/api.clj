@@ -166,13 +166,16 @@
   representation.
 
   Alpha. Subject to change."
-  [{:keys [documentation request required response refs] :as doc}]
+  [{:keys [documentation documentationUrl request required response refs] :as doc}]
   (when doc
     (str/join "\n"
               (cond-> ["-------------------------"
                        (:name doc)
                        ""
                        documentation]
+                documentationUrl
+                (into [""
+                       documentationUrl])
                 request
                 (into [""
                        "-------------------------"
