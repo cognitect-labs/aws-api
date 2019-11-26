@@ -56,7 +56,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 99,
+   :line 100,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -68,7 +68,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 196,
+   :line 200,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -80,10 +80,12 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 163,
+   :line 164,
    :var-type "function",
    :arglists
-   ([{:keys [documentation request required response refs], :as doc}]),
+   ([{:keys
+      [documentation documentationUrl request required response refs],
+      :as doc}]),
    :doc
    "Given data produced by `ops`, returns a string\nrepresentation.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
@@ -93,7 +95,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 104,
+   :line 105,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -105,7 +107,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 153,
+   :line 154,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -117,7 +119,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 132,
+   :line 133,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -129,7 +131,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 139,
+   :line 140,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -141,7 +143,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 205,
+   :line 209,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -153,7 +155,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 123,
+   :line 124,
    :var-type "function",
    :arglists ([client] [client bool]),
    :doc
