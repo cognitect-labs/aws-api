@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.408 / 2019-11-25
 
 * Reduce noise from reflection warnings in java 9+ [#106](https://github.com/cognitect-labs/aws-api/issues/106)
 * Get signing region from endpoint config [#105](https://github.com/cognitect-labs/aws-api/issues/105)
