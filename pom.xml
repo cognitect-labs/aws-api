@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
-      <version>0.4.500</version>
+      <version>0.5.527</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>data.json</artifactId>
-      <version>0.2.6</version>
+      <version>0.2.7</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
