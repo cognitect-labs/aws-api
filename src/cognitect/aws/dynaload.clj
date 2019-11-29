@@ -1,4 +1,4 @@
-(ns cognitect.aws.dynaload)
+(ns ^:skip-wiki cognitect.aws.dynaload)
 
 (defonce ^:private dynalock (Object.))
 
