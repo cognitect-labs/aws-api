@@ -3,7 +3,7 @@
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
- {:mvn/version "776.2.582.0", :aws/serviceFullName "Access Analyzer"},
+ {:mvn/version "780.2.582.0", :aws/serviceFullName "Access Analyzer"},
  com.cognitect.aws/acm
  {:mvn/version "773.2.578.0", :aws/serviceFullName "AWS Certificate Manager"},
  com.cognitect.aws/acm-pca
