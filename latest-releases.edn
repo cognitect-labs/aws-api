@@ -17,7 +17,7 @@
  com.cognitect.aws/apigatewaymanagementapi
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AmazonApiGatewayManagementApi"},
  com.cognitect.aws/apigatewayv2
- {:mvn/version "770.2.568.0", :aws/serviceFullName "AmazonApiGatewayV2"},
+ {:mvn/version "781.2.585.0", :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/appconfig {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon AppConfig"},
  com.cognitect.aws/application-autoscaling
  {:mvn/version "780.2.584.0", :aws/serviceFullName "Application Auto Scaling"},
@@ -195,12 +195,14 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Video Streams Archived Media"},
  com.cognitect.aws/kinesis-video-media
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Video Streams Media"},
+ com.cognitect.aws/kinesis-video-signaling
+ {:mvn/version "781.2.585.0", :aws/serviceFullName "Amazon Kinesis Video Signaling Channels"},
  com.cognitect.aws/kinesisanalytics
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Analytics"},
  com.cognitect.aws/kinesisanalyticsv2
  {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Kinesis Analytics"},
  com.cognitect.aws/kinesisvideo
- {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Video Streams"},
+ {:mvn/version "781.2.585.0", :aws/serviceFullName "Amazon Kinesis Video Streams"},
  com.cognitect.aws/kms
  {:mvn/version "773.2.579.0", :aws/serviceFullName "AWS Key Management Service"},
  com.cognitect.aws/lakeformation
