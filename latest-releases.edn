@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.408"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.686"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.689"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
@@ -187,7 +187,7 @@
  com.cognitect.aws/iotthingsgraph
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS IoT Things Graph"},
  com.cognitect.aws/kafka
- {:mvn/version "770.2.568.0", :aws/serviceFullName "Managed Streaming for Kafka"},
+ {:mvn/version "782.2.586.0", :aws/serviceFullName "Managed Streaming for Kafka"},
  com.cognitect.aws/kendra
  {:mvn/version "780.2.584.0", :aws/serviceFullName "AWSKendraFrontendService"},
  com.cognitect.aws/kinesis {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis"},
@@ -204,7 +204,7 @@
  com.cognitect.aws/kinesisvideo
  {:mvn/version "781.2.585.0", :aws/serviceFullName "Amazon Kinesis Video Streams"},
  com.cognitect.aws/kms
- {:mvn/version "773.2.579.0", :aws/serviceFullName "AWS Key Management Service"},
+ {:mvn/version "782.2.586.0", :aws/serviceFullName "AWS Key Management Service"},
  com.cognitect.aws/lakeformation
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Lake Formation"},
  com.cognitect.aws/lambda {:mvn/version "780.2.584.0", :aws/serviceFullName "AWS Lambda"},
@@ -280,7 +280,7 @@
  com.cognitect.aws/qldb-session
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon QLDB Session"},
  com.cognitect.aws/quicksight
- {:mvn/version "776.2.580.0", :aws/serviceFullName "Amazon QuickSight"},
+ {:mvn/version "782.2.586.0", :aws/serviceFullName "Amazon QuickSight"},
  com.cognitect.aws/ram
  {:mvn/version "773.2.579.0", :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rds
@@ -340,7 +340,7 @@
  com.cognitect.aws/sqs
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
- {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Simple Systems Manager (SSM)"},
+ {:mvn/version "782.2.586.0", :aws/serviceFullName "Amazon Simple Systems Manager (SSM)"},
  com.cognitect.aws/sso {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Single Sign-On"},
  com.cognitect.aws/sso-oidc {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS SSO OIDC"},
  com.cognitect.aws/states {:mvn/version "780.2.584.0", :aws/serviceFullName "AWS Step Functions"},
