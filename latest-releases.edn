@@ -1,9 +1,9 @@
 {com.cognitect.aws/api {:mvn/version "0.8.408"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.689"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.692"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
- {:mvn/version "780.2.582.0", :aws/serviceFullName "Access Analyzer"},
+ {:mvn/version "783.2.589.0", :aws/serviceFullName "Access Analyzer"},
  com.cognitect.aws/acm
  {:mvn/version "773.2.578.0", :aws/serviceFullName "AWS Certificate Manager"},
  com.cognitect.aws/acm-pca
@@ -50,7 +50,7 @@
  com.cognitect.aws/cloudsearchdomain
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon CloudSearch Domain"},
  com.cognitect.aws/cloudtrail {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS CloudTrail"},
- com.cognitect.aws/codebuild {:mvn/version "773.2.579.0", :aws/serviceFullName "AWS CodeBuild"},
+ com.cognitect.aws/codebuild {:mvn/version "783.2.590.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecommit {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS CodeCommit"},
  com.cognitect.aws/codedeploy {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS CodeDeploy"},
  com.cognitect.aws/codeguru-reviewer
@@ -88,6 +88,7 @@
  com.cognitect.aws/datasync {:mvn/version "773.2.576.0", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/dax
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
+ com.cognitect.aws/detective {:mvn/version "783.2.590.0", :aws/serviceFullName "Amazon Detective"},
  com.cognitect.aws/devicefarm {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Device Farm"},
  com.cognitect.aws/devices
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS IoT 1-Click Devices Service"},
@@ -106,7 +107,7 @@
  com.cognitect.aws/ebs
  {:mvn/version "780.2.584.0", :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "780.2.583.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
+ {:mvn/version "783.2.588.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
@@ -189,7 +190,7 @@
  com.cognitect.aws/kafka
  {:mvn/version "782.2.586.0", :aws/serviceFullName "Managed Streaming for Kafka"},
  com.cognitect.aws/kendra
- {:mvn/version "780.2.584.0", :aws/serviceFullName "AWSKendraFrontendService"},
+ {:mvn/version "783.2.587.0", :aws/serviceFullName "AWSKendraFrontendService"},
  com.cognitect.aws/kinesis {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis"},
  com.cognitect.aws/kinesis-video-archived-media
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Video Streams Archived Media"},
@@ -328,7 +329,7 @@
  com.cognitect.aws/servicediscovery
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Cloud Map"},
  com.cognitect.aws/sesv2
- {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Simple Email Service"},
+ {:mvn/version "783.2.590.0", :aws/serviceFullName "Amazon Simple Email Service"},
  com.cognitect.aws/shield {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Shield"},
  com.cognitect.aws/signer {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Signer"},
  com.cognitect.aws/sms
