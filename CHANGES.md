@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Remove dep on commons-codec [#113](https://github.com/cognitect-labs/aws-api/issues/113)
+
 ## 0.8.408 / 2019-11-25
 
 * Reduce noise from reflection warnings in java 9+ [#106](https://github.com/cognitect-labs/aws-api/issues/106)
