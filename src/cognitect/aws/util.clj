@@ -13,7 +13,6 @@
            [java.io InputStream]
            [java.nio.charset Charset]
            [java.security MessageDigest]
-           [org.apache.commons.codec.binary Hex]
            [javax.crypto Mac]
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
@@ -63,9 +62,19 @@
 (def ^ThreadLocal rfc822-date-format
   (date-format "EEE, dd MMM yyyy HH:mm:ss z"))
 
-(defn hex-encode
-  [^bytes bytes]
-  (String. (Hex/encodeHex bytes true)))
+(let [hex-chars (char-array [\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \a \b \c \d \e \f])]
+  (defn hex-encode
+    [^bytes bytes]
+    (let [bl (alength bytes)
+          ca (char-array (* 2 bl))]
+      (loop [i (int 0)
+             c (int 0)]
+        (if (< i bl)
+          (let [b (long (bit-and (long (aget bytes i)) 255))]
+            (aset ca c ^char (aget hex-chars (unsigned-bit-shift-right b 4)))
+            (aset ca (unchecked-inc-int c) (aget hex-chars (bit-and b 15)))
+            (recur (unchecked-inc-int i) (unchecked-add-int c 2)))
+          (String. ca))))))
 
 (defn sha-256
   "Returns the sha-256 digest (bytes) of data, which can be a
