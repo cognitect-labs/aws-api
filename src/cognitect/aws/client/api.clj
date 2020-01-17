@@ -9,6 +9,7 @@
             [cognitect.aws.dynaload :as dynaload]
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
+            [cognitect.aws.client.shared :as shared]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.http :as http]
@@ -25,17 +26,18 @@
 
   :api                  - required, this or api-descriptor required, the name of the api
                           you want to interact with e.g. :s3, :cloudformation, etc
+  :http-client          - optional, to share http-clients across aws-clients.
+                          See default-http-client.
+  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
+                          protocol, defaults to cognitect.aws.region/default-region-provider.
+                          Ignored if :region is also provided
   :region               - optional, the aws region serving the API endpoints you
                           want to interact with, defaults to region provided by
-                          by the default region provider (see cognitect.aws.region)
+                          by the region-provider
   :credentials-provider - optional, implementation of
                           cognitect.aws.credentials/CredentialsProvider
                           protocol, defaults to
                           cognitect.aws.credentials/default-credentials-provider
-  :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                          protocol, defaults to cognitect.aws.region/default-region-provider
-  :http-client          - optional, to share http-clients across aws-clients.
-                          See default-http-client.
   :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                             :protocol     - :http or :https
                             :hostname     - string
@@ -58,44 +60,48 @@
                           (if the request is retriable?), or nil if it should stop.
                           Defaults to cognitect.aws.retry/default-backoff.
 
+  By default, all clients use shared http-client, credentials-provider, and
+  region-provider instances which use a small collection of daemon threads.
+
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
            http-client]
-    :or {endpoint-override {}}
-    :as config}]
+    :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
      (format
       "DEPRECATION NOTICE: :endpoint-override string is deprecated.\nUse {:endpoint-override {:hostname \"%s\"}} instead."
       endpoint-override)))
-  (let [service   (service/service-description (name api))
-        http-client (http/resolve-http-client http-client)
-        region    (keyword
-                   (or region
-                       (region/fetch
-                        (or region-provider
-                            (region/default-region-provider http-client)))))]
+  (let [service              (service/service-description (name api))
+        http-client          (if http-client
+                               (http/resolve-http-client http-client)
+                               (shared/http-client))
+        region-provider      (cond region          (reify region/RegionProvider (fetch [_] region))
+                                   region-provider region-provider
+                                   :else           (shared/region-provider))
+        credentials-provider (or credentials-provider (shared/credentials-provider))
+        endpoint-provider    (endpoint/default-endpoint-provider
+                              api
+                              (get-in service [:metadata :endpointPrefix])
+                              endpoint-override)]
     (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (client/->Client
      (atom {'clojure.core.protocols/datafy (fn [c]
-                                             (-> c
-                                                 client/-get-info
-                                                 (select-keys [:region :endpoint :service])
-                                                 (update :endpoint select-keys [:hostname :protocols :signatureVersions])
-                                                 (update :service select-keys [:metadata])
-                                                 (assoc :ops (ops c))))})
-     {:service     service
-      :region      region
-      :endpoint    (if-let [ep (endpoint/resolve (keyword (get-in service [:metadata :endpointPrefix]))
-                                                 (keyword region))]
-                     (merge ep (if (string? endpoint-override)
-                                 {:hostname endpoint-override}
-                                 endpoint-override))
-                     (throw (ex-info "No known endpoint." {:service api :region region})))
-      :retriable?  (or retriable? retry/default-retriable?)
-      :backoff     (or backoff retry/default-backoff)
-      :http-client http-client
-      :credentials (or credentials-provider (credentials/default-credentials-provider http-client))})))
+                                             (let [i (client/-get-info c)]
+                                               (-> i
+                                                   (select-keys [:service])
+                                                   (assoc :region (-> i :region-provider region/fetch)
+                                                          :endpoint (-> i :endpoint-provider endpoint/fetch))
+                                                   (update :endpoint select-keys [:hostname :protocols :signatureVersions])
+                                                   (update :service select-keys [:metadata])
+                                                   (assoc :ops (ops c)))))})
+     {:service              service
+      :retriable?           (or retriable? retry/default-retriable?)
+      :backoff              (or backoff retry/default-backoff)
+      :http-client          http-client
+      :endpoint-provider    endpoint-provider
+      :region-provider      region-provider
+      :credentials-provider credentials-provider})))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."
@@ -209,11 +215,14 @@
 (defn stop
   "Shuts down the underlying http-client, releasing resources.
 
-  NOTE: if you're sharing an http-client across aws-api clients,
-  this will shut down the shared client for all aws-api clients
-  that are using it.
+  There should be no need to use this in the default case, as
+  aws-clients share a single http-client, credentials-provider,
+  and region-provider by default, all of which use a small number
+  of daemon threads. If you call stop on a client using these
+  shared resources, the underlying resources will be shut down
+  for all other clients using the same ones.
 
   Alpha. Subject to change."
   [client]
-  (let [{:keys [http-client credentials]} (client/-get-info client)]
+  (let [{:keys [http-client]} (client/-get-info client)]
     (http/-stop http-client)))
