@@ -18,7 +18,7 @@
     (Executors/newScheduledThreadPool 1 (reify ThreadFactory
                                           (newThread [_ r]
                                             (doto (Thread. r)
-                                              (.setName "cognitect.aws-api.credentials.refresh")
+                                              (.setName "cognitect.aws-api.region-provider")
                                               (.setDaemon true)))))))
 
 (defn ^:skip-wiki valid-region
@@ -99,9 +99,11 @@
 
   Alpha. Subject to change."
   [http-client]
-  (reify RegionProvider
-    (fetch [_] (valid-region (ec2/get-ec2-instance-region http-client)))))
-
+  (let [cached-region (atom nil)]
+    (reify RegionProvider
+      (fetch [_]
+        (or @cached-region
+            (reset! cached-region (valid-region (ec2/get-ec2-instance-region http-client))))))))
 
 (defn default-region-provider
   "Return a chain-region-provider comprising, in order:

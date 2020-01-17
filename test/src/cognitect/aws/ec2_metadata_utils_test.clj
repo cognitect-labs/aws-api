@@ -5,6 +5,7 @@
   (:require [clojure.test :refer :all]
             [clojure.core.async :as a]
             [cognitect.aws.http :as http]
+            [cognitect.aws.client.shared :as shared]
             [cognitect.aws.test.ec2-metadata-utils-server :as ec2-metadata-utils-server]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]))
 
@@ -14,15 +15,14 @@
 (defn test-server
   [f]
   ;; NOTE: starting w/ 0 generates a random port
-  (let [server-stop-fn (ec2-metadata-utils-server/start 0)
+  (let [server-stop-fn   (ec2-metadata-utils-server/start 0)
         test-server-port (-> server-stop-fn meta :local-port)]
     (try
       (System/setProperty ec2-metadata-utils/ec2-metadata-service-override-system-property
                           (str "http://localhost:" test-server-port))
       (binding [*test-server-port* test-server-port
-                *http-client* (http/resolve-http-client 'cognitect.aws.http.cognitect/create)]
-        (f)
-        (http/stop *http-client*))
+                *http-client*      (shared/http-client)]
+        (f))
       (finally
         (server-stop-fn)
         (System/clearProperty ec2-metadata-utils/ec2-metadata-service-override-system-property)))))

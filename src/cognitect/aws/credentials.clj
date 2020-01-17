@@ -42,7 +42,7 @@
    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
                                          (newThread [_ r]
                                            (doto (Thread. r)
-                                             (.setName "cognitect.aws-api.credentials.refresh")
+                                             (.setName "cognitect.aws-api.credentials-provider")
                                              (.setDaemon true)))))))
 
 (defn ^:skip-wiki refresh!
