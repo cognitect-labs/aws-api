@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.423 / 2020-01-17
 
 * Remove dep on commons-codec [#113](https://github.com/cognitect-labs/aws-api/issues/113)
 * Convey anomaly from http-client as/is [#114](https://github.com/cognitect-labs/aws-api/issues/114)
