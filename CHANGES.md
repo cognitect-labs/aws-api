@@ -3,6 +3,7 @@
 ## DEV
 
 * Remove dep on commons-codec [#113](https://github.com/cognitect-labs/aws-api/issues/113)
+* Convey anomaly from http-client as/is [#114](https://github.com/cognitect-labs/aws-api/issues/114)
 
 ## 0.8.408 / 2019-11-25
 

@@ -42,9 +42,8 @@
 (defn ^:private handle-http-response
   [service op-map http-response]
   (try
-    (if-let [anomaly-category (:cognitect.anomalies/category http-response)]
-      {:cognitect.anomalies/category anomaly-category
-       ::throwable (::http/throwable http-response)}
+    (if (:cognitect.anomalies/category http-response)
+      http-response
       (parse-http-response service op-map http-response))
     (catch Throwable t
       {:cognitect.anomalies/category :cognitect.anomalies/fault
