@@ -1,5 +1,12 @@
 # aws-api
 
+## DEV
+
+* Improved resource management
+  * all aws clients use shared http-client, credentials-provider,
+    and region-provider by default
+  * first call to invoke takes hit of fetching region and credentials
+
 ## 0.8.423 / 2020-01-17
 
 * Remove dep on commons-codec [#113](https://github.com/cognitect-labs/aws-api/issues/113)
