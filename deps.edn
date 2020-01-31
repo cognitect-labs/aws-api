@@ -25,6 +25,10 @@
            :test            {:extra-deps  {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                                                       :sha     "cb96e80f6f3d3b307c59cbeb49bb0dcb3a2a780b"}}
                              :main-opts   ["-m" "cognitect.test-runner"]}
+                             
+           :cljs-build
+           {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.520"}}
+            :main-opts ["-m" "cljs.main" "-co" "min.js.edn" "-c"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
                              :extra-deps  {org.clojure/test.check      {:mvn/version "0.10.0"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
