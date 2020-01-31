@@ -5,7 +5,6 @@
   "Impl, don't call directly."
   (:refer-clojure :exclude [resolve])
   (:require [clojure.string :as str]
-            [clojure.java.io :as io]
             [clojure.edn :as edn]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))

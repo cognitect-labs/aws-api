@@ -7,10 +7,11 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
-  (:import [java.net URI]
-           [java.net URLDecoder]))
+  #?(:clj (:import [java.net URI]
+                   [java.net URLDecoder])
+     :cljs (:import [google.Uri])))
 
-(set! *warn-on-reflection* true)
+#?(:clj (set! *warn-on-reflection* true))
 
 (defn uri-encode
   "Escape (%XX) special characters in the string `s`.
@@ -22,18 +23,19 @@
    (when s
      (uri-encode s "")))
   ([^String s extra-chars]
-   (when s
-     (let [safe-chars (->> extra-chars
-                           (into #{\_ \- \~ \.})
-                           (into #{} (map int)))
-           builder    (StringBuilder.)]
-       (doseq [b (.getBytes s "UTF-8")]
-         (.append builder
-                  (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? safe-chars b))
-                    (char b)
-                    (format "%%%02X" b))))
-       (.toString builder)))))
+   #?(:clj (when s
+             (let [safe-chars (->> extra-chars
+                                   (into #{\_ \- \~ \.})
+                                   (into #{} (map int)))
+                   builder    (StringBuilder.)]
+               (doseq [b (.getBytes s "UTF-8")]
+                 (.append builder
+                          (if (or (Character/isLetterOrDigit ^int b)
+                                  (contains? safe-chars b))
+                            (char b)
+                            (format "%%%02X" b))))
+               (.toString builder)))
+      :cljs (js/encodeURI uri))))
 
 (defn credential-scope
   [{:keys [region service] :as auth-info} request]
@@ -48,14 +50,16 @@
   [{:keys [request-method]}]
   (-> request-method name str/upper-case))
 
+(defn- uri-path [uri]
+  #?(:clj (.. (URI. uri) normalize getPath)
+     :cljs (.. (google.Uri. uri) getPath)))
+
 (defn- canonical-uri
   [{:keys [uri]}]
   (let [encoded-path (-> uri
                          (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
                          (str/replace #"\s" "%20"); (URI.) throws Exception on space.
-                         (URI.)
-                         (.normalize)
-                         (.getPath)
+                         (uri-path)
                          (uri-encode "/"))]
     (if (.isEmpty ^String encoded-path)
       "/"
@@ -69,7 +73,7 @@
            (map #(str/split % #"=" 2))
            ;; TODO (dchelimsky 2019-01-30) decoding first because sometimes
            ;; it's already been encoding. Look into avoiding that!
-           (map (fn [kv] (map #(uri-encode (URLDecoder/decode %)) kv)))
+           (map (fn [kv] (map #(uri-encode #?(:clj (URLDecoder/decode %) :cljs (js/decodeURI %))) kv)))
            (sort (fn [[k1 v1] [k2 v2]]
                    (if (= k1 k2)
                      (compare v1 v2)

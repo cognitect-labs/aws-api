@@ -20,7 +20,8 @@
   (:require [clojure.data.json :as json]
             [cognitect.aws.util :as util]))
 
-(set! *warn-on-reflection* true)
+#?(:clj
+  (set! *warn-on-reflection* true))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Helpers to navigate shapes
@@ -78,22 +79,26 @@
      "unixTimestamp" (util/format-timestamp data)
      (default-format-fn data))))
 
+(defn ->date [^long x]
+  #?(:clj (java.util.Date. x)
+     :cljs (js/Date. x)))
+
 (defn parse-date
   [shape data]
   (condp = (:timestampFormat shape)
     "rfc822"  (util/parse-date util/rfc822-date-format data)
     "iso8601" (util/parse-date util/iso8601-date-format data)
     (cond (int? data)
-          (java.util.Date. (* 1000 ^int data))
+          (->date (* 1000 (long ^int data)))
           (double? data)
-          (java.util.Date. (* 1000 (long data)))
+          (->date (* 1000 (long data)))
           (re-matches #"^\d+$" data)
-          (java.util.Date. (* 1000 (long (read-string data))))
+          (->date (* 1000 (long (clojure.edn/read-string data))))
           :else
           (->> [util/iso8601-date-format
                 util/iso8601-msecs-date-format
                 util/rfc822-date-format]
-               (map #(try (util/parse-date % data) (catch java.text.ParseException _ nil)))
+               (map #(try (util/parse-date % data) (catch #?(:clj java.text.ParseException :cljs :default) _ nil)))
                (filter identity)
                first))))
 
@@ -169,7 +174,7 @@
 
 (defmethod json-serialize* "timestamp"
   [shape data]
-  (format-date shape data (comp read-string util/format-timestamp)))
+  (format-date shape data (comp clojure.edn/read-string util/format-timestamp)))
 
 (defmethod json-serialize* "structure"
   [shape data]
@@ -396,10 +401,19 @@
 (defmethod xml-parse* "string"    [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "character" [_ nodes] (or (data nodes) ""))
 (defmethod xml-parse* "boolean"   [_ nodes] (= (data nodes) "true"))
-(defmethod xml-parse* "double"    [_ nodes] (Double/parseDouble ^String (data nodes)))
-(defmethod xml-parse* "float"     [_ nodes] (Double/parseDouble ^String (data nodes)))
-(defmethod xml-parse* "long"      [_ nodes] (Long/parseLong ^String (data nodes)))
-(defmethod xml-parse* "integer"   [_ nodes] (Long/parseLong ^String (data nodes)))
+
+(defn parse-double [x]
+  #?(:clj (Double/parseDouble ^String x)
+     :cljs (js/parseFloat x)))
+
+(defn parse-long [x]
+  #?(:clj (Long/parseLong ^String x)
+     :cljs (js/parseInt x)))
+
+(defmethod xml-parse* "double"    [_ nodes] (parse-double (data nodes)))
+(defmethod xml-parse* "float"     [_ nodes] (parse-double (data nodes)))
+(defmethod xml-parse* "long"      [_ nodes] (parse-long (data nodes)))
+(defmethod xml-parse* "integer"   [_ nodes] (parse-long (data nodes)))
 (defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
 (defmethod xml-parse* "timestamp"
   [shape nodes]
