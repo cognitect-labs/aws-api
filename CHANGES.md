@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* upgrade to cognitect.http-client 0.1.104 [#115](https://github.com/cognitect-labs/aws-api/issues/115)
+
 ## 0.8.423 / 2020-01-17
 
 * Remove dep on commons-codec [#113](https://github.com/cognitect-labs/aws-api/issues/113)
