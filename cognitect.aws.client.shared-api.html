@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.region - aws-api API documentation</title>
+    <title>cognitect.aws.client.shared - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -52,32 +52,24 @@ namespace.
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
     <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/chain-region-provider">chain-region-provider</a>
+      <a href="#cognitect.aws.client.shared/credentials-provider">credentials-provider</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/default-region-provider">default-region-provider</a>
+      <a href="#cognitect.aws.client.shared/http-client">http-client</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/environment-region-provider">environment-region-provider</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/fetch">fetch</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/instance-region-provider">instance-region-provider</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/profile-region-provider">profile-region-provider</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.region/system-property-region-provider">system-property-region-provider</a>
+      <a href="#cognitect.aws.client.shared/region-provider">region-provider</a>
     </div>
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.region</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.client.shared</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.region</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.client.shared</span>
 <p></p>
 <h2>Overview</h2>
-<pre id="namespace-docstr">Region providers. Primarily for internal use, and subject to change.</pre>
+<pre id="namespace-docstr"></pre>
 
 
 <br />
@@ -85,15 +77,12 @@ namespace.
 <div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.region/chain-region-provider">chain-region-provider</h2>
+  <h2 id="cognitect.aws.client.shared/credentials-provider">credentials-provider</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (chain-region-provider providers)
+  <pre id="var-usage">Usage: (credentials-provider)
 </pre>
-  <pre id="var-docstr">Chain together multiple region providers.
-
-Calls each provider in order until one return a non-nil result.
-
-Returns nil if none of the providers return a region.
+  <pre id="var-docstr">Returns the globally shared instance of credentials-provider, which
+uses the globally shared instance of http-client.
 
 Alpha. Subject to change.</pre>
   
@@ -102,16 +91,12 @@ Alpha. Subject to change.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.region/default-region-provider">default-region-provider</h2>
+  <h2 id="cognitect.aws.client.shared/http-client">http-client</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (default-region-provider http-client)
+  <pre id="var-usage">Usage: (http-client)
 </pre>
-  <pre id="var-docstr">Return a chain-region-provider comprising, in order:
-
-  environment-region-provider
-  system-property-region-provider
-  profile-region-provider
-  instance-region-provider
+  <pre id="var-docstr">Returns the globally shared instance of http-client (created on the
+first call).
 
 Alpha. Subject to change.</pre>
   
@@ -120,73 +105,12 @@ Alpha. Subject to change.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.region/environment-region-provider">environment-region-provider</h2>
+  <h2 id="cognitect.aws.client.shared/region-provider">region-provider</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (environment-region-provider)
+  <pre id="var-usage">Usage: (region-provider)
 </pre>
-  <pre id="var-docstr">Return the region from the AWS_REGION env var, or nil if not present.
-
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.region/fetch">fetch</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (fetch _)
-</pre>
-  <pre id="var-docstr">Returns the region found by this provider, or nil.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.region/instance-region-provider">instance-region-provider</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (instance-region-provider http-client)
-</pre>
-  <pre id="var-docstr">Return the region from the ec2 instance's metadata service,
-or nil if the service can not be found.
-
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.region/profile-region-provider">profile-region-provider</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (profile-region-provider)
-       (profile-region-provider profile-name)
-       (profile-region-provider profile-name f)
-</pre>
-  <pre id="var-docstr">Return the region in a AWS configuration profile.
-
-Arguments:
-
-  f             File    The profile configuration file. (default: ~/.aws/config)
-  profile-name  string  The name of the profile in the file. (default: default)
-
-Parsed properties:
-
-  region        required
-
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.region/system-property-region-provider">system-property-region-provider</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (system-property-region-provider)
-</pre>
-  <pre id="var-docstr">Return the region from the aws.region system property, or nil if not present.
+  <pre id="var-docstr">Returns the globally shared instance of region-provider, which
+uses the globally shared instance of http-client.
 
 Alpha. Subject to change.</pre>
   

@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -99,23 +99,24 @@ namespace.
   <hr />
   <h2 id="cognitect.aws.client.api/client">client</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override http-client], :or {endpoint-override {}}, :as config})
+  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override http-client], :or {endpoint-override {}}})
 </pre>
   <pre id="var-docstr">Given a config map, create a client for specified api. Supported keys:
 
 :api                  - required, this or api-descriptor required, the name of the api
                         you want to interact with e.g. :s3, :cloudformation, etc
+:http-client          - optional, to share http-clients across aws-clients.
+                        See default-http-client.
+:region-provider      - optional, implementation of aws-clojure.region/RegionProvider
+                        protocol, defaults to cognitect.aws.region/default-region-provider.
+                        Ignored if :region is also provided
 :region               - optional, the aws region serving the API endpoints you
                         want to interact with, defaults to region provided by
-                        by the default region provider (see cognitect.aws.region)
+                        by the region-provider
 :credentials-provider - optional, implementation of
                         cognitect.aws.credentials/CredentialsProvider
                         protocol, defaults to
                         cognitect.aws.credentials/default-credentials-provider
-:region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                        protocol, defaults to cognitect.aws.region/default-region-provider
-:http-client          - optional, to share http-clients across aws-clients.
-                        See default-http-client.
 :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                           :protocol     - :http or :https
                           :hostname     - string
@@ -137,6 +138,9 @@ namespace.
                         number of milliseconds to wait before the next retry
                         (if the request is retriable?), or nil if it should stop.
                         Defaults to cognitect.aws.retry/default-backoff.
+
+By default, all clients use shared http-client, credentials-provider, and
+region-provider instances which use a small collection of daemon threads.
 
 Alpha. Subject to change.</pre>
   
@@ -250,13 +254,13 @@ Alpha. Subject to change.</pre>
   <hr />
   <h2 id="cognitect.aws.client.api/stop">stop</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (stop client)
+  <pre id="var-usage">Usage: (stop aws-client)
 </pre>
-  <pre id="var-docstr">Shuts down the underlying http-client, releasing resources.
+  <pre id="var-docstr">Has no effect when the underlying http-client is the shared
+instance.
 
-NOTE: if you're sharing an http-client across aws-api clients,
-this will shut down the shared client for all aws-api clients
-that are using it.
+If you explicitly provided any other instance of http-client, stops
+it, releasing resources.
 
 Alpha. Subject to change.</pre>
   
