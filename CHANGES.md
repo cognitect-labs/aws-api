@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.430 / 2020-02-10
 
 * upgrade to cognitect.http-client 0.1.104 [#115](https://github.com/cognitect-labs/aws-api/issues/115)
 * all aws clients use shared http-client, credentials-provider, and region-provider by default
