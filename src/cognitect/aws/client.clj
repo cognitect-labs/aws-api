@@ -7,6 +7,8 @@
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
+            [cognitect.aws.endpoint :as endpoint]
+            [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as credentials])
   (:import [java.util.concurrent Callable ExecutorService Executors ThreadFactory]))
 
@@ -61,50 +63,39 @@
     port     (assoc :server-port port)
     path     (assoc :uri path)))
 
-(defn- send-request*
-  "*Blocking* helper, call only from send-request."
-  [ch client op-map]
-  (let [err-meta (atom {})]
+(defn send-request
+  "Send the request to AWS and return a channel which delivers the response."
+  [client op-map]
+  (let [{:keys [service http-client region-provider credentials-provider endpoint-provider]}
+        (-get-info client)
+        ch       (a/promise-chan)
+        err-meta (atom {})]
     (try
-      (let [{:keys [service region credentials endpoint http-client]} (-get-info client)
-            http-request (sign-http-request service endpoint
-                                            (credentials/fetch credentials)
-                                            (-> (build-http-request service op-map)
-                                                (with-endpoint endpoint)
-                                                (update :body util/->bbuf)
-                                                ((partial interceptors/modify-http-request service op-map))))]
-        (swap! err-meta assoc :http-request http-request)
-        (a/take!
-         (http/submit http-client http-request)
-         (fn [response]
-           (a/put! ch (with-meta
-                        (handle-http-response service op-map response)
-                        {:http-request  http-request
-                         :http-response (update response :body util/bbuf->input-stream)}))))
-        ch)
+      (a/take!
+       (region/fetch-async region-provider)
+       (fn [region]
+         (a/take!
+          (credentials/fetch-async credentials-provider)
+          (fn [creds]
+            (let [endpoint     (endpoint/fetch endpoint-provider region)
+                  http-request (sign-http-request service endpoint
+                                                  creds
+                                                  (-> (build-http-request service op-map)
+                                                      (with-endpoint endpoint)
+                                                      (update :body util/->bbuf)
+                                                      ((partial interceptors/modify-http-request service op-map))))]
+              (swap! err-meta assoc :http-request http-request)
+              (a/take!
+               (http/submit http-client http-request)
+               (fn [response]
+                 (a/put! ch (with-meta
+                              (handle-http-response service op-map response)
+                              {:http-request  http-request
+                               :http-response (update response :body util/bbuf->input-stream)})))))))))
+      ch
       (catch Throwable t
         (a/put! ch (with-meta
                      {:cognitect.anomalies/category :cognitect.anomalies/fault
                       ::throwable                   t}
                      (assoc @err-meta :op-map op-map)))
         ch))))
-
-(defonce send-pool
-  (delay
-   (let [idx (atom 0)]
-     (Executors/newFixedThreadPool
-      4
-      (reify ThreadFactory
-             (newThread
-              [_ runnable]
-              (doto (.newThread (Executors/defaultThreadFactory) runnable)
-                (.setName (str "cognitect-aws-send-" (swap! idx inc)))
-                (.setDaemon true))))))))
-
-(defn send-request
-  "Send the request to AWS and return a channel which delivers the response."
-  [client op-map]
-  (let [ch (a/chan 1)]
-    (.submit ^ExecutorService @send-pool
-             ^Callable #(send-request* ch client op-map))
-    ch))

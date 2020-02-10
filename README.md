@@ -216,27 +216,16 @@ the `:path` in the `:endpoint-override` map.
 
 ## http-client
 
+NOTE: the behavior of `com.cognitect.aws.api/client` and `com.cognitect.aws.api/stop`
+changed as of release 0.8.430. See [Upgrade
+Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md)
+for more information.
+
 The aws-api client uses an http-client to send requests to AWS,
 including any operations you invoke _and_ fetching the region and
 credentials when you're running in EC2 or ECS. By default, each
-aws-api client creates its own http-client, which, in turn, manages
-its own resources. Invoke `cognitect.aws.client.api/stop` on the
-client if you want it to shut down any resources it and its
-http-client are using.
-
-If you're creating multiple aws-api clients, you can, optionally,
-create a single http-client and share it across aws-api clients e.g.
-
-``` clojure
-(require '[cognitect.aws.client.api :as aws])
-(def http-client (aws/default-http-client))
-(def s3-client (aws/client {:api :s3 :http-client http-client}))
-(def ssm-client (aws/client {:api :ssm :http-client http-client}))
-;; etc
-```
-
-If you call `stop` on `s3-client` or `ssm-client` in this example, the
-single http-client gets shut down for both.
+aws-api client uses a single, shared http-client, whose resources
+are managed by aws-api.
 
 ## Contributing
 
@@ -275,6 +264,17 @@ access.
 
 Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html),
 and supply the correct endpoint as described in [nodename nor servname provided, or not known](#nodename-nor-servname-provided-or-not-known), above.
+
+#### Ops limit reached
+
+The underlying http-client has a `:pending-ops-limit` configuration
+which, when reached, results in an exception with the message "Ops
+limit reached". As of this writing, aws-api does not provide access to
+the http-client's configuration. Programs that encounter "Ops limit
+reached" can avoid it by creating separate http-clients for each
+aws-client. You may wish to explicitly stop
+(`com.cognitect.aws.api/stop`) these aws-clients when the are not
+longer in use to conserve resources.
 
 ### S3 Issues
 

@@ -6,10 +6,20 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
+            [clojure.core.async :as a]
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
-  (:import [java.io File]))
+  (:import (java.io File)
+           (java.util.concurrent Executors ExecutorService ThreadFactory)))
+
+(defonce ^:private scheduled-executor-service
+  (delay
+    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
+                                          (newThread [_ r]
+                                            (doto (Thread. r)
+                                              (.setName "cognitect.aws-api.region-provider")
+                                              (.setDaemon true)))))))
 
 (defn ^:skip-wiki valid-region
   "For internal use. Don't call directly.
@@ -89,9 +99,11 @@
 
   Alpha. Subject to change."
   [http-client]
-  (reify RegionProvider
-    (fetch [_] (valid-region (ec2/get-ec2-instance-region http-client)))))
-
+  (let [cached-region (atom nil)]
+    (reify RegionProvider
+      (fetch [_]
+        (or @cached-region
+            (reset! cached-region (valid-region (ec2/get-ec2-instance-region http-client))))))))
 
 (defn default-region-provider
   "Return a chain-region-provider comprising, in order:
@@ -108,3 +120,9 @@
     (system-property-region-provider)
     (profile-region-provider)
     (instance-region-provider http-client)]))
+
+(defn fetch-async [provider]
+  (let [ch (a/chan 1)]
+    (.submit ^ExecutorService @scheduled-executor-service
+             ^Callable        #(a/put! ch (fetch provider)))
+    ch))

@@ -7,8 +7,19 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
+            [clojure.core.async :as a]
             [cognitect.aws.service :as service]
-            [cognitect.aws.util :as util]))
+            [cognitect.aws.region :as region]
+            [cognitect.aws.util :as util])
+  (:import (java.util.concurrent Executors ExecutorService ThreadFactory)))
+
+(defonce ^:private scheduled-executor-service
+  (delay
+    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
+                                          (newThread [_ r]
+                                            (doto (Thread. r)
+                                              (.setName "cognitect.aws-api.credentials.refresh")
+                                              (.setDaemon true)))))))
 
 (defn descriptor-resource-path [] (format "%s/endpoints.edn" service/base-resource-path))
 
@@ -74,3 +85,20 @@
         (:partitions (resolver))))
 
 (def resolve (memoize resolve*))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defprotocol EndpointProvider
+  (-fetch [provider region]))
+
+(defn default-endpoint-provider [api endpointPrefix endpoint-override]
+  (reify EndpointProvider
+    (-fetch [_ region]
+      (if-let [ep (resolve (keyword endpointPrefix) (keyword region))]
+        (merge ep (if (string? endpoint-override)
+                    {:hostname endpoint-override}
+                    endpoint-override))
+        (throw (ex-info "No known endpoint." {:service api :region region}))))))
+
+(defn fetch [provider region]
+  (-fetch provider region))

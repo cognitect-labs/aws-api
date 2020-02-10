@@ -4,6 +4,7 @@
 (ns cognitect.aws.region-test
   (:require [clojure.test :refer :all]
             [clojure.java.io :as io]
+            [clojure.core.async :as a]
             [cognitect.aws.region :as region]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
@@ -40,8 +41,23 @@
         (is (= "us-west-1" (region/fetch (region/profile-region-provider))))))))
 
 (deftest instance-region-provider-test
-  (testing "The provider obtains the region from the instance metadata correctly."
-    (is (= "us-east-1" (region/fetch (region/instance-region-provider ec2-metadata-utils-test/*http-client*))))))
+  (testing "provider caches the fetched value"
+    (let [orig-get-region-fn cognitect.aws.ec2-metadata-utils/get-ec2-instance-region
+          request-counter    (atom 0)
+          fetch-counter      (atom 0)]
+      (with-redefs [cognitect.aws.ec2-metadata-utils/get-ec2-instance-region
+                    (fn [http]
+                      (swap! fetch-counter inc)
+                      (orig-get-region-fn http))]
+        (let [num-requests 10
+              p            (region/instance-region-provider ec2-metadata-utils-test/*http-client*)
+              chans        (repeatedly num-requests
+                                       #(do
+                                          (swap! request-counter inc)
+                                          (region/fetch-async p)))]
+          (is (apply = "us-east-1" (map #(a/<!! %) chans)))
+          (is (= num-requests @request-counter))
+          (is (= 1 @fetch-counter))))))())
 
 (comment
   (run-tests)
