@@ -45,7 +45,7 @@
 ;; make a credentials provider that can assume a role
 (defn assumed-role-credentials-provider [role-arn session-name refresh-every-n-seconds]
   (let [sts (aws/client {:api :sts})]
-    (credentials/auto-refreshing-credentials
+    (credentials/cached-credentials-with-auto-refresh
      (reify credentials/CredentialsProvider
        (fetch [_]
          (when-let [creds (:Credentials

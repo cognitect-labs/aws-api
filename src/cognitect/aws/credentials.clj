@@ -5,21 +5,20 @@
   "Contains credentials providers and helpers for discovering credentials.
 
   Alpha. Subject to change."
-  (:require [clojure.data.json :as json]
-            [clojure.java.io :as io]
-            [clojure.string :as str]
+  (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
+            [clojure.core.async :as a]
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
-  (:import (java.util.concurrent Executors ScheduledExecutorService)
-           (java.util.concurrent TimeUnit ThreadFactory)
+  (:import (java.util.concurrent Executors ExecutorService ScheduledExecutorService
+                                 ScheduledFuture TimeUnit ThreadFactory)
            (java.io File)
            (java.net URI)
            (java.time Duration Instant)))
 
 (defprotocol CredentialsProvider
-  (fetch [_]
+  (fetch [provider]
     "Return the credentials found by this provider, or nil.
 
     Credentials should be a map with the following keys:
@@ -38,59 +37,73 @@
 
 ;; Credentials subsystem
 
-(defn ^:skip-wiki auto-refresh-fn
+(defonce ^:private scheduled-executor-service
+  (delay
+   (Executors/newScheduledThreadPool 1 (reify ThreadFactory
+                                         (newThread [_ r]
+                                           (doto (Thread. r)
+                                             (.setName "cognitect.aws-api.credentials-provider")
+                                             (.setDaemon true)))))))
+
+(defn ^:skip-wiki refresh!
   "For internal use. Don't call directly.
 
-  Return the function to auto-refresh the `credentials` atom using the given `provider`.
+  Invokes `(fetch provider)`, resets the `credentials-atom` with and
+  returns the result.
 
-  If the credentials return a ::ttl, schedule refresh after ::ttl seconds using `scheduler`.
+  If the result includes a ::ttl, schedules a refresh after ::ttl
+  seconds using `scheduler`, resetting `scheduled-refresh` with the
+  resulting `ScheduledFuture`.
 
-  If the credentials returned by the provider are not valid, an error will be logged and
-  the automatic refresh process will stop."
-  [credentials provider scheduler]
-  (fn refresh! []
-    (try
-      (let [{:keys [::ttl] :as new-creds} (fetch provider)]
-        (reset! credentials new-creds)
-        (when ttl
-          (.schedule ^ScheduledExecutorService scheduler
-                     ^Runnable refresh!
-                     ^long ttl
-                     TimeUnit/SECONDS))
-        new-creds)
-      (catch Throwable t
-        (log/error t "Error fetching the credentials.")))))
+  If the credentials returned by the provider are not valid, resets
+  both atoms to nil, logs an error, and returns nil."
+  [credentials-atom scheduled-refresh-atom provider scheduler]
+  (try
+    (let [{:keys [::ttl] :as new-creds} (fetch provider)]
+      (reset! scheduled-refresh-atom
+              (when ttl
+                (.schedule ^ScheduledExecutorService scheduler
+                           ^Runnable #(refresh! credentials-atom scheduled-refresh-atom provider scheduler)
+                           ^long ttl
+                           TimeUnit/SECONDS)))
+      (reset! credentials-atom new-creds))
+    (catch Throwable t
+      (reset! scheduled-refresh-atom nil)
+      (log/error t "Error fetching credentials."))))
 
-(defn auto-refreshing-credentials
-  "Create auto-refreshing credentials using the specified provider.
+(defn cached-credentials-with-auto-refresh
+  "Returns a CredentialsProvider which wraps `provider`, caching
+  credentials returned by `fetch`, and auto-refreshing the cached
+  credentials in a background thread when the credentials include a
+  ::ttl.
 
-  Return a derefable containing the credentials.
+  Call `stop` to cancel future auto-refreshes.
 
-  Call `stop` to stop the auto-refreshing process.
-
-  The default ScheduledExecutorService uses a ThreadFactory
-  that spawns daemon threads. You can override this by
-  providing your own ScheduledExecutorService.
+  The default ScheduledExecutorService uses a ThreadFactory that
+  spawns daemon threads. You can override this by providing your own
+  ScheduledExecutorService.
 
   Alpha. Subject to change."
   ([provider]
-   (auto-refreshing-credentials
-    provider
-    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
-                                          (newThread [_ r]
-                                            (doto (Thread. r)
-                                              (.setName "cognitect.aws-api.credentials.refresh")
-                                              (.setDaemon true)))))))
+   (cached-credentials-with-auto-refresh provider @scheduled-executor-service))
   ([provider scheduler]
-   (let [credentials (atom nil)
-         auto-refresh! (auto-refresh-fn credentials provider scheduler)]
+   (let [credentials-atom       (atom nil)
+         scheduled-refresh-atom (atom nil)]
      (reify
        CredentialsProvider
-       (fetch [_] (or @credentials (auto-refresh!)))
+       (fetch [_]
+         (or @credentials-atom
+             (refresh! credentials-atom scheduled-refresh-atom provider scheduler)))
        Stoppable
        (-stop [_]
          (-stop provider)
-         (.shutdownNow ^ScheduledExecutorService scheduler))))))
+         (when-let [r @scheduled-refresh-atom]
+           (.cancel ^ScheduledFuture r true)))))))
+
+(defn ^{:deprecated true} auto-refreshing-credentials
+  "Deprecated. Use cached-credentials-with-auto-refresh"
+  ([provider] (cached-credentials-with-auto-refresh provider))
+  ([provider scheduler] (cached-credentials-with-auto-refresh provider scheduler)))
 
 (defn stop
   "Stop auto-refreshing the credentials.
@@ -106,18 +119,12 @@
    (valid-credentials credentials nil))
   ([{:keys [aws/access-key-id aws/secret-access-key] :as credentials}
     credential-source]
-   (cond (and (not (str/blank? access-key-id))
-              (not (str/blank? secret-access-key)))
-         credentials
-
-         (or (str/blank? access-key-id) (str/blank? secret-access-key))
-         (do
-           (when-not (nil? credential-source)
-             (log/debug (str "Unable to fetch credentials from " credential-source ".")))
-           nil)
-
-         :else
-         nil)))
+   (if (and (some-> access-key-id not-empty)
+            (some-> secret-access-key not-empty))
+     credentials
+     (when credential-source
+       (log/info (str "Unable to fetch credentials from " credential-source "."))
+       nil))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Providers
@@ -163,13 +170,14 @@
 
   Alpha. Subject to change."
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (valid-credentials
-       {:aws/access-key-id     (u/getenv "AWS_ACCESS_KEY_ID")
-        :aws/secret-access-key (u/getenv "AWS_SECRET_ACCESS_KEY")
-        :aws/session-token     (u/getenv "AWS_SESSION_TOKEN")}
-       "environment variables"))))
+  (cached-credentials-with-auto-refresh
+   (reify CredentialsProvider
+     (fetch [_]
+       (valid-credentials
+        {:aws/access-key-id     (u/getenv "AWS_ACCESS_KEY_ID")
+         :aws/secret-access-key (u/getenv "AWS_SECRET_ACCESS_KEY")
+         :aws/session-token     (u/getenv "AWS_SESSION_TOKEN")}
+        "environment variables")))))
 
 (defn system-property-credentials-provider
   "Return the credentials from the system properties.
@@ -185,12 +193,13 @@
 
   Alpha. Subject to change. "
   []
-  (reify CredentialsProvider
-    (fetch [_]
-      (valid-credentials
-       {:aws/access-key-id     (u/getProperty "aws.accessKeyId")
-        :aws/secret-access-key (u/getProperty "aws.secretKey")}
-       "system properties"))))
+  (cached-credentials-with-auto-refresh
+   (reify CredentialsProvider
+     (fetch [_]
+       (valid-credentials
+        {:aws/access-key-id     (u/getProperty "aws.accessKeyId")
+         :aws/secret-access-key (u/getProperty "aws.secretKey")}
+        "system properties")))))
 
 (defn profile-credentials-provider
   "Return credentials in an AWS configuration profile.
@@ -216,18 +225,19 @@
    (profile-credentials-provider profile-name (or (io/file (u/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
                                                   (io/file (u/getProperty "user.home") ".aws" "credentials"))))
   ([profile-name ^File f]
-   (reify CredentialsProvider
-     (fetch [_]
-       (when (.exists f)
-         (try
-           (let [profile (get (config/parse f) profile-name)]
-             (valid-credentials
-              {:aws/access-key-id     (get profile "aws_access_key_id")
-               :aws/secret-access-key (get profile "aws_secret_access_key")
-               :aws/session-token     (get profile "aws_session_token")}
-              "aws profiles file"))
-           (catch Throwable t
-             (log/error t "Error fetching credentials from aws profiles file"))))))))
+   (cached-credentials-with-auto-refresh
+    (reify CredentialsProvider
+      (fetch [_]
+        (when (.exists f)
+          (try
+            (let [profile (get (config/parse f) profile-name)]
+              (valid-credentials
+               {:aws/access-key-id     (get profile "aws_access_key_id")
+                :aws/secret-access-key (get profile "aws_secret_access_key")
+                :aws/session-token     (get profile "aws_session_token")}
+               "aws profiles file"))
+            (catch Throwable t
+              (log/error t "Error fetching credentials from aws profiles file")))))))))
 
 (defn ^:skip-wiki calculate-ttl
   "For internal use. Don't call directly."
@@ -246,7 +256,7 @@
 
   Alpha. Subject to change."
   [http-client]
-  (auto-refreshing-credentials
+  (cached-credentials-with-auto-refresh
    (reify CredentialsProvider
      (fetch [_]
        (when-let [creds (ec2/container-credentials http-client)]
@@ -267,7 +277,7 @@
 
   Alpha. Subject to change."
   [http-client]
-  (auto-refreshing-credentials
+  (cached-credentials-with-auto-refresh
    (reify CredentialsProvider
      (fetch [_]
        (when-let [creds (ec2/instance-credentials http-client)]
@@ -309,3 +319,9 @@
     (fetch [_]
       {:aws/access-key-id     access-key-id
        :aws/secret-access-key secret-access-key})))
+
+(defn fetch-async [provider]
+  (let [ch (a/chan 1)]
+    (.submit ^ExecutorService @scheduled-executor-service
+             ^Callable        #(a/put! ch (fetch provider)))
+    ch))

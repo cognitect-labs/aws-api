@@ -2,16 +2,13 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.credentials-test
-  (:require [cognitect.aws.credentials :as credentials]
+  (:require [clojure.test :as t :refer [deftest testing use-fixtures is]]
+            [clojure.java.io :as io]
+            [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
-            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.test :refer :all]
-            [clojure.java.io :as io]))
+            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]))
 
 (use-fixtures :once ec2-metadata-utils-test/test-server)
 
@@ -148,13 +145,13 @@
               {:aws/access-key-id "id"
                :aws/secret-access-key "secret"
                ::credentials/ttl 1}))
-        creds (credentials/auto-refreshing-credentials p)]
+        creds (credentials/cached-credentials-with-auto-refresh p)]
     (credentials/fetch creds)
-    (Thread/sleep 5000)
+    (Thread/sleep 2500)
     (let [refreshed @cnt]
       (credentials/stop creds)
-      (Thread/sleep 2000)
-      (is (<= 3 refreshed) "The credentials have been refreshed.")
+      (Thread/sleep 1000)
+      (is (= 3 refreshed) "The credentials have been refreshed.")
       (is (= refreshed @cnt) "We stopped the auto-refreshing process."))))
 
 (deftest basic-credentials-provider
@@ -184,6 +181,6 @@
       (is (= 60 (credentials/calculate-ttl c))))))
 
 (comment
-  (run-tests)
+  (t/run-tests)
 
   )

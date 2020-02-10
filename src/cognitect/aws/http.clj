@@ -43,6 +43,9 @@
    (-submit client request channel)))
 
 (defn stop
+  "Stops the client, releasing resources.
+
+  Alpha. Subject to change."
   [client]
   (-stop client))
 

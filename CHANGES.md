@@ -3,6 +3,13 @@
 ## DEV
 
 * upgrade to cognitect.http-client 0.1.104 [#115](https://github.com/cognitect-labs/aws-api/issues/115)
+* all aws clients use shared http-client, credentials-provider, and region-provider by default
+  * addresses [#109](https://github.com/cognitect-labs/aws-api/issues/109)
+  * first call to invoke takes hit of fetching region and credentials
+* `com.cognitect.aws.api/stop` will not stop the shared http-client, but stop any other instance
+
+See [Upgrade Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md) for more
+information about upgrading to this version.
 
 ## 0.8.423 / 2020-01-17
 
