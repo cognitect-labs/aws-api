@@ -30,13 +30,13 @@
   <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
-      <artifactId>clojure</artifactId>
-      <version>1.10.1</version>
+      <artifactId>data.json</artifactId>
+      <version>0.2.7</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
-      <artifactId>core.async</artifactId>
-      <version>0.5.527</version>
+      <artifactId>clojure</artifactId>
+      <version>1.10.1</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -44,9 +44,9 @@
       <version>0.5.0</version>
     </dependency>
     <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>data.json</artifactId>
-      <version>0.2.7</version>
+      <groupId>com.cognitect</groupId>
+      <artifactId>http-client</artifactId>
+      <version>0.1.104</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -54,9 +54,9 @@
       <version>0.2.0-alpha6</version>
     </dependency>
     <dependency>
-      <groupId>com.cognitect</groupId>
-      <artifactId>http-client</artifactId>
-      <version>0.1.101</version>
+      <groupId>org.clojure</groupId>
+      <artifactId>core.async</artifactId>
+      <version>0.5.527</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -184,6 +184,10 @@
     <repository>
       <id>clojars</id>
       <url>https://repo.clojars.org/</url>
+    </repository>
+    <repository>
+      <id>datomic-cloud</id>
+      <url>s3://datomic-releases-1fc2183a/maven/releases</url>
     </repository>
   </repositories>
 </project>
