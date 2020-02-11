@@ -124,5 +124,5 @@
 (defn fetch-async [provider]
   (let [ch (a/chan 1)]
     (.submit ^ExecutorService @scheduled-executor-service
-             ^Callable        #(a/put! ch (fetch provider)))
+             ^Callable        #(a/put! ch (or (fetch provider) "")))
     ch))
