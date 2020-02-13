@@ -98,7 +98,8 @@
         (merge ep (if (string? endpoint-override)
                     {:hostname endpoint-override}
                     endpoint-override))
-        (throw (ex-info "No known endpoint." {:service api :region region}))))))
+        {:cognitect.anomalies/category :cognitect.anomalies/fault
+         :cognitect.anomalies/message "No known endpoint."}))))
 
 (defn fetch [provider region]
   (-fetch provider region))

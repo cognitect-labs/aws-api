@@ -6,8 +6,10 @@
   (:require [clojure.string :as str]
             [clojure.data.xml :as xml]
             [clojure.data.json :as json]
-            [clojure.java.io :as io])
-  (:import [java.text SimpleDateFormat]
+            [clojure.java.io :as io]
+            [clojure.core.async :as a])
+  (:import [java.util.concurrent ExecutorService]
+           [java.text SimpleDateFormat]
            [java.util Date TimeZone]
            [java.util UUID]
            [java.io InputStream]
@@ -290,3 +292,21 @@
 
 (defn getProperty [k]
   (System/getProperty k))
+
+(defn fetch-async
+  "Internal use. Do not call directly."
+  [fetch provider executor item]
+  (let [ch (a/chan 1)]
+    (.submit
+     ^ExecutorService executor
+     ^Callable        #(a/put!
+                        ch
+                        (try
+                          (or (fetch provider)
+                              {:cognitect.anomalies/category :cognitect.anomalies/fault
+                               :cognitect.anomalies/message (format "Unable to fetch %s. See log for more details." item)})
+                          (catch Throwable t
+                            {:cognitect.anomalies/category :cognitect.anomalies/fault
+                             ::throwable t
+                             :cognitect.anomalies/message (format "Unable to fetch %s." item)}))))
+    ch))

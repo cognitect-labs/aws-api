@@ -122,7 +122,4 @@
     (instance-region-provider http-client)]))
 
 (defn fetch-async [provider]
-  (let [ch (a/chan 1)]
-    (.submit ^ExecutorService @scheduled-executor-service
-             ^Callable        #(a/put! ch (or (fetch provider) "")))
-    ch))
+  (u/fetch-async fetch provider @scheduled-executor-service "region"))

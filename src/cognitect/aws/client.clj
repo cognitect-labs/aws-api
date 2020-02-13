@@ -63,39 +63,57 @@
     port     (assoc :server-port port)
     path     (assoc :uri path)))
 
+(defn ^:private put-throwable [result-ch t response-meta op-map]
+  (a/put! result-ch (with-meta
+                      {:cognitect.anomalies/category :cognitect.anomalies/fault
+                       ::throwable                   t}
+                      (swap! response-meta
+                             assoc :op-map op-map))))
+
 (defn send-request
-  "Send the request to AWS and return a channel which delivers the response."
+  "For internal use. Send the request to AWS and return a channel which delivers the response.
+
+  Alpha. Subject to change."
   [client op-map]
   (let [{:keys [service http-client region-provider credentials-provider endpoint-provider]}
         (-get-info client)
-        ch       (a/promise-chan)
-        err-meta (atom {})]
-    (try
-      (a/take!
-       (region/fetch-async region-provider)
-       (fn [region]
-         (a/take!
-          (credentials/fetch-async credentials-provider)
-          (fn [creds]
-            (let [endpoint     (endpoint/fetch endpoint-provider region)
-                  http-request (sign-http-request service endpoint
+        response-meta (atom {})
+        region-ch     (region/fetch-async region-provider)
+        creds-ch      (credentials/fetch-async credentials-provider)
+        response-ch   (a/chan 1)
+        result-ch     (a/promise-chan)]
+    (a/go
+      []
+      (let [region   (a/<! region-ch)
+            creds    (a/<! creds-ch)
+            endpoint (endpoint/fetch endpoint-provider region)]
+        (cond
+          (:cognitect.anomalies/category region)
+          (a/put! result-ch region)
+          (:cognitect.anomalies/category creds)
+          (a/put! result-ch creds)
+          (:cognitect.anomalies/category endpoint)
+          (a/put! result-ch endpoint)
+          :else
+          (try
+            (let [http-request (sign-http-request service endpoint
                                                   creds
                                                   (-> (build-http-request service op-map)
                                                       (with-endpoint endpoint)
                                                       (update :body util/->bbuf)
                                                       ((partial interceptors/modify-http-request service op-map))))]
-              (swap! err-meta assoc :http-request http-request)
-              (a/take!
-               (http/submit http-client http-request)
-               (fn [response]
-                 (a/put! ch (with-meta
+              (swap! response-meta assoc :http-request http-request)
+              (http/submit http-client http-request response-ch))
+            (catch Throwable t
+              (put-throwable result-ch t response-meta op-map))))))
+    (a/go
+      []
+      (try
+        (let [response (a/<! response-ch)]
+          (a/put! result-ch (with-meta
                               (handle-http-response service op-map response)
-                              {:http-request  http-request
-                               :http-response (update response :body util/bbuf->input-stream)})))))))))
-      ch
-      (catch Throwable t
-        (a/put! ch (with-meta
-                     {:cognitect.anomalies/category :cognitect.anomalies/fault
-                      ::throwable                   t}
-                     (assoc @err-meta :op-map op-map)))
-        ch))))
+                              (swap! response-meta assoc
+                                     :http-response (update response :body util/bbuf->input-stream)))))
+        (catch Throwable t
+          (put-throwable result-ch t response-meta op-map))))
+    result-ch))
