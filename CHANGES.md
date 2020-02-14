@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* fix issue with `invoke` hanging when no region or creds are found [#124](https://github.com/cognitect-labs/aws-api/issues/124)
+
 ## 0.8.430 / 2020-02-10
 
 * upgrade to cognitect.http-client 0.1.104 [#115](https://github.com/cognitect-labs/aws-api/issues/115)
