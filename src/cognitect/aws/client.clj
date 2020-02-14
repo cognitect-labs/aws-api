@@ -83,7 +83,6 @@
         response-ch   (a/chan 1)
         result-ch     (a/promise-chan)]
     (a/go
-      []
       (let [region   (a/<! region-ch)
             creds    (a/<! creds-ch)
             endpoint (endpoint/fetch endpoint-provider region)]
@@ -107,7 +106,6 @@
             (catch Throwable t
               (put-throwable result-ch t response-meta op-map))))))
     (a/go
-      []
       (try
         (let [response (a/<! response-ch)]
           (a/put! result-ch (with-meta
