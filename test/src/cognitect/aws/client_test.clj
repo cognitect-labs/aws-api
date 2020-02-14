@@ -36,6 +36,19 @@
     (is (= {:cognitect.anomalies/category :does-not-matter}
            (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
 
+(deftest test-meta
+  (let [res (aws/invoke (aws/client params) {:op :ListBuckets})]
+    (testing "request meta includes :http-request"
+      (is (=  {:uri "/"
+               :server-name "s3.amazonaws.com"
+               :body nil}
+              (select-keys (:http-request (meta res)) [:uri :server-name :body]))))
+    (testing "request meta includes raw response"
+      (is (= {:cognitect.anomalies/category :cognitect.aws/test,
+              :cognitect.anomalies/message "test",
+              :body nil}
+             (:http-response (meta res)))))))
+
 (deftest test-providers
   (testing "base case"
     (let [aws-client (aws/client params)]
