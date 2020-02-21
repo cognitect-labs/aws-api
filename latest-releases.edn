@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.437"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.722"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.726"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "785.2.599.0", :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
@@ -18,7 +18,7 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AmazonApiGatewayManagementApi"},
  com.cognitect.aws/apigatewayv2
  {:mvn/version "781.2.585.0", :aws/serviceFullName "AmazonApiGatewayV2"},
- com.cognitect.aws/appconfig {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon AppConfig"},
+ com.cognitect.aws/appconfig {:mvn/version "792.2.623.0", :aws/serviceFullName "Amazon AppConfig"},
  com.cognitect.aws/application-autoscaling
  {:mvn/version "780.2.584.0", :aws/serviceFullName "Application Auto Scaling"},
  com.cognitect.aws/application-insights
@@ -27,7 +27,7 @@
  com.cognitect.aws/appstream {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync {:mvn/version "789.2.613.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/athena {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Athena"},
- com.cognitect.aws/autoscaling {:mvn/version "773.2.575.0", :aws/serviceFullName "Auto Scaling"},
+ com.cognitect.aws/autoscaling {:mvn/version "792.2.622.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
  {:mvn/version "773.2.578.0", :aws/serviceFullName "AWS Auto Scaling Plans"},
  com.cognitect.aws/backup {:mvn/version "786.2.602.0", :aws/serviceFullName "AWS Backup"},
@@ -35,7 +35,7 @@
  com.cognitect.aws/budgets {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
  {:mvn/version "785.2.600.0", :aws/serviceFullName "AWS Cost Explorer Service"},
- com.cognitect.aws/chime {:mvn/version "785.2.601.0", :aws/serviceFullName "Amazon Chime"},
+ com.cognitect.aws/chime {:mvn/version "792.2.621.0", :aws/serviceFullName "Amazon Chime"},
  com.cognitect.aws/cloud9 {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Cloud9"},
  com.cognitect.aws/clouddirectory
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon CloudDirectory"},
@@ -109,7 +109,7 @@
  com.cognitect.aws/ebs
  {:mvn/version "789.2.613.0", :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "791.2.617.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
+ {:mvn/version "791.2.619.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
@@ -242,7 +242,7 @@
  com.cognitect.aws/mediastore-data
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Elemental MediaStore Data Plane"},
  com.cognitect.aws/mediatailor
- {:mvn/version "776.2.580.0", :aws/serviceFullName "AWS MediaTailor"},
+ {:mvn/version "791.2.619.0", :aws/serviceFullName "AWS MediaTailor"},
  com.cognitect.aws/meteringmarketplace
  {:mvn/version "773.2.577.0", :aws/serviceFullName "AWSMarketplace Metering"},
  com.cognitect.aws/migrationhub-config
@@ -321,7 +321,7 @@
  com.cognitect.aws/secretsmanager
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Secrets Manager"},
  com.cognitect.aws/securityhub
- {:mvn/version "789.2.612.0", :aws/serviceFullName "AWS SecurityHub"},
+ {:mvn/version "791.2.619.0", :aws/serviceFullName "AWS SecurityHub"},
  com.cognitect.aws/serverlessrepo
  {:mvn/version "776.2.580.0", :aws/serviceFullName "AWSServerlessApplicationRepository"},
  com.cognitect.aws/service-quotas
@@ -332,7 +332,7 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Cloud Map"},
  com.cognitect.aws/sesv2
  {:mvn/version "783.2.590.0", :aws/serviceFullName "Amazon Simple Email Service"},
- com.cognitect.aws/shield {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Shield"},
+ com.cognitect.aws/shield {:mvn/version "791.2.619.0", :aws/serviceFullName "AWS Shield"},
  com.cognitect.aws/signer {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Signer"},
  com.cognitect.aws/sms
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Server Migration Service"},
