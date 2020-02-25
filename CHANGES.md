@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* fix deadlock using composite credentials providers (e.g. assume role example) [#130](https://github.com/cognitect-labs/aws-api/issues/130)
+
 ## 0.8.437 / 2020-02-14
 
 * fix issue with `invoke` hanging when no region or creds are found [#124](https://github.com/cognitect-labs/aws-api/issues/124)
