@@ -10,16 +10,7 @@
             [clojure.core.async :as a]
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
-            [cognitect.aws.util :as util])
-  (:import (java.util.concurrent Executors ExecutorService ThreadFactory)))
-
-(defonce ^:private scheduled-executor-service
-  (delay
-    (Executors/newScheduledThreadPool 1 (reify ThreadFactory
-                                          (newThread [_ r]
-                                            (doto (Thread. r)
-                                              (.setName "cognitect.aws-api.credentials.refresh")
-                                              (.setDaemon true)))))))
+            [cognitect.aws.util :as util]))
 
 (defn descriptor-resource-path [] (format "%s/endpoints.edn" service/base-resource-path))
 

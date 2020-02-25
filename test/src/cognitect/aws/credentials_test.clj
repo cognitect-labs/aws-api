@@ -8,7 +8,8 @@
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
-            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]))
+            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test])
+  (:import (java.time Instant)))
 
 (use-fixtures :once ec2-metadata-utils-test/test-server)
 
@@ -163,7 +164,7 @@
 
 (defn minutes-from-now
   [m]
-  (-> (java.time.Instant/now)
+  (-> (Instant/now)
       (.plusSeconds (* m 60))
       (.with java.time.temporal.ChronoField/NANO_OF_SECOND 0)
       str))
@@ -173,11 +174,14 @@
     (is (= 3600 (credentials/calculate-ttl {}))))
   (testing "refreshes in exp - 5 minutes"
     (let [c {:Expiration (minutes-from-now 60)}]
-      (is (< (- (* 55 60) 5)
+      (is (< (- (* 55 60) (* 5 60))
              (credentials/calculate-ttl c)
-             (+ (* 55 60) 5)))))
+             (+ (* 55 60) (* 5 60))))))
   (testing "short expiration minimum is one minute"
     (let [c {:Expiration (minutes-from-now 3)}]
+      (is (= 60 (credentials/calculate-ttl c)))))
+  (testing "supports java.util.Date (return value from sts :AssumeRole)"
+    (let [c {:Expiration (java.util.Date/from (Instant/parse (minutes-from-now 3)))}]
       (is (= 60 (credentials/calculate-ttl c))))))
 
 (comment

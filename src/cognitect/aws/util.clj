@@ -8,7 +8,7 @@
             [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
-  (:import [java.util.concurrent ExecutorService]
+  (:import [java.util.concurrent Executors ExecutorService ThreadFactory]
            [java.text SimpleDateFormat]
            [java.util Date TimeZone]
            [java.util UUID]
@@ -293,12 +293,23 @@
 (defn getProperty [k]
   (System/getProperty k))
 
+(defonce ^:private async-fetch-pool
+  (delay
+    (let [idx (atom 0)]
+      (Executors/newFixedThreadPool
+       4
+       (reify ThreadFactory
+         (newThread [_ runnable]
+           (doto (.newThread (Executors/defaultThreadFactory) runnable)
+             (.setName (str "cognitect-aws-send-" (swap! idx inc)))
+             (.setDaemon true))))))))
+
 (defn fetch-async
   "Internal use. Do not call directly."
-  [fetch provider executor item]
+  [fetch provider item]
   (let [ch (a/chan 1)]
     (.submit
-     ^ExecutorService executor
+     ^ExecutorService @async-fetch-pool
      ^Callable        #(a/put!
                         ch
                         (try

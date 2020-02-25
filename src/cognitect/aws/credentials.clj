@@ -100,7 +100,7 @@
          (when-let [r @scheduled-refresh-atom]
            (.cancel ^ScheduledFuture r true)))))))
 
-(defn ^{:deprecated true} auto-refreshing-credentials
+(defn ^:deprecated auto-refreshing-credentials
   "Deprecated. Use cached-credentials-with-auto-refresh"
   ([provider] (cached-credentials-with-auto-refresh provider))
   ([provider scheduler] (cached-credentials-with-auto-refresh provider scheduler)))
@@ -130,12 +130,13 @@
 ;;;; Providers
 
 (defn chain-credentials-provider
-  "Chain together multiple credentials provider.
+  "Returns a credentials-provider which chains together multiple
+  credentials providers.
 
-  Calls each provider in order until one return a non-nil result. This
-  provider is then cached for future calls to `fetch`.
+  `fetch` calls each provider in order until one returns a non-nil
+  result. This provider is then cached for future calls to `fetch`.
 
-  Returns nil if none of the providers return credentials.
+  `fetch` returns nil if none of the providers return credentials.
 
   Alpha. Subject to change."
   [providers]
@@ -239,12 +240,21 @@
             (catch Throwable t
               (log/error t "Error fetching credentials from aws profiles file")))))))))
 
-(defn ^:skip-wiki calculate-ttl
-  "For internal use. Don't call directly."
-  [credentials]
-  (if-let [expiration (some-> credentials :Expiration Instant/parse)]
-    (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
-         60)
+(defn calculate-ttl
+  "Primarily for internal use, returns time to live (ttl, in seconds),
+  based on `:Expiration` in credentials.  If `credentials` contains no
+  `:Expiration`, defaults to 3600.
+
+  `:Expiration` can be a java.util.Date, or a string parsable
+  by java.time.Instant/parse (returned by ec2/ecs instance credentials)
+  or a java.util.Date (returned from :AssumeRole on aws sts client)."
+  [{:keys [Expiration] :as credentials}]
+  (if Expiration
+    (let [expiration (if (inst? Expiration)
+                       (.toInstant Expiration)
+                       (Instant/parse Expiration))]
+      (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
+           60))
     3600))
 
 (defn container-credentials-provider
@@ -289,7 +299,7 @@
           "ec2 instance"))))))
 
 (defn default-credentials-provider
-  "Return a chain-credentials-provider comprising, in order:
+  "Returns a chain-credentials-provider with (in order):
 
     environment-credentials-provider
     system-property-credentials-provider
@@ -320,5 +330,10 @@
       {:aws/access-key-id     access-key-id
        :aws/secret-access-key secret-access-key})))
 
-(defn fetch-async [provider]
-  (u/fetch-async fetch provider @scheduled-executor-service "credentials"))
+(defn fetch-async
+  "Returns a channel that will produce the result of calling fetch on
+  the provider.
+
+  Alpha. Subject to change."
+  [provider]
+  (u/fetch-async fetch provider "credentials"))
