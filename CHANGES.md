@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.445 / 2020-02-25
 
 * fix deadlock using composite credentials providers (e.g. assume role example) [#130](https://github.com/cognitect-labs/aws-api/issues/130)
 
