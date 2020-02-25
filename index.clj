@@ -214,7 +214,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 309,
+   :line 319,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -235,6 +235,18 @@
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/cached-credentials-with-auto-refresh"}
   {:raw-source-url nil,
+   :name "calculate-ttl",
+   :file "src/cognitect/aws/credentials.clj",
+   :source-url nil,
+   :line 243,
+   :var-type "function",
+   :arglists ([{:keys [Expiration], :as credentials}]),
+   :doc
+   "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a java.util.Date, or a string parsable\nby java.time.Instant/parse (returned by ec2/ecs instance credentials)\nor a java.util.Date (returned from :AssumeRole on aws sts client).",
+   :namespace "cognitect.aws.credentials",
+   :wiki-url
+   "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/calculate-ttl"}
+  {:raw-source-url nil,
    :name "chain-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
@@ -242,7 +254,7 @@
    :var-type "function",
    :arglists ([providers]),
    :doc
-   "Chain together multiple credentials provider.\n\nCalls each provider in order until one return a non-nil result. This\nprovider is then cached for future calls to `fetch`.\n\nReturns nil if none of the providers return credentials.\n\nAlpha. Subject to change.",
+   "Returns a credentials-provider which chains together multiple\ncredentials providers.\n\n`fetch` calls each provider in order until one returns a non-nil\nresult. This provider is then cached for future calls to `fetch`.\n\n`fetch` returns nil if none of the providers return credentials.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/chain-credentials-provider"}
@@ -250,7 +262,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 250,
+   :line 260,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -262,11 +274,11 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 291,
+   :line 301,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Return a chain-credentials-provider comprising, in order:\n\n  environment-credentials-provider\n  system-property-credentials-provider\n  profile-credentials-provider\n  container-credentials-provider\n  instance-profile-credentials-provider\n\nAlpha. Subject to change.",
+   "Returns a chain-credentials-provider with (in order):\n\n  environment-credentials-provider\n  system-property-credentials-provider\n  profile-credentials-provider\n  container-credentials-provider\n  instance-profile-credentials-provider\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/default-credentials-provider"}
@@ -274,7 +286,7 @@
    :name "environment-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 158,
+   :line 159,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -294,10 +306,22 @@
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch"}
   {:raw-source-url nil,
+   :name "fetch-async",
+   :file "src/cognitect/aws/credentials.clj",
+   :source-url nil,
+   :line 333,
+   :var-type "function",
+   :arglists ([provider]),
+   :doc
+   "Returns a channel that will produce the result of calling fetch on\nthe provider.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.credentials",
+   :wiki-url
+   "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch-async"}
+  {:raw-source-url nil,
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 270,
+   :line 280,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -309,7 +333,7 @@
    :name "profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 204,
+   :line 205,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -333,7 +357,7 @@
    :name "system-property-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 182,
+   :line 183,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -345,11 +369,11 @@
    :name "chain-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 35,
+   :line 26,
    :var-type "function",
    :arglists ([providers]),
    :doc
-   "Chain together multiple region providers.\n\nCalls each provider in order until one return a non-nil result.\n\nReturns nil if none of the providers return a region.\n\nAlpha. Subject to change.",
+   "Chain together multiple region providers.\n\n`fetch` calls each provider in order until one returns a non-nil result,\nor returns nil.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/chain-region-provider"}
@@ -357,11 +381,11 @@
    :name "default-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 108,
+   :line 98,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Return a chain-region-provider comprising, in order:\n\n  environment-region-provider\n  system-property-region-provider\n  profile-region-provider\n  instance-region-provider\n\nAlpha. Subject to change.",
+   "Returns a chain-region-provider with, in order:\n\n  environment-region-provider\n  system-property-region-provider\n  profile-region-provider\n  instance-region-provider\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/default-region-provider"}
@@ -369,11 +393,11 @@
    :name "environment-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 50,
+   :line 40,
    :var-type "function",
    :arglists ([]),
    :doc
-   "Return the region from the AWS_REGION env var, or nil if not present.\n\nAlpha. Subject to change.",
+   "Returns the region from the AWS_REGION env var, or nil if not present.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/environment-region-provider"}
@@ -388,14 +412,26 @@
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/fetch"}
   {:raw-source-url nil,
+   :name "fetch-async",
+   :file "src/cognitect/aws/region.clj",
+   :source-url nil,
+   :line 114,
+   :var-type "function",
+   :arglists ([provider]),
+   :doc
+   "Returns a channel that will produce the result of calling fetch on\nthe provider.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.region",
+   :wiki-url
+   "/cognitect.aws.region-api.html#cognitect.aws.region/fetch-async"}
+  {:raw-source-url nil,
    :name "instance-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 96,
+   :line 86,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Return the region from the ec2 instance's metadata service,\nor nil if the service can not be found.\n\nAlpha. Subject to change.",
+   "Returns the region from the ec2 instance's metadata service,\nor nil if the service can not be found.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/instance-region-provider"}
@@ -403,11 +439,11 @@
    :name "profile-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 66,
+   :line 56,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
-   "Return the region in a AWS configuration profile.\n\nArguments:\n\n  f             File    The profile configuration file. (default: ~/.aws/config)\n  profile-name  string  The name of the profile in the file. (default: default)\n\nParsed properties:\n\n  region        required\n\nAlpha. Subject to change.",
+   "Returns the region from an AWS configuration profile.\n\nArguments:\n\n  f             File    The profile configuration file. (default: ~/.aws/config)\n  profile-name  string  The name of the profile in the file. (default: default)\n\nParsed properties:\n\n  region        required\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/profile-region-provider"}
@@ -415,11 +451,11 @@
    :name "system-property-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 58,
+   :line 48,
    :var-type "function",
    :arglists ([]),
    :doc
-   "Return the region from the aws.region system property, or nil if not present.\n\nAlpha. Subject to change.",
+   "Returns the region from the aws.region system property, or nil if not present.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/system-property-region-provider"}

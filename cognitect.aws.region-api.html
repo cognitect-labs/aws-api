@@ -60,6 +60,8 @@ namespace.
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.region/fetch">fetch</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/fetch-async">fetch-async</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.region/instance-region-provider">instance-region-provider</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.region/profile-region-provider">profile-region-provider</a>
@@ -91,9 +93,8 @@ namespace.
 </pre>
   <pre id="var-docstr">Chain together multiple region providers.
 
-Calls each provider in order until one return a non-nil result.
-
-Returns nil if none of the providers return a region.
+`fetch` calls each provider in order until one returns a non-nil result,
+or returns nil.
 
 Alpha. Subject to change.</pre>
   
@@ -106,7 +107,7 @@ Alpha. Subject to change.</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (default-region-provider http-client)
 </pre>
-  <pre id="var-docstr">Return a chain-region-provider comprising, in order:
+  <pre id="var-docstr">Returns a chain-region-provider with, in order:
 
   environment-region-provider
   system-property-region-provider
@@ -124,7 +125,7 @@ Alpha. Subject to change.</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (environment-region-provider)
 </pre>
-  <pre id="var-docstr">Return the region from the AWS_REGION env var, or nil if not present.
+  <pre id="var-docstr">Returns the region from the AWS_REGION env var, or nil if not present.
 
 Alpha. Subject to change.</pre>
   
@@ -144,11 +145,25 @@ Alpha. Subject to change.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="cognitect.aws.region/fetch-async">fetch-async</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (fetch-async provider)
+</pre>
+  <pre id="var-docstr">Returns a channel that will produce the result of calling fetch on
+the provider.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="cognitect.aws.region/instance-region-provider">instance-region-provider</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (instance-region-provider http-client)
 </pre>
-  <pre id="var-docstr">Return the region from the ec2 instance's metadata service,
+  <pre id="var-docstr">Returns the region from the ec2 instance's metadata service,
 or nil if the service can not be found.
 
 Alpha. Subject to change.</pre>
@@ -164,7 +179,7 @@ Alpha. Subject to change.</pre>
        (profile-region-provider profile-name)
        (profile-region-provider profile-name f)
 </pre>
-  <pre id="var-docstr">Return the region in a AWS configuration profile.
+  <pre id="var-docstr">Returns the region from an AWS configuration profile.
 
 Arguments:
 
@@ -186,7 +201,7 @@ Alpha. Subject to change.</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (system-property-region-provider)
 </pre>
-  <pre id="var-docstr">Return the region from the aws.region system property, or nil if not present.
+  <pre id="var-docstr">Returns the region from the aws.region system property, or nil if not present.
 
 Alpha. Subject to change.</pre>
   
