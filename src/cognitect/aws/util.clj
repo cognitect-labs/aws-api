@@ -313,7 +313,12 @@
      ^Callable        #(a/put!
                         ch
                         (try
-                          (or (fetch provider)
+                          ;; lock on the provider to avoid redundant
+                          ;; concurrent requests before the provider
+                          ;; has a chance to cache the results of the
+                          ;; first fetch.
+                          (or (locking provider
+                                (fetch provider))
                               {:cognitect.anomalies/category :cognitect.anomalies/fault
                                :cognitect.anomalies/message (format "Unable to fetch %s. See log for more details." item)})
                           (catch Throwable t
