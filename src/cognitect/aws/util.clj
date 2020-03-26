@@ -283,6 +283,26 @@
           (:members shape)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; used to fetch creds and region
+
+(defn fetch-async
+  "Internal use. Do not call directly."
+  [fetch provider item]
+  (a/thread
+    (try
+      ;; lock on the provider to avoid redundant concurrent requests
+      ;; before the provider has a chance to cache the results of the
+      ;; first fetch.
+      (or (locking provider
+            (fetch provider))
+          {:cognitect.anomalies/category :cognitect.anomalies/fault
+           :cognitect.anomalies/message (format "Unable to fetch %s. See log for more details." item)})
+      (catch Throwable t
+        {:cognitect.anomalies/category :cognitect.anomalies/fault
+         ::throwable t
+         :cognitect.anomalies/message (format "Unable to fetch %s." item)}))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Wrappers - here to support testing with-redefs since
 ;;;;            we can't redef static methods
 
@@ -292,37 +312,3 @@
 
 (defn getProperty [k]
   (System/getProperty k))
-
-(defonce ^:private async-fetch-pool
-  (delay
-    (let [idx (atom 0)]
-      (Executors/newFixedThreadPool
-       4
-       (reify ThreadFactory
-         (newThread [_ runnable]
-           (doto (.newThread (Executors/defaultThreadFactory) runnable)
-             (.setName (str "async-fetch-pool-" (swap! idx inc)))
-             (.setDaemon true))))))))
-
-(defn fetch-async
-  "Internal use. Do not call directly."
-  [fetch provider item]
-  (let [ch (a/chan 1)]
-    (.submit
-     ^ExecutorService @async-fetch-pool
-     ^Callable        #(a/put!
-                        ch
-                        (try
-                          ;; lock on the provider to avoid redundant
-                          ;; concurrent requests before the provider
-                          ;; has a chance to cache the results of the
-                          ;; first fetch.
-                          (or (locking provider
-                                (fetch provider))
-                              {:cognitect.anomalies/category :cognitect.anomalies/fault
-                               :cognitect.anomalies/message (format "Unable to fetch %s. See log for more details." item)})
-                          (catch Throwable t
-                            {:cognitect.anomalies/category :cognitect.anomalies/fault
-                             ::throwable t
-                             :cognitect.anomalies/message (format "Unable to fetch %s." item)}))))
-    ch))
