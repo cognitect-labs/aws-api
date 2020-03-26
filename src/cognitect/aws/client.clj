@@ -9,8 +9,7 @@
             [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.region :as region]
-            [cognitect.aws.credentials :as credentials])
-  (:import [java.util.concurrent Callable ExecutorService Executors ThreadFactory]))
+            [cognitect.aws.credentials :as credentials]))
 
 (set! *warn-on-reflection* true)
 
