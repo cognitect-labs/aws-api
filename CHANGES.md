@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* upgrade to tools.logging-1.0.0, data.json-1.0.0, and core.async-1.0.567
+
 ## 0.8.445 / 2020-02-25
 
 * fix deadlock using composite credentials providers (e.g. assume role example) [#130](https://github.com/cognitect-labs/aws-api/issues/130)
