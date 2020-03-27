@@ -3,6 +3,8 @@
 ## DEV
 
 * upgrade to tools.logging-1.0.0, data.json-1.0.0, and core.async-1.0.567
+* let core.async manage the threadpool for fetching credentials and region
+  * fixes deadlock with concurrent credentials fetch [#137](https://github.com/cognitect-labs/aws-api/issues/137)
 
 ## 0.8.445 / 2020-02-25
 
