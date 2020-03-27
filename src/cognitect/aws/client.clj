@@ -87,11 +87,11 @@
             endpoint (endpoint/fetch endpoint-provider region)]
         (cond
           (:cognitect.anomalies/category region)
-          (a/put! result-ch region)
+          (a/>! result-ch region)
           (:cognitect.anomalies/category creds)
-          (a/put! result-ch creds)
+          (a/>! result-ch creds)
           (:cognitect.anomalies/category endpoint)
-          (a/put! result-ch endpoint)
+          (a/>! result-ch endpoint)
           :else
           (try
             (let [http-request (sign-http-request service endpoint
@@ -107,10 +107,10 @@
     (a/go
       (try
         (let [response (a/<! response-ch)]
-          (a/put! result-ch (with-meta
-                              (handle-http-response service op-map response)
-                              (swap! response-meta assoc
-                                     :http-response (update response :body util/bbuf->input-stream)))))
+          (a/>! result-ch (with-meta
+                            (handle-http-response service op-map response)
+                            (swap! response-meta assoc
+                                   :http-response (update response :body util/bbuf->input-stream)))))
         (catch Throwable t
           (put-throwable result-ch t response-meta op-map))))
     result-ch))
