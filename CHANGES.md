@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.456 / 2020-03-27
 
 * upgrade to tools.logging-1.0.0, data.json-1.0.0, and core.async-1.0.567
 * let core.async manage the threadpool for fetching credentials and region
