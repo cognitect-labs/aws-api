@@ -301,7 +301,7 @@
        (reify ThreadFactory
          (newThread [_ runnable]
            (doto (.newThread (Executors/defaultThreadFactory) runnable)
-             (.setName (str "cognitect-aws-send-" (swap! idx inc)))
+             (.setName (str "async-fetch-pool-" (swap! idx inc)))
              (.setDaemon true))))))))
 
 (defn fetch-async
