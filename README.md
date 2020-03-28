@@ -235,6 +235,27 @@ aws-api is incorporated into products and client projects, we prefer
 to do development internally and are not accepting pull requests or
 patches.
 
+## Contributors
+
+`aws-api` was extracted from an internal project at Cognitect, and
+some contributors are missing from the commit log.  Here are all the
+folks from Cognitect who either committed code directly, or
+contributed significantly to research and design:
+
+[Timothy Baldridge](https://github.com/halgari)<br/>
+[David Chelimsky](https://github.com/dchelimsky)<br/>
+[Benoît Fleury](https://github.com/benfle)<br/>
+[Fogus](https://github.com/fogus)<br/>
+[Stuart Halloway](https://github.com/stuarthalloway)<br/>
+[Rich Hickey](https://github.com/richhickey)<br/>
+[George Kierstein](https://github.com/MissInterpret)<br/>
+[Carin Meier](https://github.com/gigasquid)<br/>
+[Alex Miller](https://github.com/puredanger)<br/>
+[Michael Nygard](https://github.com/mtnygard)<br/>
+[Ghadi Shayban](https://github.com/ghadishayban)<br/>
+[Joseph Smith](https://github.com/solussd)<br/>
+[Marshall Thompson](https://github.com/Glassonion)
+
 ## Troubleshooting
 
 ### General
