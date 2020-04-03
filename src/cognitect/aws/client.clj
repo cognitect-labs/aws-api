@@ -9,7 +9,8 @@
             [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.region :as region]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.flow :as flow]))
 
 (set! *warn-on-reflection* true)
 
@@ -114,3 +115,75 @@
         (catch Throwable t
           (put-throwable result-ch t response-meta op-map))))
     result-ch))
+
+(defn flow-request
+  [client op-map]
+  (let [executor (java.util.concurrent.ForkJoinPool/commonPool)
+        submit! (fn [f]
+                  (java.util.concurrent.CompletableFuture/supplyAsync
+                   (reify java.util.function.Supplier
+                     (get [_] (f)))
+                   executor))
+        {:keys [service http-client region-provider credentials-provider endpoint-provider]}
+        (-get-info client)
+
+        stk [{:name "fetch region"
+              :f (fn [context]
+                   (submit! #(assoc context :region (region/fetch region-provider))))}
+
+             {:name "fetch credentials"
+              :f (fn [context]
+                   (submit! #(assoc context :credentials (credentials/fetch credentials-provider))))}
+
+             {:name "discover endpoint"
+              :f (fn [{:keys [region] :as context}]
+                   (submit! #(assoc context :endpoint (endpoint/fetch endpoint-provider region))))}
+
+             {:name "build http request"
+              :f (fn [context]
+                   (let [req (build-http-request service op-map)]
+                     (assoc context :http-request req)))}
+
+             {:name "add endpoint"
+              :f (fn [context]
+                   (update context :http-request with-endpoint (:endpoint context)))}
+
+             {:name "body to ByteBuffer"
+              :f #(update-in % [:http-request :body] util/->bbuf)}
+
+             {:name "http interceptors"
+              :f (fn [context]
+                   (update context :http-request
+                           (fn [r]
+                             (interceptors/modify-http-request service op-map r))))}
+
+             {:name "sign request"
+              :f (fn [context]
+                   (let [{:keys [endpoint credentials http-request]} context
+                         signed (sign-http-request service endpoint credentials http-request)]
+                     (assoc context :http-request signed)))}
+
+             {:name "send request"
+              :f (fn [context]
+                   (let [cf (java.util.concurrent.CompletableFuture.)
+                         resp-ch (http/submit http-client (:http-request context))
+                         fulfill-future! (fn [response]
+                                           (let [context (assoc context :http-response response)]
+                                             (.complete cf context)))]
+                     (a/take! resp-ch fulfill-future!)
+                     cf))}
+
+             {:name "decode response"
+              :f (fn [context]
+                   (let [{:keys [http-response]} context]
+                     (assoc context :decoded
+                            (handle-http-response service op-map http-response))))}]]
+    (flow/execute-future {} stk)))
+
+(comment
+  (require '[cognitect.aws.client.api :as aws])
+  (System/setProperty "aws.profile" "REDACTED")
+
+  (def c (aws/client {:api :s3}))
+  @(flow-request c {:op :ListBuckets})
+  )
