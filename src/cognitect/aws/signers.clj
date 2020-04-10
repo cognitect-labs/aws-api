@@ -36,8 +36,8 @@
        (.toString builder)))))
 
 (defn credential-scope
-  [{:keys [region service] :as auth-info} request]
-  (str/join "/" [(->> (get-in request [:headers "x-amz-date"])
+  [headers {:keys [region service]}]
+  (str/join "/" [(->> (get headers "x-amz-date")
                       (util/parse-date util/x-amz-date-format)
                       (util/format-date util/x-amz-date-only-format))
                  region
@@ -45,11 +45,11 @@
                  "aws4_request"]))
 
 (defn- canonical-method
-  [{:keys [request-method]}]
+  [request-method]
   (-> request-method name str/upper-case))
 
 (defn- canonical-uri
-  [{:keys [uri]}]
+  [uri]
   (let [encoded-path (-> uri
                          (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
                          (str/replace #"\s" "%20"); (URI.) throws Exception on space.
@@ -77,51 +77,38 @@
            (map (fn [[k v]] (str k "=" v)))
            (str/join "&")))))
 
-(defn- canonical-headers
-  [{:keys [headers]}]
-  (reduce-kv (fn [m k v]
-               (assoc m (str/lower-case k) (-> v str/trim (str/replace  #"\s+" " "))))
-             (sorted-map)
-             headers))
-
 (defn- canonical-headers-string
-  [request]
-  (->> (canonical-headers request)
+  [headers]
+  (->> headers
        (map (fn [[k v]] (str k ":" v "\n")))
        (str/join "")))
 
-(defn signed-headers
-  [request]
-  (->> (canonical-headers request)
-       keys
-       (str/join ";")))
+(defn signed-headers [headers] (str/join ";" (keys headers)))
 
-(defn hashed-body
-  [request]
-  (util/hex-encode (util/sha-256 (:body request))))
+(def hashed-body (comp util/hex-encode util/sha-256))
 
 (defn canonical-request
-  [{:keys [headers body content-length] :as request}]
-  (str/join "\n" [(canonical-method request)
-                  (canonical-uri request)
+  [{:keys [request-method uri headers body] :as request}]
+  (str/join "\n" [(canonical-method request-method)
+                  (canonical-uri uri)
                   (canonical-query-string request)
-                  (canonical-headers-string request)
-                  (signed-headers request)
+                  (canonical-headers-string headers)
+                  (signed-headers headers)
                   (or (get headers "x-amz-content-sha256")
-                      (hashed-body request))]))
+                      (hashed-body body))]))
 
 (defn string-to-sign
-  [request auth-info]
+  [{:keys [headers] :as request} auth-info]
   (let [bytes (.getBytes ^String (canonical-request request))]
     (str/join "\n" ["AWS4-HMAC-SHA256"
-                    (get-in request [:headers "x-amz-date"])
-                    (credential-scope auth-info request)
+                    (get headers "x-amz-date")
+                    (credential-scope headers auth-info)
                     (util/hex-encode (util/sha-256 bytes))])))
 
 (defn signing-key
-  [request {:keys [secret-access-key region service] :as auth-info}]
+  [{:keys [headers]} {:keys [secret-access-key region service]}]
   (-> (.getBytes (str "AWS4" secret-access-key) "UTF-8")
-      (util/hmac-sha-256 (->> (get-in request [:headers "x-amz-date"])
+      (util/hmac-sha-256 (->> (get headers "x-amz-date")
                               (util/parse-date util/x-amz-date-format)
                               (util/format-date util/x-amz-date-only-format)))
       (util/hmac-sha-256 region)
@@ -129,30 +116,63 @@
       (util/hmac-sha-256 "aws4_request")))
 
 (defn signature
-  [auth-info request]
+  [request auth-info]
   (util/hex-encode
    (util/hmac-sha-256 (signing-key request auth-info)
                       (string-to-sign request auth-info))))
 
+(defn auth-info [service endpoint {:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]}]
+  {:access-key-id     access-key-id
+   :secret-access-key secret-access-key
+   :session-token     session-token
+   :service           (or (service/signing-name service)
+                          (service/endpoint-prefix service))
+   :region            (or (get-in endpoint [:credentialScope :region])
+                          (get-in endpoint [:region]))})
+
+(defn auth-params [op timeout {:keys [headers] :as request} auth-info]
+  ;; See https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
+  ;; See https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+  {:Action              op ;; e.g. "ListBuckets"
+   :X-Amz-Algorithm     "AWS4-HMAC-SHA256"
+   :X-Amz-Credential    (format "%s/%s" (:access-key-id auth-info) (credential-scope headers auth-info))
+   :X-Amz-Date          (->> (get headers "x-amz-date")
+                             (util/parse-date util/x-amz-date-format)
+                             (util/format-date util/x-amz-date-only-format))
+   :X-Amz-Expires       timeout ;; seconds
+   :X-Amz-SignedHeaders (signed-headers headers)
+   :X-Amz-Signature     (signature request auth-info)})
+
+(defn authorization-string [{:keys [X-Amz-Credential
+                                    X-Amz-SignedHeaders
+                                    X-Amz-Signature]}]
+  (format "AWS4-HMAC-SHA256 Credential=%s, SignedHeaders=%s, Signature=%s"
+          X-Amz-Credential
+          X-Amz-SignedHeaders
+          X-Amz-Signature))
+
+(defn- normalize-headers
+  [headers]
+  (reduce-kv (fn [m k v]
+               (assoc m (str/lower-case k) (-> v str/trim (str/replace  #"\s+" " "))))
+             (sorted-map)
+             headers))
+
+(defn presigned-url [op timeout service endpoint credentials http-request & {:keys [content-sha256-header?]}]
+  )
+
 (defn v4-sign-http-request
   [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
-  (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
-        auth-info      {:access-key-id     access-key-id
-                        :secret-access-key secret-access-key
-                        :service           (or (service/signing-name service)
-                                               (service/endpoint-prefix service))
-                        :region            (or (get-in endpoint [:credentialScope :region])
-                                               (:region endpoint))}
-        req (cond-> http-request
-              session-token          (assoc-in [:headers "x-amz-security-token"] session-token)
-              content-sha256-header? (assoc-in [:headers "x-amz-content-sha256"] (hashed-body http-request)))]
-    (assoc-in req
-              [:headers "authorization"]
-              (format "AWS4-HMAC-SHA256 Credential=%s/%s, SignedHeaders=%s, Signature=%s"
-                      (:access-key-id auth-info)
-                      (credential-scope auth-info req)
-                      (signed-headers req)
-                      (signature auth-info req)))))
+  (let [auth-info (auth-info service endpoint credentials)
+        req       (update http-request :headers normalize-headers)]
+    (update req :headers
+            #(-> %
+                 (assoc "authorization" (authorization-string (auth-params "noop" 0 req auth-info)))
+                 (cond->
+                     (:session-token auth-info)
+                   (assoc "x-amz-security-token" (:session-token auth-info))
+                   content-sha256-header?
+                   (assoc "x-amz-content-sha256" (hashed-body (:body req))))))))
 
 (defmethod client/sign-http-request "v4"
   [service endpoint credentials http-request]
