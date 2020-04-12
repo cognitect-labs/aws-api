@@ -3,7 +3,7 @@
 
 (ns cognitect.aws.signers-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :as t :refer [deftest is testing]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
@@ -12,7 +12,6 @@
             [clojure.spec.test.alpha :as stest])
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
-
 
 (def exclude-dir?
   "These dirs have subdirs with tests, but no tests directly in them."
@@ -130,22 +129,24 @@
   :ret string?)
 
 (deftest test-uri-encode
-  (testing "with *unchecked-math* true"
-    (set! *unchecked-math* true)
-    (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res)))
+  (testing "regression for issue-71"
+    ;; See https://github.com/cognitect-labs/aws-api/issues/71
+    (testing "with *unchecked-math* true"
+      (binding [*unchecked-math* true]
+        (require '[cognitect.aws.signers :as signers] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+          (is (true? (:result res))
+              res))))
 
-  (testing "with *unchecked-math* false (default)"
-    (set! *unchecked-math* false)
-    (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res))))
+    (testing "with *unchecked-math* false"
+      (binding [*unchecked-math* false]
+        (require '[cognitect.aws.signers :as signers] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+          (is (true? (:result res))
+              res))))))
 
 (comment
-  (run-tests)
+  (t/run-tests)
 
   (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
 
