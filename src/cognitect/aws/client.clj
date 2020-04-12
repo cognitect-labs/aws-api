@@ -116,8 +116,108 @@
           (put-throwable result-ch t response-meta op-map))))
     result-ch))
 
+(def fetch-region-step
+  {:name "fetch region"
+   :f (fn [{:keys [submit! region-provider] :as context}]
+        (submit! #(assoc context :region (region/fetch region-provider))))})
+
+(def fetch-credentials-step
+  {:name "fetch credentials"
+   :f (fn [{:keys [submit! credentials-provider] :as context}]
+        (submit! #(assoc context :credentials (credentials/fetch credentials-provider))))})
+
+(def discover-endpoint-step
+  {:name "discover endpoint"
+   :f (fn [{:keys [submit! endpoint-provider region] :as context}]
+        (submit! #(assoc context :endpoint (endpoint/fetch endpoint-provider region))))})
+
+(def build-http-request-step
+  {:name "build http request"
+   :f (fn [{:keys [service op-map] :as context}]
+        (assoc context :http-request (build-http-request service op-map)))})
+
+(def add-endpoint-step
+  {:name "add endpoint"
+   :f (fn [{:keys [endpoint] :as context}]
+        (update context :http-request with-endpoint endpoint))})
+
+(def body-to-byte-buffer-step
+  {:name "body to ByteBuffer"
+   :f #(update-in % [:http-request :body] util/->bbuf)})
+
+(def http-interceptors-step
+  {:name "http interceptors"
+   :f (fn [{:keys [service op-map] :as context}]
+        (update context :http-request
+                (fn [r]
+                  (interceptors/modify-http-request service op-map r))))})
+
+(def sign-request-step
+  {:name "sign request"
+   :f (fn [{:keys [service endpoint credentials http-request] :as  context}]
+        (let [
+              signed (sign-http-request service endpoint credentials http-request)]
+          (assoc context :http-request signed)))})
+
+(def send-request-step
+  {:name "send request"
+   :f (fn [{:keys [http-client http-request] :as context}]
+        (let [cf (java.util.concurrent.CompletableFuture.)
+              resp-ch (http/submit http-client http-request)
+              fulfill-future! (fn [response]
+                                (let [context (assoc context :http-response response)]
+                                  (.complete cf context)))]
+          (a/take! resp-ch fulfill-future!)
+          cf))})
+
+(def decode-response-step
+  {:name "decode response"
+  :f (fn [{:keys [service op-map http-response] :as context}]
+       (assoc context :decoded (handle-http-response service op-map http-response)))})
+
+(def add-presigned-query-string-step
+  {:name "add presigned query-string"
+   :f (fn [{:keys [service endpoint credentials http-request op-map] :as context}]
+        (update context
+                :http-request
+                cognitect.aws.signers/presign-http-request
+                (:op op-map)
+                (or (:timeout op-map) 60)
+                service
+                endpoint
+                credentials))})
+
+(def default-stack
+  [fetch-region-step
+   fetch-credentials-step
+   discover-endpoint-step
+   build-http-request-step
+   add-endpoint-step
+   body-to-byte-buffer-step
+   http-interceptors-step
+   sign-request-step
+   send-request-step
+   decode-response-step])
+
+(def create-presigned-request-stack
+  [fetch-region-step
+   fetch-credentials-step
+   discover-endpoint-step
+   build-http-request-step
+   add-endpoint-step
+   body-to-byte-buffer-step
+   http-interceptors-step
+   add-presigned-query-string-step])
+
+(defn fetch-presigned-request-stack [http-request]
+  [{:name "add http-request"
+    :f (fn [context]
+         (assoc context :http-request http-request))}
+   send-request-step
+   decode-response-step])
+
 (defn flow-request
-  [client op-map]
+  [client op-map stk]
   (let [executor (java.util.concurrent.ForkJoinPool/commonPool)
         submit! (fn [f]
                   (java.util.concurrent.CompletableFuture/supplyAsync
@@ -125,65 +225,69 @@
                      (get [_] (f)))
                    executor))
         {:keys [service http-client region-provider credentials-provider endpoint-provider]}
-        (-get-info client)
-
-        stk [{:name "fetch region"
-              :f (fn [context]
-                   (submit! #(assoc context :region (region/fetch region-provider))))}
-
-             {:name "fetch credentials"
-              :f (fn [context]
-                   (submit! #(assoc context :credentials (credentials/fetch credentials-provider))))}
-
-             {:name "discover endpoint"
-              :f (fn [{:keys [region] :as context}]
-                   (submit! #(assoc context :endpoint (endpoint/fetch endpoint-provider region))))}
-
-             {:name "build http request"
-              :f (fn [context]
-                   (let [req (build-http-request service op-map)]
-                     (assoc context :http-request req)))}
-
-             {:name "add endpoint"
-              :f (fn [context]
-                   (update context :http-request with-endpoint (:endpoint context)))}
-
-             {:name "body to ByteBuffer"
-              :f #(update-in % [:http-request :body] util/->bbuf)}
-
-             {:name "http interceptors"
-              :f (fn [context]
-                   (update context :http-request
-                           (fn [r]
-                             (interceptors/modify-http-request service op-map r))))}
-
-             {:name "sign request"
-              :f (fn [context]
-                   (let [{:keys [endpoint credentials http-request]} context
-                         signed (sign-http-request service endpoint credentials http-request)]
-                     (assoc context :http-request signed)))}
-
-             {:name "send request"
-              :f (fn [context]
-                   (let [cf (java.util.concurrent.CompletableFuture.)
-                         resp-ch (http/submit http-client (:http-request context))
-                         fulfill-future! (fn [response]
-                                           (let [context (assoc context :http-response response)]
-                                             (.complete cf context)))]
-                     (a/take! resp-ch fulfill-future!)
-                     cf))}
-
-             {:name "decode response"
-              :f (fn [context]
-                   (let [{:keys [http-response]} context]
-                     (assoc context :decoded
-                            (handle-http-response service op-map http-response))))}]]
-    (flow/execute-future {} stk)))
+        (-get-info client)]
+    (flow/execute-future (assoc (-get-info client)
+                                :op-map op-map
+                                :submit! submit!)
+                         (conj
+                          stk
+                          ;; this should be configurable with a logical default
+                          {:name "cleanup"
+                           :f #(dissoc %
+                                       :op-map
+                                       :endpoint
+                                       :submit!
+                                       :retriable?
+                                       :credentials
+                                       :region
+                                       :service
+                                       :backoff
+                                       :http-client
+                                       :endpoint-provider
+                                       :region-provider
+                                       :credentials-provider)}))))
 
 (comment
   (require '[cognitect.aws.client.api :as aws])
   (System/setProperty "aws.profile" "REDACTED")
 
   (def c (aws/client {:api :s3}))
-  @(flow-request c {:op :ListBuckets})
-  )
+
+  @(flow-request c {:op :ListBuckets} default-stack)
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; presigned requests
+  ;;
+  ;; works for ListBuckets
+  @(flow-request c {:op :ListBuckets
+                    :timeout 30}
+                 create-presigned-request-stack)
+
+  @(flow-request c
+                 {:op :ListBuckets}
+                 (fetch-presigned-request-stack (:http-request *1)))
+
+  (def bucket (-> *1 :decoded :Buckets first :Name))
+
+  ;; works for ListObjects
+  @(flow-request c {:op :ListObjects
+                    :request {:Bucket bucket}}
+                 create-presigned-request-stack)
+
+  @(flow-request c
+                 {:op :ListObjects
+                  :request {:Bucket bucket}}
+                 (fetch-presigned-request-stack (:http-request *1)))
+
+  ;; not so much for ListObjectsV2 because it has its own query string
+  @(flow-request c {:op :ListObjectsV2
+                    :request {:Bucket bucket}}
+                 create-presigned-request-stack)
+
+  @(flow-request c
+                 {:op :ListObjectsV2
+                  :request {:Bucket bucket}}
+                 (fetch-presigned-request-stack (:http-request *1)))
+
+
+)
