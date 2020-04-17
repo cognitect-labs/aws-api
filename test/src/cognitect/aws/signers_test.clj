@@ -3,7 +3,7 @@
 
 (ns cognitect.aws.signers-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :as t :refer [deftest is testing]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
@@ -12,7 +12,6 @@
             [clojure.spec.test.alpha :as stest])
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
-
 
 (def exclude-dir?
   "These dirs have subdirs with tests, but no tests directly in them."
@@ -130,22 +129,46 @@
   :ret string?)
 
 (deftest test-uri-encode
-  (testing "with *unchecked-math* true"
-    (set! *unchecked-math* true)
-    (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res)))
+  (testing "regression for issue-71"
+    ;; See https://github.com/cognitect-labs/aws-api/issues/71
+    (testing "with *unchecked-math* true"
+      (binding [*unchecked-math* true]
+        (require '[cognitect.aws.signers :as signers] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+          (is (true? (:result res))
+              res))))
 
-  (testing "with *unchecked-math* false (default)"
-    (set! *unchecked-math* false)
-    (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res))))
+    (testing "with *unchecked-math* false"
+      (binding [*unchecked-math* false]
+        (require '[cognitect.aws.signers :as signers] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+          (is (true? (:result res))
+              res))))))
+
+(deftest test-presign-url
+  ;; from https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+  (let [{{:keys [string-to-sign
+                 canonical-request]}
+         :presigned-request-meta}
+        (signers/presign-http-request
+         {:request-method :get
+          :uri "/test.txt"
+          :headers {"x-amz-date" "20130524T000000Z"
+                    "host" "examplebucket.s3.amazonaws.com"}}
+         nil ;; op
+         86400  ;; expires
+         {:metadata {:signingName "s3"}}
+         {:region "us-east-1"}
+         {:aws/access-key-id "AKIAIOSFODNN7EXAMPLE"
+          :aws/secret-access-key "AWSSecretAccessKey"})]
+    (is (= "AWS4-HMAC-SHA256\n20130524T000000Z\n20130524/us-east-1/s3/aws4_request\n3bfa292879f6447bbcda7001decf97f4a54dc650c8942174ae0a9121cf58ad04"
+           string-to-sign))
+    (is (= "GET\n/test.txt\nX-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host\nhost:examplebucket.s3.amazonaws.com\n\nhost\nUNSIGNED-PAYLOAD"
+           canonical-request)))
+  )
 
 (comment
-  (run-tests)
+  (t/run-tests)
 
   (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
 
