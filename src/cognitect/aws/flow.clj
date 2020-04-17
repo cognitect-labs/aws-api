@@ -12,31 +12,32 @@
       (if-let [{:keys [name f] :as interceptor} (peek q)]
         (let [input (assoc context ::queue (pop q))
               log+ (let [beginms (System/currentTimeMillis)]
-                     #(conj log {:name name
-                                 :ms (- (System/currentTimeMillis) beginms)}))
+                     (fn [out]
+                       (conj log {:name name
+                                  :input input
+                                  :output out
+                                  :ms (- (System/currentTimeMillis) beginms)})))
               envelop-error (fn [t]
-                             {:cognitect.anomalies/category :cognitect.anomalies/fault
-                              :throwable t
-                              :failing-input input
-                              ::queue (pop q)
-                              ::failing-step name})
+                              {:cognitect.anomalies/category :cognitect.anomalies/fault
+                               :throwable t
+                               ::failed-interceptor name})
               context (try
-                         (f input)
-                         (catch Throwable throwable
-                           (envelop-error throwable)))]
+                        (f input)
+                        (catch Throwable t
+                          (envelop-error t)))]
           (cond
             (:cognitect.anomalies/category context)
             (done! (assoc context ::log log))
 
             (instance? CompletionStage context)
             (let [reenter (reify BiConsumer
-                            (accept [_ ctx t]
-                              (let [ctx (if t (envelop-error t) ctx)]
-                                (execute* done! ctx (log+)))))]
+                            (accept [_ context t]
+                              (let [context (or context (envelop-error t))]
+                                (execute* done! context (log+ context)))))]
               (.whenCompleteAsync ^CompletionStage context reenter))
 
             :else
-            (recur context (log+))))
+            (recur context (log+ context))))
         (-> context
             (dissoc ::queue)
             (assoc ::log log)
@@ -57,20 +58,23 @@
 
    Returns a CompletableFuture with the last step's output
    including a trace of steps performed + timings under ::log"
-  ^CompletableFuture
-  [data interceptors]
-  (let [cf (CompletableFuture.)
-        done! #(.complete cf %)
-        q (into clojure.lang.PersistentQueue/EMPTY interceptors)
-        data (assoc data ::queue q)
-        work (fn []
-               (try
-                 (execute* done! data [])
-                 (catch Throwable t
-                   (done! {:cognitect.anomalies/category :cognitect.anomalies/fault
-                           :throwable t}))))]
-    (.submit (java.util.concurrent.ForkJoinPool/commonPool) ^Callable work)
-    cf))
+  (^CompletableFuture
+   [data interceptors]
+    (execute-future data interceptors {:executor (java.util.concurrent.ForkJoinPool/commonPool)}))
+  (^CompletableFuture
+   [data interceptors {:keys [executor] :as opts}]
+   (let [cf (CompletableFuture.)
+         done! #(.complete cf %)
+         q (into clojure.lang.PersistentQueue/EMPTY interceptors)
+         data (assoc data ::queue q)
+         work (fn []
+                (try
+                  (execute* done! data [])
+                  (catch Throwable t
+                    (done! {:cognitect.anomalies/category :cognitect.anomalies/fault
+                            :throwable t}))))]
+     (.submit ^java.util.concurrent.ExecutorService executor ^Callable work)
+     cf)))
 
 (defn execute
   "Like execute-future but returns a channel"
