@@ -246,7 +246,7 @@
    add-region-provider-step
    add-credentials-provider-step
    add-endpoint-provider-step
-   
+
    fetch-region-step
    fetch-credentials-step
    discover-endpoint-step
@@ -275,6 +275,10 @@
    http-interceptors-step
    add-presigned-query-string-step])
 
+(def exec-presigned-request-stack
+  [send-request-step
+   decode-response-step])
+
 (defn flow-request
   ([request stk]
    (let [request (assoc request :executor (java.util.concurrent.ForkJoinPool/commonPool))]
@@ -283,11 +287,16 @@
    (flow-request (merge client-info request) stk)))
 
 (comment
-  (System/setProperty "aws.profile" "REDACTED")
-  (set! *print-level* 4)
-  
+  (System/setProperty "aws.profile" "aws-api-test")
+  (set! *print-level* 10)
+
   (def c {:api :s3})
   (require 'cognitect.aws.signers)
+
+  (defn remove-service [node]
+    (if (:service node)
+      (dissoc node :service)
+      node))
 
   (defn summarize-log
     [resp]
@@ -296,16 +305,60 @@
   (-> @(flow-request c {:op :ListBuckets} default-stack)
       (dissoc ::flow/log))
 
+  (def bucket (-> *1 :Buckets first :Name))
+
+  (-> @(flow-request c {:op :ListObjects
+                        :request {:Bucket bucket}
+                        :timeout 30}
+                     default-stack)
+      (dissoc ::flow/log))
+
+  (-> @(flow-request c {:op :ListObjectsV2
+                        :request {:Bucket bucket}
+                        :timeout 30}
+                     default-stack)
+      (update ::flow/log
+              #(clojure.walk/postwalk remove-service %)))
+
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; presigned requests
   ;;
-  ;; works for ListBuckets
+  ;; ListBuckets
   (def presigned @(flow-request c {:op :ListBuckets
                                    :timeout 30}
                                 create-presigned-request-stack))
 
-  @(flow/execute-future presigned [send-request-step
-                                   decode-response-step])
+  (->> presigned
+       ::flow/log
+       (filter #(re-find #"presign" (:name %)))
+       first
+       :output
+       :http-request
+       meta)
 
+  (-> @(flow/execute-future presigned exec-presigned-request-stack)
+      ::flow/log)
+
+  (def bucket (-> *1 :Buckets first :Name))
+
+  ;; ListObjects
+
+  (def presigned @(flow-request c {:op :ListObjects
+                                   :request {:Bucket bucket}
+                                   :timeout 30}
+                                create-presigned-request-stack))
+
+  (-> @(flow/execute-future presigned exec-presigned-request-stack)
+      (dissoc ::flow/log))
+
+  ;; ListObjectsV2
+
+  (def presigned @(flow-request c {:op :ListObjectsV2
+                                   :request {:Bucket bucket}
+                                   :timeout 30}
+                                create-presigned-request-stack))
+
+  (-> @(flow/execute-future presigned exec-presigned-request-stack)
+      (dissoc ::flow/log))
 
 )

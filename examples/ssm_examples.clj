@@ -24,13 +24,13 @@
 ;; describe an op param
 (s/form :cognitect.aws.ssm.PutParameterRequest/Type)
 
-;; jam!
-(aws/invoke ssm-client {:op      :PutParameter
-                        :request {:Name  "aws-api-example"
-                                  :Value "example-value"
-                                  :Type  "SecureString"}})
-
 ;; see spec fail
 (aws/invoke ssm-client {:op      :PutParameter
                         :request {:Value "example-value"
+                                  :Type  "SecureString"}})
+
+;; jam!
+(aws/invoke ssm-client {:op      :PutParameter
+                        :request {:Name  "an-aws-api-example"
+                                  :Value "example-value"
                                   :Type  "SecureString"}})

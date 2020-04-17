@@ -103,29 +103,27 @@
                                          :endpointPrefix   "service"
                                          :uid              "service-2018-12-28"}}
               signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
-          (is (= (get-in signed-request [:headers "authorization"])
-                 authorization))))
+          (is (= authorization
+                 (get-in signed-request [:headers "authorization"])))))
       (testing "using signingName"
         (let [service        {:metadata {:signatureVersion "v4"
                                          :endpointPrefix   "incorrect"
                                          :signingName      "service"
                                          :uid              "service-2018-12-28"}}
               signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
-          (is (= (get-in signed-request [:headers "authorization"])
-                 authorization)))))))
+          (is (= authorization
+                 (get-in signed-request [:headers "authorization"]))))))))
 
 (deftest test-canonical-query-string
   (testing "ordering"
     (is (= "q=Red&q.parser=lucene"
            (#'signers/canonical-query-string {:query-string "q=Red&q.parser=lucene"})
-           (#'signers/canonical-query-string {:query-string "q.parser=lucene&q=Red"})
-           (#'signers/canonical-query-string {:uri "path?q=Red&q.parser=lucene"})
-           (#'signers/canonical-query-string {:uri "path?q.parser=lucene&q=Red"}))))
+           (#'signers/canonical-query-string {:query-string "q.parser=lucene&q=Red"}))))
   (testing "key with no value"
-    (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
+    (is (= "policy=" (#'signers/canonical-query-string {:query-string "policy="})))))
 
 (s/fdef signers/uri-encode
-  :args (s/cat :string (s/and string? not-empty) :extra-chars (s/? string?))
+  :args (s/cat :string (s/and string? (complement str/blank?)) :extra-chars (s/? string?))
   :ret string?)
 
 (deftest test-uri-encode
@@ -146,26 +144,26 @@
               res))))))
 
 (deftest test-presign-url
-  ;; from https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
-  (let [{{:keys [string-to-sign
-                 canonical-request]}
-         :presigned-request-meta}
-        (signers/presign-http-request
-         {:request-method :get
-          :uri "/test.txt"
-          :headers {"x-amz-date" "20130524T000000Z"
-                    "host" "examplebucket.s3.amazonaws.com"}}
-         nil ;; op
-         86400  ;; expires
-         {:metadata {:signingName "s3"}}
-         {:region "us-east-1"}
-         {:aws/access-key-id "AKIAIOSFODNN7EXAMPLE"
-          :aws/secret-access-key "AWSSecretAccessKey"})]
-    (is (= "AWS4-HMAC-SHA256\n20130524T000000Z\n20130524/us-east-1/s3/aws4_request\n3bfa292879f6447bbcda7001decf97f4a54dc650c8942174ae0a9121cf58ad04"
-           string-to-sign))
-    (is (= "GET\n/test.txt\nX-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host\nhost:examplebucket.s3.amazonaws.com\n\nhost\nUNSIGNED-PAYLOAD"
-           canonical-request)))
-  )
+  ;; "Golden Master" test based on (but modified)
+  ;; https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+  (let [req (signers/presign-http-request
+             {:request-method :get
+              :uri            "/test.txt?a=b"
+              :headers        {"x-amz-date" "20130524T000000Z"
+                               "host"       "examplebucket.s3.amazonaws.com"}}
+             :GetSomething ;; op
+             86400         ;; expires
+             {:metadata {:signingName "s3"}}
+             {:region "us-east-1"}
+             {:aws/access-key-id     "AKIAIOSFODNN7EXAMPLE"
+              :aws/secret-access-key "AWSSecretAccessKey"})
+        {:keys [canonical-request signature] :as cxt} (meta req)]
+    (is (= "GET\n/test.txt\nAction=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host\nhost:examplebucket.s3.amazonaws.com\n\nhost\nUNSIGNED-PAYLOAD"
+           canonical-request))
+    (is (= "25d5a5c71930cbf8e2a10167fc5aaf6f663db3a6f8ae3ef580c8b7f4ba519f4c" signature))
+    (is (= nil? req))
+    ))
+
 
 (comment
   (t/run-tests)
