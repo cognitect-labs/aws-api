@@ -165,3 +165,10 @@
 (defmethod client/sign-http-request "s3v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
+
+(defmethod client/presign-http-request* :default
+  [context]
+  (let [{:keys [http-request op timeout service endpoint
+                credentials]} context]
+    (presign-http-request http-request op timeout service endpoint credentials)))
+

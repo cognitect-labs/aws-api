@@ -7,11 +7,12 @@
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
+            [cognitect.aws.dynaload :as dynaload]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.service :as service]
-            [cognitect.aws.client.shared :as shared]
+             [cognitect.aws.client.shared :as shared]
             [cognitect.aws.flow :as flow]))
 
 (set! *warn-on-reflection* true)
@@ -41,6 +42,11 @@
   "Sign the HTTP request."
   (fn [service endpoint credentials http-request]
     (get-in service [:metadata :signatureVersion])))
+
+(defmulti presign-http-request*
+  "Presign the HTTP request."
+  (fn [context]
+    (get-in context [:service :metadata :signatureVersion])))
 
 ;; TODO convey throwable back from impl
 (defn ^:private handle-http-response
@@ -118,112 +124,188 @@
           (put-throwable result-ch t response-meta op-map))))
     result-ch))
 
+;;; steps
+;;;
+(def load-service-step
+  {:name "load service"
+   :f (fn [{:keys [api] :as context}]
+        (let [service (service/service-description (name api))]
+          (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
+          (assoc context :service service)))})
+
+(def check-op-step
+  {:name "check op"
+   :f (fn [{:keys [op service] :as context}]
+        (if-not (contains? (:operations service) op)
+          {:cognitect.anomalies/category :cognitect.anomalies/incorrect
+           :throwable (ex-info "Operation not supported" {:service (keyword (service/service-name service))
+                                                          :operation op})}
+          context))})
+
+(def add-http-provider-step
+  {:name "add http provider"
+   :f (fn [context]
+        (update context :http-client
+                (fn [c]
+                  (if c
+                    (http/resolve-http-client c)
+                    (shared/http-client)))))})
+
+(def add-region-provider-step
+  {:name "add region provider"
+   :f (fn [{:keys [region region-provider] :as context}]
+        (assoc context :region-provider
+               (cond
+                 region          (reify region/RegionProvider (fetch [_] region))
+                 region-provider  region-provider
+                 :else           (shared/region-provider))))})
+
+(def add-credentials-provider-step
+  {:name "add credentials provider"
+   :f (fn [context]
+        (if (:credentials-provider context)
+          context
+          (assoc context :credentials-provider (shared/credentials-provider))))})
+
+(def add-endpoint-provider-step
+  {:name "endpoint provider"
+   :f (fn [{:keys [api service endpoint-override] :as context}]
+        (assoc context :endpoint-provider
+               (endpoint/default-endpoint-provider
+                api
+                (get-in service [:metadata :endpointPrefix])
+                endpoint-override)))})
+
+(def fetch-region-step
+  {:name "fetch region"
+   :f (fn [{:keys [executor region-provider] :as context}]
+        (flow/submit executor #(assoc context :region (region/fetch region-provider))))})
+
+(def fetch-credentials-step
+  {:name "fetch credentials"
+   :f (fn [{:keys [executor credentials-provider] :as context}]
+        (flow/submit executor #(assoc context :credentials (credentials/fetch credentials-provider))))})
+
+(def discover-endpoint-step
+  {:name "discover endpoint"
+   :f (fn [{:keys [executor endpoint-provider region] :as context}]
+        (flow/submit executor #(assoc context :endpoint (endpoint/fetch endpoint-provider region))))})
+
+(def build-http-request-step
+  {:name "build http request"
+   :f (fn [{:keys [service] :as context}]
+        (assoc context :http-request (build-http-request service context)))})
+
+(def add-endpoint-step
+  {:name "add endpoint"
+   :f (fn [{:keys [endpoint] :as context}]
+        (update context :http-request with-endpoint endpoint))})
+
+(def body-to-byte-buffer-step
+  {:name "body to ByteBuffer"
+   :f #(update-in % [:http-request :body] util/->bbuf)})
+
+(def http-interceptors-step
+  {:name "http interceptors"
+   :f (fn [{:keys [service] :as context}]
+        (update context :http-request
+                (fn [r]
+                  (interceptors/modify-http-request service context r))))})
+
+(def sign-request-step
+  {:name "sign request"
+   :f (fn [{:keys [service endpoint credentials http-request] :as  context}]
+        (let [signed (sign-http-request service endpoint credentials http-request)]
+          (assoc context :http-request signed)))})
+
+(def send-request-step
+  {:name "send request"
+   :f (fn [{:keys [http-client http-request] :as context}]
+        (let [cf (java.util.concurrent.CompletableFuture.)
+              resp-ch (http/submit http-client http-request)
+              fulfill-future! (fn [response]
+                                (let [context (assoc context :http-response response)]
+                                  (.complete cf context)))]
+          (a/take! resp-ch fulfill-future!)
+          cf))})
+
+(def decode-response-step
+  {:name "decode response"
+   :f (fn [{:keys [service http-response] :as context}]
+        (handle-http-response service context http-response))})
+
+(def add-presigned-query-string-step
+  {:name "add presigned query-string"
+   :f (fn [{:keys [op service endpoint credentials http-request] :as context}]
+        (assoc context :http-request (presign-http-request* context)))})
+
+(def default-stack
+  [load-service-step
+   check-op-step
+   add-http-provider-step
+   add-region-provider-step
+   add-credentials-provider-step
+   add-endpoint-provider-step
+   
+   fetch-region-step
+   fetch-credentials-step
+   discover-endpoint-step
+   build-http-request-step
+   add-endpoint-step
+   body-to-byte-buffer-step
+   http-interceptors-step
+   sign-request-step
+   send-request-step
+   decode-response-step])
+
+(def create-presigned-request-stack
+  [load-service-step
+   check-op-step
+   add-http-provider-step
+   add-region-provider-step
+   add-credentials-provider-step
+   add-endpoint-provider-step
+
+   fetch-region-step
+   fetch-credentials-step
+   discover-endpoint-step
+   build-http-request-step
+   add-endpoint-step
+   body-to-byte-buffer-step
+   http-interceptors-step
+   add-presigned-query-string-step])
+
 (defn flow-request
-  [op-map]
-  (let [executor (get op-map :executor (java.util.concurrent.ForkJoinPool/commonPool))
-        submit! (fn [f]
-                  (java.util.concurrent.CompletableFuture/supplyAsync
-                   (reify java.util.function.Supplier
-                     (get [_] (f)))
-                   executor))
-
-        stk [{:name "load service"
-              :f (fn [{:keys [api] :as context}]
-                   (assoc context :service (service/service-description (name api))))}
-
-             {:name "check op"
-              :f (fn [{:keys [op service] :as context}]
-                   (if-not (contains? (:operations service) op)
-                     {:cognitect.anomalies/category :cognitect.anomalies/incorrect
-                      :throwable (ex-info "Operation not supported" {:service (keyword (service/service-name service))
-                                                                     :operation op})}
-                     context))}
-
-             {:name "+http provider"
-              :f (fn [context]
-                   (update context :http-client
-                           (fn [c]
-                             (if c
-                               (http/resolve-http-client c)
-                               (shared/http-client)))))}
-
-             {:name "+region provider"
-              :f (fn [{:keys [region region-provider] :as context}]
-                   (assoc context :region-provider
-                          (cond
-                            region          (reify region/RegionProvider (fetch [_] region))
-                            region-provider  region-provider
-                            :else           (shared/region-provider))))}
-
-             {:name "+creds provider"
-              :f (fn [context]
-                   (if (:credentials-provider context)
-                     context
-                     (assoc context :credentials-provider (shared/credentials-provider))))}
-
-             {:name "+endpoint provider"
-              :f (fn [{:keys [api service endpoint-override] :as context}]
-                   (assoc context :endpoint-provider
-                          (endpoint/default-endpoint-provider
-                           api
-                           (get-in service [:metadata :endpointPrefix])
-                           endpoint-override)))}
-
-             {:name "fetch region"
-              :f (fn [context]
-                   (submit! #(assoc context :region (region/fetch (:region-provider context)))))}
-
-             {:name "fetch credentials"
-              :f (fn [context]
-                   (submit! #(assoc context :credentials (credentials/fetch (:credentials-provider context)))))}
-
-             {:name "discover endpoint"
-              :f (fn [{:keys [region] :as context}]
-                   (submit! #(assoc context :endpoint (endpoint/fetch (:endpoint-provider context) region))))}
-
-             {:name "build http request"
-              :f (fn [context]
-                   (let [req (build-http-request (:service context) context)]
-                     (assoc context :http-request req)))}
-
-             {:name "body to ByteBuffer"
-              :f #(update-in % [:http-request :body] util/->bbuf)}
-
-             {:name "add endpoint"
-              :f (fn [context]
-                   (update context :http-request with-endpoint (:endpoint context)))}
-
-             {:name "http interceptors"
-              :f (fn [context]
-                   (update context :http-request
-                           (fn [r]
-                             (interceptors/modify-http-request (:service context) context r))))}
-
-             {:name "sign request"
-              :f (fn [context]
-                   (let [{:keys [service endpoint credentials http-request]} context
-                         signed (sign-http-request service endpoint credentials http-request)]
-                     (assoc context :http-request signed)))}
-
-             {:name "send request"
-              :f (fn [context]
-                   (let [cf (java.util.concurrent.CompletableFuture.)
-                         resp-ch (http/submit (:http-client context) (:http-request context))
-                         fulfill-future! (fn [response]
-                                           (let [context (assoc context :http-response response)]
-                                             (.complete cf context)))]
-                     (a/take! resp-ch fulfill-future!)
-                     cf))}
-
-             {:name "decode response"
-              :f (fn [context]
-                   (handle-http-response (:service context) context (:http-response context)))}]]
-    (flow/execute-future op-map stk)))
+  ([request stk]
+   (let [request (assoc request :executor (java.util.concurrent.ForkJoinPool/commonPool))]
+     (flow/execute-future request stk)))
+  ([client-info request stk]
+   (flow-request (merge client-info request) stk)))
 
 (comment
-  (require '[cognitect.aws.client.api :as aws])
   (System/setProperty "aws.profile" "REDACTED")
+  (set! *print-level* 4)
+  
+  (def c {:api :s3})
+  (require 'cognitect.aws.signers)
 
-  (def c (aws/client {:api :s3}))
-  @(flow-request c {:op :ListBuckets})
-  )
+  (defn summarize-log
+    [resp]
+    (mapv #(select-keys % [:name :ms]) (::flow/log resp)))
+
+  (-> @(flow-request c {:op :ListBuckets} default-stack)
+      (dissoc ::flow/log))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; presigned requests
+  ;;
+  ;; works for ListBuckets
+  (def presigned @(flow-request c {:op :ListBuckets
+                                   :timeout 30}
+                                create-presigned-request-stack))
+
+  @(flow/execute-future presigned [send-request-step
+                                   decode-response-step])
+
+
+)

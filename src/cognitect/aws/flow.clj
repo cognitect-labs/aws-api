@@ -86,3 +86,10 @@
                             (accept [_ m]
                               (async/put! ch m))))
      ch)))
+
+(defn submit
+  [executor f]
+  (java.util.concurrent.CompletableFuture/supplyAsync
+   (reify java.util.function.Supplier
+     (get [_] (f)))
+   executor))
