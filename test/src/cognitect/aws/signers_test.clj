@@ -160,9 +160,7 @@
         {:keys [canonical-request signature] :as cxt} (meta req)]
     (is (= "GET\n/test.txt\nAction=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host\nhost:examplebucket.s3.amazonaws.com\n\nhost\nUNSIGNED-PAYLOAD"
            canonical-request))
-    (is (= "25d5a5c71930cbf8e2a10167fc5aaf6f663db3a6f8ae3ef580c8b7f4ba519f4c" signature))
-    (is (= nil? req))
-    ))
+    (is (= "25d5a5c71930cbf8e2a10167fc5aaf6f663db3a6f8ae3ef580c8b7f4ba519f4c" signature))))
 
 
 (comment
