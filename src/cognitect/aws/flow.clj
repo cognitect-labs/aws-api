@@ -11,11 +11,19 @@
     (let [q (::queue context)]
       (if-let [{:keys [name f] :as interceptor} (peek q)]
         (let [input (assoc context ::queue (pop q))
+              ;; TODO (dchelimsky,2020-04-24) get rid of io-filter
+              ;; once we have a log filter solution in place.
+              io-filter (fn [m]
+                          (cond-> (dissoc m :service)
+                            (:credentials m)
+                            (update :credentials dissoc :secret-access-key)))
               log+ (let [beginms (System/currentTimeMillis)]
                      (fn [out]
                        (conj log {:name name
-                                  :input input
-                                  :output out
+                                  ;; TODO (dchelimsky,2020-04-24) get rid of io-filter
+                                  ;; once we have a log filter solution in place.
+                                  :input (io-filter input)
+                                  :output (io-filter out)
                                   :ms (- (System/currentTimeMillis) beginms)})))
               envelop-error (fn [t]
                               {:cognitect.anomalies/category :cognitect.anomalies/fault
