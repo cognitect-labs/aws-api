@@ -157,7 +157,7 @@
                           (get-in endpoint [:region]))})
 
 (defn signing-params
-  [op timeout headers-to-sign auth-info amz-date]
+  [op timeout {:strs [x-amz-date] :as headers-to-sign} auth-info amz-date]
   (assoc auth-info
          ;; TODO: we only need the op for presign, hence this
          ;; some->. Maybe there's a clearer way to express that
@@ -179,8 +179,8 @@
       new-qs
       (assoc :query-string new-qs))))
 
-(defn presign-http-request
-  [http-request op timeout service endpoint credentials]
+(defmethod client/presigned-url :default
+  [{:keys [http-request op timeout service endpoint credentials]}]
   (let [req*                    (-> http-request
                                     (update :headers normalize-headers)
                                     move-uri-qs-to-qs)
@@ -209,10 +209,11 @@
                                      add-signature)
         qs-params-with-sig      (assoc qs-params-no-sig "X-Amz-Signature" signature)
         qs-with-sig             (format-qs qs-params-with-sig)]
-    (with-meta (assoc req :query-string qs-with-sig)
-      (-> signing-context
-          (dissoc :req)
-          (update :signing-params dissoc :secret-access-key)))))
+    {:presigned-url (str "https://" (:server-name req) (:uri req) "?"
+                         (canonical-query-string {:query-string qs-with-sig}))
+     :cognitect.aws.signing/basis (-> signing-context
+                                      (dissoc :req)
+                                      (update :signing-params dissoc :secret-access-key))}))
 
 (defn v4-sign-http-request
   [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
@@ -254,9 +255,3 @@
 (defmethod client/sign-http-request "s3v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
-
-(defmethod client/presign-http-request* :default
-  [context]
-  (let [{:keys [http-request op timeout service endpoint
-                credentials]} context]
-    (presign-http-request http-request op timeout service endpoint credentials)))

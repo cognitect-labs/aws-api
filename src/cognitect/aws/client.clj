@@ -43,7 +43,7 @@
   (fn [service endpoint credentials http-request]
     (get-in service [:metadata :signatureVersion])))
 
-(defmulti presign-http-request*
+(defmulti presigned-url
   "Presign the HTTP request."
   (fn [context]
     (get-in context [:service :metadata :signatureVersion])))
@@ -237,7 +237,15 @@
 (def add-presigned-query-string-step
   {:name "add presigned query-string"
    :f (fn [{:keys [op service endpoint credentials http-request] :as context}]
-        (assoc context :http-request (presign-http-request* context)))})
+        (let [{:keys [presigned-url cognitect.aws.signing/basis]} (presigned-url context)]
+          (assoc context
+                 :presigned-url presigned-url
+                 :cognitect.aws.signing/basis basis)))})
+
+(def filter-presigned-url-result
+  {:name "filter presigned url result"
+   :f (fn [context]
+        (select-keys context [:presigned-url :cognitect.aws.signing/basis]))})
 
 (def default-stack
   [load-service-step
@@ -258,7 +266,8 @@
    send-request-step
    decode-response-step])
 
-(def create-presigned-request-stack
+(def presigned-url-stack
+  "Returns a map of :presigned-url"
   [load-service-step
    check-op-step
    add-http-provider-step
@@ -273,11 +282,8 @@
    add-endpoint-step
    body-to-byte-buffer-step
    http-interceptors-step
-   add-presigned-query-string-step])
-
-(def exec-presigned-request-stack
-  [send-request-step
-   decode-response-step])
+   add-presigned-query-string-step
+   filter-presigned-url-result])
 
 (defn flow-request
   ([request stk]
@@ -287,23 +293,18 @@
    (flow-request (merge client-info request) stk)))
 
 (comment
-  (System/setProperty "aws.profile" "aws-api-test")
+  (System/setProperty "aws.profile" "REDACTED")
   (set! *print-level* 10)
 
   (def c {:api :s3})
   (require 'cognitect.aws.signers)
 
-  (defn remove-service [node]
-    (if (:service node)
-      (dissoc node :service)
-      node))
-
   (defn summarize-log
-    [resp]
-    (mapv #(select-keys % [:name :ms]) (::flow/log resp)))
+    [log]
+    (mapv #(select-keys % [:name :ms]) log))
 
   (-> @(flow-request c {:op :ListBuckets} default-stack)
-      (dissoc ::flow/log))
+      (update ::flow/log summarize-log))
 
   (def bucket (-> *1 :Buckets first :Name))
 
@@ -311,46 +312,48 @@
                         :request {:Bucket bucket}
                         :timeout 30}
                      default-stack)
-      (dissoc ::flow/log))
+      (update ::flow/log summarize-log))
 
   (-> @(flow-request c {:op :ListObjectsV2
                         :request {:Bucket bucket}
                         :timeout 30}
                      default-stack)
-      (update ::flow/log
-              #(clojure.walk/postwalk remove-service %)))
+      (update ::flow/log summarize-log))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; presigned requests
-  ;;
+
+  (defn curl [url] (clojure.java.shell/sh "curl" url))
+
   ;; ListBuckets
-  (def presigned @(flow-request c {:op :ListBuckets
-                                   :timeout 30}
-                                create-presigned-request-stack))
+  (def list-buckets-url
+    (:presigned-url (dissoc @(flow-request c {:op :ListBuckets
+                                              :timeout 30}
+                                           presigned-url-stack)
+                            ::flow/log)
 
-  (-> @(flow/execute-future presigned exec-presigned-request-stack)
-      ::flow/log)
+                    ))
 
-  (def bucket (-> *1 :Buckets first :Name))
+  (curl list-buckets-url)
 
-  ;; ListObjects
+  ;; assumes bucket is defined from ListObjects
 
-  (def presigned @(flow-request c {:op :ListObjects
-                                   :request {:Bucket bucket}
-                                   :timeout 30}
-                                create-presigned-request-stack))
+  (def list-objects-url
+    (:presigned-url @(flow-request c {:op :ListObjects
+                                      :request {:Bucket bucket}
+                                      :timeout 30}
+                                   presigned-url-stack)))
 
-  (-> @(flow/execute-future presigned exec-presigned-request-stack)
-      (dissoc ::flow/log))
+  (curl list-objects-url)
 
   ;; ListObjectsV2
 
-  (def presigned @(flow-request c {:op :ListObjectsV2
-                                   :request {:Bucket bucket}
-                                   :timeout 30}
-                                create-presigned-request-stack))
+  (def list-objects-v2-url
+    (:presigned-url @(flow-request c {:op :ListObjectsV2
+                                      :request {:Bucket bucket}
+                                      :timeout 30}
+                                   presigned-url-stack)))
 
-  (-> @(flow/execute-future presigned exec-presigned-request-stack)
-      (dissoc ::flow/log))
+  (curl list-objects-v2-url)
 
 )

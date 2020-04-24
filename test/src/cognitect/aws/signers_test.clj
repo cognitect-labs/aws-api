@@ -144,24 +144,21 @@
               res))))))
 
 (deftest test-presign-url
-  ;; "Golden Master" test based on (but modified)
-  ;; https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
-  (let [req (signers/presign-http-request
-             {:request-method :get
-              :uri            "/test.txt?a=b"
-              :headers        {"x-amz-date" "20130524T000000Z"
-                               "host"       "examplebucket.s3.amazonaws.com"}}
-             :GetSomething ;; op
-             86400         ;; expires
-             {:metadata {:signingName "s3"}}
-             {:region "us-east-1"}
-             {:aws/access-key-id     "AKIAIOSFODNN7EXAMPLE"
-              :aws/secret-access-key "AWSSecretAccessKey"})
-        {:keys [canonical-request signature] :as cxt} (meta req)]
-    (is (= "GET\n/test.txt\nAction=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host\nhost:examplebucket.s3.amazonaws.com\n\nhost\nUNSIGNED-PAYLOAD"
-           canonical-request))
-    (is (= "25d5a5c71930cbf8e2a10167fc5aaf6f663db3a6f8ae3ef580c8b7f4ba519f4c" signature))))
-
+  ;; "Golden Master" test
+  (is (= "https://examplebucket.s3.amazonaws.com/a/path?Action=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AWSKeyId%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-Signature=8beb5653f122f71ae1d068f69823ca374d247d1e5fedb9a5c0583ba75bf958ab&X-Amz-SignedHeaders=host"
+         (:presigned-url
+          (client/presigned-url
+           {:http-request {:request-method :get
+                           :server-name    "examplebucket.s3.amazonaws.com"
+                           :uri            "/a/path"
+                           :headers        {"x-amz-date" "20130524T000000Z"
+                                            "host"       "examplebucket.s3.amazonaws.com"}}
+            :op :GetSomething
+            :timeout 86400
+            :service {:metadata {:signingName "s3"}}
+            :endpoint {:region "us-east-1"}
+            :credentials {:aws/access-key-id     "AWSKeyId"
+                          :aws/secret-access-key "AWSSecretAccessKey"}})))))
 
 (comment
   (t/run-tests)
