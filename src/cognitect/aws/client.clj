@@ -328,14 +328,6 @@
                                    :timeout 30}
                                 create-presigned-request-stack))
 
-  (->> presigned
-       ::flow/log
-       (filter #(re-find #"presign" (:name %)))
-       first
-       :output
-       :http-request
-       meta)
-
   (-> @(flow/execute-future presigned exec-presigned-request-stack)
       ::flow/log)
 
