@@ -1,13 +1,14 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns cognitect.aws.signers-test
+(ns cognitect.aws.signing-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
   (:require [clojure.test :as t :refer [deftest is testing]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
-            [cognitect.aws.signers :as signers]
+            [cognitect.aws.signing :as signing]
+            [cognitect.aws.signing.impl :as signing.impl]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest])
   (:import [java.io ByteArrayInputStream]
@@ -102,7 +103,7 @@
         (let [service        {:metadata {:signatureVersion "v4"
                                          :endpointPrefix   "service"
                                          :uid              "service-2018-12-28"}}
-              signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
+              signed-request (signing/sign-http-request service {:region "us-east-1"} credentials request)]
           (is (= authorization
                  (get-in signed-request [:headers "authorization"])))))
       (testing "using signingName"
@@ -110,19 +111,19 @@
                                          :endpointPrefix   "incorrect"
                                          :signingName      "service"
                                          :uid              "service-2018-12-28"}}
-              signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
+              signed-request (signing/sign-http-request service {:region "us-east-1"} credentials request)]
           (is (= authorization
                  (get-in signed-request [:headers "authorization"]))))))))
 
 (deftest test-canonical-query-string
   (testing "ordering"
     (is (= "q=Red&q.parser=lucene"
-           (#'signers/canonical-query-string {:query-string "q=Red&q.parser=lucene"})
-           (#'signers/canonical-query-string {:query-string "q.parser=lucene&q=Red"}))))
+           (#'signing.impl/canonical-query-string {:query-string "q=Red&q.parser=lucene"})
+           (#'signing.impl/canonical-query-string {:query-string "q.parser=lucene&q=Red"}))))
   (testing "key with no value"
-    (is (= "policy=" (#'signers/canonical-query-string {:query-string "policy="})))))
+    (is (= "policy=" (#'signing.impl/canonical-query-string {:query-string "policy="})))))
 
-(s/fdef signers/uri-encode
+(s/fdef signing.impl/uri-encode
   :args (s/cat :string (s/and string? (complement str/blank?)) :extra-chars (s/? string?))
   :ret string?)
 
@@ -131,15 +132,15 @@
     ;; See https://github.com/cognitect-labs/aws-api/issues/71
     (testing "with *unchecked-math* true"
       (binding [*unchecked-math* true]
-        (require '[cognitect.aws.signers :as signers] :reload)
-        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+        (require '[cognitect.aws.signing.impl :as signing.impl] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signing.impl/uri-encode)))]
           (is (true? (:result res))
               res))))
 
     (testing "with *unchecked-math* false"
       (binding [*unchecked-math* false]
-        (require '[cognitect.aws.signers :as signers] :reload)
-        (let [res (:clojure.spec.test.check/ret (first (stest/check `signers/uri-encode)))]
+        (require '[cognitect.aws.signing.impl :as signing.impl] :reload)
+        (let [res (:clojure.spec.test.check/ret (first (stest/check `signing.impl/uri-encode)))]
           (is (true? (:result res))
               res))))))
 
@@ -147,7 +148,7 @@
   ;; "Golden Master" test
   (is (= "https://examplebucket.s3.amazonaws.com/a/path?Action=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AWSKeyId%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-Signature=8beb5653f122f71ae1d068f69823ca374d247d1e5fedb9a5c0583ba75bf958ab&X-Amz-SignedHeaders=host"
          (:presigned-url
-          (client/presigned-url
+          (signing/presigned-url
            {:http-request {:request-method :get
                            :server-name    "examplebucket.s3.amazonaws.com"
                            :uri            "/a/path"

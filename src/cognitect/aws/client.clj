@@ -12,7 +12,9 @@
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.service :as service]
-             [cognitect.aws.client.shared :as shared]
+            [cognitect.aws.signing :as signing]
+            [cognitect.aws.signing.impl] ;; implements multimethods
+            [cognitect.aws.client.shared :as shared]
             [cognitect.aws.flow :as flow]))
 
 (set! *warn-on-reflection* true)
@@ -37,16 +39,6 @@
   "HTTP response -> AWS response"
   (fn [service op-map http-response]
     (get-in service [:metadata :protocol])))
-
-(defmulti sign-http-request
-  "Sign the HTTP request."
-  (fn [service endpoint credentials http-request]
-    (get-in service [:metadata :signatureVersion])))
-
-(defmulti presigned-url
-  "Presign the HTTP request."
-  (fn [context]
-    (get-in context [:service :metadata :signatureVersion])))
 
 ;; TODO convey throwable back from impl
 (defn ^:private handle-http-response
@@ -103,12 +95,14 @@
           (a/>! result-ch endpoint)
           :else
           (try
-            (let [http-request (sign-http-request service endpoint
-                                                  creds
-                                                  (-> (build-http-request service op-map)
-                                                      (with-endpoint endpoint)
-                                                      (update :body util/->bbuf)
-                                                      ((partial interceptors/modify-http-request service op-map))))]
+            (let [http-request (signing/sign-http-request
+                                service
+                                endpoint
+                                creds
+                                (-> (build-http-request service op-map)
+                                    (with-endpoint endpoint)
+                                    (update :body util/->bbuf)
+                                    ((partial interceptors/modify-http-request service op-map))))]
               (swap! response-meta assoc :http-request http-request)
               (http/submit http-client http-request response-ch))
             (catch Throwable t
@@ -215,7 +209,7 @@
 (def sign-request-step
   {:name "sign request"
    :f (fn [{:keys [service endpoint credentials http-request] :as  context}]
-        (let [signed (sign-http-request service endpoint credentials http-request)]
+        (let [signed (signing/sign-http-request service endpoint credentials http-request)]
           (assoc context :http-request signed)))})
 
 (def send-request-step
@@ -237,7 +231,7 @@
 (def add-presigned-query-string-step
   {:name "add presigned query-string"
    :f (fn [{:keys [op service endpoint credentials http-request] :as context}]
-        (let [{:keys [presigned-url cognitect.aws.signing/basis]} (presigned-url context)]
+        (let [{:keys [presigned-url cognitect.aws.signing/basis]} (signing/presigned-url context)]
           (assoc context
                  :presigned-url presigned-url
                  :cognitect.aws.signing/basis basis)))})
@@ -297,7 +291,6 @@
   (set! *print-level* 10)
 
   (def c {:api :s3})
-  (require 'cognitect.aws.signers)
 
   (defn summarize-log
     [log]

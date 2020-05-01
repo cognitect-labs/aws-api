@@ -16,7 +16,6 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
-            [cognitect.aws.signers] ;; implements multimethods
             [cognitect.aws.util :as util]))
 
 (declare ops)

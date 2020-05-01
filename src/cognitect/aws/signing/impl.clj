@@ -1,10 +1,10 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns ^:skip-wiki cognitect.aws.signers
+(ns ^:skip-wiki cognitect.aws.signing.impl
   "Impl, don't call directly."
   (:require [clojure.string :as str]
-            [cognitect.aws.client :as client]
+            [cognitect.aws.signing :as signing]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
   (:import [java.net URI]
@@ -179,7 +179,7 @@
       new-qs
       (assoc :query-string new-qs))))
 
-(defmethod client/presigned-url :default
+(defmethod signing/presigned-url :default
   [{:keys [http-request op timeout service endpoint credentials]}]
   (let [req*                    (-> http-request
                                     (update :headers normalize-headers)
@@ -244,14 +244,14 @@
           (dissoc :req)
           (update :signing-params dissoc :secret-access-key)))))
 
-(defmethod client/sign-http-request "v4"
+(defmethod signing/sign-http-request "v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request))
 
-(defmethod client/sign-http-request "s3"
+(defmethod signing/sign-http-request "s3"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
 
-(defmethod client/sign-http-request "s3v4"
+(defmethod signing/sign-http-request "s3v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
