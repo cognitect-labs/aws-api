@@ -16,7 +16,7 @@
               io-filter (fn [m]
                           (cond-> (dissoc m :service)
                             (:credentials m)
-                            (update :credentials dissoc :secret-access-key)))
+                            (update :credentials dissoc :aws/secret-access-key)))
               log+ (let [beginms (System/currentTimeMillis)]
                      (fn [out]
                        (conj log {:name name

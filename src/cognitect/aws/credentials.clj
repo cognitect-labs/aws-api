@@ -23,10 +23,11 @@
 
     Credentials should be a map with the following keys:
 
-    :aws/access-key-id                      string  required
-    :aws/secret-access-key                  string  required
-    :aws/session-token                      string  optional
-    :cognitect.aws.credentials/ttl          number  optional  Time-to-live in seconds"))
+    :aws/access-key-id             string  required
+    :aws/secret-access-key         string  required
+    :aws/session-token             string  optional
+    :cognitect.aws.credentials/ttl number  optional  Time-to-live in seconds
+    :cognitect.aws.provenance      string  optional"))
 
 (defprotocol Stoppable
   (-stop [_]))
@@ -117,13 +118,13 @@
   "For internal use. Don't call directly."
   ([credentials]
    (valid-credentials credentials nil))
-  ([{:keys [aws/access-key-id aws/secret-access-key] :as credentials}
+  ([{:keys [aws/access-key-id aws/secret-access-key cognitect.aws.credentials/provenance] :as credentials}
     credential-source]
    (if (and (some-> access-key-id not-empty)
             (some-> secret-access-key not-empty))
      credentials
-     (when credential-source
-       (log/info (str "Unable to fetch credentials from " credential-source "."))
+     (when provenance
+       (log/info (str "Unable to fetch credentials from " provenance "."))
        nil))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -177,7 +178,8 @@
        (valid-credentials
         {:aws/access-key-id     (u/getenv "AWS_ACCESS_KEY_ID")
          :aws/secret-access-key (u/getenv "AWS_SECRET_ACCESS_KEY")
-         :aws/session-token     (u/getenv "AWS_SESSION_TOKEN")}
+         :aws/session-token     (u/getenv "AWS_SESSION_TOKEN")
+         ::provenance           "environment variables"}
         "environment variables")))))
 
 (defn system-property-credentials-provider
@@ -199,7 +201,8 @@
      (fetch [_]
        (valid-credentials
         {:aws/access-key-id     (u/getProperty "aws.accessKeyId")
-         :aws/secret-access-key (u/getProperty "aws.secretKey")}
+         :aws/secret-access-key (u/getProperty "aws.secretKey")
+         ::provenance           "system properties"}
         "system properties")))))
 
 (defn profile-credentials-provider
@@ -235,7 +238,9 @@
               (valid-credentials
                {:aws/access-key-id     (get profile "aws_access_key_id")
                 :aws/secret-access-key (get profile "aws_secret_access_key")
-                :aws/session-token     (get profile "aws_session_token")}
+                :aws/session-token     (get profile "aws_session_token")
+                ::provenance           "aws profiles file"
+                :aws.profile           profile-name}
                "aws profiles file"))
             (catch Throwable t
               (log/error t "Error fetching credentials from aws profiles file")))))))))
@@ -274,7 +279,8 @@
           {:aws/access-key-id     (:AccessKeyId creds)
            :aws/secret-access-key (:SecretAccessKey creds)
            :aws/session-token     (:Token creds)
-           ::ttl                  (calculate-ttl creds)}
+           ::ttl                  (calculate-ttl creds)
+           ::provenance           "ecs container"}
           "ecs container"))))))
 
 (defn instance-profile-credentials-provider
@@ -295,6 +301,7 @@
           {:aws/access-key-id     (:AccessKeyId creds)
            :aws/secret-access-key (:SecretAccessKey creds)
            :aws/session-token     (:Token creds)
+           ::provenance           "ec2 instance"
            ::ttl                  (calculate-ttl creds)}
           "ec2 instance"))))))
 
@@ -328,7 +335,8 @@
   (reify CredentialsProvider
     (fetch [_]
       {:aws/access-key-id     access-key-id
-       :aws/secret-access-key secret-access-key})))
+       :aws/secret-access-key secret-access-key
+       ::provenance           "provided by user"})))
 
 (defn fetch-async
   "Returns a channel that will produce the result of calling fetch on
