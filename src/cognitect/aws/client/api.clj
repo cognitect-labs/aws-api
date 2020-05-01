@@ -71,36 +71,24 @@
      (format
       "DEPRECATION NOTICE: :endpoint-override string is deprecated.\nUse {:endpoint-override {:hostname \"%s\"}} instead."
       endpoint-override)))
-  (let [service              (service/service-description (name api))
-        http-client          (if http-client
-                               (http/resolve-http-client http-client)
-                               (shared/http-client))
-        region-provider      (cond region          (reify region/RegionProvider (fetch [_] region))
-                                   region-provider region-provider
-                                   :else           (shared/region-provider))
-        credentials-provider (or credentials-provider (shared/credentials-provider))
-        endpoint-provider    (endpoint/default-endpoint-provider
-                              api
-                              (get-in service [:metadata :endpointPrefix])
-                              endpoint-override)]
-    (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
-    (client/->Client
-     (atom {'clojure.core.protocols/datafy (fn [c]
-                                             (let [i (client/-get-info c)]
-                                               (-> i
-                                                   (select-keys [:service])
-                                                   (assoc :region (-> i :region-provider region/fetch)
-                                                          :endpoint (-> i :endpoint-provider endpoint/fetch))
-                                                   (update :endpoint select-keys [:hostname :protocols :signatureVersions])
-                                                   (update :service select-keys [:metadata])
-                                                   (assoc :ops (ops c)))))})
-     {:service              service
-      :retriable?           (or retriable? retry/default-retriable?)
-      :backoff              (or backoff retry/default-backoff)
-      :http-client          http-client
-      :endpoint-provider    endpoint-provider
-      :region-provider      region-provider
-      :credentials-provider credentials-provider})))
+  (client/->Client
+   (atom {'clojure.core.protocols/datafy (fn [c]
+                                           (let [i (client/-get-info c)]
+                                             ;; TODO: think about what this means in a world in which
+                                             ;; clients could have no api to begin with
+                                             (-> {:service (service/service-description (name api))
+                                                  :ops (ops c)
+                                                  :region (-> i :region-provider region/fetch)
+                                                  :endpoint (-> i :endpoint-provider endpoint/fetch)}
+                                                 (update :service select-keys [:metadata])
+                                                 (update :endpoint select-keys [:hostname :protocols :signatureVersions]))))})
+   {:api                  api
+    :retriable?           (or retriable? retry/default-retriable?)
+    :backoff              (or backoff retry/default-backoff)
+    :http-client          http-client
+    :endpoint-override    endpoint-override
+    :region-provider      region-provider
+    :credentials-provider credentials-provider}))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."
@@ -161,10 +149,12 @@
 
   Alpha. Subject to change."
   [client]
-  (->> client
-       client/-get-info
-       :service
-       service/docs))
+  (-> client
+      client/-get-info
+      :api
+      name
+      service/service-description
+      service/docs))
 
 (defn doc-str
   "Given data produced by `ops`, returns a string

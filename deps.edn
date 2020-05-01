@@ -13,6 +13,7 @@
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io       {:mvn/version "2.6"}
                                            org.clojure/test.check      {:mvn/version "0.10.0"}
+                                           nubank/matcher-combinators  {:mvn/version "1.5.1"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
                                            http-kit                    {:mvn/version "2.3.0"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.11.718"}

@@ -89,7 +89,9 @@
   ([data interceptors]
     (execute data interceptors (async/chan 1)))
   ([data interceptors ch]
-   (let [cf (execute-future data interceptors)]
+   (execute data interceptors (async/chan 1) {:executor (java.util.concurrent.ForkJoinPool/commonPool)}))
+  ([data interceptors ch opts]
+   (let [cf (execute-future data interceptors opts)]
      (.thenAcceptAsync cf (reify java.util.function.Consumer
                             (accept [_ m]
                               (async/put! ch m))))
