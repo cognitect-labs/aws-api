@@ -45,8 +45,7 @@
               (select-keys (:http-request (meta res)) [:uri :server-name :body]))))
     (testing "request meta includes raw response"
       (is (= {:cognitect.anomalies/category :cognitect.aws/test,
-              :cognitect.anomalies/message "test",
-              :body nil}
+              :cognitect.anomalies/message "test"}
              (:http-response (meta res)))))))
 
 (deftest test-providers

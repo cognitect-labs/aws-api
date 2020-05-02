@@ -52,7 +52,9 @@
             (let [reenter (reify BiConsumer
                             (accept [_ context t]
                               (let [context (or context (envelop-error t))]
-                                (execute* done! context (log+ context)))))]
+                                (if (:cognitect.anomalies/category context)
+                                  (done! (vary-meta context format-meta log))
+                                  (execute* done! context (log+ context))))))]
               (.whenCompleteAsync ^CompletionStage context reenter))
 
             :else

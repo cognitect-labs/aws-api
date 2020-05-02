@@ -87,17 +87,26 @@
 (def fetch-region-step
   {:name "fetch region"
    :f (fn [{:keys [executor region-provider] :as context}]
-        (flow/submit executor #(assoc context :region (region/fetch region-provider))))})
+        (flow/submit executor #(if-let [region (-> (region/fetch region-provider))]
+                                 (assoc context :region region)
+                                 {:cognitect.anomalies/category :cognitect.anomalies/fault
+                                  :cognitect.anomalies/message "Unable to fetch region"})))})
 
 (def fetch-credentials-step
   {:name "fetch credentials"
    :f (fn [{:keys [executor credentials-provider] :as context}]
-        (flow/submit executor #(assoc context :credentials (credentials/fetch credentials-provider))))})
+        (flow/submit executor #(if-let [creds (credentials/fetch credentials-provider)]
+                                 (assoc context :credentials creds)
+                                 {:cognitect.anomalies/category :cognitect.anomalies/fault
+                                  :cognitect.anomalies/message "Unable to fetch credentials"})))})
 
 (def discover-endpoint-step
   {:name "discover endpoint"
    :f (fn [{:keys [executor endpoint-provider region] :as context}]
-        (flow/submit executor #(assoc context :endpoint (endpoint/fetch endpoint-provider region))))})
+        (flow/submit executor #(let [endpoint (endpoint/fetch endpoint-provider region)]
+                                 (if (:cognitect.anomalies/category endpoint)
+                                   endpoint
+                                   (assoc context :endpoint endpoint)) )))})
 
 (def build-http-request-step
   {:name "build http request"
