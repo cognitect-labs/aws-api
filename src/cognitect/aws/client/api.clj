@@ -111,8 +111,10 @@
   :request in op-map.
 
   Alpha. Subject to change."
-  [client op-map]
-  (a/<!! (api.async/invoke client op-map)))
+  ([client op-map]
+   (a/<!! (api.async/invoke client op-map)))
+  ([client op-map steps]
+   (a/<!! (api.async/invoke client op-map steps))))
 
 (defn validate-requests
   "Given true, uses clojure.spec to validate all invoke calls on client.

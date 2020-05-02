@@ -55,7 +55,7 @@
   Alpha. Subject to change."
   ([client op-map]
    (invoke client op-map steps/default-stack))
-  ([client op-map stk]
+  ([client op-map steps]
    (let [result-chan                          (or (:ch op-map) (a/promise-chan))
          {:keys [service retriable? backoff]} (client/-get-info client)
          validation-error                     (and (get @validate-requests? client)
@@ -63,7 +63,7 @@
      (if validation-error
        (a/put! result-chan validation-error)
        (retry/with-retry
-         #(client/send-request client op-map stk)
+         #(client/send-request client op-map steps)
          result-chan
          (or (:retriable? op-map) retriable?)
          (or (:backoff op-map) backoff)))
