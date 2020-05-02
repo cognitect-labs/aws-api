@@ -4,6 +4,17 @@
    [java.util.concurrent CompletableFuture CompletionStage]
    [java.util.function Supplier Consumer BiConsumer]))
 
+(defn- format-meta [m log]
+  ;; TODO: (dchelimsky,2020-05-02) we're including :http-request and
+  ;; :http-response on the response meta to maintain
+  ;; compatibility. Consider whether there is a more general
+  ;; concept/solution for this (i.e. a means of) steps registering
+  ;; data to be added to metadata.
+  (assoc m
+         ::log log
+         :http-request (->> log (map :output) (filter :http-request) last :http-request)
+         :http-response (->> log (map :output) (filter :http-response) last :http-response)))
+
 (defn- execute*
   [done! context log]
   (loop [context context
@@ -35,7 +46,7 @@
                           (envelop-error t)))]
           (cond
             (:cognitect.anomalies/category context)
-            (done! (assoc context ::log log))
+            (done! (vary-meta context format-meta log))
 
             (instance? CompletionStage context)
             (let [reenter (reify BiConsumer
@@ -48,7 +59,7 @@
             (recur context (log+ context))))
         (-> context
             (dissoc ::queue)
-            (assoc ::log log)
+            (vary-meta format-meta log)
             done!)))))
 
 (defn execute-future

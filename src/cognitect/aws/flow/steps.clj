@@ -76,7 +76,7 @@
           (assoc context :credentials-provider (shared/credentials-provider))))})
 
 (def add-endpoint-provider-step
-  {:name "endpoint provider"
+  {:name "add endpoint provider"
    :f (fn [{:keys [api service endpoint-override] :as context}]
         (assoc context :endpoint-provider
                (endpoint/default-endpoint-provider
