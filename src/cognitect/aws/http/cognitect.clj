@@ -13,13 +13,14 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
-;; copied and modified from cognitect.http-client
+;; heavily adapted from cognitect.http-client
 
 ;; TODO reconsider pending ops check, when there are lazy request/response bodies
 
 (ns ^:skip-wiki cognitect.aws.http.cognitect
   (:require
    [cognitect.aws.http :as aws]
+   [cognitect.aws.chanutil :as chanutil]
    [clojure.core.async :refer [put!] :as a])
   (:import
    [java.net SocketTimeoutException UnknownHostException ConnectException]
@@ -29,49 +30,21 @@
    [org.eclipse.jetty.client HttpClient Socks4Proxy]
    [org.eclipse.jetty.http HttpField]
    [org.eclipse.jetty.client.api Request Response Result
-                                 Response$CompleteListener Response$HeadersListener Response$ContentListener]
+    Response$HeadersListener
+    Response$AsyncContentListener
+    Response$CompleteListener]
    [org.eclipse.jetty.client.util ByteBufferContentProvider]
+   [org.eclipse.jetty.util Callback]
    [org.eclipse.jetty.util.resource Resource]
    [org.eclipse.jetty.util.ssl SslContextFactory SslContextFactory$Client]))
 
 (set! *warn-on-reflection* true)
 
-;; begin copied from datomic.java.io.bbuf ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn empty-bbuf
-  "Returns an array-backed bbuf with pos and lim 0, cap n."
-  [n]
-  (.flip (ByteBuffer/wrap (byte-array n))))
-
-(defn ^ByteBuffer unflip
-  "Given a readable buffer, return a writable buffer that appends at
-   the end of the buffer's valid information."
-  [^ByteBuffer b]
-  (-> (.duplicate b)
-      (.position (.limit b))
-      (.limit (.capacity b))))
-
-(defn ^ByteBuffer expand-buffer
-  "Given a readable buffer buf, returns a writeable buffer with the
-   same contents as buf, plus room for extra additional bytes."
-  [^ByteBuffer buf ^long extra]
-  (let [available (- (.capacity buf) (.limit buf))]
-    (if (<= extra available)
-      (unflip buf)
-      (let [new-length (max (* 2 (.capacity buf))
-                            (+ extra (.capacity buf)))
-            new-buf (if (.isDirect buf)
-                      (ByteBuffer/allocateDirect new-length)
-                      (ByteBuffer/allocate new-length))]
-        (.put new-buf (.duplicate buf))))))
-
-(defn ^ByteBuffer append-buffer
-  "Given a readable buffer dest, and a readable buffer src, return
-   a readable buffer that has the contents dest+src."
-  [^ByteBuffer dest ^ByteBuffer src]
-  (let [^ByteBuffer result (expand-buffer dest (.remaining src))]
-      (.put result (.duplicate src))
-      (.flip result)))
-;; end copied from datomic.java.io.bbuf ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn copy-bbuf
+  [^ByteBuffer bb]
+  (-> (ByteBuffer/allocate (.remaining bb))
+      (.put bb)
+      .flip))
 
 (def method-string
   {:get "GET"
@@ -81,8 +54,11 @@
    :delete "DELETE"
    :patch "PATCH"})
 
-(def response-body?
-  (complement #{"HEAD"}))
+(defn add-request-body
+  ^Request [^Request req {:keys [body request-body-as]}]
+  ;; TODO, dispatch on request-body-as
+  (cond-> req
+    body (.content (ByteBufferContentProvider. (into-array [(.duplicate ^ByteBuffer body)])))))
 
 (defn map->jetty-request
   "Convert a Ring request map into a Jetty request. Note if :body is present
@@ -109,23 +85,7 @@
         req (if-let [to (::timeout-msec m)]
               (.timeout ^Request req to TimeUnit/MILLISECONDS)
               req)]
-    (if body
-      (.content ^Request req
-        (ByteBufferContentProvider. (into-array [(.duplicate ^ByteBuffer body)])))
-      req)))
-
-(defn- on-headers
-  "Helper for submit. Adds :status and :headers to state based on
-   response."
-  [state ^Response response]
-  (let [headers (-> (reduce (fn [m ^HttpField f]
-                              (assoc! m (.getLowerCaseName f) (.getValue f)))
-                            (transient {})
-                            (.getHeaders response))
-                    persistent!)]
-    (assoc state
-           :status (.getStatus response)
-           :headers headers)))
+    req))
 
 (defn error->category
   "Guess what categoric thing went wrong based on jetty exception.
@@ -157,47 +117,118 @@ response map if submit succeeded."
            state)
          (select-keys request [::meta])))
 
-(defprotocol IClient
-  (submit* [_ request ch]))
-
-(defn submit
+(comment
   "Submit an http request, channel will be filled with response. Returns ch.
 
-Request map:
+  Request map:
 
-:server-name        string
-:server-port         integer
-:uri                string
-:query-string       string, optional
-:request-method     :get/:post/:put/:head
-:scheme             :http or :https
-:headers            map from downcased string to string
-:body               ByteBuffer, optional
-:cognitect.http-client/timeout-msec   opt, total request send/receive timeout
-:cognitect.http-client/meta           opt, data to be added to the response map
+  :server-name        string
+  :server-port         integer
+  :uri                string
+  :query-string       string, optional
+  :request-method     :get/:post/:put/:head
+  :scheme             :http or :https
+  :headers            map from downcased string to string
+  :body               ByteBuffer, optional
+  :cognitect.http-client/timeout-msec   opt, total request send/receive timeout
+  :cognitect.http-client/meta           opt, data to be added to the response map
 
-content-type must be specified in the headers map
-content-length is derived from the ByteBuffer passed to body
+  content-type must be specified in the headers map
+  content-length is derived from the ByteBuffer passed to body
 
-Response map:
+  Response map:
 
-:status              integer HTTP status code
-:body                ByteBuffer, optional
-:header              map from downcased string to string
-:cognitect.http-client/meta           opt, data from the request
+  :status              integer HTTP status code
+  :body                ByteBuffer, optional
+  :header              map from downcased string to string
+  :cognitect.http-client/meta           opt, data from the request
 
-On error, response map is per cognitect.anomalies"
-  ([client request]
-     (submit client request (a/chan 1)))
-  ([client request ch]
-   {:pre [(every? #(contains? request %) [:server-name
-                                          :server-port
-                                          :uri
-                                          :request-method
-                                          :scheme])]}
-    ;; Not Clojure 1.8 compatible. Using :pre for now
-    ;; (s/assert ::submit-request request)
-   (submit* client request ch)))
+  On error, response map is per cognitect.anomalies")
+
+(defmulti response-listener
+  "attach callbacks to jetty-request and return
+   a fn of jetty Result"
+  (fn [jetty-req request ch pending-ops]
+    (get request :response-body-as :inputstream)))
+
+(defn headers
+  [^Response response]
+  (-> (reduce (fn [m ^HttpField f]
+                (assoc! m (.getLowerCaseName f) (.getValue f)))
+              (transient {})
+              (.getHeaders response))
+      persistent!))
+
+(defn respond!
+  [ch latch {:keys [response-body-as] :as request} body]
+  (reify Response$HeadersListener
+    (onHeaders [_ response]
+      (when (compare-and-set! latch false true)
+        (put! ch (merge {:status (.getStatus response)
+                      :headers (headers response)
+                      :body body
+                      :response-body-as response-body-as}
+                     (select-keys request [::meta])))))))
+
+(defn content->ch
+  [ch]
+  (reify Response$AsyncContentListener
+    (onContent [_ response content callback]
+      (put! ch (copy-bbuf content)
+            ;; signal Jetty when put! into channel completes
+            #(if %
+               (.succeeded callback)
+               ;; user closed InputStream
+               (.failed callback (java.nio.channels.AsynchronousCloseException.)))))))
+
+(defmethod response-listener
+  :chan
+  [^Request jr request respch pending-ops]
+  ;; HTTP makes it possible to receive a response before the fully sending the request.
+  ;; AWS always checks request checksum, so this possibility does not have to be accounted for
+
+  ;; However, it is possible to fail before receiving response headers,
+  ;; so keep track of whether we sent to the channel
+  (let [latch (atom false)
+        bufch (a/chan)
+        on-complete (reify Response$CompleteListener
+                      (onComplete [_ result]
+                        (when-let [ex (and (.isFailed result) (.getFailure result))]
+                          (when (compare-and-set! latch false true)
+                            (put! respch (merge (error->anomaly ex)
+                                                (select-keys request [::meta])))))
+                        ;; close channel buffer
+                        (a/close! bufch)
+                        (swap! pending-ops dec)))]
+    (-> jr
+        (.onResponseHeaders (respond! respch latch request bufch))
+        (.onResponseContentAsync (content->ch bufch)))
+    on-complete))
+
+(defmethod response-listener
+  :inputstream
+  [^Request jr request respch pending-ops]
+  ;; HTTP makes it possible to receive a response before the fully sending the request.
+  ;; AWS always checks request checksum, so this possibility does not have to be accounted for
+
+  ;; However, it is possible to fail before receiving response headers,
+  ;; so keep track of whether we sent to the channel
+  (let [latch (atom false)
+        {:keys [bufch inputstream error!]} (chanutil/async-inputstream)
+        on-complete (reify Response$CompleteListener
+                      (onComplete [_ result]
+                        (when-let [ex (and (.isFailed result) (.getFailure result))]
+                          (error! ex)
+                          (when (compare-and-set! latch false true)
+                            (put! respch (merge (error->anomaly ex)
+                                            (select-keys request [::meta])))))
+                        ;; close inputstream buffer
+                        (a/close! bufch)
+                        (swap! pending-ops dec)))]
+    (-> jr
+        (.onResponseHeaders (respond! respch latch request inputstream))
+        (.onResponseContentAsync (content->ch bufch)))
+    on-complete))
 
 (deftype Client
   [^HttpClient jetty-client pending-ops pending-ops-limit]
@@ -210,22 +241,9 @@ On error, response map is per cognitect.anomalies"
                        (select-keys request [::meta])))
        (swap! pending-ops dec))
      (try
-       (let [jr (map->jetty-request jetty-client request)
-             state (atom {})
-             jr (.onResponseHeaders jr (reify Response$HeadersListener
-                                         (onHeaders
-                                           [_ response]
-                                           (swap! state on-headers response))))
-             jr (.onResponseContent jr (reify Response$ContentListener
-                                         (onContent
-                                           [_ response content]
-                                           (swap! state on-content content))))
-             listener (reify Response$CompleteListener
-                        (onComplete
-                          [_ result]
-                          (put! ch (on-complete @state result request))
-                          (swap! pending-ops dec)))]
-         (.send jr listener))
+       (let [jr (-> (map->jetty-request jetty-client request)
+                    (add-request-body request))]
+         (.send jr (response-listener jr request ch pending-ops)))
        (catch RejectedExecutionException t
          (put! ch (merge {:cognitect.anomalies/category :cognitect.anomalies/unavailable
                           :cognitect.anomalies/message "Rejected by executor"}
@@ -277,9 +295,12 @@ On error, response map is per cognitect.anomalies"
       pending-ops-limit))))
 
 (comment
-  (a/<!! (aws/-submit c {:scheme :https
-                         :server-name "lwn.net"
-                         :server-port 443
-                         :uri "/"
-                         :request-method :get}
-                      (a/chan 1))))
+  (def c (create))
+  (def req {:scheme :https
+            :server-name "lwn.net"
+            :server-port 443
+            :uri "/"
+            :request-method :get})
+  (a/<!! (aws/-submit c req (a/chan 1)))
+
+  )
