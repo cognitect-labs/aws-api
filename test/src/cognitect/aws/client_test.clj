@@ -1,12 +1,16 @@
 (ns cognitect.aws.client-test
   (:require [clojure.test :as t :refer [deftest testing is]]
             [clojure.core.async :as a]
+            [matcher-combinators.test]
+            [cognitect.aws.credentials :as credentials]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client :as client]
+            [cognitect.aws.client.shared :as shared]
             [cognitect.aws.http :as http]
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as creds]
-            [cognitect.aws.flow :as flow]))
+            [cognitect.aws.flow :as flow]
+            [cognitect.aws.flow.default-stack :as default-stack]))
 
 (defn stub-http-client [result]
   (reify http/HttpClient
@@ -29,13 +33,8 @@
                                                       :cognitect.anomalies/message  "test"})
              :region-provider      (stub-region-provider :us-east-1)
              :credentials-provider (stub-credentials-provider
-                                    {:access-key-id     "a"
-                                     :secret-access-key "b"})})
-
-(deftest test-handle-http-response
-  (testing "returns http-response if it is an anomaly"
-    (is (= {:cognitect.anomalies/category :does-not-matter}
-           (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
+                                    {:aws/access-key-id     "a"
+                                     :aws/secret-access-key "b"})})
 
 (deftest test-request-meta
   (let [res (aws/invoke (aws/client params) {:op :ListBuckets})]
@@ -51,37 +50,71 @@
     (testing "includes flow log"
       (is (contains? (meta res) ::flow/log)))))
 
-(deftest test-providers
-  (testing "base case"
-    (let [aws-client (aws/client params)]
-      (is (= "test"
-             (:cognitect.anomalies/message
-              (aws/invoke aws-client {:op :ListBuckets}))))))
+(deftest test-credentials-resolution
+  (testing "uses shared credentials-provider by default"
+    (let [c     (aws/client {})
+          creds {:aws/access-key-id     "aki"
+                 :aws/secret-access-key "sak"}]
+      (with-redefs [shared/credentials-provider #(stub-credentials-provider creds)]
+        (is (match? creds
+                    (:credentials (aws/invoke c {} [default-stack/add-credentials-provider
+                                                    default-stack/provide-credentials])))))))
+  (testing "uses credentials-provider provided to client"
+    (let [creds {:aws/access-key-id     "aki"
+                 :aws/secret-access-key "sak"}
+          c     (aws/client {:credentials-provider (stub-credentials-provider creds)})]
+      (is (match? creds
+                  (:credentials (aws/invoke c {} [default-stack/add-credentials-provider
+                                                  default-stack/provide-credentials]))))))
+  ;; TODO:(dchelimsky,2020-05-04) client supports :region but not :credentials.
+  ;; Consider supporting credentials as well.
   (testing "nil creds (regression test - should not hang)"
-    (let [aws-client (aws/client (assoc params
-                                        :credentials-provider
-                                        (stub-credentials-provider nil)))]
+    (let [c (aws/client {:credentials-provider (stub-credentials-provider nil)})]
       (is (re-find #"^Unable to fetch credentials"
                    (:cognitect.anomalies/message
-                    (aws/invoke aws-client {:op :ListBuckets}))))))
+                    (aws/invoke c {}
+                                [default-stack/add-credentials-provider
+                                 default-stack/provide-credentials]))))))
   (testing "empty creds (regression test - should not hang)"
-    (let [aws-client (aws/client (assoc params
-                                        :credentials-provider
-                                        (stub-credentials-provider {})))]
-      (is (= "test"
-             (:cognitect.anomalies/message
-              (aws/invoke aws-client {:op :ListBuckets}))))))
-  (testing "nil region (regression test - should not hang)"
-    (let [aws-client (aws/client (assoc params
-                                        :region-provider
-                                        (stub-region-provider nil)))]
+    (let [c (aws/client {:credentials-provider (stub-credentials-provider {})})]
+      (is (re-find #"^Unable to fetch credentials"
+                   (:cognitect.anomalies/message
+                    (aws/invoke c {}
+                                [default-stack/add-credentials-provider
+                                 default-stack/provide-credentials])))))))
+
+(deftest test-region-resolution
+  (testing "uses shared region-provider by default"
+    (let [c (aws/client {})]
+      (with-redefs [shared/region-provider #(region/basic-region-provider "a-region")]
+        (is (= "a-region"
+               (:region (aws/invoke c {} [default-stack/add-region-provider
+                                          default-stack/provide-region])))))))
+  (testing "uses region supplied to client"
+    (let [c (aws/client {:region "a-region"})]
+      (is (= "a-region"
+             (:region (aws/invoke c {} [default-stack/add-region-provider
+                                        default-stack/provide-region]))))))
+  (testing "uses region-provider supplied to client"
+    (let [c (aws/client {:region-provider (region/basic-region-provider "a-region")})]
+      (is (= "a-region"
+             (:region (aws/invoke c {} [default-stack/add-region-provider
+                                        default-stack/provide-region]))))))
+  (testing "anomaly when region is nil (regression test - should not hang)"
+    (let [c (aws/client (assoc params
+                               :region-provider
+                               (stub-region-provider nil)))]
       (is (re-find #"^Unable to fetch region"
                    (:cognitect.anomalies/message
-                    (aws/invoke aws-client {:op :ListBuckets}))))))
-  (testing "empty region (regression test - should not hang)"
-    (let [aws-client (aws/client (assoc params
-                                        :region-provider
-                                        (stub-region-provider "")))]
+                    (aws/invoke c {} [default-stack/add-region-provider
+                                      default-stack/provide-region]))))))
+  (testing "anomaly when region is empty (regression test - should not hang)"
+    (let [c (aws/client (assoc params
+                               :region-provider
+                               (stub-region-provider "")))]
       (is (re-find #"^No known endpoint."
                    (:cognitect.anomalies/message
-                    (aws/invoke aws-client {:op :ListBuckets})))))))
+                    (aws/invoke c {} [default-stack/add-region-provider
+                                      default-stack/provide-region
+                                      default-stack/add-endpoint-provider
+                                      default-stack/provide-endpoint])))))))

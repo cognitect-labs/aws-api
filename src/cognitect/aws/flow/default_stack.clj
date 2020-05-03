@@ -59,12 +59,10 @@
 
 (def add-region-provider
   {:name "add region provider"
-   :f (fn [{:keys [region region-provider] :as context}]
-        (assoc context :region-provider
-               (cond
-                 region          (reify region/RegionProvider (fetch [_] region))
-                 region-provider  region-provider
-                 :else           (shared/region-provider))))})
+   :f (fn [{:keys [region-provider] :as context}]
+        (if (:region-provider context)
+          context
+          (assoc context :region-provider (shared/region-provider))))})
 
 (def add-credentials-provider
   {:name "add credentials provider"
@@ -93,7 +91,8 @@
 (def provide-credentials
   {:name "provide credentials"
    :f (fn [{:keys [executor credentials-provider] :as context}]
-        (flow/submit executor #(if-let [creds (credentials/fetch credentials-provider)]
+        (flow/submit executor #(if-let [creds (credentials/valid-credentials
+                                               (credentials/fetch credentials-provider))]
                                  (assoc context :credentials creds)
                                  {:cognitect.anomalies/category :cognitect.anomalies/fault
                                   :cognitect.anomalies/message "Unable to fetch credentials"})))})

@@ -88,7 +88,9 @@
     :backoff              (or backoff retry/default-backoff)
     :http-client          http-client
     :endpoint-override    endpoint-override
-    :region-provider      region-provider
+    :region-provider      (or region-provider
+                              (and region
+                                   (region/basic-region-provider region)))
     :credentials-provider credentials-provider}))
 
 (defn default-http-client
