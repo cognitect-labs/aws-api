@@ -32,14 +32,14 @@
     port     (assoc :server-port port)
     path     (assoc :uri path)))
 
-(def load-service-step
+(def load-service
   {:name "load service"
    :f (fn [{:keys [api] :as context}]
         (let [service (service/service-description (name api))]
           (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
           (assoc context :service service)))})
 
-(def check-op-step
+(def check-op
   {:name "check op"
    :f (fn [{:keys [op service] :as context}]
         (if-not (contains? (:operations service) op)
@@ -48,7 +48,7 @@
                                                           :operation op})}
           context))})
 
-(def add-http-provider-step
+(def add-http-client
   {:name "add http provider"
    :f (fn [context]
         (update context :http-client
@@ -57,7 +57,7 @@
                     (http/resolve-http-client c)
                     (shared/http-client)))))})
 
-(def add-region-provider-step
+(def add-region-provider
   {:name "add region provider"
    :f (fn [{:keys [region region-provider] :as context}]
         (assoc context :region-provider
@@ -66,14 +66,14 @@
                  region-provider  region-provider
                  :else           (shared/region-provider))))})
 
-(def add-credentials-provider-step
+(def add-credentials-provider
   {:name "add credentials provider"
    :f (fn [context]
         (if (:credentials-provider context)
           context
           (assoc context :credentials-provider (shared/credentials-provider))))})
 
-(def add-endpoint-provider-step
+(def add-endpoint-provider
   {:name "add endpoint provider"
    :f (fn [{:keys [api service endpoint-override] :as context}]
         (assoc context :endpoint-provider
@@ -82,58 +82,58 @@
                 (get-in service [:metadata :endpointPrefix])
                 endpoint-override)))})
 
-(def fetch-region-step
-  {:name "fetch region"
+(def provide-region
+  {:name "provide region"
    :f (fn [{:keys [executor region-provider] :as context}]
         (flow/submit executor #(if-let [region (-> (region/fetch region-provider))]
                                  (assoc context :region region)
                                  {:cognitect.anomalies/category :cognitect.anomalies/fault
                                   :cognitect.anomalies/message "Unable to fetch region"})))})
 
-(def fetch-credentials-step
-  {:name "fetch credentials"
+(def provide-credentials
+  {:name "provide credentials"
    :f (fn [{:keys [executor credentials-provider] :as context}]
         (flow/submit executor #(if-let [creds (credentials/fetch credentials-provider)]
                                  (assoc context :credentials creds)
                                  {:cognitect.anomalies/category :cognitect.anomalies/fault
                                   :cognitect.anomalies/message "Unable to fetch credentials"})))})
 
-(def discover-endpoint-step
-  {:name "discover endpoint"
+(def provide-endpoint
+  {:name "provide endpoint"
    :f (fn [{:keys [executor endpoint-provider region] :as context}]
         (flow/submit executor #(let [endpoint (endpoint/fetch endpoint-provider region)]
                                  (if (:cognitect.anomalies/category endpoint)
                                    endpoint
                                    (assoc context :endpoint endpoint)) )))})
 
-(def build-http-request-step
+(def build-http-request
   {:name "build http request"
    :f (fn [{:keys [service] :as context}]
         (assoc context :http-request (client/build-http-request service context)))})
 
-(def add-endpoint-step
+(def add-endpoint
   {:name "add endpoint"
    :f (fn [{:keys [endpoint] :as context}]
         (update context :http-request with-endpoint endpoint))})
 
-(def body-to-byte-buffer-step
+(def body-to-byte-buffer
   {:name "body to ByteBuffer"
    :f #(update-in % [:http-request :body] util/->bbuf)})
 
-(def http-interceptors-step
+(def http-interceptors
   {:name "http interceptors"
    :f (fn [{:keys [service] :as context}]
         (update context :http-request
                 (fn [r]
                   (interceptors/modify-http-request service context r))))})
 
-(def sign-request-step
+(def sign-request
   {:name "sign request"
    :f (fn [{:keys [service endpoint credentials http-request] :as  context}]
         (let [signed (signing/sign-http-request service endpoint credentials http-request)]
           (assoc context :http-request signed)))})
 
-(def send-request-step
+(def send-request
   {:name "send request"
    :f (fn [{:keys [http-client http-request] :as context}]
         (let [cf (java.util.concurrent.CompletableFuture.)
@@ -144,26 +144,28 @@
           (a/take! resp-ch fulfill-future!)
           cf))})
 
-(def decode-response-step
+(def decode-response
   {:name "decode response"
    :f (fn [{:keys [service http-response] :as context}]
         (client/handle-http-response service context http-response))})
 
 (def default-stack
-  [load-service-step
-   check-op-step
-   add-http-provider-step
-   add-region-provider-step
-   add-credentials-provider-step
-   add-endpoint-provider-step
+  [load-service              ;; resolution
+   check-op                  ;; validation
+   add-http-client           ;; resolution
+   add-region-provider       ;; resolution
+   add-credentials-provider  ;; resolution
+   add-endpoint-provider     ;; resolution
+   provide-region            ;; resolution
+   provide-credentials       ;; resolution
+   provide-endpoint          ;; resolution
 
-   fetch-region-step
-   fetch-credentials-step
-   discover-endpoint-step
-   build-http-request-step
-   add-endpoint-step
-   body-to-byte-buffer-step
-   http-interceptors-step
-   sign-request-step
-   send-request-step
-   decode-response-step])
+   build-http-request        ;; process
+   add-endpoint              ;; process / modification
+   body-to-byte-buffer       ;; process / modification
+   http-interceptors         ;; process / modification
+   sign-request              ;; process / modification
+
+   send-request              ;; action
+   decode-response           ;; post-process
+   ])

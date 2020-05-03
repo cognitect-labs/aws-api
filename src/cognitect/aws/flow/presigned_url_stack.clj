@@ -8,24 +8,24 @@
 
 (set! *warn-on-reflection* true)
 
-(def add-presigned-query-string-step
+(def add-presigned-query-string
   {:name "add presigned query-string"
    :f (fn [context]
         (select-keys (signing/presigned-url context) [:presigned-url :cognitect.aws.signing/basis]))})
 
 (def presigned-url-stack
   "Returns a map of :presigned-url"
-  [default-stack/load-service-step
-   default-stack/check-op-step
-   default-stack/add-http-provider-step
-   default-stack/add-region-provider-step
-   default-stack/add-credentials-provider-step
-   default-stack/add-endpoint-provider-step
-   default-stack/fetch-region-step
-   default-stack/fetch-credentials-step
-   default-stack/discover-endpoint-step
-   default-stack/build-http-request-step
-   default-stack/add-endpoint-step
-   default-stack/body-to-byte-buffer-step
-   default-stack/http-interceptors-step
-   add-presigned-query-string-step])
+  [default-stack/load-service
+   default-stack/check-op
+   default-stack/add-http-client
+   default-stack/add-region-provider
+   default-stack/add-credentials-provider
+   default-stack/add-endpoint-provider
+   default-stack/provide-region
+   default-stack/provide-credentials
+   default-stack/provide-endpoint
+   default-stack/build-http-request
+   default-stack/add-endpoint
+   default-stack/body-to-byte-buffer
+   default-stack/http-interceptors
+   add-presigned-query-string])
