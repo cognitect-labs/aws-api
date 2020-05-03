@@ -111,8 +111,8 @@
    :f (fn [{:keys [service] :as context}]
         (assoc context :http-request (client/build-http-request service context)))})
 
-(def add-endpoint
-  {:name "add endpoint"
+(def apply-endpoint
+  {:name "apply endpoint"
    :f (fn [{:keys [endpoint] :as context}]
         (update context :http-request with-endpoint endpoint))})
 
@@ -161,7 +161,7 @@
    provide-endpoint          ;; resolution
 
    build-http-request        ;; process
-   add-endpoint              ;; process / modification
+   apply-endpoint              ;; process / modification
    body-to-byte-buffer       ;; process / modification
    http-interceptors         ;; process / modification
    sign-request              ;; process / modification

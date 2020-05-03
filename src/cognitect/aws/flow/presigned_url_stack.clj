@@ -25,7 +25,7 @@
    default-stack/provide-credentials
    default-stack/provide-endpoint
    default-stack/build-http-request
-   default-stack/add-endpoint
+   default-stack/apply-endpoint
    default-stack/body-to-byte-buffer
    default-stack/http-interceptors
    add-presigned-query-string])
