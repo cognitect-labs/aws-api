@@ -5,7 +5,7 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
-            [cognitect.aws.flow.steps :as steps]
+            [cognitect.aws.flow.default-stack :as default-stack]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.service :as service]
             [cognitect.aws.dynaload :as dynaload]))
@@ -54,7 +54,7 @@
 
   Alpha. Subject to change."
   ([client op-map]
-   (invoke client op-map steps/default-stack))
+   (invoke client op-map default-stack/default-stack))
   ([client op-map steps]
    (let [result-chan                          (or (:ch op-map) (a/promise-chan))
          {:keys [service retriable? backoff]} (client/-get-info client)

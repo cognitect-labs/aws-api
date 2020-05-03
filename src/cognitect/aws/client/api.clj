@@ -12,7 +12,7 @@
             [cognitect.aws.client.shared :as shared]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.endpoint :as endpoint]
-            [cognitect.aws.flow.steps :as steps]
+            [cognitect.aws.flow.default-stack :as default-stack]
             [cognitect.aws.http :as http]
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
@@ -216,6 +216,6 @@
   ;; NOTE: (dchelimsky,2020-05-02) getting this via invoke is a bit goofy -
   ;; did this in the transition to execution flow model in order to preserve
   ;; this API.
-  (let [http-client (:http-client (invoke aws-client {} [steps/add-http-provider-step]))]
+  (let [http-client (:http-client (invoke aws-client {} [default-stack/add-http-provider-step]))]
     (when-not (#'shared/shared-http-client? http-client)
       (http/stop http-client))))

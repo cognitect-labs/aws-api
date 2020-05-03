@@ -3,13 +3,13 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.http :as http]
             [cognitect.aws.client.api :as aws]
-            [cognitect.aws.flow.steps :as steps]
+            [cognitect.aws.flow.default-stack :as default-stack]
             [cognitect.aws.client.shared :as shared]))
 
 (deftest test-underlying-http-client
   (testing "defaults to shared client"
     (let [contexts (repeatedly 5 #(let [c (aws/client {:api :s3 :region "us-east-1"})]
-                                    (aws/invoke c {} [steps/add-http-provider-step])))]
+                                    (aws/invoke c {} [default-stack/add-http-provider-step])))]
       (is (= #{(shared/http-client)}
              (into #{(shared/http-client)}
                    (->> contexts (map :http-client))))))))

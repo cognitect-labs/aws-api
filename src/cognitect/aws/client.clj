@@ -76,62 +76,62 @@
   (System/setProperty "aws.profile" "REDACTED")
   (set! *print-level* 10)
 
-  (def c (cognitect.aws.client.api/client {:api :s3}))
+  (require '[cognitect.aws.client.api :as aws])
+  (def c (aws/client {:api :s3}))
 
-  (cognitect.aws.client.api/invoke c {:op :ListBuckets})
+  (aws/invoke c {:op :ListBuckets})
 
   (defn summarize-log
     [log]
     (mapv #(select-keys % [:name :ms]) log))
 
-  (-> @(flow-request c {:op :ListBuckets} default-stack)
-      (update ::flow/log summarize-log))
+  (-> (aws/invoke c {:op :ListBuckets})
+      meta
+      ::flow/log
+      summarize-log)
 
-  (def bucket (-> *1 :Buckets first :Name))
+  (def bucket (-> (aws/invoke c {:op :ListBuckets}) :Buckets first :Name))
 
-  (-> @(flow-request c {:op :ListObjects
-                        :request {:Bucket bucket}
-                        :timeout 30}
-                     default-stack)
-      (update ::flow/log summarize-log))
+  (aws/invoke c {:op :ListObjects
+                 :request {:Bucket bucket}
+                 :timeout 30})
 
-  (-> @(flow-request c {:op :ListObjectsV2
-                        :request {:Bucket bucket}
-                        :timeout 30}
-                     default-stack)
-      (update ::flow/log summarize-log))
+  (aws/invoke c {:op :ListObjectsV2
+                 :request {:Bucket bucket}
+                 :timeout 30})
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; presigned requests
+
+  (require '[cognitect.aws.flow.presigned-url-stack :as presigned-url-stack])
 
   (defn curl [url] (clojure.java.shell/sh "curl" url))
 
   ;; ListBuckets
   (def list-buckets-url
-    (:presigned-url (dissoc @(flow-request c {:op :ListBuckets
-                                              :timeout 30}
-                                           presigned-url-stack)
-                            ::flow/log)))
+    (:presigned-url (aws/invoke c {:op :ListBuckets
+                       :timeout 30}
+                    cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
 
   (curl list-buckets-url)
 
   ;; assumes bucket is defined from ListObjects
 
   (def list-objects-url
-    (:presigned-url @(flow-request c {:op :ListObjects
-                                      :request {:Bucket bucket}
-                                      :timeout 30}
-                                   presigned-url-stack)))
+    (:presigned-url (aws/invoke c {:op :ListObjects
+                                   :request {:Bucket bucket}
+                                   :timeout 30}
+                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
 
   (curl list-objects-url)
 
   ;; ListObjectsV2
 
   (def list-objects-v2-url
-    (:presigned-url @(flow-request c {:op :ListObjectsV2
-                                      :request {:Bucket bucket}
-                                      :timeout 30}
-                                   presigned-url-stack)))
+    (:presigned-url (aws/invoke c {:op :ListObjectsV2
+                                   :request {:Bucket bucket}
+                                   :timeout 30}
+                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
 
   (curl list-objects-v2-url)
 

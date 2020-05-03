@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns ^:skip-wiki cognitect.aws.flow.steps
+(ns ^:skip-wiki cognitect.aws.flow.default-stack
   "Impl, don't call directly."
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
@@ -32,8 +32,6 @@
     port     (assoc :server-port port)
     path     (assoc :uri path)))
 
-;;; steps
-;;;
 (def load-service-step
   {:name "load service"
    :f (fn [{:keys [api] :as context}]
@@ -151,19 +149,6 @@
    :f (fn [{:keys [service http-response] :as context}]
         (client/handle-http-response service context http-response))})
 
-(def add-presigned-query-string-step
-  {:name "add presigned query-string"
-   :f (fn [{:keys [op service endpoint credentials http-request] :as context}]
-        (let [{:keys [presigned-url cognitect.aws.signing/basis]} (signing/presigned-url context)]
-          (assoc context
-                 :presigned-url presigned-url
-                 :cognitect.aws.signing/basis basis)))})
-
-(def filter-presigned-url-result
-  {:name "filter presigned url result"
-   :f (fn [context]
-        (select-keys context [:presigned-url :cognitect.aws.signing/basis]))})
-
 (def default-stack
   [load-service-step
    check-op-step
@@ -182,22 +167,3 @@
    sign-request-step
    send-request-step
    decode-response-step])
-
-(def presigned-url-stack
-  "Returns a map of :presigned-url"
-  [load-service-step
-   check-op-step
-   add-http-provider-step
-   add-region-provider-step
-   add-credentials-provider-step
-   add-endpoint-provider-step
-
-   fetch-region-step
-   fetch-credentials-step
-   discover-endpoint-step
-   build-http-request-step
-   add-endpoint-step
-   body-to-byte-buffer-step
-   http-interceptors-step
-   add-presigned-query-string-step
-   filter-presigned-url-result])
