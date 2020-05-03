@@ -1,11 +1,12 @@
 (ns cognitect.aws.client-test
   (:require [clojure.test :as t :refer [deftest testing is]]
+            [clojure.core.async :as a]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client :as client]
             [cognitect.aws.http :as http]
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as creds]
-            [clojure.core.async :as a]))
+            [cognitect.aws.flow :as flow]))
 
 (defn stub-http-client [result]
   (reify http/HttpClient
@@ -36,17 +37,19 @@
     (is (= {:cognitect.anomalies/category :does-not-matter}
            (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
 
-(deftest test-meta
+(deftest test-request-meta
   (let [res (aws/invoke (aws/client params) {:op :ListBuckets})]
-    (testing "request meta includes :http-request"
+    (testing "includes :http-request"
       (is (=  {:uri "/"
                :server-name "s3.amazonaws.com"
                :body nil}
               (select-keys (:http-request (meta res)) [:uri :server-name :body]))))
-    (testing "request meta includes raw response"
+    (testing "includes raw response"
       (is (= {:cognitect.anomalies/category :cognitect.aws/test,
               :cognitect.anomalies/message "test"}
-             (:http-response (meta res)))))))
+             (:http-response (meta res)))))
+    (testing "includes flow log"
+      (is (contains? (meta res) ::flow/log)))))
 
 (deftest test-providers
   (testing "base case"
