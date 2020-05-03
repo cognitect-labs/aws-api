@@ -73,24 +73,24 @@
     (flow/execute request stk)))
 
 (comment
+  (require '[cognitect.aws.client.api :as aws]
+           '[cognitect.aws.diagnostics :as diagnostics])
+
   (System/setProperty "aws.profile" "REDACTED")
+
   (set! *print-level* 10)
 
-  (require '[cognitect.aws.client.api :as aws])
   (def c (aws/client {:api :s3}))
 
   (aws/invoke c {:op :ListBuckets})
 
-  (defn summarize-log
-    [log]
-    (mapv #(select-keys % [:name :ms]) log))
+  (def list-buckets-response (aws/invoke c {:op :ListBuckets}))
 
-  (-> (aws/invoke c {:op :ListBuckets})
-      meta
-      ::flow/log
-      summarize-log)
+  (diagnostics/summarize-log list-buckets-response)
 
-  (def bucket (-> (aws/invoke c {:op :ListBuckets}) :Buckets first :Name))
+  (diagnostics/trace-key list-buckets-response :http-request)
+
+  (def bucket (-> list-buckets-response :Buckets first :Name))
 
   (aws/invoke c {:op :ListObjects
                  :request {:Bucket bucket}
@@ -110,12 +110,13 @@
   ;; ListBuckets
   (def list-buckets-url
     (:presigned-url (aws/invoke c {:op :ListBuckets
-                       :timeout 30}
-                    cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
+                                   :timeout 30}
+                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
 
   (curl list-buckets-url)
 
-  ;; assumes bucket is defined from ListObjects
+  ;; ListObjects
+  ;; - assumes bucket is defined from ListBuckets, above
 
   (def list-objects-url
     (:presigned-url (aws/invoke c {:op :ListObjects
