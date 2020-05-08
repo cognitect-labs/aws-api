@@ -31,12 +31,13 @@
 
 (deftest test-xml-read
   (testing "removes whitespace-only nodes, preserving whitespace in single text nodes"
-    (let [parsed (util/xml-read "<outer>
+    (let [parsed (util/xml-read (java.io.ByteArrayInputStream.
+                                 (.getBytes "<outer>
                                   outer-value
                                   <inner>
                                      inner-value
                                   </inner>
-                                </outer>")]
+                                </outer>")))]
       (is (= 2 (count (-> parsed :content))))
       (is (re-matches #"\n\s+outer-value\s+" (-> parsed :content first)))
       (is (= 1 (count (-> parsed :content last :content))))

@@ -232,23 +232,21 @@
           {}
           (keys members)))
 
-(defn parse-body
+(defn parse-body*
   "Parse the HTTP response body for response data."
-  [output-shape body parse-fn]
+  [output-shape {:keys [body response-body-as]} parse-fn]
   (if-let [payload-name (:payload output-shape)]
     (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
       (condp = (:type body-shape)
-        "blob" {(keyword payload-name) (util/bbuf->input-stream body)}
-        "string" (util/bbuf->str body)
-        {(keyword payload-name) (parse-fn body-shape (util/bbuf->str body))}))
+        "blob" {(keyword payload-name) body}
+        "string" #_(util/bbuf->str body) (throw (Exception. "dead branch?"))
+        {(keyword payload-name) (parse-fn body-shape body)}))
     ;; No payload
-    (let [body-str (util/bbuf->str body)]
-      (when-not (str/blank? body-str)
-        (parse-fn output-shape body-str)))))
+    (parse-fn output-shape body)))
 
 (defn parse-http-response
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}
-   parse-body-str
+   parse-success
    parse-error]
   (if (:cognitect.anomalies/category http-response)
     http-response
@@ -257,5 +255,5 @@
       (if (< status 400)
         (merge (parse-non-payload-attrs output-shape http-response)
                (when output-shape
-                 (parse-body output-shape body parse-body-str)))
+                 (parse-body* output-shape http-response parse-success)))
         (parse-error http-response)))))

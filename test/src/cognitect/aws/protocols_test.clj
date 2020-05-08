@@ -403,7 +403,8 @@
                                                                              (assoc m (name k) v))
                                                                            {}
                                                                            (:headers response))
-                                                       :body    (util/->bbuf (:body response))})]
+                                                       :response-body-as :inputstream
+                                                       :body   (java.io.ByteArrayInputStream. (.getBytes (:body response)))})]
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))

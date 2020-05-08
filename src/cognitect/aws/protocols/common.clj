@@ -35,8 +35,8 @@
 
 (defn xml-parse-error
   [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body util/bbuf->str util/xml-read util/xml->map)))
+  (parse-error* http-response (some-> body util/xml-read util/xml->map)))
 
 (defn json-parse-error
   [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body util/bbuf->str (json/read-str :key-fn keyword))))
+  (parse-error* http-response (some-> body (json/read :key-fn keyword))))
