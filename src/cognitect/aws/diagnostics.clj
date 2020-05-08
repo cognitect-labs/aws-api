@@ -7,9 +7,9 @@
 
 (set! *warn-on-reflection* true)
 
-(defn execution-log
+(defn log
   ([result]
-   (execution-log result
+   (log result
                   (fn [entry]
                     (-> entry
                         (update :input dissoc :service)
@@ -21,12 +21,12 @@
 (defn summarize-log
   [result]
   (->> result
-       execution-log
+       log
        (mapv #(select-keys % [:name :ms]))))
 
 (defn trace-key [result k]
   (->> result
-       (execution-log identity)
+       (log identity)
        (map #(update % :input select-keys [k]))
        (map #(update % :output select-keys [k]))
        (remove #(= (:input %) (:output %)))

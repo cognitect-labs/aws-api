@@ -3,6 +3,7 @@
             [clojure.core.async :as a]
             [matcher-combinators.test]
             [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.diagnostics :as diagnostics]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client :as client]
             [cognitect.aws.client.shared :as shared]
@@ -118,3 +119,58 @@
                                       default-stack/provide-region
                                       default-stack/add-endpoint-provider
                                       default-stack/provide-endpoint])))))))
+
+(def sync-anomaly-step
+  {:name "sync anomaly"
+   :f (fn [context]
+        (assoc context :cognitect.anomalies/category :cognitect.anomalies/incorrect))})
+
+(def async-anomaly-step
+  {:name "async anomaly"
+   :f (fn [{:keys [executor] :as context}]
+        (flow/submit executor
+                     #(assoc context :cognitect.anomalies/category :cognitect.anomalies/incorrect)))})
+
+(def sync-error-step
+  {:name "sync error"
+   :f (fn [_] (throw (ex-info "sync error" {})))})
+
+(def async-error-step
+  {:name "async error"
+   :f (fn [{:keys [executor] :as context}]
+        (flow/submit executor (fn [] (throw (ex-info "async error" {})))))})
+
+(defn step-named [n]
+  {:name n :f identity})
+
+(def c (aws/client {}))
+
+(deftest short-circuit-on-anomaly
+  (let [c (aws/client {})]
+    (is (match? [{:name "before anomaly"}
+                 {:name "sync anomaly"}]
+                (diagnostics/summarize-log
+                 (aws/invoke c {} [(step-named "before anomaly")
+                                   sync-anomaly-step
+                                   (step-named "after anomaly")]))))
+
+    (is (match? [{:name "before anomaly"}
+                 {:name "async anomaly"}]
+                (diagnostics/summarize-log
+                 (aws/invoke c {} [(step-named "before anomaly")
+                                   async-anomaly-step
+                                   (step-named "after anomaly")]))))
+
+    (is (match? [{:name "before error"}
+                 {:name "sync error"}]
+                (diagnostics/summarize-log
+                 (aws/invoke c {} [(step-named "before error")
+                                   sync-error-step
+                                   (step-named "after error")]))))
+
+    (is (match? [{:name "before error"}
+                 {:name "async error"}]
+                (diagnostics/summarize-log
+                 (aws/invoke c {} [(step-named "before error")
+                                   async-error-step
+                                   (step-named "after error")]))))))

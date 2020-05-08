@@ -45,15 +45,17 @@
                           (envelop-error t)))]
           (cond
             (:cognitect.anomalies/category context)
-            (done! (vary-meta context format-meta log))
+            (recur (dissoc context ::queue) (log+ context))
 
             (instance? CompletionStage context)
             (let [reenter (reify BiConsumer
                             (accept [_ context t]
                               (let [context (or context (envelop-error t))]
-                                (if (:cognitect.anomalies/category context)
-                                  (done! (vary-meta context format-meta log))
-                                  (execute* done! context (log+ context))))))]
+                                (execute* done!
+                                          (if (:cognitect.anomalies/category context)
+                                            (dissoc context ::queue)
+                                            context)
+                                          (log+ context)))))]
               (.whenCompleteAsync ^CompletionStage context reenter))
 
             :else

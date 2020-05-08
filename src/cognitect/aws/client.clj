@@ -88,7 +88,11 @@
 
   (diagnostics/summarize-log list-buckets-response)
 
+  (diagnostics/log list-buckets-response)
+
   (diagnostics/trace-key list-buckets-response :http-request)
+
+  (diagnostics/trace-key list-buckets-response :service)
 
   (def bucket (-> list-buckets-response :Buckets first :Name))
 

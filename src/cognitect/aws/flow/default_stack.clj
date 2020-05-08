@@ -152,11 +152,12 @@
   [load-service              ;; resolution
    check-op                  ;; validation
    add-http-client           ;; resolution
+
    add-region-provider       ;; resolution
-   add-credentials-provider  ;; resolution
-   add-endpoint-provider     ;; resolution
    provide-region            ;; resolution
+   add-credentials-provider  ;; resolution
    provide-credentials       ;; resolution
+   add-endpoint-provider     ;; resolution
    provide-endpoint          ;; resolution
 
    build-http-request        ;; process
