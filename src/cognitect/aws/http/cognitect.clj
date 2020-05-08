@@ -130,6 +130,7 @@ response map if submit succeeded."
   :scheme             :http or :https
   :headers            map from downcased string to string
   :body               ByteBuffer, optional
+  :response-body-as   :inputstream / :chan
   :cognitect.http-client/timeout-msec   opt, total request send/receive timeout
   :cognitect.http-client/meta           opt, data to be added to the response map
 
@@ -165,10 +166,10 @@ response map if submit succeeded."
     (onHeaders [_ response]
       (when (compare-and-set! latch false true)
         (put! ch (merge {:status (.getStatus response)
-                      :headers (headers response)
-                      :body body
-                      :response-body-as response-body-as}
-                     (select-keys request [::meta])))))))
+                         :headers (headers response)
+                         :body body
+                         :response-body-as (or response-body-as :inputstream)}
+                        (select-keys request [::meta])))))))
 
 (defn content->ch
   [ch]
