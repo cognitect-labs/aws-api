@@ -15,6 +15,11 @@
          :http-request (->> log (map :output) (filter :http-request) last :http-request)
          :http-response (->> log (map :output) (filter :http-response) last :http-response)))
 
+(defn redact-password [{:keys [credentials] :as log-entry}]
+  (cond-> log-entry
+    credentials
+    (assoc-in [:credentials :aws/secret-access-key] "REDACTED")))
+
 (defn- execute*
   [done! context log]
   (loop [context context
@@ -22,19 +27,13 @@
     (let [q (::queue context)]
       (if-let [{:keys [name f] :as interceptor} (peek q)]
         (let [input (assoc context ::queue (pop q))
-              ;; TODO (dchelimsky,2020-04-24) get rid of io-filter
+              ;; TODO (dchelimsky,2020-04-24) get rid of redact-password
               ;; once we have a log filter solution in place.
-              io-filter (fn [m]
-                          (cond-> (dissoc m :service)
-                            (:credentials m)
-                            (update :credentials dissoc :aws/secret-access-key)))
               log+ (let [beginms (System/currentTimeMillis)]
                      (fn [out]
                        (conj log {:name name
-                                  ;; TODO (dchelimsky,2020-04-24) get rid of io-filter
-                                  ;; once we have a log filter solution in place.
-                                  :input (io-filter input)
-                                  :output (io-filter out)
+                                  :input (redact-password input)
+                                  :output (redact-password out)
                                   :ms (- (System/currentTimeMillis) beginms)})))
               envelop-error (fn [t]
                               {:cognitect.anomalies/category :cognitect.anomalies/fault

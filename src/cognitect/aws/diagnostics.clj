@@ -7,8 +7,16 @@
 
 (set! *warn-on-reflection* true)
 
-(defn execution-log [result]
-  (-> result meta ::flow/log))
+(defn execution-log
+  ([result]
+   (execution-log result
+                  (fn [entry]
+                    (-> entry
+                        (update :input dissoc :service)
+                        (update :output dissoc :service)))))
+  ([result fltr]
+   (->> (::flow/log (meta result))
+        (map fltr))))
 
 (defn summarize-log
   [result]
@@ -18,7 +26,7 @@
 
 (defn trace-key [result k]
   (->> result
-       execution-log
+       (execution-log identity)
        (map #(update % :input select-keys [k]))
        (map #(update % :output select-keys [k]))
        (remove #(= (:input %) (:output %)))
