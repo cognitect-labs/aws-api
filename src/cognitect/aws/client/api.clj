@@ -24,8 +24,9 @@
 (defn client
   "Given a config map, create a client for specified api. Supported keys:
 
-  :api                  - required, this or api-descriptor required, the name of the api
-                          you want to interact with e.g. :s3, :cloudformation, etc
+  :api                  - optional, keyword name of the AWS api you want to interact
+                          with e.g. :s3, :cloudformation, etc.
+                          Must be provided to invoke if not provided here.
   :http-client          - optional, to share http-clients across aws-clients.
                           See default-http-client.
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
@@ -59,13 +60,15 @@
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
                           Defaults to cognitect.aws.retry/default-backoff.
+  :steps                - optional, execution steps. Provide this for non-standard
+                          workflows. Defaults to cognitect.aws.flow.default-stack/default-stack.
 
   By default, all clients use shared http-client, credentials-provider, and
   region-provider instances which use a small collection of daemon threads.
 
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
-           http-client]
+           http-client steps]
     :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
@@ -77,9 +80,9 @@
                                            (let [i (client/-get-info c)]
                                              ;; TODO: think about what this means in a world in which
                                              ;; clients could have no api to begin with
-                                             (-> {:service (service/service-description (name api))
-                                                  :ops (ops c)
-                                                  :region (-> i :region-provider region/fetch)
+                                             (-> {:service  (service/service-description (name api))
+                                                  :ops      (ops c)
+                                                  :region   (-> i :region-provider region/fetch)
                                                   :endpoint (-> i :endpoint-provider endpoint/fetch)}
                                                  (update :service select-keys [:metadata])
                                                  (update :endpoint select-keys [:hostname :protocols :signatureVersions]))))})
@@ -91,7 +94,8 @@
     :region-provider      (or region-provider
                               (and region
                                    (region/basic-region-provider region)))
-    :credentials-provider credentials-provider}))
+    :credentials-provider credentials-provider
+    :steps                steps}))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."
@@ -103,21 +107,22 @@
 
   Supported keys in op-map:
 
+  :api                  - required if not provided to client (see client)
   :op                   - required, keyword, the op to perform
   :request              - required only for ops that require them.
   :retriable?           - optional, defaults to :retriable? on the client.
                           See client.
   :backoff              - optional, defaults to :backoff on the client.
                           See client.
+  :steps                - optional, execution steps. Provide this for non-standard
+                          workflows. Defaults to cognitect.aws.flow.default-stack/default-stack.
 
   After invoking (cognitect.aws.client.api/validate-requests true), validates
   :request in op-map.
 
   Alpha. Subject to change."
-  ([client op-map]
-   (a/<!! (api.async/invoke client op-map)))
-  ([client op-map steps]
-   (a/<!! (api.async/invoke client op-map steps))))
+  [client op-map]
+  (a/<!! (api.async/invoke client op-map)))
 
 (defn validate-requests
   "Given true, uses clojure.spec to validate all invoke calls on client.
@@ -218,6 +223,6 @@
   ;; NOTE: (dchelimsky,2020-05-02) getting this via invoke is a bit goofy -
   ;; did this in the transition to execution flow model in order to preserve
   ;; this API.
-  (let [http-client (:http-client (invoke aws-client {} [default-stack/add-http-client]))]
+  (let [http-client (:http-client (invoke aws-client {:steps [default-stack/add-http-client]}))]
     (when-not (#'shared/shared-http-client? http-client)
       (http/stop http-client))))

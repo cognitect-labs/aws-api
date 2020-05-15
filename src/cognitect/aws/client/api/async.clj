@@ -53,18 +53,19 @@
   :ch - optional, channel to deliver the result
 
   Alpha. Subject to change."
-  ([client op-map]
-   (invoke client op-map default-stack/default-stack))
-  ([client op-map steps]
-   (let [result-chan                          (or (:ch op-map) (a/promise-chan))
-         {:keys [service retriable? backoff]} (client/-get-info client)
-         validation-error                     (and (get @validate-requests? client)
-                                                   (validate service op-map))]
-     (if validation-error
-       (a/put! result-chan validation-error)
-       (retry/with-retry
-         #(client/send-request client op-map steps)
-         result-chan
-         (or (:retriable? op-map) retriable?)
-         (or (:backoff op-map) backoff)))
-     result-chan)))
+  [client op-map]
+  (let [steps                                (or (:steps op-map)
+                                                 (:steps client)
+                                                 default-stack/default-stack)
+        result-chan                          (or (:ch op-map) (a/promise-chan))
+        {:keys [service retriable? backoff]} (client/-get-info client)
+        validation-error                     (and (get @validate-requests? client)
+                                                  (validate service op-map))]
+    (if validation-error
+      (a/put! result-chan validation-error)
+      (retry/with-retry
+        #(client/send-request client op-map steps)
+        result-chan
+        (or (:retriable? op-map) retriable?)
+        (or (:backoff op-map) backoff)))
+    result-chan))
