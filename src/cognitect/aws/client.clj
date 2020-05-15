@@ -114,8 +114,9 @@
   ;; ListBuckets
   (def list-buckets-url
     (:presigned-url (aws/invoke c {:op :ListBuckets
-                                   :timeout 30}
-                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
+                                   :timeout 30
+                                   :steps
+                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
 
   (curl list-buckets-url)
 
@@ -125,8 +126,9 @@
   (def list-objects-url
     (:presigned-url (aws/invoke c {:op :ListObjects
                                    :request {:Bucket bucket}
-                                   :timeout 30}
-                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
+                                   :timeout 30
+                                   :steps
+                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
 
   (curl list-objects-url)
 
@@ -135,8 +137,9 @@
   (def list-objects-v2-url
     (:presigned-url (aws/invoke c {:op :ListObjectsV2
                                    :request {:Bucket bucket}
-                                   :timeout 30}
-                                cognitect.aws.flow.presigned-url-stack/presigned-url-stack)))
+                                   :timeout 30
+                                   :steps
+                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
 
   (curl list-objects-v2-url)
 
