@@ -140,4 +140,14 @@
 
   (curl list-objects-v2-url)
 
+  ;; GetObject
+
+  (def get-object-url
+    (:presigned-url (aws/invoke c {:op :GetObject
+                                   :request       {:Bucket bucket :Key "hello.txt"}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
+
+  (curl get-object-url)
+
 )
