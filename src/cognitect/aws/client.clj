@@ -96,11 +96,11 @@
 
   (def bucket (-> list-buckets-response :Buckets first :Name))
 
-  (aws/invoke c {:op :ListObjects
+  (aws/invoke c {:op      :ListObjects
                  :request {:Bucket bucket}
                  :timeout 30})
 
-  (aws/invoke c {:op :ListObjectsV2
+  (aws/invoke c {:op      :ListObjectsV2
                  :request {:Bucket bucket}
                  :timeout 30})
 
@@ -113,10 +113,9 @@
 
   ;; ListBuckets
   (def list-buckets-url
-    (:presigned-url (aws/invoke c {:op :ListBuckets
-                                   :timeout 30
-                                   :steps
-                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
+    (:presigned-url (aws/invoke c {:op            :ListBuckets
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
 
   (curl list-buckets-url)
 
@@ -124,22 +123,20 @@
   ;; - assumes bucket is defined from ListBuckets, above
 
   (def list-objects-url
-    (:presigned-url (aws/invoke c {:op :ListObjects
-                                   :request {:Bucket bucket}
-                                   :timeout 30
-                                   :steps
-                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
+    (:presigned-url (aws/invoke c {:op            :ListObjects
+                                   :request       {:Bucket bucket}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
 
   (curl list-objects-url)
 
   ;; ListObjectsV2
 
   (def list-objects-v2-url
-    (:presigned-url (aws/invoke c {:op :ListObjectsV2
-                                   :request {:Bucket bucket}
-                                   :timeout 30
-                                   :steps
-                                   cognitect.aws.flow.presigned-url-stack/presigned-url-stack})))
+    (:presigned-url (aws/invoke c {:op            :ListObjectsV2
+                                   :request       {:Bucket bucket}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
 
   (curl list-objects-v2-url)
 

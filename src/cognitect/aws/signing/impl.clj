@@ -157,7 +157,7 @@
                           (get-in endpoint [:region]))})
 
 (defn signing-params
-  [op timeout {:strs [x-amz-date] :as headers-to-sign} auth-info amz-date]
+  [op expires {:strs [x-amz-date] :as headers-to-sign} auth-info amz-date]
   (assoc auth-info
          ;; TODO: we only need the op for presign, hence this
          ;; some->. Maybe there's a clearer way to express that
@@ -168,7 +168,7 @@
          :algo           "AWS4-HMAC-SHA256"
          :credential     (format "%s/%s" (:access-key-id auth-info) (credential-scope auth-info amz-date))
          :amz-date       amz-date
-         :timeout        timeout ;; seconds
+         :expires        expires ;; seconds
          :signed-headers (signed-headers-string headers-to-sign)))
 
 (defn- move-uri-qs-to-qs [req]
@@ -180,22 +180,23 @@
       (assoc :query-string new-qs))))
 
 (defmethod signing/presigned-url :default
-  [{:keys [http-request op timeout service endpoint credentials]}]
+  [{:keys [http-request op service endpoint credentials]
+    {:keys [expires]} :presigned-url}]
   (let [req*                    (-> http-request
                                     (update :headers normalize-headers)
                                     move-uri-qs-to-qs)
         amz-date                (get-in req* [:headers "x-amz-date"])
         req                     (update req* :headers dissoc "x-amz-date")
         auth-info               (auth-info service endpoint credentials)
-        signing-params          (signing-params op timeout (:headers req) auth-info amz-date)
+        signing-params          (signing-params op expires (:headers req) auth-info amz-date)
         qs-params-no-sig        (into (sorted-map)
                                       (-> signing-params
-                                          (select-keys [:op :algo :credential :amz-date :timeout :signed-headers])
+                                          (select-keys [:op :algo :credential :amz-date :expires :signed-headers])
                                           (clojure.set/rename-keys {:op             "Action"
                                                                     :algo           "X-Amz-Algorithm"
                                                                     :credential     "X-Amz-Credential"
                                                                     :amz-date       "X-Amz-Date"
-                                                                    :timeout        "X-Amz-Expires"
+                                                                    :expires        "X-Amz-Expires"
                                                                     :signed-headers "X-Amz-SignedHeaders"})))
         qs-no-sig               (format-qs qs-params-no-sig)
         {:keys [signature]

@@ -6,6 +6,7 @@
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
             [cognitect.aws.flow.default-stack :as default-stack]
+            [cognitect.aws.flow.presigned-url-stack :as presigned-url-stack]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.service :as service]
             [cognitect.aws.dynaload :as dynaload]))
@@ -44,6 +45,10 @@
         (assoc (explain-data spec request)
                :cognitect.anomalies/category :cognitect.anomalies/incorrect)))))
 
+(def ^{:private true :skip-wiki true} workflow-stacks
+  {:cognitect.aws.alpha.workflow/default       default-stack/default-stack
+   :cognitect.aws.alpha.workflow/presigned-url presigned-url-stack/presigned-url-stack})
+
 (defn invoke
   "Async version of cognitect.aws.client.api/invoke. Returns
   a core.async channel which delivers the result.
@@ -54,9 +59,10 @@
 
   Alpha. Subject to change."
   [client op-map]
-  (let [steps                                (or (:steps op-map)
-                                                 (:steps client)
-                                                 default-stack/default-stack)
+  (let [steps                                (or (:steps op-map) ;; internal use only
+                                                 (get workflow-stacks
+                                                      (or (:workflow op-map) (:workflow client))
+                                                      default-stack/default-stack))
         result-chan                          (or (:ch op-map) (a/promise-chan))
         {:keys [service retriable? backoff]} (client/-get-info client)
         validation-error                     (and (get @validate-requests? client)

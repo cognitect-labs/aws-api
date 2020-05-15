@@ -149,17 +149,17 @@
   (is (= "https://examplebucket.s3.amazonaws.com/a/path?Action=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AWSKeyId%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-Signature=8beb5653f122f71ae1d068f69823ca374d247d1e5fedb9a5c0583ba75bf958ab&X-Amz-SignedHeaders=host"
          (:presigned-url
           (signing/presigned-url
-           {:http-request {:request-method :get
-                           :server-name    "examplebucket.s3.amazonaws.com"
-                           :uri            "/a/path"
-                           :headers        {"x-amz-date" "20130524T000000Z"
-                                            "host"       "examplebucket.s3.amazonaws.com"}}
-            :op :GetSomething
-            :timeout 86400
-            :service {:metadata {:signingName "s3"}}
-            :endpoint {:region "us-east-1"}
-            :credentials {:aws/access-key-id     "AWSKeyId"
-                          :aws/secret-access-key "AWSSecretAccessKey"}})))))
+           {:http-request  {:request-method :get
+                            :server-name    "examplebucket.s3.amazonaws.com"
+                            :uri            "/a/path"
+                            :headers        {"x-amz-date" "20130524T000000Z"
+                                             "host"       "examplebucket.s3.amazonaws.com"}}
+            :op            :GetSomething
+            :presigned-url {:expires 86400}
+            :service       {:metadata {:signingName "s3"}}
+            :endpoint      {:region "us-east-1"}
+            :credentials   {:aws/access-key-id     "AWSKeyId"
+                            :aws/secret-access-key "AWSSecretAccessKey"}})))))
 
 (comment
   (t/run-tests)

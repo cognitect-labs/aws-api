@@ -60,15 +60,17 @@
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
                           Defaults to cognitect.aws.retry/default-backoff.
-  :steps                - optional, execution steps. Provide this for non-standard
-                          workflows. Defaults to cognitect.aws.flow.default-stack/default-stack.
+  :workflow             - optional, keyword indicating execution workflow.
+                          Valid values:
+                          - :cognitect.aws.alpha.workflow/default (default)
+                          - :cognitect.aws.alpha.workflow/presigned-url
 
   By default, all clients use shared http-client, credentials-provider, and
   region-provider instances which use a small collection of daemon threads.
 
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
-           http-client steps]
+           http-client workflow]
     :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
@@ -95,7 +97,7 @@
                               (and region
                                    (region/basic-region-provider region)))
     :credentials-provider credentials-provider
-    :steps                steps}))
+    :workflow             workflow}))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."
@@ -114,8 +116,10 @@
                           See client.
   :backoff              - optional, defaults to :backoff on the client.
                           See client.
-  :steps                - optional, execution steps. Provide this for non-standard
-                          workflows. Defaults to cognitect.aws.flow.default-stack/default-stack.
+  :workflow             - optional, keyword indicating execution workflow.
+                          Valid values:
+                          - :cognitect.aws.alpha.workflow/default (default)
+                          - :cognitect.aws.alpha.workflow/presigned-url
 
   After invoking (cognitect.aws.client.api/validate-requests true), validates
   :request in op-map.
