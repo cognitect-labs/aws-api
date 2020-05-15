@@ -49,7 +49,7 @@
           context))})
 
 (def add-http-client
-  {:name "add http provider"
+  {:name "add http client"
    :f (fn [context]
         (update context :http-client
                 (fn [c]
