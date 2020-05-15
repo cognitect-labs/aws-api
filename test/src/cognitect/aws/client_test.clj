@@ -101,6 +101,12 @@
       (is (= "a-region"
              (:region (aws/invoke c {} [default-stack/add-region-provider
                                         default-stack/provide-region]))))))
+  (testing "uses region provided to invoke"
+    (let [c (aws/client {:region-provider (region/basic-region-provider "a-region")})]
+      (is (= "another-region"
+             (:region (aws/invoke c {:region "another-region"}
+                                  [default-stack/add-region-provider
+                                   default-stack/provide-region]))))))
   (testing "anomaly when region is nil (regression test - should not hang)"
     (let [c (aws/client (assoc params
                                :region-provider

@@ -82,11 +82,13 @@
 
 (def provide-region
   {:name "provide region"
-   :f (fn [{:keys [executor region-provider] :as context}]
-        (flow/submit executor #(if-let [region (-> (region/fetch region-provider))]
-                                 (assoc context :region region)
-                                 {:cognitect.anomalies/category :cognitect.anomalies/fault
-                                  :cognitect.anomalies/message "Unable to fetch region"})))})
+   :f (fn [{:keys [executor region region-provider] :as context}]
+        (if region
+          context
+          (flow/submit executor #(if-let [region (-> (region/fetch region-provider))]
+                                   (assoc context :region region)
+                                   {:cognitect.anomalies/category :cognitect.anomalies/fault
+                                    :cognitect.anomalies/message "Unable to fetch region"}))))})
 
 (def provide-credentials
   {:name "provide credentials"
