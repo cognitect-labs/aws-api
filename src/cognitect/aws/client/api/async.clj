@@ -46,8 +46,9 @@
                :cognitect.anomalies/category :cognitect.anomalies/incorrect)))))
 
 (def ^{:private true :skip-wiki true} workflow-stacks
-  {:cognitect.aws.alpha.workflow/default       default-stack/default-stack
-   :cognitect.aws.alpha.workflow/presigned-url presigned-url-stack/presigned-url-stack})
+  {:cognitect.aws.alpha.workflow/default             default-stack/default-stack
+   :cognitect.aws.alpha.workflow/presigned-url       presigned-url-stack/presigned-url-stack
+   :cognitect.aws.alpha.workflow/fetch-presigned-url presigned-url-stack/fetch-presigned-url-stack})
 
 (defn invoke
   "Async version of cognitect.aws.client.api/invoke. Returns
@@ -59,7 +60,7 @@
 
   Alpha. Subject to change."
   [client op-map]
-  (let [steps                                (or (:steps op-map) ;; internal use only
+  (let [workflow-steps                       (or (:workflow-steps op-map) ;; internal use only
                                                  (get workflow-stacks
                                                       (or (:workflow op-map) (:workflow client))
                                                       default-stack/default-stack))
@@ -70,7 +71,7 @@
     (if validation-error
       (a/put! result-chan validation-error)
       (retry/with-retry
-        #(client/send-request client op-map steps)
+        #(client/send-request client op-map workflow-steps)
         result-chan
         (or (:retriable? op-map) retriable?)
         (or (:backoff op-map) backoff)))

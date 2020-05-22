@@ -94,6 +94,8 @@
 
   (diagnostics/trace-key list-buckets-response :service)
 
+  (diagnostics/trace-key list-buckets-response :credentials)
+
   (def bucket (-> list-buckets-response :Buckets first :Name))
 
   (aws/invoke c {:op      :ListObjects
@@ -111,11 +113,16 @@
 
   (defn curl [url] (clojure.java.shell/sh "curl" url))
 
+  (def c (aws/client {}))
+
   ;; ListBuckets
   (def list-buckets-url
     (:presigned-url (aws/invoke c {:op            :ListBuckets
                                    :workflow      :cognitect.aws.alpha.workflow/presigned-url
                                    :presigned-url {:expires 15}})))
+
+  (aws/invoke c {:workflow      :cognitect.aws.alpha.workflow/fetch-presigned-url
+                 :presigned-url {:url list-buckets-url}})
 
   (curl list-buckets-url)
 
@@ -143,7 +150,7 @@
   ;; GetObject
 
   (def get-object-url
-    (:presigned-url (aws/invoke c {:op :GetObject
+    (:presigned-url (aws/invoke c {:op            :GetObject
                                    :request       {:Bucket bucket :Key "hello.txt"}
                                    :workflow      :cognitect.aws.alpha.workflow/presigned-url
                                    :presigned-url {:expires 15}})))

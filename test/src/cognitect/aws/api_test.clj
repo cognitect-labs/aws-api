@@ -9,7 +9,7 @@
 (deftest test-underlying-http-client
   (testing "defaults to shared client"
     (let [contexts (repeatedly 5 #(let [c (aws/client {:api :s3 :region "us-east-1"})]
-                                    (aws/invoke c {:steps [default-stack/add-http-client]})))]
+                                    (aws/invoke c {:workflow-steps [default-stack/add-http-client]})))]
       (is (= #{(shared/http-client)}
              (into #{(shared/http-client)}
                    (->> contexts (map :http-client))))))))

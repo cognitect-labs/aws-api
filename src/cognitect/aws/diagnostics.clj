@@ -9,12 +9,12 @@
 
 (defn log
   ([result]
-   (log result
-                  (fn [entry]
-                    (-> entry
-                        (update :input dissoc :service)
-                        (update :output dissoc :service)))))
-  ([result fltr]
+   (log (fn [entry]
+          (-> entry
+              (update :input dissoc :service)
+              (update :output dissoc :service)))
+        result))
+  ([fltr result]
    (->> (::flow/log (meta result))
         (map fltr))))
 

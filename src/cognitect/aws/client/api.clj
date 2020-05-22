@@ -227,6 +227,6 @@
   ;; NOTE: (dchelimsky,2020-05-02) getting this via invoke is a bit goofy -
   ;; did this in the transition to execution flow model in order to preserve
   ;; this API.
-  (let [http-client (:http-client (invoke aws-client {:steps [default-stack/add-http-client]}))]
+  (let [http-client (:http-client (invoke aws-client {:workflow-steps [default-stack/add-http-client]}))]
     (when-not (#'shared/shared-http-client? http-client)
       (http/stop http-client))))

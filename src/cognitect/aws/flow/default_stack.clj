@@ -16,7 +16,8 @@
             [cognitect.aws.signing :as signing]
             [cognitect.aws.signing.impl] ;; implements multimethods
             [cognitect.aws.client.shared :as shared]
-            [cognitect.aws.flow :as flow]))
+            [cognitect.aws.flow :as flow]
+            [cognitect.aws.flow.credentials-stack :as credentials-stack]))
 
 (set! *warn-on-reflection* true)
 
@@ -64,13 +65,6 @@
           context
           (assoc context :region-provider (shared/region-provider))))})
 
-(def add-credentials-provider
-  {:name "add credentials provider"
-   :f (fn [context]
-        (if (:credentials-provider context)
-          context
-          (assoc context :credentials-provider (shared/credentials-provider))))})
-
 (def add-endpoint-provider
   {:name "add endpoint provider"
    :f (fn [{:keys [api service endpoint-override] :as context}]
@@ -89,15 +83,6 @@
                                    (assoc context :region region)
                                    {:cognitect.anomalies/category :cognitect.anomalies/fault
                                     :cognitect.anomalies/message "Unable to fetch region"}))))})
-
-(def provide-credentials
-  {:name "provide credentials"
-   :f (fn [{:keys [executor credentials-provider] :as context}]
-        (flow/submit executor #(if-let [creds (credentials/valid-credentials
-                                               (credentials/fetch credentials-provider))]
-                                 (assoc context :credentials creds)
-                                 {:cognitect.anomalies/category :cognitect.anomalies/fault
-                                  :cognitect.anomalies/message "Unable to fetch credentials"})))})
 
 (def provide-endpoint
   {:name "provide endpoint"
@@ -157,8 +142,7 @@
 
    add-region-provider       ;; resolution
    provide-region            ;; resolution
-   add-credentials-provider  ;; resolution
-   provide-credentials       ;; resolution
+   (credentials-stack/process-credentials)
    add-endpoint-provider     ;; resolution
    provide-endpoint          ;; resolution
 

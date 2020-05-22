@@ -51,46 +51,11 @@
     (testing "includes flow log"
       (is (contains? (meta res) ::flow/log)))))
 
-(deftest test-credentials-resolution
-  (testing "uses shared credentials-provider by default"
-    (let [c     (aws/client {})
-          creds {:aws/access-key-id     "aki"
-                 :aws/secret-access-key "sak"}]
-      (with-redefs [shared/credentials-provider #(stub-credentials-provider creds)]
-        (is (match? creds
-                    (:credentials (aws/invoke c {:steps
-                                                 [default-stack/add-credentials-provider
-                                                  default-stack/provide-credentials]})))))))
-  (testing "uses credentials-provider provided to client"
-    (let [creds {:aws/access-key-id     "aki"
-                 :aws/secret-access-key "sak"}
-          c     (aws/client {:credentials-provider (stub-credentials-provider creds)})]
-      (is (match? creds
-                  (:credentials (aws/invoke c {:steps
-                                               [default-stack/add-credentials-provider
-                                                default-stack/provide-credentials]}))))))
-  ;; TODO:(dchelimsky,2020-05-04) client supports :region but not :credentials.
-  ;; Consider supporting credentials as well.
-  (testing "nil creds (regression test - should not hang)"
-    (let [c (aws/client {:credentials-provider (stub-credentials-provider nil)})]
-      (is (re-find #"^Unable to fetch credentials"
-                   (:cognitect.anomalies/message
-                    (aws/invoke c {:steps
-                                   [default-stack/add-credentials-provider
-                                    default-stack/provide-credentials]}))))))
-  (testing "empty creds (regression test - should not hang)"
-    (let [c (aws/client {:credentials-provider (stub-credentials-provider {})})]
-      (is (re-find #"^Unable to fetch credentials"
-                   (:cognitect.anomalies/message
-                    (aws/invoke c {:steps
-                                   [default-stack/add-credentials-provider
-                                    default-stack/provide-credentials]})))))))
-
 (testing "uses region provided to invoke"
   (let [c (aws/client {:region-provider (region/basic-region-provider "a-region")})]
     (is (= "another-region"
            (:region (aws/invoke c {:region "another-region"
-                                   :steps
+                                   :workflow-steps
                                    [default-stack/add-region-provider
                                     default-stack/provide-region]}))))))
 
@@ -99,26 +64,26 @@
     (let [c (aws/client {})]
       (with-redefs [shared/region-provider #(region/basic-region-provider "a-region")]
         (is (= "a-region"
-               (:region (aws/invoke c {:steps
+               (:region (aws/invoke c {:workflow-steps
                                        [default-stack/add-region-provider
                                         default-stack/provide-region]})))))))
   (testing "uses region supplied to client"
     (let [c (aws/client {:region "a-region"})]
       (is (= "a-region"
-             (:region (aws/invoke c {:steps
+             (:region (aws/invoke c {:workflow-steps
                                      [default-stack/add-region-provider
                                       default-stack/provide-region]}))))))
   (testing "uses region-provider supplied to client"
     (let [c (aws/client {:region-provider (region/basic-region-provider "a-region")})]
       (is (= "a-region"
-             (:region (aws/invoke c {:steps
+             (:region (aws/invoke c {:workflow-steps
                                      [default-stack/add-region-provider
                                       default-stack/provide-region]}))))))
   (testing "uses region provided to invoke"
     (let [c (aws/client {:region-provider (region/basic-region-provider "a-region")})]
       (is (= "another-region"
              (:region (aws/invoke c {:region "another-region"
-                                     :steps
+                                     :workflow-steps
                                      [default-stack/add-region-provider
                                       default-stack/provide-region]}))))))
   (testing "anomaly when region is nil (regression test - should not hang)"
@@ -127,7 +92,7 @@
                                (stub-region-provider nil)))]
       (is (re-find #"^Unable to fetch region"
                    (:cognitect.anomalies/message
-                    (aws/invoke c {:steps
+                    (aws/invoke c {:workflow-steps
                                    [default-stack/add-region-provider
                                     default-stack/provide-region]}))))))
   (testing "anomaly when region is empty (regression test - should not hang)"
@@ -136,7 +101,7 @@
                                (stub-region-provider "")))]
       (is (re-find #"^No known endpoint."
                    (:cognitect.anomalies/message
-                    (aws/invoke c {:steps
+                    (aws/invoke c {:workflow-steps
                                    [default-stack/add-region-provider
                                     default-stack/provide-region
                                     default-stack/add-endpoint-provider
@@ -172,7 +137,7 @@
     (is (match? [{:name "before anomaly"}
                  {:name "sync anomaly"}]
                 (diagnostics/summarize-log
-                 (aws/invoke c {:steps
+                 (aws/invoke c {:workflow-steps
                                 [(step-named "before anomaly")
                                  sync-anomaly-step
                                  (step-named "after anomaly")]}))))
@@ -180,7 +145,7 @@
     (is (match? [{:name "before anomaly"}
                  {:name "async anomaly"}]
                 (diagnostics/summarize-log
-                 (aws/invoke c {:steps
+                 (aws/invoke c {:workflow-steps
                                 [(step-named "before anomaly")
                                  async-anomaly-step
                                  (step-named "after anomaly")]}))))
@@ -188,7 +153,7 @@
     (is (match? [{:name "before error"}
                  {:name "sync error"}]
                 (diagnostics/summarize-log
-                 (aws/invoke c {:steps
+                 (aws/invoke c {:workflow-steps
                                 [(step-named "before error")
                                  sync-error-step
                                  (step-named "after error")]}))))
@@ -196,7 +161,7 @@
     (is (match? [{:name "before error"}
                  {:name "async error"}]
                 (diagnostics/summarize-log
-                 (aws/invoke c {:steps
+                 (aws/invoke c {:workflow-steps
                                 [(step-named "before error")
                                  async-error-step
                                  (step-named "after error")]}))))))
