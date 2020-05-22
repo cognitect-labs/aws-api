@@ -129,7 +129,7 @@ response map if submit succeeded."
   :request-method     :get/:post/:put/:head
   :scheme             :http or :https
   :headers            map from downcased string to string
-  :body               ByteBuffer, optional
+  :body               InputStream or channel of ByteBuffers
   :response-body-as   :inputstream / :chan
   :cognitect.http-client/timeout-msec   opt, total request send/receive timeout
   :cognitect.http-client/meta           opt, data to be added to the response map
