@@ -200,7 +200,13 @@
   [shape s]
   (if (instance? java.io.InputStream s)
     (with-open [rdr (io/reader s)]
-      (json-parse* shape (json/read rdr :key-fn keyword)))
+      (let [data (json/read rdr
+                            :key-fn keyword
+                            :eof-error? false
+                            :eof-value :eof)]
+        (if (= data :eof)
+          {}
+          (json-parse* shape data))))
     (throw (Exception. "can only parse InputStreams as JSON"))))
 
 (defn json-serialize
@@ -224,6 +230,10 @@
         (if (:resultWrapper shape)
           (xml-parse* shape (:content root))
           (xml-parse* shape [root])))
+      (catch javax.xml.stream.XMLStreamException xse
+        (if (some-> xse .getLocation .getCharacterOffset zero?)
+          {}
+          (throw xse)))
       (finally
         (.close ^java.io.InputStream s)))
     (throw (Exception. "can only parse InputStreams as XML"))))

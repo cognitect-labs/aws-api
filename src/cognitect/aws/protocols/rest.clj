@@ -234,15 +234,17 @@
 
 (defn parse-body*
   "Parse the HTTP response body for response data."
-  [output-shape {:keys [body response-body-as]} parse-fn]
-  (if-let [payload-name (:payload output-shape)]
-    (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
-      (condp = (:type body-shape)
-        "blob" {(keyword payload-name) body}
-        "string" #_(util/bbuf->str body) (throw (Exception. "dead branch?"))
-        {(keyword payload-name) (parse-fn body-shape body)}))
+  [output-shape {:keys [body response-body-as headers]} parse-fn]
+  (if-let [payload-name (some-> output-shape :payload keyword)]
+    (let [body-shape (shape/member-shape output-shape payload-name)
+          parsed-body (condp = (:type body-shape)
+                        "blob" body ;; e.g. S3 GetObject
+                        "string" (slurp body) ;; e.g. S3 GetBucketPolicy is a string payload
+                        (parse-fn body-shape body))]
+      {payload-name parsed-body})
     ;; No payload
-    (parse-fn output-shape body)))
+    (do ;when (not= "0" (get headers "content-length"))
+      (parse-fn output-shape body))))
 
 (defn parse-http-response
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}

@@ -396,15 +396,15 @@
   [_ protocol description service {:keys [given response result] :as test-case}]
   (try
     (let [op-map          {:op (:name given)}
-          parsed-response (client/parse-http-response service
-                                                      op-map
-                                                      {:status  (:status_code response)
-                                                       :headers (reduce-kv (fn [m k v]
-                                                                             (assoc m (name k) v))
-                                                                           {}
-                                                                           (:headers response))
-                                                       :response-body-as :inputstream
-                                                       :body   (java.io.ByteArrayInputStream. (.getBytes (:body response)))})]
+          body-bytes (.getBytes (:body response))
+          received-response {:status  (:status_code response)
+                             :headers (reduce-kv (fn [m k v]
+                                                   (assoc m (name k) v))
+                                                 {}
+                                                 (:headers response))
+                             :response-body-as :inputstream
+                             :body (java.io.ByteArrayInputStream. body-bytes)}
+          parsed-response (client/parse-http-response service op-map received-response)]
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
