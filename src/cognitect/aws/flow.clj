@@ -18,7 +18,7 @@
 (defn redact-password [{:keys [credentials] :as log-entry}]
   (cond-> log-entry
     credentials
-    (assoc-in [:credentials :aws/secret-access-key] "REDACTED")))
+    (assoc-in [:credentials :aws/secret-access-key] "**REDACTED**")))
 
 (defn- execute*
   [done! context log]
