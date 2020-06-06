@@ -143,9 +143,9 @@
   (->bbuf [_]))
 
 (defn xml-read
-  "Parse the UTF-8 XML string."
+  "Parse the source XML, presumably a java.util.InputStream"
   [s]
-  (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))
+  (xml/parse s
              :namespace-aware false
              :skip-whitespace true))
 

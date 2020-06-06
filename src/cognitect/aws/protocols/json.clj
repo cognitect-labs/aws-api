@@ -39,9 +39,8 @@
     http-response
     (let [operation (get-in service [:operations op])
           output-shape (service/shape service (:output operation))]
-      (let [body-str (util/bbuf->str body)]
-        (if (< status 400)
-          (if output-shape
-            (shape/json-parse output-shape body-str)
-            {})
-          (common/json-parse-error http-response))))))
+      (if (< status 400)
+        (if output-shape
+          (shape/json-parse output-shape body)
+          {})
+        (common/json-parse-error http-response)))))

@@ -18,6 +18,7 @@
   "
   (:refer-clojure :exclude [resolve])
   (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
             [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
@@ -197,7 +198,16 @@
 (defn json-parse
   "Parse the JSON string to return an instance of the shape."
   [shape s]
-  (json-parse* shape (json/read-str s :key-fn keyword)))
+  (if (instance? java.io.InputStream s)
+    (with-open [rdr (io/reader s)]
+      (let [data (json/read rdr
+                            :key-fn keyword
+                            :eof-error? false
+                            :eof-value :eof)]
+        (if (= data :eof)
+          {}
+          (json-parse* shape data))))
+    (throw (Exception. "can only parse InputStreams as JSON"))))
 
 (defn json-serialize
   "Serialize the shape's instance into a JSON string."
@@ -212,12 +222,21 @@
 
 ;; TODO: ResponseMetadata in root
 (defn xml-parse
-  "Parse the XML string and return an instance of the shape."
+  "Parse the XML InputStream and return an instance of the shape."
   [shape s]
-  (let [root (util/xml-read s)]
-    (if (:resultWrapper shape)
-      (xml-parse* shape (:content root))
-      (xml-parse* shape [root]))))
+  (if (instance? java.io.InputStream s)
+    (try
+      (let [root (util/xml-read s)]
+        (if (:resultWrapper shape)
+          (xml-parse* shape (:content root))
+          (xml-parse* shape [root])))
+      (catch javax.xml.stream.XMLStreamException xse
+        (if (some-> xse .getLocation .getCharacterOffset zero?)
+          {}
+          (throw xse)))
+      (finally
+        (.close ^java.io.InputStream s)))
+    (throw (Exception. "can only parse InputStreams as XML"))))
 
 (defn xml-serialize
   "Serialize the shape's instance into a XML string.
@@ -405,3 +424,4 @@
   [shape nodes]
   (let [ts (data nodes)]
     (parse-date shape (data nodes))))
+
