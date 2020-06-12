@@ -86,7 +86,7 @@
        (str/join "")))
 
 (defn signed-headers-string [headers]
-  (str/join ";" (keys headers)))
+  (str/join ";" (sort (keys headers))))
 
 (def hashed-body (comp util/hex-encode util/sha-256))
 
@@ -179,6 +179,12 @@
       new-qs
       (assoc :query-string new-qs))))
 
+(defn- maybe-add-session-token [headers auth-info]
+  (cond-> headers
+    (and (:session-token auth-info)
+         (= "s3" (:service-name auth-info)))
+    (assoc "x-amz-security-token" (:session-token auth-info))))
+
 (defmethod signing/presigned-url :default
   [{:keys [http-request op service endpoint credentials]
     {:keys [expires]} :presigned-url}]
@@ -218,12 +224,13 @@
 
 (defn v4-sign-http-request
   [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
-  (let [req                     (-> http-request
+  (let [auth-info               (auth-info service endpoint credentials)
+        req                     (-> http-request
                                     (update :headers normalize-headers)
+                                    (update :headers maybe-add-session-token auth-info)
                                     move-uri-qs-to-qs)
         amz-date                (get-in http-request [:headers "x-amz-date"])
         hashed-body             (hashed-body (:body req))
-        auth-info               (auth-info service endpoint credentials)
         signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params

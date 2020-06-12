@@ -117,7 +117,9 @@
   {:name "sign request"
    :f (fn [{:keys [service endpoint credentials http-request] :as  context}]
         (let [signed (signing/sign-http-request service endpoint credentials http-request)]
-          (assoc context :http-request signed)))})
+          (assoc context
+                 :cognitect.aws.signing/basis (meta signed)
+                 :http-request signed)))})
 
 (def send-request
   {:name "send request"

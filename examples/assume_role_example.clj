@@ -70,7 +70,40 @@
 ;; use it!
 (aws/invoke iam-with-assumed-role {:op :GetUser :request {:UserName (:UserName me)}})
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; let's try that with s3
+
+(aws/invoke iam {:op      :CreatePolicy
+                 :request {:PolicyName "AssumeRoleS3ExamplePolicy"
+                           :PolicyDocument
+                           (json/json-str
+                            {"Version"   "2012-10-17",
+                             "Statement" [ {"Effect"   "Allow"
+                                            "Action" ["*"]
+                                            "Resource" ["arn:aws:s3:::*"]}]})}})
+
+(def bucket-policy (->> (aws/invoke iam {:op :ListPolicies})
+                        :Policies
+                        (filter #(re-find #"AssumeRoleS3ExamplePolicy" (:Arn %)))
+                        first))
+
+(aws/invoke iam {:op :AttachRolePolicy :request {:RoleName (:RoleName new-role)
+                                                 :PolicyArn (:Arn bucket-policy)}})
+
+;; assuming you have permissions to do this already:
+(aws/invoke iam {:api :s3
+                 :op  :ListBuckets})
+
+(def s3-with-assumed-role (aws/client {:api :s3 :credentials-provider provider}))
+
+(aws/invoke s3-with-assumed-role {:op  :ListBuckets})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; clean up
-(aws/invoke iam {:op :DetachRolePolicy :request {:RoleName (:RoleName new-role) :PolicyArn (:Arn policy)}})
+(aws/invoke iam {:op :DetachRolePolicy :request {:RoleName  (:RoleName new-role)
+                                                 :PolicyArn (:Arn bucket-policy)}})
+(aws/invoke iam {:op :DetachRolePolicy :request {:RoleName  (:RoleName new-role)
+                                                 :PolicyArn (:Arn policy)}})
+(aws/invoke iam {:op :DeletePolicy :request {:PolicyArn (:Arn bucket-policy)}})
 (aws/invoke iam {:op :DeletePolicy :request {:PolicyArn (:Arn policy)}})
 (aws/invoke iam {:op :DeleteRole :request {:RoleName "aws-api-example-role"}})
