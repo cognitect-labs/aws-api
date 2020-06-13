@@ -147,14 +147,16 @@
           signature))
 
 ;; TODO: collapse auth-info and auth-params into one function
-(defn auth-info [service endpoint {:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]}]
-  {:access-key-id     access-key-id
-   :secret-access-key secret-access-key
-   :session-token     session-token
-   :service-name      (or (service/signing-name service)
-                          (service/endpoint-prefix service))
-   :region            (or (get-in endpoint [:credentialScope :region])
-                          (get-in endpoint [:region]))})
+(defn auth-info [service endpoint {:aws/keys [access-key-id secret-access-key session-token]}]
+  (cond->
+      {:access-key-id     access-key-id
+       :secret-access-key secret-access-key
+       :service-name      (or (service/signing-name service)
+                              (service/endpoint-prefix service))
+       :region            (or (get-in endpoint [:credentialScope :region])
+                              (get-in endpoint [:region]))}
+    session-token
+    (assoc :session-token session-token)))
 
 (defn signing-params
   [op expires {:strs [x-amz-date] :as headers-to-sign} auth-info amz-date]
