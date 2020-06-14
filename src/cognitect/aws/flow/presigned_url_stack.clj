@@ -6,7 +6,8 @@
   (:require [clojure.string :as str]
             [cognitect.aws.signing :as signing]
             [cognitect.aws.flow.default-stack :as default-stack]
-            [cognitect.aws.flow.credentials-stack :as credentials-stack]))
+            [cognitect.aws.flow.credentials-stack :as credentials-stack]
+            [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
 
@@ -28,19 +29,19 @@
 
 (def add-presigned-http-request
   {:name "add http request"
-   :f (fn [context]
-        (if-let [url (get-in context [:presigned-url :url])]
-          (assoc context :http-request
-                 ;; TODO (dchelimsky,2020-05-22) this belongs in util
-                 ;; or http namespace
-                 (let [uri (java.net.URI. url)]
-                   {:request-method :get
-                    :scheme (.getScheme uri)
-                    :server-name (.getHost uri)
-                    :server-port 443
-                    :uri (.getPath uri)
-                    :query-string (.getQuery uri)}))
-          context))})
+   :f    (fn [context]
+           (if-let [url (get-in context [:presigned-url :url])]
+             (assoc context :http-request
+                    (let [uri (java.net.URI. url)]
+                      {:request-method :get
+                       :scheme         (.getScheme uri)
+                       :server-name    (.getHost uri)
+                       :server-port    443
+                       :uri            (.getPath uri)
+                       ;; extract the encoded query string manually instead
+                       ;; of getting the decoded query strings from the URI.
+                       :query-string   (last (str/split url #"\?"))}))
+             context))})
 
 (def add-op
   {:name "add op"

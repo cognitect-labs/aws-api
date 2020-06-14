@@ -98,6 +98,24 @@
 
 (aws/invoke s3-with-assumed-role {:op  :ListBuckets})
 
+;; and now with a presigned URL!
+
+(def list-buckets-url
+  (:presigned-url (aws/invoke s3-with-assumed-role
+                              {:op            :ListBuckets
+                               :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                               :presigned-url {:expires 60}})))
+
+(defn curl [url] (clojure.java.shell/sh "curl" url))
+
+;; you can curl it
+(curl list-buckets-url)
+
+;; or you can use aws-api to fetch it
+(aws/invoke s3-with-assumed-role
+            {:workflow      :cognitect.aws.alpha.workflow/fetch-presigned-url
+             :presigned-url {:url list-buckets-url}})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; clean up
 (aws/invoke iam {:op :DetachRolePolicy :request {:RoleName  (:RoleName new-role)
