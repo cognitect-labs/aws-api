@@ -123,7 +123,7 @@
                                 (update request :query-string url-encode))]
             (is (= authorization
                    (get-in signed-request [:headers "authorization"]))
-                (str "oops" request))))
+                (str "Wrong signature for " request))))
         (testing "using signingName"
             (let [service        {:metadata {:signatureVersion "v4"
                                              :endpointPrefix   "incorrect"
@@ -133,7 +133,8 @@
                                   service {:region "us-east-1"} credentials
                                   (update request :query-string url-encode))]
               (is (= authorization
-                     (get-in signed-request [:headers "authorization"])))))))))
+                     (get-in signed-request [:headers "authorization"]))
+                  (str "Wrong signature for " request))))))))
 
 (deftest test-canonical-query-string
   (testing "ordering"
