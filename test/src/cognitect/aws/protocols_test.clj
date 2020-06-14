@@ -67,60 +67,6 @@
 (defn update-params [data paths fn]
   (update data :params update-many paths fn))
 
-(defmulti with-blob-xforms
-  "The botocore tests we're taking advantage of here all assume that
-  we accept strings for blob types, but this library does not.  Use
-  this multimethod to xform strings to byte arrays before submitting
-  requests to invoke."
-  (fn [protocol test-name test-case]
-    [protocol test-name]))
-
-(defmethod with-blob-xforms :default
-  [_ _ test-case] test-case)
-
-(defmethod with-blob-xforms ["ec2" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case [:BlobArg] get-bytes))
-
-(defmethod with-blob-xforms ["query" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case [:BlobArg] get-bytes))
-
-(defmethod with-blob-xforms ["json" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case
-                 [:BlobArg
-                  [:BlobMap :key1]
-                  [:BlobMap :key2]]
-                 get-bytes))
-
-(defmethod with-blob-xforms ["json" "Nested blobs"]
-  [_ _ test-case]
-  (update-params test-case
-                 [[:ListParam 0]
-                  [:ListParam 1]]
-                 get-bytes))
-
-(defmethod with-blob-xforms ["rest-xml" "Blob and timestamp shapes"]
-  [_ _ test-case]
-  (update-params test-case [[:StructureParam :b]] get-bytes))
-
-(defmethod with-blob-xforms ["rest-xml" "Blob payload"]
-  [_ _ test-case]
-  (update-params test-case [:foo] get-bytes))
-
-(defmethod with-blob-xforms ["rest-json" "Blob and timestamp shapes"]
-  [_ _ test-case]
-  (update-in test-case [:params :Bar] get-bytes))
-
-(defmethod with-blob-xforms ["rest-json" "Serialize blobs in body"]
-  [_ _ test-case]
-  (update-in test-case [:params :Bar] get-bytes))
-
-(defmethod with-blob-xforms ["query" "URL Encoded values in body"]
-  [_ _ test-case]
-  (update-in test-case [:params :Blob] get-bytes))
-
 (defn timestamp->date [secs]
   (Date. (* secs 1000)))
 
@@ -358,7 +304,7 @@
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
 
-(defn parse-query-string [s]
+(defn query-string->map [s]
   (->> (str/split s #"&")
        (map #(str/split % #"="))
        (map (fn [[a b]] [a b]))
@@ -368,17 +314,15 @@
   [_ expected {:keys [body]}]
   (if (str/blank? expected)
     (is (nil? body))
-    (is (= (parse-query-string expected)
-           (parse-query-string body)))))
+    (is (= (query-string->map expected)
+           (query-string->map body)))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 
 (defmethod run-test "input"
   [_ protocol description service test-case]
   (let [{expected :serialized :keys [given params]}
-        (->> test-case
-             (with-blob-xforms protocol description)
-             (with-timestamp-xforms protocol description))]
+        (with-timestamp-xforms protocol description test-case)]
     (try
       (let [op-map       {:op (:name given) :request params}
             http-request (client/build-http-request service op-map)]
