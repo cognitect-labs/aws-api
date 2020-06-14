@@ -31,13 +31,13 @@
                  (or (if (.endsWith param "+")
                        (some-> args
                                (get (keyword (.substring param 0 (dec (count param)))))
-                               util/url-encode
+                               util/uri-encode
                                (.replace "%2F" "/")
                                (.replace "%7E" "~")
                                remove-leading-slash)
                        (some-> args
                                (get (keyword param))
-                               util/url-encode
+                               util/uri-encode
                                remove-leading-slash))
                      ;; TODO (dchelimsky 2019-02-08) it's possible that 100% of
                      ;; params in templated URIs are required, in which case
@@ -70,7 +70,7 @@
 (defmethod serialize-qs-args :default
   [shape param-name args]
   (when-not (nil? args)
-    [[param-name (util/url-encode (str args))]]))
+    [[param-name (util/uri-encode (str args))]]))
 
 (defmethod serialize-qs-args "list"
   [shape param-name args]
@@ -91,7 +91,7 @@
   [shape param-name args]
   (when-not (nil? args)
     [[param-name
-      (util/url-encode
+      (util/uri-encode
        (shape/format-date shape
                           args
                           (partial util/format-date util/iso8601-date-format)))]]))

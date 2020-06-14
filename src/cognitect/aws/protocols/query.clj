@@ -28,7 +28,7 @@
 
 (defmethod serialize :default
   [shape args serialized prefix]
-  (prefix-assoc serialized prefix (util/url-encode (str args))))
+  (prefix-assoc serialized prefix (util/uri-encode (str args))))
 
 (defmethod serialize "structure"
   [shape args serialized prefix]
@@ -74,7 +74,7 @@
   (prefix-assoc serialized prefix (util/base64-encode args)))
 
 (defmethod serialize "timestamp" [shape args serialized prefix]
-  (prefix-assoc serialized prefix (util/url-encode
+  (prefix-assoc serialized prefix (util/uri-encode
                                    (shape/format-date shape
                                                       args
                                                       (partial util/format-date util/iso8601-date-format)))))

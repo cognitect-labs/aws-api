@@ -12,29 +12,6 @@
 
 (set! *warn-on-reflection* true)
 
-(defn uri-encode
-  "Escape (%XX) special characters in the string `s`.
-
-  Letters, digits, and the characters `_-~.` are never encoded.
-
-  The optional `extra-chars` specifies extra characters to not encode."
-  ([^String s]
-   (when s
-     (uri-encode s "")))
-  ([^String s extra-chars]
-   (when s
-     (let [safe-chars (->> extra-chars
-                           (into #{\_ \- \~ \.})
-                           (into #{} (map int)))
-           builder    (StringBuilder.)]
-       (doseq [b (.getBytes s "UTF-8")]
-         (.append builder
-                  (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? safe-chars b))
-                    (char b)
-                    (format "%%%02X" b))))
-       (.toString builder)))))
-
 (defn credential-scope
   [{:keys [region service-name amz-date]} date]
   (str/join "/" [(->> date
@@ -56,7 +33,7 @@
                          (URI.)
                          (.normalize)
                          (.getPath)
-                         (uri-encode "/"))]
+                         (util/uri-encode "/"))]
     (if (.isEmpty ^String encoded-path)
       "/"
       encoded-path)))
@@ -207,10 +184,10 @@
                                                                         :expires        "X-Amz-Expires"
                                                                         :session-token  "X-Amz-Security-Token"
                                                                         :signed-headers "X-Amz-SignedHeaders"})
-                                              (update "X-Amz-Credential" uri-encode)
-                                              (update "X-Amz-Date" uri-encode))
+                                              (update "X-Amz-Credential" util/uri-encode)
+                                              (update "X-Amz-Date" util/uri-encode))
                                         (:session-token signing-params)
-                                        (update "X-Amz-Security-Token" uri-encode)))
+                                        (update "X-Amz-Security-Token" util/uri-encode)))
         qs-no-sig               (format-qs qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params

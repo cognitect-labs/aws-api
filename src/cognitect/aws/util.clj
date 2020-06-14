@@ -19,7 +19,6 @@
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream ByteArrayOutputStream]
-           [java.net URLEncoder]
            [java.util Base64]))
 
 (set! *warn-on-reflection* true)
@@ -187,12 +186,30 @@
           (print (str "</" (name (:tag e)) ">")))
         (print " />")))))
 
-(defn url-encode
-  "Percent encode the string to put in a URL."
-  [^String s]
-  (-> s
-      (URLEncoder/encode "UTF-8")
-      (.replace "+" "%20")))
+(defn uri-encode
+  "Escape (%XX) special characters in the string `s`.
+
+  Letters, digits, and the characters `_-~.` are never encoded.
+
+  The optional `extra-chars` specifies extra characters to not encode.
+
+  See https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html"
+  ([^String s]
+   (when s
+     (uri-encode s "")))
+  ([^String s extra-chars]
+   (when s
+     (let [safe-chars (->> extra-chars
+                           (into #{\_ \- \~ \.})
+                           (into #{} (map int)))
+           builder    (StringBuilder.)]
+       (doseq [b (.getBytes s "UTF-8")]
+         (.append builder
+                  (if (or (Character/isLetterOrDigit ^int b)
+                          (contains? safe-chars b))
+                    (char b)
+                    (format "%%%02X" b))))
+       (.toString builder)))))
 
 (defn query-string
   "Create a query string from a list of parameters. Values must all be

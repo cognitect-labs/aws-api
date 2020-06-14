@@ -4,8 +4,6 @@
 (ns cognitect.aws.signing-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
   (:require [clojure.test :as t :refer [deftest is testing]]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
@@ -98,15 +96,15 @@
   {:aws/access-key-id "AKIDEXAMPLE"
    :aws/secret-access-key "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY"})
 
-(defn- url-encode
+(defn- encode-query-string
   "The aws tests assume query strings are not already encoded, but aws-api
   encodes them before handing over to signers."
   [query-string]
   (some->> query-string
            (test.utils/query-string->vec)
            (reduce (fn [accum [k v]] (conj accum
-                                           [(signing.impl/uri-encode k)
-                                            (signing.impl/uri-encode v)]))
+                                           [(util/uri-encode k)
+                                            (util/uri-encode v)]))
                    [])
            (util/query-string)))
 
@@ -120,7 +118,7 @@
                                            :uid              "service-2018-12-28"}}
                 signed-request (signing/sign-http-request
                                 service {:region "us-east-1"} credentials
-                                (update request :query-string url-encode))]
+                                (update request :query-string encode-query-string))]
             (is (= authorization
                    (get-in signed-request [:headers "authorization"]))
                 (str "Wrong signature for " request))))
@@ -131,7 +129,7 @@
                                              :uid              "service-2018-12-28"}}
                   signed-request (signing/sign-http-request
                                   service {:region "us-east-1"} credentials
-                                  (update request :query-string url-encode))]
+                                  (update request :query-string encode-query-string))]
               (is (= authorization
                      (get-in signed-request [:headers "authorization"]))
                   (str "Wrong signature for " request))))))))
@@ -143,27 +141,6 @@
            (#'signing.impl/canonical-query-string {:query-string "q.parser=lucene&q=Red"}))))
   (testing "key with no value"
     (is (= "policy=" (#'signing.impl/canonical-query-string {:query-string "policy="})))))
-
-(s/fdef signing.impl/uri-encode
-  :args (s/cat :string (s/and string? (complement str/blank?)) :extra-chars (s/? string?))
-  :ret string?)
-
-(deftest test-uri-encode
-  (testing "regression for issue-71"
-    ;; See https://github.com/cognitect-labs/aws-api/issues/71
-    (testing "with *unchecked-math* true"
-      (binding [*unchecked-math* true]
-        (require '[cognitect.aws.signing.impl :as signing.impl] :reload)
-        (let [res (:clojure.spec.test.check/ret (first (stest/check `signing.impl/uri-encode)))]
-          (is (true? (:result res))
-              res))))
-
-    (testing "with *unchecked-math* false"
-      (binding [*unchecked-math* false]
-        (require '[cognitect.aws.signing.impl :as signing.impl] :reload)
-        (let [res (:clojure.spec.test.check/ret (first (stest/check `signing.impl/uri-encode)))]
-          (is (true? (:result res))
-              res))))))
 
 (deftest test-presign-url
   ;; "Golden Master" test
