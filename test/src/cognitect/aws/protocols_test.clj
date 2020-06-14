@@ -288,11 +288,7 @@
 (defmethod test-request-body "rest-xml"
   [_ expected {:keys [body]}]
   (is (= (some-> expected not-empty)
-         ;; TODO (dchelimsky 2019-02-15) there is only one case
-         ;; in which body is a byte array. This may change if/when
-         ;; we expose build-http-request as an API and settle on
-         ;; a type for body.
-         (if (bytes? body) (slurp body) body))))
+         body)))
 
 (defmethod test-request-body "rest-json"
   [_ expected http-request]
