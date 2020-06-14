@@ -16,7 +16,8 @@
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
             [cognitect.aws.protocols.query]
-            [cognitect.aws.protocols.ec2])
+            [cognitect.aws.protocols.ec2]
+            [cognitect.aws.test.utils :as test.utils])
   (:import (java.util Date)))
 
 (s/fdef cognitect.aws.util/query-string
@@ -304,18 +305,12 @@
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
 
-(defn query-string->map [s]
-  (->> (str/split s #"&")
-       (map #(str/split % #"="))
-       (map (fn [[a b]] [a b]))
-       (into {})))
-
 (defmethod test-request-body "query"
   [_ expected {:keys [body]}]
   (if (str/blank? expected)
     (is (nil? body))
-    (is (= (query-string->map expected)
-           (query-string->map body)))))
+    (is (= (test.utils/query-string->map expected)
+           (test.utils/query-string->map body)))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 

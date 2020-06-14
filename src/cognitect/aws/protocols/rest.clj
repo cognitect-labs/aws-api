@@ -21,7 +21,9 @@
 
 (defn serialize-uri
   "Take a URI template, an input-shape, and a map of values and replace the parameters by their values.
-  Throws if args is missing any keys that are required in input-shape."
+  Throws if args is missing any keys that are required in input-shape.
+
+  Example URI template: /{Bucket}/{Key}"
   [uri-template {:keys [required] :as input-shape} args]
   (str/replace uri-template
                #"\{([^}]+)\}"
@@ -68,14 +70,7 @@
 (defmethod serialize-qs-args :default
   [shape param-name args]
   (when-not (nil? args)
-    [[param-name (str args)]]))
-
-(defmethod serialize-qs-args "timestamp"
-  [shape param-name args]
-  (when-not (nil? args)
-    [[param-name (shape/format-date shape
-                                    args
-                                    (partial util/format-date util/iso8601-date-format))]]))
+    [[param-name (util/url-encode (str args))]]))
 
 (defmethod serialize-qs-args "list"
   [shape param-name args]
@@ -91,6 +86,15 @@
                                (name k)
                                v))
           args))
+
+(defmethod serialize-qs-args "timestamp"
+  [shape param-name args]
+  (when-not (nil? args)
+    [[param-name
+      (util/url-encode
+       (shape/format-date shape
+                          args
+                          (partial util/format-date util/iso8601-date-format)))]]))
 
 (defmulti serialize-header-value
   "Serialize a primitive shape in a HTTP header."

@@ -199,10 +199,7 @@
   strings."
   [params]
   (when-not (empty? params)
-    (str/join "&" (map (fn [[k v]]
-                         (str (url-encode (name k))
-                              "="
-                              (url-encode v)))
+    (str/join "&" (map (fn [[k v]] (str (name k) "=" v))
                        params))))
 
 (defn read-json

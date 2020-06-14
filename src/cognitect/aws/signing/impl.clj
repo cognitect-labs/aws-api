@@ -69,9 +69,6 @@
   [{:keys [query-string]}]
   (when-not (str/blank? query-string)
     (->> (qs->map query-string)
-         ;; TODO (dchelimsky 2019-01-30) decoding first because sometimes
-         ;; it's already been encoded. Look into avoiding that!
-         (map (fn [kv] (map #(uri-encode (URLDecoder/decode %)) kv)))
          (sort (fn [[k1 v1] [k2 v2]]
                  (if (= k1 k2)
                    (compare v1 v2)
@@ -190,22 +187,30 @@
 (defmethod signing/presigned-url :default
   [{:keys [http-request op service endpoint credentials]
     {:keys [expires]} :presigned-url}]
-  (let [req*                    (-> http-request
+  (let [auth-info               (auth-info service endpoint credentials)
+        req*                    (-> http-request
                                     (update :headers normalize-headers)
                                     move-uri-qs-to-qs)
         amz-date                (get-in req* [:headers "x-amz-date"])
-        req                     (update req* :headers dissoc "x-amz-date")
-        auth-info               (auth-info service endpoint credentials)
+        req**                   (update req* :headers dissoc "x-amz-date")
+        req                     (maybe-add-session-token req** auth-info)
         signing-params          (signing-params op expires (:headers req) auth-info amz-date)
         qs-params-no-sig        (into (sorted-map)
-                                      (-> signing-params
-                                          (select-keys [:op :algo :credential :amz-date :expires :signed-headers])
-                                          (clojure.set/rename-keys {:op             "Action"
-                                                                    :algo           "X-Amz-Algorithm"
-                                                                    :credential     "X-Amz-Credential"
-                                                                    :amz-date       "X-Amz-Date"
-                                                                    :expires        "X-Amz-Expires"
-                                                                    :signed-headers "X-Amz-SignedHeaders"})))
+                                      (cond->
+                                          (-> signing-params
+                                              (select-keys [:op :algo :credential :amz-date :expires :signed-headers
+                                                            :session-token])
+                                              (clojure.set/rename-keys {:op             "Action"
+                                                                        :algo           "X-Amz-Algorithm"
+                                                                        :credential     "X-Amz-Credential"
+                                                                        :amz-date       "X-Amz-Date"
+                                                                        :expires        "X-Amz-Expires"
+                                                                        :session-token  "X-Amz-Security-Token"
+                                                                        :signed-headers "X-Amz-SignedHeaders"})
+                                              (update "X-Amz-Credential" uri-encode)
+                                              (update "X-Amz-Date" uri-encode))
+                                        (:session-token signing-params)
+                                        (update "X-Amz-Security-Token" uri-encode)))
         qs-no-sig               (format-qs qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
@@ -218,8 +223,7 @@
                                      add-signature)
         qs-params-with-sig      (assoc qs-params-no-sig "X-Amz-Signature" signature)
         qs-with-sig             (format-qs qs-params-with-sig)]
-    {:presigned-url (str "https://" (:server-name req) (:uri req) "?"
-                         (canonical-query-string {:query-string qs-with-sig}))
+    {:presigned-url (str "https://" (:server-name req) (:uri req) "?" qs-with-sig)
      :cognitect.aws.signing/basis (-> signing-context
                                       (dissoc :req)
                                       (update :signing-params dissoc :secret-access-key))}))
