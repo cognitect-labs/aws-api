@@ -33,7 +33,7 @@
                          (URI.)
                          (.normalize)
                          (.getPath)
-                         (util/uri-encode "/"))]
+                         (util/uri-encode :exclude-slashes))]
     (if (.isEmpty ^String encoded-path)
       "/"
       encoded-path)))

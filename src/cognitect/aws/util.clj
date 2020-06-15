@@ -189,24 +189,24 @@
 (defn uri-encode
   "Escape (%XX) special characters in the string `s`.
 
-  Letters, digits, and the characters `_-~.` are never encoded.
-
-  The optional `extra-chars` specifies extra characters to not encode.
+  Letters, digits, and the characters `_-~.` are excluded from
+  encoding. Supply the optional `exclude-slashes` (anything truthy) to
+  exclude them from encoding as well.
 
   See https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html"
   ([^String s]
    (when s
-     (uri-encode s "")))
-  ([^String s extra-chars]
+     (uri-encode s false)))
+  ([^String s exclude-slashes]
    (when s
-     (let [safe-chars (->> extra-chars
-                           (into #{\_ \- \~ \.})
-                           (into #{} (map int)))
-           builder    (StringBuilder.)]
+     (let [exclude-chars (->> (when exclude-slashes #{\/})
+                              (into #{\_ \- \~ \.})
+                              (into #{} (map int)))
+           builder       (StringBuilder.)]
        (doseq [b (.getBytes s "UTF-8")]
          (.append builder
                   (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? safe-chars b))
+                          (contains? exclude-chars b))
                     (char b)
                     (format "%%%02X" b))))
        (.toString builder)))))
