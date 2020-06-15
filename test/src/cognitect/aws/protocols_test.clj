@@ -27,7 +27,7 @@
 
 (defn instrument-fixture [f]
   (try
-    (stest/instrument ['cognitect.aws.util/query-string])
+    (stest/instrument)
     (f)
     (finally
       (stest/unstrument))))
@@ -305,8 +305,8 @@
   [_ expected {:keys [body]}]
   (if (str/blank? expected)
     (is (nil? body))
-    (is (= (test.utils/query-string->map expected)
-           (test.utils/query-string->map body)))))
+    (is (= (util/query-string->map expected)
+           (util/query-string->map body)))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 

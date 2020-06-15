@@ -22,10 +22,10 @@
 (defn parse-request-line
   [request-line]
   (let [[_ request-method uri] (re-find #"^([A-Za-z]+)\s(.*)\s(HTTP.*)$" request-line)
-        [path query-string] (str/split uri #"\?" 2)]
+        [path query-string]    (str/split uri #"\?" 2)]
     {:request-method (keyword (str/lower-case request-method))
-     :uri path
-     :query-string query-string}))
+     :uri            path
+     :query-string   query-string}))
 
 (defn parse-headers
   [lines]
@@ -101,7 +101,7 @@
   encodes them before handing over to signers."
   [query-string]
   (some->> query-string
-           (test.utils/query-string->vec)
+           (util/query-string->vec)
            (reduce (fn [accum [k v]] (conj accum
                                            [(util/uri-encode k)
                                             (util/uri-encode v)]))

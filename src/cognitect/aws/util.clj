@@ -219,6 +219,22 @@
     (str/join "&" (map (fn [[k v]] (str (name k) "=" v))
                        params))))
 
+(defn query-string->vec
+  "Parses query string to a sequence of tuples. Returns empty sequence
+  if s is nil or blank."
+  [s]
+  (when-not (str/blank? s)
+    (->> (str/split s #"&")
+         (map #(str/split % #"=" 2)))))
+
+(defn query-string->map
+  "Parses query string to a map. Returns empty map if s is nil or
+  blank."
+  [s]
+  (->> (query-string->vec s)
+       (map (fn [[a b]] [a b]))
+       (into {})))
+
 (defn read-json
   "Read readable as JSON. readable can be any valid input for
   clojure.java.io/reader."

@@ -11,13 +11,6 @@
 
 (set! *warn-on-reflection* true)
 
-;; TODO: (dchelimsky,2020-05-22) this is copied from signing/impl.
-;; Move to util?
-(defn- qs->map [qs]
-  (->> (str/split (or qs "") #"&")
-       (map #(str/split % #"=" 2))
-       (into {})))
-
 (def set-api-to-s3
   {:name "set api to s3"
    :f (fn [context] (assoc context :api :s3))})
@@ -50,7 +43,7 @@
           (assoc context :op
                  (some-> http-request
                          :query-string
-                         qs->map
+                         util/query-string->map
                          (get "Action")
                          keyword))
           context))})

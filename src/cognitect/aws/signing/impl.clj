@@ -38,14 +38,10 @@
       "/"
       encoded-path)))
 
-(defn- qs->map [qs]
-  (->> (str/split (or qs "") #"&")
-       (map #(str/split % #"=" 2))))
-
 (defn- canonical-query-string
   [{:keys [query-string]}]
   (when-not (str/blank? query-string)
-    (->> (qs->map query-string)
+    (->> (util/query-string->vec query-string)
          (sort (fn [[k1 v1] [k2 v2]]
                  (if (= k1 k2)
                    (compare v1 v2)
@@ -99,9 +95,6 @@
              (sorted-map)
              headers))
 
-(defn format-qs [params]
-  (str/join "&" (map (fn [[k v]] (str k "=" v)) params)))
-
 (defn add-canonical-request
   [{{:keys [request-method uri headers body] :as request} :req :as context}]
   (assoc context
@@ -148,9 +141,9 @@
          :signed-headers (signed-headers-string headers-to-sign)))
 
 (defn- move-uri-qs-to-qs [req]
-  (let [orig-qs (:query-string req)
+  (let [orig-qs      (:query-string req)
         [uri uri-qs] (some-> req :uri (str/split #"\?"))
-        new-qs (not-empty (str/join "&" (remove str/blank? [orig-qs uri-qs])))]
+        new-qs       (not-empty (str/join "&" (remove str/blank? [orig-qs uri-qs])))]
     (cond-> (assoc req :uri uri)
       new-qs
       (assoc :query-string new-qs))))
@@ -188,7 +181,7 @@
                                               (update "X-Amz-Date" util/uri-encode))
                                         (:session-token signing-params)
                                         (update "X-Amz-Security-Token" util/uri-encode)))
-        qs-no-sig               (format-qs qs-params-no-sig)
+        qs-no-sig               (util/query-string qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
                                       :req            (assoc req
@@ -199,7 +192,7 @@
                                      add-string-to-sign
                                      add-signature)
         qs-params-with-sig      (assoc qs-params-no-sig "X-Amz-Signature" signature)
-        qs-with-sig             (format-qs qs-params-with-sig)]
+        qs-with-sig             (util/query-string qs-params-with-sig)]
     {:presigned-url (str "https://" (:server-name req) (:uri req) "?" qs-with-sig)
      :cognitect.aws.signing/basis (-> signing-context
                                       (dissoc :req)
