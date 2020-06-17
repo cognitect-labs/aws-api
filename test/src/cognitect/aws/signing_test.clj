@@ -110,29 +110,28 @@
 
 (deftest test-aws-sign-v4
   (doseq [{:keys [name request authorization]} (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))]
-    (when (re-find #"get-vanilla" name)
-      (testing name
-        (testing "using endpointPrefix"
-          (let [service        {:metadata {:signatureVersion "v4"
-                                           :endpointPrefix   "service"
-                                           :uid              "service-2018-12-28"}}
-                signed-request (signing/sign-http-request
-                                service {:region "us-east-1"} credentials
-                                (update request :query-string encode-query-string))]
-            (is (= authorization
-                   (get-in signed-request [:headers "authorization"]))
-                (str "Wrong signature for " request))))
-        (testing "using signingName"
-            (let [service        {:metadata {:signatureVersion "v4"
-                                             :endpointPrefix   "incorrect"
-                                             :signingName      "service"
-                                             :uid              "service-2018-12-28"}}
-                  signed-request (signing/sign-http-request
-                                  service {:region "us-east-1"} credentials
-                                  (update request :query-string encode-query-string))]
-              (is (= authorization
-                     (get-in signed-request [:headers "authorization"]))
-                  (str "Wrong signature for " request))))))))
+    (testing name
+      (testing "using endpointPrefix"
+        (let [service        {:metadata {:signatureVersion "v4"
+                                         :endpointPrefix   "service"
+                                         :uid              "service-2018-12-28"}}
+              signed-request (signing/sign-http-request
+                              service {:region "us-east-1"} credentials
+                              (update request :query-string encode-query-string))]
+          (is (= authorization
+                 (get-in signed-request [:headers "authorization"]))
+              (str "Wrong signature for " request))))
+      (testing "using signingName"
+        (let [service        {:metadata {:signatureVersion "v4"
+                                         :endpointPrefix   "incorrect"
+                                         :signingName      "service"
+                                         :uid              "service-2018-12-28"}}
+              signed-request (signing/sign-http-request
+                              service {:region "us-east-1"} credentials
+                              (update request :query-string encode-query-string))]
+          (is (= authorization
+                 (get-in signed-request [:headers "authorization"]))
+              (str "Wrong signature for " request)))))))
 
 (deftest test-canonical-query-string
   (testing "ordering"
@@ -157,7 +156,23 @@
             :service       {:metadata {:signingName "s3"}}
             :endpoint      {:region "us-east-1"}
             :credentials   {:aws/access-key-id     "AWSKeyId"
-                            :aws/secret-access-key "AWSSecretAccessKey"}})))))
+                            :aws/secret-access-key "AWSSecretAccessKey"}}))))
+
+  (is (= "https://examplebucket.s3.amazonaws.com/a/path?Action=GetSomething&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AWSKeyId%2F20130524%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20130524T000000Z&X-Amz-Expires=86400&X-Amz-Security-Token=AWS%2FSession%2FToken&X-Amz-Signature=6f9393fbe48b5edb5b544a57d018e4e0235d8bbc7174888f55fa1650f6022431&X-Amz-SignedHeaders=host"
+         (:presigned-url
+          (signing/presigned-url
+           {:http-request  {:request-method :get
+                            :server-name    "examplebucket.s3.amazonaws.com"
+                            :uri            "/a/path"
+                            :headers        {"x-amz-date" "20130524T000000Z"
+                                             "host"       "examplebucket.s3.amazonaws.com"}}
+            :op            :GetSomething
+            :presigned-url {:expires 86400}
+            :service       {:metadata {:signingName "s3"}}
+            :endpoint      {:region "us-east-1"}
+            :credentials   {:aws/access-key-id     "AWSKeyId"
+                            :aws/secret-access-key "AWSSecretAccessKey"
+                            :aws/session-token     "AWS/Session/Token"}})))))
 
 (comment
   (t/run-tests)
