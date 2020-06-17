@@ -12,8 +12,8 @@
 
 (set! *warn-on-reflection* true)
 
-(defn credential-scope
-  [{:keys [region service-name amz-date]} date]
+(defn- credential-scope
+  [{:keys [region service-name]} date]
   (str/join "/" [(->> date
                       (util/parse-date util/x-amz-date-format)
                       (util/format-date util/x-amz-date-only-format))
@@ -55,12 +55,12 @@
        (map (fn [[k v]] (str k ":" v "\n")))
        (str/join "")))
 
-(defn signed-headers-string [headers]
+(defn- signed-headers-string [headers]
   (str/join ";" (sort (keys headers))))
 
-(def hashed-body (comp util/hex-encode util/sha-256))
+(def ^:private hashed-body (comp util/hex-encode util/sha-256))
 
-(defn add-string-to-sign
+(defn- add-string-to-sign
   [{:keys [signing-params canonical-request] :as context}]
   (let [{:keys [amz-date]} signing-params
         bytes              (.getBytes ^String canonical-request)]
@@ -71,7 +71,7 @@
                            (credential-scope signing-params amz-date)
                            (util/hex-encode (util/sha-256 bytes))]))))
 
-(defn add-signing-key
+(defn- add-signing-key
   [{{:keys [secret-access-key region service-name amz-date]} :signing-params :as context}]
   (assoc context
          :signing-key
@@ -83,7 +83,7 @@
              (util/hmac-sha-256 service-name)
              (util/hmac-sha-256 "aws4_request"))))
 
-(defn add-signature
+(defn- add-signature
   [{:keys [signing-key string-to-sign] :as context}]
   (assoc context :signature
          (util/hex-encode (util/hmac-sha-256 signing-key string-to-sign))))
@@ -95,7 +95,7 @@
              (sorted-map)
              headers))
 
-(defn add-canonical-request
+(defn- add-canonical-request
   [{{:keys [request-method uri headers body] :as request} :req :as context}]
   (assoc context
          :canonical-request
@@ -106,15 +106,14 @@
                          (signed-headers-string headers)
                          body])))
 
-(defn authorization-string [{:keys [algo credential signed-headers]} signature]
+(defn- authorization-string [{:keys [algo credential signed-headers]} signature]
   (format "%s Credential=%s, SignedHeaders=%s, Signature=%s"
           algo
           credential
           signed-headers
           signature))
 
-;; TODO: collapse auth-info and auth-params into one function
-(defn auth-info [service endpoint {:aws/keys [access-key-id secret-access-key session-token]}]
+(defn- auth-info [service endpoint {:aws/keys [access-key-id secret-access-key session-token]}]
   (cond->
       {:access-key-id     access-key-id
        :secret-access-key secret-access-key
@@ -125,15 +124,10 @@
     session-token
     (assoc :session-token session-token)))
 
-(defn signing-params
+(defn- signing-params
   [op expires {:strs [x-amz-date] :as headers-to-sign} auth-info amz-date]
   (assoc auth-info
-         ;; TODO: we only need the op for presign, hence this
-         ;; some->. Maybe there's a clearer way to express that
-         ;; fact. Alternatively, we could always supply one, even
-         ;; though we may not need it. That way this data is consistent
-         ;; across different contexts/use cases.
-         :op             (some-> op name)
+         :op             (name op)
          :algo           "AWS4-HMAC-SHA256"
          :credential     (format "%s/%s" (:access-key-id auth-info) (credential-scope auth-info amz-date))
          :amz-date       amz-date
@@ -148,11 +142,9 @@
       new-qs
       (assoc :query-string new-qs))))
 
-(defn- maybe-add-session-token [headers auth-info]
-  (cond-> headers
-    (and (:session-token auth-info)
-         (= "s3" (:service-name auth-info)))
-    (assoc "x-amz-security-token" (:session-token auth-info))))
+(defn- add-session-token? [auth-info]
+  (and (:session-token auth-info)
+       (= "s3" (:service-name auth-info))))
 
 (defmethod signing/presigned-url :default
   [{:keys [http-request op service endpoint credentials]
@@ -162,8 +154,7 @@
                                     (update :headers normalize-headers)
                                     move-uri-qs-to-qs)
         amz-date                (get-in req* [:headers "x-amz-date"])
-        req**                   (update req* :headers dissoc "x-amz-date")
-        req                     (maybe-add-session-token req** auth-info)
+        req                     (update req* :headers dissoc "x-amz-date")
         signing-params          (signing-params op expires (:headers req) auth-info amz-date)
         qs-params-no-sig        (into (sorted-map)
                                       (cond->
@@ -193,18 +184,20 @@
                                      add-signature)
         qs-params-with-sig      (assoc qs-params-no-sig "X-Amz-Signature" signature)
         qs-with-sig             (util/query-string qs-params-with-sig)]
-    {:presigned-url (str "https://" (:server-name req) (:uri req) "?" qs-with-sig)
+    {:presigned-url               (str "https://" (:server-name req) (:uri req) "?" qs-with-sig)
      :cognitect.aws.signing/basis (-> signing-context
                                       (dissoc :req)
-                                      (update :signing-params dissoc :secret-access-key))}))
+                                      (update :signing-params assoc :secret-access-key "**REDACTED**"))}))
 
 (defn v4-sign-http-request
   [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
   (let [auth-info               (auth-info service endpoint credentials)
-        req                     (-> http-request
-                                    (update :headers normalize-headers)
-                                    (update :headers maybe-add-session-token auth-info)
-                                    move-uri-qs-to-qs)
+        req                     (cond->
+                                    (-> http-request
+                                        (update :headers normalize-headers)
+                                        move-uri-qs-to-qs)
+                                  (add-session-token? auth-info)
+                                  (update :headers assoc "x-amz-security-token" (:session-token auth-info)))
         amz-date                (get-in http-request [:headers "x-amz-date"])
         hashed-body             (hashed-body (:body req))
         signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
