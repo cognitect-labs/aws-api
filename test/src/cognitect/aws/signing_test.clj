@@ -66,10 +66,7 @@
 
 (def suffix-handlers
   {"req"   [:request           parse-request]
-   "creq"  [:canonical-request identity]
-   "sts"   [:string-to-sign    identity]
-   "authz" [:authorization     identity]
-   "sreq"  [:signed-request    parse-request]})
+   "authz" [:authorization     identity]})
 
 (defn suffix
   [f]
@@ -86,8 +83,11 @@
   (->> (sub-directories dir)
        (remove #(exclude-dir? (.getName %)))
        (map (fn [test-directory]
-              (reduce #(let [[kw parser] (suffix-handlers (suffix %2))]
-                         (assoc %1 kw (parser (slurp %2))))
+              (reduce (fn [m f]
+                        (let [[k parser] (suffix-handlers (suffix f))]
+                          (if k ;; there are some files we don't care about
+                            (assoc m k (parser (slurp f)))
+                            m)))
                       {:name (.getName test-directory)}
                       (->> (.listFiles test-directory)
                            (remove #(.isDirectory %))))))))
@@ -109,7 +109,12 @@
            (util/query-string)))
 
 (deftest test-aws-sign-v4
-  (doseq [{:keys [name request authorization]} (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))]
+  (doseq [{:keys [name request authorization]}
+          (->> (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))
+               (remove #(contains? #{"post-vanilla-query-nonunreserved"
+                                     "post-vanilla-query-space"
+                                     "post-x-www-form-urlencoded"}
+                                   (:name %))))]
     (testing name
       (testing "using endpointPrefix"
         (let [service        {:metadata {:signatureVersion "v4"
