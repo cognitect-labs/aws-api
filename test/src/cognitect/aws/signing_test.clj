@@ -111,6 +111,9 @@
 (deftest test-aws-sign-v4
   (doseq [{:keys [name request authorization]}
           (->> (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))
+               ;; TODO (dchelimsky,2020-06-19) I update the test suite from the
+               ;; cpp sdk and these 3 fail. Need to address, but putting that
+               ;; off for right now (very edge-casey)
                (remove #(contains? #{"post-vanilla-query-nonunreserved"
                                      "post-vanilla-query-space"
                                      "post-x-www-form-urlencoded"}
