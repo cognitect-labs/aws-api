@@ -19,7 +19,8 @@
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream ByteArrayOutputStream]
-           [java.util Base64]))
+           [java.util Base64]
+           [java.net URLEncoder]))
 
 (set! *warn-on-reflection* true)
 
@@ -195,21 +196,17 @@
 
   See https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html"
   ([^String s]
+   (uri-encode s false))
+  ([^String s exclude-slashes?]
    (when s
-     (uri-encode s false)))
-  ([^String s exclude-slashes]
-   (when s
-     (let [exclude-chars (->> (when exclude-slashes #{\/})
-                              (into #{\_ \- \~ \.})
-                              (into #{} (map int)))
-           builder       (StringBuilder.)]
-       (doseq [b (.getBytes s "UTF-8")]
-         (.append builder
-                  (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? exclude-chars b))
-                    (char b)
-                    (format "%%%02X" b))))
-       (.toString builder)))))
+     (cond->
+         (-> s
+             (URLEncoder/encode "UTF-8")
+             (str/replace "+" "%20")
+             (str/replace "*" "%2A")
+             (str/replace "%7E" "~"))
+       exclude-slashes?
+       (str/replace "%2F" "/")))))
 
 (defn query-string
   "Create a query string from a list of parameters. Values must all be
