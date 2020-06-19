@@ -30,11 +30,11 @@
   [request-method]
   (-> request-method name str/upper-case))
 
-(defn s3-path-encoder [path]
+(defn s3-uri-encoder [path]
   (util/uri-encode path :exclude-slashes))
 
-(defn default-path-encoder [path]
-  (-> path
+(defn default-uri-encoder [uri]
+  (-> uri
       (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
       (str/replace #"\s" "%20"); (URI.) throws Exception on space.
       (URI.)
@@ -43,11 +43,11 @@
       (util/uri-encode :exclude-slashes)))
 
 (defn- canonical-uri
-  [uri path-encoder]
-  (let [encoded-path (path-encoder uri)]
-    (if (.isEmpty ^String encoded-path)
+  [uri uri-encoder]
+  (let [encoded-uri (uri-encoder uri)]
+    (if (.isEmpty ^String encoded-uri)
       "/"
-      encoded-path)))
+      encoded-uri)))
 
 (defn- canonical-query-string
   [{:keys [query-string]}]
@@ -111,7 +111,7 @@
   (assoc context
          :canonical-request
          (str/join "\n" [(canonical-method request-method)
-                         (canonical-uri uri (:path-encoder context))
+                         (canonical-uri uri (:uri-encoder context))
                          (canonical-query-string request)
                          (canonical-headers-string headers)
                          (signed-headers-string headers)
@@ -186,7 +186,7 @@
         qs-no-sig               (util/query-string qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
-                                      :path-encoder   s3-path-encoder
+                                      :uri-encoder   s3-uri-encoder
                                       :req            (assoc req
                                                              :query-string qs-no-sig
                                                              :body "UNSIGNED-PAYLOAD")}
@@ -215,9 +215,9 @@
         signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
-                                      :path-encoder   (if (= "s3" (:service-name auth-info))
-                                                        s3-path-encoder
-                                                        default-path-encoder)
+                                      :uri-encoder   (if (= "s3" (:service-name auth-info))
+                                                        s3-uri-encoder
+                                                        default-uri-encoder)
                                       :req            (assoc req :body hashed-body)}
                                      add-canonical-request
                                      add-signing-key
