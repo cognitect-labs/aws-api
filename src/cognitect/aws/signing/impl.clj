@@ -2,7 +2,12 @@
 ;; All rights reserved.
 
 (ns ^:skip-wiki cognitect.aws.signing.impl
-  "Impl, don't call directly."
+  "Impl, don't call directly.
+
+  See:
+
+  * https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+  * https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html#canonical-request"
   (:require [clojure.string :as str]
             [cognitect.aws.signing :as signing]
             [cognitect.aws.service :as service]
@@ -25,15 +30,21 @@
   [request-method]
   (-> request-method name str/upper-case))
 
+(defn s3-path-encoder [path]
+  (util/uri-encode path :exclude-slashes))
+
+(defn default-path-encoder [path]
+  (-> path
+      (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
+      (str/replace #"\s" "%20"); (URI.) throws Exception on space.
+      (URI.)
+      (.normalize)
+      (.getPath)
+      (util/uri-encode :exclude-slashes)))
+
 (defn- canonical-uri
-  [uri]
-  (let [encoded-path (-> uri
-                         (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
-                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.
-                         (URI.)
-                         (.normalize)
-                         (.getPath)
-                         (util/uri-encode :exclude-slashes))]
+  [uri path-encoder]
+  (let [encoded-path (path-encoder uri)]
     (if (.isEmpty ^String encoded-path)
       "/"
       encoded-path)))
@@ -100,7 +111,7 @@
   (assoc context
          :canonical-request
          (str/join "\n" [(canonical-method request-method)
-                         (canonical-uri uri)
+                         (canonical-uri uri (:path-encoder context))
                          (canonical-query-string request)
                          (canonical-headers-string headers)
                          (signed-headers-string headers)
@@ -175,6 +186,7 @@
         qs-no-sig               (util/query-string qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
+                                      :path-encoder   s3-path-encoder
                                       :req            (assoc req
                                                              :query-string qs-no-sig
                                                              :body "UNSIGNED-PAYLOAD")}
@@ -203,6 +215,9 @@
         signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
+                                      :path-encoder   (if (= "s3" (:service-name auth-info))
+                                                        s3-path-encoder
+                                                        default-path-encoder)
                                       :req            (assoc req :body hashed-body)}
                                      add-canonical-request
                                      add-signing-key
