@@ -157,8 +157,61 @@
   (and (:session-token auth-info)
        (= "s3" (:service-name auth-info))))
 
-(defmethod signing/presigned-url :default
-  [{:keys [http-request op service endpoint credentials]
+(defn v4-sign-http-request
+  [service endpoint credentials http-request & {:keys [content-sha256-header? uri-encoder]}]
+  (let [auth-info               (auth-info service endpoint credentials)
+        req                     (cond->
+                                    (-> http-request
+                                        (update :headers normalize-headers)
+                                        move-uri-qs-to-qs)
+                                  (add-session-token? auth-info)
+                                  (update :headers assoc "x-amz-security-token" (:session-token auth-info)))
+        amz-date                (get-in http-request [:headers "x-amz-date"])
+        hashed-body             (hashed-body (:body req))
+        signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
+        {:keys [signature]
+         :as   signing-context} (->> {:signing-params signing-params
+                                      :uri-encoder    uri-encoder
+                                      :req            (assoc req :body hashed-body)}
+                                     add-canonical-request
+                                     add-signing-key
+                                     add-string-to-sign
+                                     add-signature)
+        auth-string             (authorization-string signing-params signature)]
+    (with-meta (update req :headers
+                       #(-> %
+                            (assoc "authorization" auth-string)
+                            (cond->
+                                (:session-token signing-params)
+                              (assoc "x-amz-security-token" (:session-token signing-params))
+                              content-sha256-header?
+                              (assoc "x-amz-content-sha256" hashed-body))))
+      (-> signing-context
+          (dissoc :req)
+          (update :signing-params dissoc :secret-access-key)))))
+
+(defmethod signing/sign-http-request "s3"
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request
+                        :content-sha256-header? true
+                        :uri-encoder s3-uri-encoder))
+
+(defmethod signing/sign-http-request "v4"
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request
+                        :uri-encoder default-uri-encoder))
+
+;; The only service that uses s3v4 is s3-control. aws-sdk-js assigns the v4 signer for this
+(defmethod signing/sign-http-request "s3v4"
+  [service endpoint credentials http-request]
+  (v4-sign-http-request service endpoint credentials http-request
+                        :uri-encoder default-uri-encoder))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; PRESIGN
+
+(defmethod signing/presigned-url "s3"
+  [{:keys             [http-request op service endpoint credentials]
     {:keys [expires]} :presigned-url}]
   (let [auth-info               (auth-info service endpoint credentials)
         req*                    (-> http-request
@@ -186,7 +239,7 @@
         qs-no-sig               (util/query-string qs-params-no-sig)
         {:keys [signature]
          :as   signing-context} (->> {:signing-params signing-params
-                                      :uri-encoder   s3-uri-encoder
+                                      :uri-encoder    s3-uri-encoder
                                       :req            (assoc req
                                                              :query-string qs-no-sig
                                                              :body "UNSIGNED-PAYLOAD")}
@@ -200,50 +253,3 @@
      :cognitect.aws.signing/basis (-> signing-context
                                       (dissoc :req)
                                       (update :signing-params assoc :secret-access-key "**REDACTED**"))}))
-
-(defn v4-sign-http-request
-  [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
-  (let [auth-info               (auth-info service endpoint credentials)
-        req                     (cond->
-                                    (-> http-request
-                                        (update :headers normalize-headers)
-                                        move-uri-qs-to-qs)
-                                  (add-session-token? auth-info)
-                                  (update :headers assoc "x-amz-security-token" (:session-token auth-info)))
-        amz-date                (get-in http-request [:headers "x-amz-date"])
-        hashed-body             (hashed-body (:body req))
-        signing-params          (signing-params "noop" 0 (:headers req) auth-info amz-date)
-        {:keys [signature]
-         :as   signing-context} (->> {:signing-params signing-params
-                                      :uri-encoder   (if (= "s3" (:service-name auth-info))
-                                                        s3-uri-encoder
-                                                        default-uri-encoder)
-                                      :req            (assoc req :body hashed-body)}
-                                     add-canonical-request
-                                     add-signing-key
-                                     add-string-to-sign
-                                     add-signature)
-        auth-string             (authorization-string signing-params signature)]
-    (with-meta (update req :headers
-                       #(-> %
-                            (assoc "authorization" auth-string)
-                            (cond->
-                                (:session-token signing-params)
-                              (assoc "x-amz-security-token" (:session-token signing-params))
-                              content-sha256-header?
-                              (assoc "x-amz-content-sha256" hashed-body))))
-      (-> signing-context
-          (dissoc :req)
-          (update :signing-params dissoc :secret-access-key)))))
-
-(defmethod signing/sign-http-request "v4"
-  [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request))
-
-(defmethod signing/sign-http-request "s3"
-  [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
-
-(defmethod signing/sign-http-request "s3v4"
-  [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))

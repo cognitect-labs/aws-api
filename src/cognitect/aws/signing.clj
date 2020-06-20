@@ -6,6 +6,6 @@
     (get-in service [:metadata :signatureVersion])))
 
 (defmulti presigned-url
-  "Return a string representing a presigned URL for an HTTP request."
+  "Return a map with :presigned-url bound to a presigned URL for an HTTP request."
   (fn [context]
     (get-in context [:service :metadata :signatureVersion])))

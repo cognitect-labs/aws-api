@@ -161,7 +161,8 @@
                                              "host"       "examplebucket.s3.amazonaws.com"}}
             :op            :GetSomething
             :presigned-url {:expires 86400}
-            :service       {:metadata {:signingName "s3"}}
+            :service       {:metadata {:signingName "s3"
+                                       :signatureVersion "s3"}}
             :endpoint      {:region "us-east-1"}
             :credentials   {:aws/access-key-id     "AWSKeyId"
                             :aws/secret-access-key "AWSSecretAccessKey"}}))))
@@ -176,7 +177,8 @@
                                              "host"       "examplebucket.s3.amazonaws.com"}}
             :op            :GetSomething
             :presigned-url {:expires 86400}
-            :service       {:metadata {:signingName "s3"}}
+            :service       {:metadata {:signingName "s3"
+                                       :signatureVersion "s3"}}
             :endpoint      {:region "us-east-1"}
             :credentials   {:aws/access-key-id     "AWSKeyId"
                             :aws/secret-access-key "AWSSecretAccessKey"
