@@ -126,6 +126,10 @@
               signed-request (signing/sign-http-request
                               service {:region "us-east-1"} credentials
                               (update request :query-string encode-query-string))]
+          (when (not= authorization (get-in signed-request [:headers "authorization"]))
+            (println {:request        request
+                      :signed-request signed-request
+                      :meta           (meta signed-request)}))
           (is (= authorization
                  (get-in signed-request [:headers "authorization"]))
               (str "Wrong signature for " request))))

@@ -35,11 +35,11 @@
 
 (defn default-uri-encoder [uri]
   (-> uri
-      (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
-      (str/replace #"\s" "%20"); (URI.) throws Exception on space.
+      (str/replace #"//+" "/")  ; (URI.) throws Exception on '//'.
+      (str/replace #"\s" "%20") ; (URI.) throws Exception on space.
       (URI.)
       (.normalize)
-      (.getPath)
+      (.getPath)                ; decodes %20 back to space
       (util/uri-encode :exclude-slashes)))
 
 (defn- canonical-uri
