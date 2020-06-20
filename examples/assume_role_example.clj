@@ -7,7 +7,7 @@
 
 (def iam (aws/client {:api :iam}))
 
-(->> (aws/invoke iam {:op :ListRoles}) :Roles (map :RoleName))
+(->> (aws/invoke iam {:op :ListRoles}) :Roles (map :RoleName) sort)
 
 ;; who am I?
 (aws/invoke iam {:op :GetUser})
