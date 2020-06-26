@@ -109,7 +109,9 @@
              headers))
 
 (defn- add-canonical-request
-  [{{:keys [request-method uri headers body] :as request} :req :as context}]
+  [{{:keys [request-method uri headers body] :as request} :req
+    :keys [hashed-body]
+    :as context}]
   (assoc context
          :canonical-request
          (str/join "\n" [(canonical-method request-method)
@@ -117,7 +119,7 @@
                          (canonical-query-string request)
                          (canonical-headers-string headers)
                          (signed-headers-string headers)
-                         body])))
+                         (or hashed-body body)])))
 
 (defn- authorization-string [{:keys [algo credential signed-headers]} signature]
   (format "%s Credential=%s, SignedHeaders=%s, Signature=%s"
@@ -152,30 +154,66 @@
         (update :headers normalize-headers)
         (cond-> new-qs (assoc :query-string new-qs)))))
 
+(defn add-signing-params [{:keys [service endpoint credentials op req amz-date]
+                           {:keys [expires]} :presigned-url
+                           :as context}]
+  (assoc context
+         :signing-params
+         (signing-params service endpoint credentials op expires (:headers req)
+                         amz-date)))
+
+(defn extract-amz-date [{:keys [req] :as context}]
+  (-> context
+      (assoc :amz-date (get-in req [:headers "x-amz-date"]))))
+
+(defn dissoc-amz-date [{:keys [req] :as context}]
+  (-> context
+      (update-in [:req :headers] dissoc "x-amz-date")))
+
+(defn prepare-request [{:keys [credentials content-sha256-header? hashed-body] :as context}]
+  (-> context
+      (clojure.set/rename-keys {:http-request :req})
+      (update :req format-request)
+      (cond-> (:aws/session-token credentials)
+        (update-in [:req :headers] assoc "x-amz-security-token" (:aws/session-token credentials)))
+      (cond-> content-sha256-header?
+        (update-in [:req :headers] assoc "x-amz-content-sha256" hashed-body))))
+
+(defn add-hashed-body [context]
+  (assoc context :hashed-body (hashed-body (get-in context [:http-request :body]))))
+
+(defn add-auth-header [{:keys [signing-params signature] :as context}]
+  (assoc-in context [:req :headers "authorization"]
+            (authorization-string signing-params signature)))
+
+(defn extract-req [{:keys [req] :as context}]
+  (with-meta req (dissoc context :req)))
+
+(defn redact-secret-access-key [context]
+  (-> context
+      (assoc-in [:credentials :aws/secret-access-key] "**REDACTED**")
+      (assoc-in [:signing-params :aws/secret-access-key] "**REDACTED**")))
+
 (defn v4-sign-http-request
   [service endpoint credentials http-request & {:keys [content-sha256-header? uri-encoder]}]
-  (let [hashed-body             (-> http-request :body hashed-body)
-        req                     (cond-> (format-request http-request)
-                                  (:aws/session-token credentials)
-                                  (update :headers assoc "x-amz-security-token" (:aws/session-token credentials))
-                                  content-sha256-header?
-                                  (update :headers assoc "x-amz-content-sha256" hashed-body))
-        amz-date                (get-in http-request [:headers "x-amz-date"])
-        signing-params          (signing-params service endpoint credentials
-                                                "noop" 0 (:headers req) amz-date)
-        {:keys [signature]
-         :as   signing-context} (->> {:signing-params signing-params
-                                      :uri-encoder    uri-encoder
-                                      :req            (assoc req :body hashed-body)}
-                                     add-canonical-request
-                                     add-signing-key
-                                     add-string-to-sign
-                                     add-signature)
-        auth-string             (authorization-string signing-params signature)]
-    (with-meta (update req :headers assoc "authorization" auth-string)
-      (-> signing-context
-          (dissoc :req)
-          (update :signing-params dissoc :aws/secret-access-key)))))
+  (->> {:uri-encoder    uri-encoder
+        :http-request http-request
+        :op "noop"
+        :service service
+        :endpoint endpoint
+        :credentials credentials
+        :content-sha256-header? content-sha256-header?}
+       add-hashed-body
+       prepare-request
+       extract-amz-date
+       add-signing-params
+       add-canonical-request
+       add-signing-key
+       add-string-to-sign
+       add-signature
+       add-auth-header
+       redact-secret-access-key
+       extract-req))
 
 (defmethod signing/sign-http-request "s3"
   [service endpoint credentials http-request]
@@ -224,20 +262,7 @@
          (str "https://" (:server-name req) (:uri req) "?"
               (util/query-string (assoc qs-params "X-Amz-Signature" signature)))))
 
-(defn add-signing-params [{:keys [service endpoint credentials op req amz-date]
-                           {:keys [expires]} :presigned-url
-                           :as context}]
-  (assoc context
-         :signing-params
-         (signing-params service endpoint credentials op expires (:headers req)
-                         amz-date)))
-
-(defn extract-amz-date [{:keys [req] :as context}]
-  (-> context
-      (assoc :amz-date (get-in req [:headers "x-amz-date"]))
-      (update-in [:req :headers] dissoc "x-amz-date")))
-
-(defn prepare-request [{:keys [] :as context}]
+(defn prepare-request-for-presign [{:keys [] :as context}]
   (-> context
       (clojure.set/rename-keys {:http-request :req})
       (update :req format-request)
@@ -246,17 +271,13 @@
 (defn add-s3-uri-encoder [context]
   (assoc context :uri-encoder s3-uri-encoder))
 
-(defn redact-secret-access-key [context]
-  (-> context
-      (assoc-in [:credentials :aws/secret-access-key] "**REDACTED**")
-      (assoc-in [:signing-params :aws/secret-access-key] "**REDACTED**")))
-
 (defmethod signing/presigned-url "s3"
   [initial-context]
   (-> initial-context
       add-s3-uri-encoder
-      prepare-request
+      prepare-request-for-presign
       extract-amz-date
+      dissoc-amz-date
       add-signing-params
       add-qs-params
       set-qs
