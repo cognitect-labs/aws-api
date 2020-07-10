@@ -97,6 +97,7 @@
                               (and region
                                    (region/basic-region-provider region)))
     :credentials-provider credentials-provider
+    :validate-requests?   (atom nil)
     :workflow             workflow}))
 
 (defn default-http-client

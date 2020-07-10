@@ -7,6 +7,7 @@
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client :as client]
             [cognitect.aws.client.shared :as shared]
+            [cognitect.aws.client.api.async :as api.async]
             [cognitect.aws.http :as http]
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as creds]
@@ -165,3 +166,11 @@
                                 [(step-named "before error")
                                  async-error-step
                                  (step-named "after error")]}))))))
+
+(deftest validate-requests?
+  (let [aws-client (aws/client params)]
+    (is (not (api.async/validate-requests? aws-client)))
+    (api.async/validate-requests aws-client true)
+    (is (api.async/validate-requests? aws-client))
+    (api.async/validate-requests aws-client false)
+    (is (not (api.async/validate-requests? aws-client)))))
