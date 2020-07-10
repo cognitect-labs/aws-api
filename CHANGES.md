@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* fix bug parsing iso8601 dates with fractional seconds [#144](https://github.com/cognitect-labs/aws-api/issues/144)
+
 ## 0.8.456 / 2020-03-27
 
 * upgrade to tools.logging-1.0.0, data.json-1.0.0, and core.async-1.0.567
