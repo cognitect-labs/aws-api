@@ -55,7 +55,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 106,
+   :line 107,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -67,7 +67,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 206,
+   :line 207,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -79,7 +79,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 170,
+   :line 171,
    :var-type "function",
    :arglists
    ([{:keys
@@ -94,7 +94,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 111,
+   :line 112,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -106,7 +106,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 160,
+   :line 161,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -118,7 +118,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 139,
+   :line 140,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -130,7 +130,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 146,
+   :line 147,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -142,7 +142,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 215,
+   :line 216,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -154,7 +154,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 130,
+   :line 131,
    :var-type "function",
    :arglists ([client] [client bool]),
    :doc
@@ -497,7 +497,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api/async.clj",
    :source-url nil,
-   :line 46,
+   :line 49,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
