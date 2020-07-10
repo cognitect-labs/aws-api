@@ -65,15 +65,6 @@
           context
           (assoc context :region-provider (shared/region-provider))))})
 
-(def add-endpoint-provider
-  {:name "add endpoint provider"
-   :f (fn [{:keys [api service endpoint-override] :as context}]
-        (assoc context :endpoint-provider
-               (endpoint/default-endpoint-provider
-                api
-                (get-in service [:metadata :endpointPrefix])
-                endpoint-override)))})
-
 (def provide-region
   {:name "provide region"
    :f (fn [{:keys [executor region region-provider] :as context}]
@@ -83,6 +74,15 @@
                                    (assoc context :region region)
                                    {:cognitect.anomalies/category :cognitect.anomalies/fault
                                     :cognitect.anomalies/message "Unable to fetch region"}))))})
+
+(def add-endpoint-provider
+  {:name "add endpoint provider"
+   :f (fn [{:keys [api service endpoint-override] :as context}]
+        (assoc context :endpoint-provider
+               (endpoint/default-endpoint-provider
+                api
+                (get-in service [:metadata :endpointPrefix])
+                endpoint-override)))})
 
 (def provide-endpoint
   {:name "provide endpoint"
@@ -149,7 +149,7 @@
    provide-endpoint          ;; resolution
 
    build-http-request        ;; process
-   apply-endpoint              ;; process / modification
+   apply-endpoint            ;; process / modification
    body-to-byte-buffer       ;; process / modification
    http-interceptors         ;; process / modification
    sign-request              ;; process / modification
