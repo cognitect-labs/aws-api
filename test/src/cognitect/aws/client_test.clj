@@ -2,6 +2,7 @@
   (:require [clojure.test :as t :refer [deftest testing is]]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client :as client]
+            [cognitect.aws.client.api.async :as api.async]
             [cognitect.aws.http :as http]
             [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as creds]
@@ -83,3 +84,11 @@
       (is (re-find #"^No known endpoint."
                    (:cognitect.anomalies/message
                     (aws/invoke aws-client {:op :ListBuckets})))))))
+
+(deftest validate-requests?
+  (let [aws-client (aws/client params)]
+    (is (not (api.async/validate-requests? aws-client)))
+    (api.async/validate-requests aws-client true)
+    (is (api.async/validate-requests? aws-client))
+    (api.async/validate-requests aws-client false)
+    (is (not (api.async/validate-requests? aws-client)))))

@@ -101,7 +101,8 @@
       :http-client          http-client
       :endpoint-provider    endpoint-provider
       :region-provider      region-provider
-      :credentials-provider credentials-provider})))
+      :credentials-provider credentials-provider
+      :validate-requests?   (atom nil)})))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."

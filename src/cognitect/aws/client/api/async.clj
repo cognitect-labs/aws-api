@@ -9,12 +9,15 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.dynaload :as dynaload]))
 
-(def ^:private validate-requests? (atom {}))
+(defn ^:skip-wiki validate-requests?
+  "For internal use. Don't call directly."
+  [client]
+  (some-> client client/-get-info :validate-requests? deref))
 
 (defn ^:skip-wiki validate-requests
   "For internal use. Don't call directly."
   [client tf]
-  (swap! validate-requests? assoc client tf)
+  (reset! (-> client client/-get-info :validate-requests?) tf)
   (when tf
     (service/load-specs (-> client client/-get-info :service)))
   tf)
@@ -55,10 +58,10 @@
   [client op-map]
   (let [result-chan                          (or (:ch op-map) (a/promise-chan))
         {:keys [service retriable? backoff]} (client/-get-info client)
-        validation-error                     (and (get @validate-requests? client)
+        validation-error                     (and (validate-requests? client)
                                                   (validate service op-map))]
     (when-not (contains? (:operations service) (:op op-map))
-      (throw (ex-info "Operation not supported" {:service (keyword (service/service-name service))
+      (throw (ex-info "Operation not supported" {:service   (keyword (service/service-name service))
                                                  :operation (:op op-map)})))
     (if validation-error
       (a/put! result-chan validation-error)
