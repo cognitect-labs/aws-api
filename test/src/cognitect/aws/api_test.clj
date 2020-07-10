@@ -33,3 +33,19 @@
         (is (= 1 @call-count))))
     ;; now actually stop the aws-client with the non-shared http-client
     (aws/stop supplied-unshared)))
+
+(deftest test-ops
+  (is (= (aws/ops (aws/client {:api :s3}))
+         (aws/ops :s3)))
+  (is (re-find #"missing :api key" (aws/ops (aws/client {}))))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/ops :does-not-exist))))
+
+(deftest test-doc
+  (is (= (with-out-str (aws/doc (aws/client {:api :s3}) :ListBuckets))
+         (with-out-str (aws/doc :s3 :ListBuckets))))
+  (is (re-find #"missing :api key" (aws/doc (aws/client {}) :ListBuckets)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/doc :does-not-exist :ListBuckets))))

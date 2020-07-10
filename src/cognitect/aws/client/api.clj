@@ -159,17 +159,20 @@
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
 
+(defn ^:private resolve-api-key [client-or-api-key]
+  (if (or (string? client-or-api-key)
+          (keyword? client-or-api-key))
+    client-or-api-key
+    (some-> client-or-api-key client/-get-info :api)))
+
 (defn ops
   "Returns a map of operation name to operation data for this client.
 
   Alpha. Subject to change."
-  [client]
-  (-> client
-      client/-get-info
-      :api
-      name
-      service/service-description
-      service/docs))
+  [client-or-api-key]
+  (if-let [api-key (resolve-api-key client-or-api-key)]
+    (service/docs (service/service-description (name api-key)))
+    "Client is missing :api key"))
 
 (defn doc-str
   "Given data produced by `ops`, returns a string
@@ -212,9 +215,11 @@
   for that operation to the current value of *out*. Returns nil.
 
   Alpha. Subject to change."
-  [client operation]
-  (println (or (some-> client ops operation doc-str)
-               (str "No docs for " (name operation)))))
+  [client-or-api-key op]
+  (if-let [api-key (resolve-api-key client-or-api-key)]
+    (println (or (some-> api-key ops op doc-str)
+                 (str "No docs for " (name op) " in " (name api-key))))
+    "Client is missing :api key"))
 
 (defn stop
   "Has no effect when the underlying http-client is the shared
