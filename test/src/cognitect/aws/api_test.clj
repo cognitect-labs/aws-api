@@ -49,3 +49,21 @@
   (is (thrown-with-msg? clojure.lang.ExceptionInfo
                         #"Cannot find"
                         (aws/doc :does-not-exist :ListBuckets))))
+
+(deftest test-request-spec-key
+  (is (= :cognitect.aws.s3/ListObjectsRequest
+         (aws/request-spec-key (aws/client {:api :s3}) :ListObjects)
+         (aws/request-spec-key :s3 :ListObjects)))
+  (is (re-find #"missing :api key" (aws/request-spec-key (aws/client {}) :ListObjects)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/request-spec-key :does-not-exist :ListBuckets))))
+
+(deftest test-response-spec-key
+  (is (= :cognitect.aws.s3/ListObjectsOutput
+         (aws/response-spec-key (aws/client {:api :s3}) :ListObjects)
+         (aws/response-spec-key :s3 :ListObjects)))
+  (is (re-find #"missing :api key" (aws/response-spec-key (aws/client {}) :ListObjects)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/response-spec-key :does-not-exist :ListBuckets))))

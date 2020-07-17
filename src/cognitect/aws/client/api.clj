@@ -138,19 +138,35 @@
   ([client bool]
    (api.async/validate-requests client bool)))
 
+(defn ^:private resolve-api-key [client-or-api-key]
+  (if (or (string? client-or-api-key)
+          (keyword? client-or-api-key))
+    client-or-api-key
+    (some-> client-or-api-key client/-get-info :api)))
+
+(defn ^:private resolve-service [client-or-api-key]
+  (some-> client-or-api-key
+          resolve-api-key
+          name
+          service/service-description))
+
 (defn request-spec-key
   "Returns the key for the request spec for op.
 
   Alpha. Subject to change."
-  [client op]
-  (service/request-spec-key (-> client client/-get-info :service) op))
+  [client-or-api-key op]
+  (if-let [service (resolve-service client-or-api-key)]
+    (service/request-spec-key service op)
+    "Client is missing :api key"))
 
 (defn response-spec-key
   "Returns the key for the response spec for op.
 
   Alpha. Subject to change."
-  [client op]
-  (service/response-spec-key (-> client client/-get-info :service) op))
+  [client-or-api-key op]
+  (if-let [service (resolve-service client-or-api-key)]
+    (service/response-spec-key service op)
+    "Client is missing :api key"))
 
 (def ^:private pprint-ref (delay (dynaload/load-var 'clojure.pprint/pprint)))
 (defn ^:skip-wiki pprint
@@ -158,12 +174,6 @@
   [& args]
   (binding [*print-namespace-maps* false]
     (apply @pprint-ref args)))
-
-(defn ^:private resolve-api-key [client-or-api-key]
-  (if (or (string? client-or-api-key)
-          (keyword? client-or-api-key))
-    client-or-api-key
-    (some-> client-or-api-key client/-get-info :api)))
 
 (defn ops
   "Returns a map of operation name to operation data for this client.
