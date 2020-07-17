@@ -7,46 +7,39 @@
             [cognitect.aws.signing :as signing]
             [cognitect.aws.flow.default-stack :as default-stack]
             [cognitect.aws.flow.credentials-stack :as credentials-stack]
+            [cognitect.aws.flow.util :refer [defstep]]
             [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
 
-(def set-api-to-s3
-  {:name "set api to s3"
-   :f (fn [context] (assoc context :api :s3))})
+(defstep set-api-to-s3 [context] (assoc context :api :s3))
 
-(def add-presigned-query-string
-  {:name "add presigned query-string"
-   :f (fn [context]
-        (select-keys (signing/presigned-url context) [:presigned-url :cognitect.aws.signing/basis]))})
+(defstep add-presigned-query-string [context]
+  (select-keys (signing/presigned-url context) [:presigned-url :cognitect.aws.signing/basis]))
 
-(def add-presigned-http-request
-  {:name "add http request"
-   :f    (fn [context]
-           (if-let [url (get-in context [:presigned-url :url])]
-             (assoc context :http-request
-                    (let [uri (java.net.URI. url)]
-                      {:request-method :get
-                       :scheme         (.getScheme uri)
-                       :server-name    (.getHost uri)
-                       :server-port    443
-                       :uri            (.getPath uri)
-                       ;; extract the encoded query string manually instead
-                       ;; of getting the decoded query strings from the URI.
-                       :query-string   (last (str/split url #"\?"))}))
-             context))})
+(defstep add-presigned-http-request [context]
+  (if-let [url (get-in context [:presigned-url :url])]
+    (assoc context :http-request
+           (let [uri (java.net.URI. url)]
+             {:request-method :get
+              :scheme         (.getScheme uri)
+              :server-name    (.getHost uri)
+              :server-port    443
+              :uri            (.getPath uri)
+              ;; extract the encoded query string manually instead
+              ;; of getting the decoded query strings from the URI.
+              :query-string   (last (str/split url #"\?"))}))
+    context))
 
-(def add-op
-  {:name "add op"
-   :f (fn [{:keys [http-request] :as context}]
-        (if http-request
-          (assoc context :op
-                 (some-> http-request
-                         :query-string
-                         util/query-string->map
-                         (get "Action")
-                         keyword))
-          context))})
+(defstep add-op [{:keys [http-request] :as context}]
+  (if http-request
+    (assoc context :op
+           (some-> http-request
+                   :query-string
+                   util/query-string->map
+                   (get "Action")
+                   keyword))
+    context))
 
 (def presigned-url-stack
   "Returns a map of :presigned-url"
