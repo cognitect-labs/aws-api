@@ -57,7 +57,10 @@
 
 (comment
 
-  (def c (cognitect.aws.client.api/client {}))
+  (require '[cognitect.aws.client.api :as aws]
+           '[cognitect.aws.diagnostics :as diagnostics])
+
+  (def c (aws/client {}))
 
   (def steps [(process-credentials)
               {:name "hide password"
@@ -66,23 +69,23 @@
                       (assoc-in context [:credentials :aws/secret-access-key] "REDACTED")
                       context))}])
 
-  (cognitect.aws.client.api/invoke c {:workflow-steps steps})
+  (aws/invoke c {:workflow-steps steps})
 
-  (cognitect.aws.client.api/invoke c {:credentials-provider
+  (aws/invoke c {:credentials-provider
                                       (credentials/basic-credentials-provider
                                        {:access-key-id "id"
                                         :secret-access-key "secret"})
                                       :workflow-steps steps})
 
-  (cognitect.aws.client.api/invoke c {:credentials-provider
+  (aws/invoke c {:credentials-provider
                                       (reify credentials/CredentialsProvider
                                         (fetch [_]))
                                       :workflow-steps steps})
 
   (def res *1)
 
-  (cognitect.aws.diagnostics/summarize-log res)
+  (diagnostics/summarize-log res)
 
-  (cognitect.aws.diagnostics/trace-key res :credentials)
+  (diagnostics/trace-key res :credentials)
 
   )
