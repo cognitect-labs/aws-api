@@ -237,10 +237,10 @@
   [output-shape body parse-fn]
   (if-let [payload-name (:payload output-shape)]
     (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
-      (condp = (:type body-shape)
-        "blob" {(keyword payload-name) (util/bbuf->input-stream body)}
-        "string" (util/bbuf->str body)
-        {(keyword payload-name) (parse-fn body-shape (util/bbuf->str body))}))
+      {(keyword payload-name) (condp = (:type body-shape)
+                                "blob"   (util/bbuf->input-stream body)
+                                "string" (util/bbuf->str body)
+                                (parse-fn body-shape (util/bbuf->str body)))})
     ;; No payload
     (let [body-str (util/bbuf->str body)]
       (when-not (str/blank? body-str)
