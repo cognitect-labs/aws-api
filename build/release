@@ -6,7 +6,7 @@ echo "Cleaning..."
 rm -rf ./target
 
 echo "Aligning pom.xml with deps.edn ..."
-clj -Spom
+clj -Srepro -Spom
 if [ "$(git diff pom.xml)" = "" ]; then
     echo "nothing to change"
 else
