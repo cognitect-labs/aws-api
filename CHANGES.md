@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* fix bug decoding GetBucketPolicy response [#148](https://github.com/cognitect-labs/aws-api/issues/148)
+
 ## 0.8.469 / 2020-07-10
 
 * fix bug parsing iso8601 dates with fractional seconds [#144](https://github.com/cognitect-labs/aws-api/issues/144)
