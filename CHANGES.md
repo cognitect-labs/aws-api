@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.474 / 2020-08-15
 
 * fix bug decoding GetBucketPolicy response [#148](https://github.com/cognitect-labs/aws-api/issues/148)
 
