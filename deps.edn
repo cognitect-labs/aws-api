@@ -14,7 +14,7 @@
                              :extra-deps  {commons-io/commons-io       {:mvn/version "2.6"}
                                            org.clojure/test.check      {:mvn/version "0.10.0"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
-                                           http-kit                    {:mvn/version "2.3.0"}
+                                           http-kit/http-kit           {:mvn/version "2.3.0"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.11.718"}
                                            com.cognitect.aws/s3        {:mvn/version "784.2.593.0"}}}
            :test            {:extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
