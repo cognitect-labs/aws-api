@@ -185,9 +185,5 @@
       <id>clojars</id>
       <url>https://repo.clojars.org/</url>
     </repository>
-    <repository>
-      <id>datomic-cloud</id>
-      <url>s3://datomic-releases-1fc2183a/maven/releases</url>
-    </repository>
   </repositories>
 </project>
