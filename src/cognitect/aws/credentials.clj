@@ -56,7 +56,7 @@
   resulting `ScheduledFuture`.
 
   If the credentials returned by the provider are not valid, resets
-  both atoms to nil, logs an error, and returns nil."
+  both atoms to nil and returns nil."
   [credentials-atom scheduled-refresh-atom provider scheduler]
   (try
     (let [{:keys [::ttl] :as new-creds} (fetch provider)]
