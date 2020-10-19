@@ -68,7 +68,8 @@
                                                       (or (:workflow op-map) (:workflow client))
                                                       default-stack/default-stack))
         result-chan                          (or (:ch op-map) (a/promise-chan))
-        {:keys [service retriable? backoff]} (client/-get-info client)
+        {:keys [api retriable? backoff]} (client/-get-info client)
+        service (service/service-description (name api))
         validation-error                     (and (validate-requests? client)
                                                   (validate service op-map))]
     (if validation-error
