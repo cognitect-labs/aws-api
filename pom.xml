@@ -41,12 +41,17 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>tools.logging</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
-      <groupId>com.cognitect</groupId>
-      <artifactId>http-client</artifactId>
-      <version>0.1.104</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-http</artifactId>
+      <version>9.4.27.v20200227</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>9.4.27.v20200227</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -54,9 +59,14 @@
       <version>0.2.0-alpha6</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-client</artifactId>
+      <version>9.4.27.v20200227</version>
+    </dependency>
+    <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
-      <version>1.0.567</version>
+      <version>1.2.603</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -184,10 +194,6 @@
     <repository>
       <id>clojars</id>
       <url>https://repo.clojars.org/</url>
-    </repository>
-    <repository>
-      <id>datomic-cloud</id>
-      <url>s3://datomic-releases-1fc2183a/maven/releases</url>
     </repository>
   </repositories>
 </project>
