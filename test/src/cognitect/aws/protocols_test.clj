@@ -16,7 +16,8 @@
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
             [cognitect.aws.protocols.query]
-            [cognitect.aws.protocols.ec2])
+            [cognitect.aws.protocols.ec2]
+            [cognitect.aws.test.utils :as test.utils])
   (:import (java.util Date)))
 
 (s/fdef cognitect.aws.util/query-string
@@ -26,7 +27,7 @@
 
 (defn instrument-fixture [f]
   (try
-    (stest/instrument ['cognitect.aws.util/query-string])
+    (stest/instrument)
     (f)
     (finally
       (stest/unstrument))))
@@ -66,60 +67,6 @@
 
 (defn update-params [data paths fn]
   (update data :params update-many paths fn))
-
-(defmulti with-blob-xforms
-  "The botocore tests we're taking advantage of here all assume that
-  we accept strings for blob types, but this library does not.  Use
-  this multimethod to xform strings to byte arrays before submitting
-  requests to invoke."
-  (fn [protocol test-name test-case]
-    [protocol test-name]))
-
-(defmethod with-blob-xforms :default
-  [_ _ test-case] test-case)
-
-(defmethod with-blob-xforms ["ec2" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case [:BlobArg] get-bytes))
-
-(defmethod with-blob-xforms ["query" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case [:BlobArg] get-bytes))
-
-(defmethod with-blob-xforms ["json" "Base64 encoded Blobs"]
-  [_ _ test-case]
-  (update-params test-case
-                 [:BlobArg
-                  [:BlobMap :key1]
-                  [:BlobMap :key2]]
-                 get-bytes))
-
-(defmethod with-blob-xforms ["json" "Nested blobs"]
-  [_ _ test-case]
-  (update-params test-case
-                 [[:ListParam 0]
-                  [:ListParam 1]]
-                 get-bytes))
-
-(defmethod with-blob-xforms ["rest-xml" "Blob and timestamp shapes"]
-  [_ _ test-case]
-  (update-params test-case [[:StructureParam :b]] get-bytes))
-
-(defmethod with-blob-xforms ["rest-xml" "Blob payload"]
-  [_ _ test-case]
-  (update-params test-case [:foo] get-bytes))
-
-(defmethod with-blob-xforms ["rest-json" "Blob and timestamp shapes"]
-  [_ _ test-case]
-  (update-in test-case [:params :Bar] get-bytes))
-
-(defmethod with-blob-xforms ["rest-json" "Serialize blobs in body"]
-  [_ _ test-case]
-  (update-in test-case [:params :Bar] get-bytes))
-
-(defmethod with-blob-xforms ["query" "URL Encoded values in body"]
-  [_ _ test-case]
-  (update-in test-case [:params :Blob] get-bytes))
 
 (defn timestamp->date [secs]
   (Date. (* secs 1000)))
@@ -341,11 +288,7 @@
 (defmethod test-request-body "rest-xml"
   [_ expected {:keys [body]}]
   (is (= (some-> expected not-empty)
-         ;; TODO (dchelimsky 2019-02-15) there is only one case
-         ;; in which body is a byte array. This may change if/when
-         ;; we expose build-http-request as an API and settle on
-         ;; a type for body.
-         (if (bytes? body) (slurp body) body))))
+         body)))
 
 (defmethod test-request-body "rest-json"
   [_ expected http-request]
@@ -358,27 +301,19 @@
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
 
-(defn parse-query-string [s]
-  (->> (str/split s #"&")
-       (map #(str/split % #"="))
-       (map (fn [[a b]] [a b]))
-       (into {})))
-
 (defmethod test-request-body "query"
   [_ expected {:keys [body]}]
   (if (str/blank? expected)
     (is (nil? body))
-    (is (= (parse-query-string expected)
-           (parse-query-string body)))))
+    (is (= (util/query-string->map expected)
+           (util/query-string->map body)))))
 
 (defmulti run-test (fn [io protocol description service test-case] io))
 
 (defmethod run-test "input"
   [_ protocol description service test-case]
   (let [{expected :serialized :keys [given params]}
-        (->> test-case
-             (with-blob-xforms protocol description)
-             (with-timestamp-xforms protocol description))]
+        (with-timestamp-xforms protocol description test-case)]
     (try
       (let [op-map       {:op (:name given) :request params}
             http-request (client/build-http-request service op-map)]
@@ -396,14 +331,15 @@
   [_ protocol description service {:keys [given response result] :as test-case}]
   (try
     (let [op-map          {:op (:name given)}
-          parsed-response (client/parse-http-response service
-                                                      op-map
-                                                      {:status  (:status_code response)
-                                                       :headers (reduce-kv (fn [m k v]
-                                                                             (assoc m (name k) v))
-                                                                           {}
-                                                                           (:headers response))
-                                                       :body    (util/->bbuf (:body response))})]
+          body-bytes (.getBytes (:body response))
+          received-response {:status  (:status_code response)
+                             :headers (reduce-kv (fn [m k v]
+                                                   (assoc m (name k) v))
+                                                 {}
+                                                 (:headers response))
+                             :response-body-as :inputstream
+                             :body (java.io.ByteArrayInputStream. body-bytes)}
+          parsed-response (client/parse-http-response service op-map received-response)]
       (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))

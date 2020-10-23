@@ -5,6 +5,8 @@
   "API functions for using a client to interact with AWS services."
   (:require [clojure.core.async :as a]
             [cognitect.aws.client :as client]
+            [cognitect.aws.flow.default-stack :as default-stack]
+            [cognitect.aws.flow.presigned-url-stack :as presigned-url-stack]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.service :as service]
             [cognitect.aws.dynaload :as dynaload]))
@@ -19,7 +21,7 @@
   [client tf]
   (reset! (-> client client/-get-info :validate-requests?) tf)
   (when tf
-    (service/load-specs (-> client client/-get-info :service)))
+    (service/load-specs (-> client client/-get-info :api name service/service-description)))
   tf)
 
 (def ^:private registry-ref (delay (dynaload/load-var 'clojure.spec.alpha/registry)))
@@ -46,6 +48,11 @@
         (assoc (explain-data spec request)
                :cognitect.anomalies/category :cognitect.anomalies/incorrect)))))
 
+(def ^{:private true :skip-wiki true} workflow-stacks
+  {:cognitect.aws.alpha.workflow/default             default-stack/default-stack
+   :cognitect.aws.alpha.workflow/presigned-url       presigned-url-stack/presigned-url-stack
+   :cognitect.aws.alpha.workflow/fetch-presigned-url presigned-url-stack/fetch-presigned-url-stack})
+
 (defn invoke
   "Async version of cognitect.aws.client.api/invoke. Returns
   a core.async channel which delivers the result.
@@ -56,17 +63,19 @@
 
   Alpha. Subject to change."
   [client op-map]
-  (let [result-chan                          (or (:ch op-map) (a/promise-chan))
-        {:keys [service retriable? backoff]} (client/-get-info client)
+  (let [workflow-steps                       (or (:workflow-steps op-map) ;; internal use only
+                                                 (get workflow-stacks
+                                                      (or (:workflow op-map) (:workflow client))
+                                                      default-stack/default-stack))
+        result-chan                          (or (:ch op-map) (a/promise-chan))
+        {:keys [api retriable? backoff]} (client/-get-info client)
         validation-error                     (and (validate-requests? client)
-                                                  (validate service op-map))]
-    (when-not (contains? (:operations service) (:op op-map))
-      (throw (ex-info "Operation not supported" {:service   (keyword (service/service-name service))
-                                                 :operation (:op op-map)})))
+                                                  api
+                                                  (validate (service/service-description (name api)) op-map))]
     (if validation-error
       (a/put! result-chan validation-error)
       (retry/with-retry
-        #(client/send-request client op-map)
+        #(client/send-request client op-map workflow-steps)
         result-chan
         (or (:retriable? op-map) retriable?)
         (or (:backoff op-map) backoff)))

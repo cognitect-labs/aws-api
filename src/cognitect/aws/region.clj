@@ -118,3 +118,12 @@
   Alpha. Subject to change."
   [provider]
   (u/fetch-async fetch provider "region"))
+
+(defn basic-region-provider
+  "Returns an implementation of RegionProvider which returns
+  region on fetch.
+
+  Alpha. Subject to change."
+  [region]
+  (reify RegionProvider
+    (fetch [_] region)))

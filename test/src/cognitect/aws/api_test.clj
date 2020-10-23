@@ -3,14 +3,16 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.http :as http]
             [cognitect.aws.client.api :as aws]
+            [cognitect.aws.flow.default-stack :as default-stack]
             [cognitect.aws.client.shared :as shared]))
 
 (deftest test-underlying-http-client
   (testing "defaults to shared client"
-    (let [clients (repeatedly 5 #(aws/client {:api :s3 :region "us-east-1"}))]
+    (let [contexts (repeatedly 5 #(let [c (aws/client {:api :s3 :region "us-east-1"})]
+                                    (aws/invoke c {:workflow-steps [default-stack/add-http-client]})))]
       (is (= #{(shared/http-client)}
              (into #{(shared/http-client)}
-                   (->> clients (map (fn [c] (-> c client/-get-info :http-client))))))))))
+                   (->> contexts (map :http-client))))))))
 
 (deftest test-stop
   (let [call-count (atom 0)
@@ -31,3 +33,37 @@
         (is (= 1 @call-count))))
     ;; now actually stop the aws-client with the non-shared http-client
     (aws/stop supplied-unshared)))
+
+(deftest test-ops
+  (is (= (aws/ops (aws/client {:api :s3}))
+         (aws/ops :s3)))
+  (is (re-find #"missing :api key" (aws/ops (aws/client {}))))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/ops :does-not-exist))))
+
+(deftest test-doc
+  (is (= (with-out-str (aws/doc (aws/client {:api :s3}) :ListBuckets))
+         (with-out-str (aws/doc :s3 :ListBuckets))))
+  (is (re-find #"missing :api key" (aws/doc (aws/client {}) :ListBuckets)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/doc :does-not-exist :ListBuckets))))
+
+(deftest test-request-spec-key
+  (is (= :cognitect.aws.s3/ListObjectsRequest
+         (aws/request-spec-key (aws/client {:api :s3}) :ListObjects)
+         (aws/request-spec-key :s3 :ListObjects)))
+  (is (re-find #"missing :api key" (aws/request-spec-key (aws/client {}) :ListObjects)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/request-spec-key :does-not-exist :ListBuckets))))
+
+(deftest test-response-spec-key
+  (is (= :cognitect.aws.s3/ListObjectsOutput
+         (aws/response-spec-key (aws/client {:api :s3}) :ListObjects)
+         (aws/response-spec-key :s3 :ListObjects)))
+  (is (re-find #"missing :api key" (aws/response-spec-key (aws/client {}) :ListObjects)))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo
+                        #"Cannot find"
+                        (aws/response-spec-key :does-not-exist :ListBuckets))))

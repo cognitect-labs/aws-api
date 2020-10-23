@@ -19,8 +19,8 @@
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream ByteArrayOutputStream]
-           [java.net URLEncoder]
-           [java.util Base64]))
+           [java.util Base64]
+           [java.net URLEncoder]))
 
 (set! *warn-on-reflection* true)
 
@@ -143,9 +143,9 @@
   (->bbuf [_]))
 
 (defn xml-read
-  "Parse the UTF-8 XML string."
+  "Parse the source XML, presumably a java.util.InputStream"
   [s]
-  (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))
+  (xml/parse s
              :namespace-aware false
              :skip-whitespace true))
 
@@ -187,23 +187,79 @@
           (print (str "</" (name (:tag e)) ">")))
         (print " />")))))
 
-(defn url-encode
-  "Percent encode the string to put in a URL."
-  [^String s]
-  (-> s
-      (URLEncoder/encode "UTF-8")
-      (.replace "+" "%20")))
+(defn replace-double-slash [s]
+  (str/replace s #"//" "/"))
+
+(defn trim-dotdot
+  "Replace `foo/..` with `` in a uri"
+  [s]
+  (let [s* (-> s
+               (str/replace #"[^./]+/\.\." "")
+               replace-double-slash)]
+    (if (not= s s*)
+      (recur s*)
+      s)))
+
+(defn trim-dot-slash
+  "Strip `./` in a uri"
+  [s]
+  (str/replace s #"(^|/)\./" ""))
+
+(defn remove-leading-slash [s]
+  (str/replace s #"^/" ""))
+
+(defn uri-normalize [uri]
+  (-> uri
+      replace-double-slash
+      remove-leading-slash
+      trim-dot-slash
+      trim-dotdot
+      (->> (apply str "/"))))
+
+(defn uri-encode
+  "Escape (%XX) special characters in the string `s`.
+
+  Letters, digits, and the characters `_-~.` are excluded from
+  encoding. Supply the optional `exclude-slashes` (anything truthy) to
+  exclude them from encoding as well.
+
+  See https://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html"
+  ([^String s]
+   (uri-encode s false))
+  ([^String s exclude-slashes?]
+   (when s
+     (cond->
+         (-> s
+             (URLEncoder/encode "UTF-8")
+             (str/replace "+" "%20")
+             (str/replace "*" "%2A")
+             (str/replace "%7E" "~"))
+         exclude-slashes?
+         (str/replace "%2F" "/")))))
 
 (defn query-string
   "Create a query string from a list of parameters. Values must all be
   strings."
   [params]
   (when-not (empty? params)
-    (str/join "&" (map (fn [[k v]]
-                         (str (url-encode (name k))
-                              "="
-                              (url-encode v)))
+    (str/join "&" (map (fn [[k v]] (str (name k) "=" v))
                        params))))
+
+(defn query-string->vec
+  "Parses query string to a sequence of tuples. Returns empty sequence
+  if s is nil or blank."
+  [s]
+  (when-not (str/blank? s)
+    (->> (str/split s #"&")
+         (map #(str/split % #"=" 2)))))
+
+(defn query-string->map
+  "Parses query string to a map. Returns empty map if s is nil or
+  blank."
+  [s]
+  (->> (query-string->vec s)
+       (map (fn [[a b]] [a b]))
+       (into {})))
 
 (defn read-json
   "Read readable as JSON. readable can be any valid input for

@@ -25,10 +25,12 @@
   [readerable]
   (edn/read-string (slurp readerable)))
 
-(defn service-description [service-name]
+(defn service-description* [service-name]
   (if-let [resource (descriptor-resource service-name)]
     (read-service-description resource)
     (throw (ex-info (str "Cannot find resource " (descriptor-resource-path service-name) ".") {}))))
+
+(def service-description (memoize service-description*))
 
 (defn shape
   "Returns the shape referred by `shape-ref`."

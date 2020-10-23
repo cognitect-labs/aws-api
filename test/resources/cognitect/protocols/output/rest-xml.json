@@ -32,40 +32,5 @@
                 }
             }
         ]
-    },
-    {
-        "description": "Single string in payload",
-        "metadata": {"protocol": "rest-xml"},
-        "shapes": {
-            "OutputShape": {
-                "type": "structure",
-                "members": {
-                    "Data": {
-                        "shape": "DataShape"
-                    }
-                },
-                "payload" : "Data"
-            },
-            "DataShape": {
-                "type": "string"
-            }
-        },
-        "cases": [
-            {
-                "given": {
-                    "output": {
-                        "shape": "OutputShape"
-                    },
-                    "name": "OperationName"
-                },
-                "result": {
-                    "Data": "{\"a\":1}"
-                },
-                "response": {
-                    "status_code": 200,
-                    "body": "{\"a\":1}"
-                }
-            }
-        ]
     }
 ]

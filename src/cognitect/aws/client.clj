@@ -7,9 +7,15 @@
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
             [cognitect.aws.interceptors :as interceptors]
+            [cognitect.aws.dynaload :as dynaload]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.region :as region]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.service :as service]
+            [cognitect.aws.signing :as signing]
+            [cognitect.aws.signing.impl] ;; implements multimethods
+            [cognitect.aws.client.shared :as shared]
+            [cognitect.aws.flow :as flow]))
 
 (set! *warn-on-reflection* true)
 
@@ -34,13 +40,11 @@
   (fn [service op-map http-response]
     (get-in service [:metadata :protocol])))
 
-(defmulti sign-http-request
-  "Sign the HTTP request."
-  (fn [service endpoint credentials http-request]
-    (get-in service [:metadata :signatureVersion])))
-
 ;; TODO convey throwable back from impl
-(defn ^:private handle-http-response
+(defn handle-http-response
+  "Internal use.
+
+  Alpha. Subject to change."
   [service op-map http-response]
   (try
     (if (:cognitect.anomalies/category http-response)
@@ -49,18 +53,6 @@
     (catch Throwable t
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
-
-(defn ^:private with-endpoint [req {:keys [protocol
-                                           hostname
-                                           port
-                                           path]
-                                    :as   endpoint}]
-  (cond-> (-> req
-              (assoc-in [:headers "host"] hostname)
-              (assoc :server-name hostname))
-    protocol (assoc :scheme protocol)
-    port     (assoc :server-port port)
-    path     (assoc :uri path)))
 
 (defn ^:private put-throwable [result-ch t response-meta op-map]
   (a/put! result-ch (with-meta
@@ -73,44 +65,96 @@
   "For internal use. Send the request to AWS and return a channel which delivers the response.
 
   Alpha. Subject to change."
-  [client op-map]
-  (let [{:keys [service http-client region-provider credentials-provider endpoint-provider]}
-        (-get-info client)
-        response-meta (atom {})
-        region-ch     (region/fetch-async region-provider)
-        creds-ch      (credentials/fetch-async credentials-provider)
-        response-ch   (a/chan 1)
-        result-ch     (a/promise-chan)]
-    (a/go
-      (let [region   (a/<! region-ch)
-            creds    (a/<! creds-ch)
-            endpoint (endpoint/fetch endpoint-provider region)]
-        (cond
-          (:cognitect.anomalies/category region)
-          (a/>! result-ch region)
-          (:cognitect.anomalies/category creds)
-          (a/>! result-ch creds)
-          (:cognitect.anomalies/category endpoint)
-          (a/>! result-ch endpoint)
-          :else
-          (try
-            (let [http-request (sign-http-request service endpoint
-                                                  creds
-                                                  (-> (build-http-request service op-map)
-                                                      (with-endpoint endpoint)
-                                                      (update :body util/->bbuf)
-                                                      ((partial interceptors/modify-http-request service op-map))))]
-              (swap! response-meta assoc :http-request http-request)
-              (http/submit http-client http-request response-ch))
-            (catch Throwable t
-              (put-throwable result-ch t response-meta op-map))))))
-    (a/go
-      (try
-        (let [response (a/<! response-ch)]
-          (a/>! result-ch (with-meta
-                            (handle-http-response service op-map response)
-                            (swap! response-meta assoc
-                                   :http-response (update response :body util/bbuf->input-stream)))))
-        (catch Throwable t
-          (put-throwable result-ch t response-meta op-map))))
-    result-ch))
+  [client op-map stk]
+  (let [request (-> client
+                    -get-info
+                    (merge op-map)
+                    (assoc :executor (java.util.concurrent.ForkJoinPool/commonPool)))]
+    (flow/execute request stk)))
+
+(comment
+  (require '[cognitect.aws.client.api :as aws]
+           '[cognitect.aws.diagnostics :as diagnostics])
+
+  (System/setProperty "aws.profile" "REDACTED")
+
+  (set! *print-level* 10)
+
+  (def c (aws/client {:api :s3}))
+
+  (aws/invoke c {:op :ListBuckets})
+
+  (def list-buckets-response (aws/invoke c {:op :ListBuckets}))
+
+  (diagnostics/summarize-log list-buckets-response)
+
+  (diagnostics/log list-buckets-response)
+
+  (diagnostics/trace-key list-buckets-response :http-request)
+
+  (diagnostics/trace-key list-buckets-response :service)
+
+  (diagnostics/trace-key list-buckets-response :credentials)
+
+  (def bucket (-> list-buckets-response :Buckets first :Name))
+
+  (aws/invoke c {:op      :ListObjects
+                 :request {:Bucket bucket}
+                 :timeout 30})
+
+  (aws/invoke c {:op      :ListObjectsV2
+                 :request {:Bucket bucket}
+                 :timeout 30})
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; presigned requests
+
+  (require '[cognitect.aws.flow.presigned-url-stack :as presigned-url-stack])
+
+  (defn curl [url] (clojure.java.shell/sh "curl" url))
+
+  (def c (aws/client {}))
+
+  ;; ListBuckets
+  (def list-buckets-url
+    (:presigned-url (aws/invoke c {:op            :ListBuckets
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
+
+  (aws/invoke c {:workflow      :cognitect.aws.alpha.workflow/fetch-presigned-url
+                 :presigned-url {:url list-buckets-url}})
+
+  (curl list-buckets-url)
+
+  ;; ListObjects
+  ;; - assumes bucket is defined from ListBuckets, above
+
+  (def list-objects-url
+    (:presigned-url (aws/invoke c {:op            :ListObjects
+                                   :request       {:Bucket bucket}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
+
+  (curl list-objects-url)
+
+  ;; ListObjectsV2
+
+  (def list-objects-v2-url
+    (:presigned-url (aws/invoke c {:op            :ListObjectsV2
+                                   :request       {:Bucket bucket}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
+
+  (curl list-objects-v2-url)
+
+  ;; GetObject
+
+  (def get-object-url
+    (:presigned-url (aws/invoke c {:op            :GetObject
+                                   :request       {:Bucket bucket :Key "hello.txt"}
+                                   :workflow      :cognitect.aws.alpha.workflow/presigned-url
+                                   :presigned-url {:expires 15}})))
+
+  (curl get-object-url)
+
+)

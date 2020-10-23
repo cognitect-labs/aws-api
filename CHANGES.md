@@ -1,14 +1,5 @@
 # aws-api
 
-## 0.8.474 / 2020-08-15
-
-* fix bug decoding GetBucketPolicy response [#148](https://github.com/cognitect-labs/aws-api/issues/148)
-
-## 0.8.469 / 2020-07-10
-
-* fix bug parsing iso8601 dates with fractional seconds [#144](https://github.com/cognitect-labs/aws-api/issues/144)
-* fix memory leak when validating requests [#143](https://github.com/cognitect-labs/aws-api/issues/143)
-
 ## 0.8.456 / 2020-03-27
 
 * upgrade to tools.logging-1.0.0, data.json-1.0.0, and core.async-1.0.567

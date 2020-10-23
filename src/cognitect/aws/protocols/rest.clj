@@ -10,7 +10,8 @@
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.service :as service]
             [cognitect.aws.client :as client]
-            [cognitect.aws.shape :as shape]))
+            [cognitect.aws.shape :as shape])
+  (:import java.util.regex.Pattern))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Serializer
@@ -21,30 +22,22 @@
 
 (defn serialize-uri
   "Take a URI template, an input-shape, and a map of values and replace the parameters by their values.
-  Throws if args is missing any keys that are required in input-shape."
-  [uri-template {:keys [required] :as input-shape} args]
-  (str/replace uri-template
-               #"\{([^}]+)\}"
-               (fn [[_ param]]
-                 (or (if (.endsWith param "+")
-                       (some-> args
-                               (get (keyword (.substring param 0 (dec (count param)))))
-                               util/url-encode
-                               (.replace "%2F" "/")
-                               (.replace "%7E" "~")
-                               remove-leading-slash)
-                       (some-> args
-                               (get (keyword param))
-                               util/url-encode
-                               remove-leading-slash))
-                     ;; TODO (dchelimsky 2019-02-08) it's possible that 100% of
-                     ;; params in templated URIs are required, in which case
-                     ;; we don't need this extra test.
-                     (let [raw-param (str/replace param #"\+" "")]
-                       (when (contains? (set required) raw-param)
-                         (throw (ex-info "Required key missing from request. Check the docs for this operation."
-                                         {:required (mapv keyword required)}))))
-                     ""))))
+  Throws if args is missing any keys that are required in input-shape.
+
+  Example URI template: /{Bucket}/{Key}"
+  [uri-template {:keys [required members] :as input-shape} args s3?]
+  (let [to-replace (filter (fn [[k {:keys [location]}]] (= "uri" location)) members)]
+    (reduce (fn [uri [k {:keys [locationName]
+                         :or {locationName (name k)}}]]
+              (when (and (contains? (set required) (name k))
+                         (not (find args k)))
+                (throw (ex-info "Required key missing from request" {:required (mapv keyword required)})))
+              (let [value (get args k)
+                    encoded-value (-> value
+                                      str
+                                      (util/uri-encode s3?)
+                                      remove-leading-slash)]
+                (str/replace uri (Pattern/compile (str "\\{" locationName "\\+?""\\}")) encoded-value))) uri-template to-replace)))
 
 (declare serialize-qs-args)
 
@@ -68,14 +61,7 @@
 (defmethod serialize-qs-args :default
   [shape param-name args]
   (when-not (nil? args)
-    [[param-name (str args)]]))
-
-(defmethod serialize-qs-args "timestamp"
-  [shape param-name args]
-  (when-not (nil? args)
-    [[param-name (shape/format-date shape
-                                    args
-                                    (partial util/format-date util/iso8601-date-format))]]))
+    [[param-name (util/uri-encode (str args))]]))
 
 (defmethod serialize-qs-args "list"
   [shape param-name args]
@@ -91,6 +77,15 @@
                                (name k)
                                v))
           args))
+
+(defmethod serialize-qs-args "timestamp"
+  [shape param-name args]
+  (when-not (nil? args)
+    [[param-name
+      (util/uri-encode
+       (shape/format-date shape
+                          args
+                          (partial util/format-date util/iso8601-date-format)))]]))
 
 (defmulti serialize-header-value
   "Serialize a primitive shape in a HTTP header."
@@ -145,13 +140,7 @@
   (reduce-kv (fn [partition k v]
                (if-let [member-shape (shape/member-shape shape k)]
                  (let [partition-key (or (keyword (:location member-shape)) :body)]
-                   (assoc-in partition
-                             [partition-key
-                              (if (= :uri partition-key)
-                                (or (keyword (:locationName member-shape))
-                                    k)
-                                k)]
-                             v))
+                   (assoc-in partition [partition-key k] v))
                  partition))
              {}
              (util/with-defaults shape args)))
@@ -165,13 +154,14 @@
                           :scheme         :https
                           :server-port    443
                           :uri            (get-in operation [:http :requestUri])
-                          :headers        (common/headers service operation)}]
+                          :headers        (common/headers service operation)}
+        s3? (= "S3" (:serviceId metadata))]
     (if-not input-shape
       http-request
       (let [location->args (partition-args input-shape request)
             body-args      (:body location->args)]
         (-> http-request
-            (update :uri serialize-uri input-shape (:uri location->args))
+            (update :uri serialize-uri input-shape (:uri location->args) s3?)
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))
@@ -232,23 +222,23 @@
           {}
           (keys members)))
 
-(defn parse-body
+(defn parse-body*
   "Parse the HTTP response body for response data."
-  [output-shape body parse-fn]
-  (if-let [payload-name (:payload output-shape)]
-    (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
-      {(keyword payload-name) (condp = (:type body-shape)
-                                "blob"   (util/bbuf->input-stream body)
-                                "string" (util/bbuf->str body)
-                                (parse-fn body-shape (util/bbuf->str body)))})
+  [output-shape {:keys [body response-body-as headers]} parse-fn]
+  (if-let [payload-name (some-> output-shape :payload keyword)]
+    (let [body-shape (shape/member-shape output-shape payload-name)
+          parsed-body (condp = (:type body-shape)
+                        "blob" body ;; e.g. S3 GetObject
+                        "string" (slurp body) ;; e.g. S3 GetBucketPolicy is a string payload
+                        (parse-fn body-shape body))]
+      {payload-name parsed-body})
     ;; No payload
-    (let [body-str (util/bbuf->str body)]
-      (when-not (str/blank? body-str)
-        (parse-fn output-shape body-str)))))
+    (do ;when (not= "0" (get headers "content-length"))
+      (parse-fn output-shape body))))
 
 (defn parse-http-response
   [service {:keys [op] :as op-map} {:keys [status body] :as http-response}
-   parse-body-str
+   parse-success
    parse-error]
   (if (:cognitect.anomalies/category http-response)
     http-response
@@ -257,5 +247,5 @@
       (if (< status 400)
         (merge (parse-non-payload-attrs output-shape http-response)
                (when output-shape
-                 (parse-body output-shape body parse-body-str)))
+                 (parse-body* output-shape http-response parse-success)))
         (parse-error http-response)))))

@@ -7,12 +7,18 @@
            org.clojure/tools.logging {:mvn/version "1.1.0"}
            org.clojure/data.json     {:mvn/version "1.0.0"}
            org.clojure/data.xml      {:mvn/version "0.2.0-alpha6"}
-           com.cognitect/http-client {:mvn/version "0.1.104"}}
+
+           ;; temporarily vendor
+           ;; com.cognitect/http-client {:mvn/version "0.1.104"}
+           org.eclipse.jetty/jetty-client {:mvn/version "9.4.27.v20200227"}
+           org.eclipse.jetty/jetty-http {:mvn/version "9.4.27.v20200227"}
+           org.eclipse.jetty/jetty-util {:mvn/version "9.4.27.v20200227"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io       {:mvn/version "2.6"}
-                                           org.clojure/test.check      {:mvn/version "0.10.0"}
+                                           org.clojure/test.check      {:mvn/version "1.1.0"}
+                                           nubank/matcher-combinators  {:mvn/version "3.1.1"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
                                            http-kit/http-kit           {:mvn/version "2.3.0"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.11.718"}

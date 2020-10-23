@@ -28,7 +28,7 @@
 
 (defmethod serialize :default
   [shape args serialized prefix]
-  (prefix-assoc serialized prefix (str args)))
+  (prefix-assoc serialized prefix (util/uri-encode (str args))))
 
 (defmethod serialize "structure"
   [shape args serialized prefix]
@@ -74,9 +74,10 @@
   (prefix-assoc serialized prefix (util/base64-encode args)))
 
 (defmethod serialize "timestamp" [shape args serialized prefix]
-  (prefix-assoc serialized prefix (shape/format-date shape
-                                                     args
-                                                     (partial util/format-date util/iso8601-date-format))))
+  (prefix-assoc serialized prefix (util/uri-encode
+                                   (shape/format-date shape
+                                                      args
+                                                      (partial util/format-date util/iso8601-date-format)))))
 
 (defmethod serialize "boolean"
   [shape args serialized prefix]
@@ -107,8 +108,8 @@
       http-response
       (if (< status 400)
         (if-let [output-shape (service/shape service (:output operation))]
-          (shape/xml-parse output-shape (util/bbuf->str body))
-          (util/xml->map (util/xml-read (util/bbuf->str body))))
+          (shape/xml-parse output-shape body)
+          (util/xml->map (util/xml-read body)))
         (common/xml-parse-error http-response)))))
 
 (defmethod client/parse-http-response "query"
