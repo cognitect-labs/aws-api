@@ -4,6 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.protocols.common
   "Impl, don't call directly. "
   (:require [clojure.data.json :as json]
+            [clojure.java.io :as io]
             [cognitect.aws.util :as util])
   (:import (java.util Date)))
 
@@ -39,4 +40,4 @@
 
 (defn json-parse-error
   [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body (json/read :key-fn keyword))))
+  (parse-error* http-response (some-> body (io/reader :encoding "UTF-8") (json/read :key-fn keyword))))

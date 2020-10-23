@@ -31,16 +31,12 @@
   (-> request-method name str/upper-case))
 
 (defn s3-uri-encoder [path]
-  (util/uri-encode path :exclude-slashes))
+  (util/uri-encode path true))
 
 (defn default-uri-encoder [uri]
   (-> uri
-      (str/replace #"//+" "/")  ; (URI.) throws Exception on '//'.
-      (str/replace #"\s" "%20") ; (URI.) throws Exception on space.
-      (URI.)
-      (.normalize)
-      (.getPath)                ; decodes %20 back to space
-      (util/uri-encode :exclude-slashes)))
+      util/uri-normalize
+      (util/uri-encode true)))
 
 (defn- canonical-uri
   [uri uri-encoder]

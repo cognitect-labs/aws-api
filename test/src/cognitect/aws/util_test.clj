@@ -75,6 +75,15 @@
           (is (true? (:result res))
               res))))))
 
+(deftest normalization
+  (are [in out] (= out (util/uri-normalize in))
+    "/foo" "/foo"
+    "/./" "/"
+    "//" "/"
+    "//example//" "/example/"
+    "/./example" "/example"
+    "/example/.." "/"
+    "/example1/example2/../.." "/"))
 
 (comment
   (run-tests)

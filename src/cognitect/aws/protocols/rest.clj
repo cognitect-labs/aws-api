@@ -10,7 +10,8 @@
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.service :as service]
             [cognitect.aws.client :as client]
-            [cognitect.aws.shape :as shape]))
+            [cognitect.aws.shape :as shape])
+  (:import java.util.regex.Pattern))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Serializer
@@ -24,29 +25,19 @@
   Throws if args is missing any keys that are required in input-shape.
 
   Example URI template: /{Bucket}/{Key}"
-  [uri-template {:keys [required] :as input-shape} args]
-  (str/replace uri-template
-               #"\{([^}]+)\}"
-               (fn [[_ param]]
-                 (or (if (.endsWith param "+")
-                       (some-> args
-                               (get (keyword (.substring param 0 (dec (count param)))))
-                               util/uri-encode
-                               (.replace "%2F" "/")
-                               (.replace "%7E" "~")
-                               remove-leading-slash)
-                       (some-> args
-                               (get (keyword param))
-                               util/uri-encode
-                               remove-leading-slash))
-                     ;; TODO (dchelimsky 2019-02-08) it's possible that 100% of
-                     ;; params in templated URIs are required, in which case
-                     ;; we don't need this extra test.
-                     (let [raw-param (str/replace param #"\+" "")]
-                       (when (contains? (set required) raw-param)
-                         (throw (ex-info "Required key missing from request. Check the docs for this operation."
-                                         {:required (mapv keyword required)}))))
-                     ""))))
+  [uri-template {:keys [required members] :as input-shape} args s3?]
+  (let [to-replace (filter (fn [[k {:keys [location]}]] (= "uri" location)) members)]
+    (reduce (fn [uri [k {:keys [locationName]
+                         :or {locationName (name k)}}]]
+              (when (and (contains? (set required) (name k))
+                         (not (find args k)))
+                (throw (ex-info "Required key missing from request" {:required (mapv keyword required)})))
+              (let [value (get args k)
+                    encoded-value (-> value
+                                      str
+                                      (util/uri-encode s3?)
+                                      remove-leading-slash)]
+                (str/replace uri (Pattern/compile (str "\\{" locationName "\\+?""\\}")) encoded-value))) uri-template to-replace)))
 
 (declare serialize-qs-args)
 
@@ -149,13 +140,7 @@
   (reduce-kv (fn [partition k v]
                (if-let [member-shape (shape/member-shape shape k)]
                  (let [partition-key (or (keyword (:location member-shape)) :body)]
-                   (assoc-in partition
-                             [partition-key
-                              (if (= :uri partition-key)
-                                (or (keyword (:locationName member-shape))
-                                    k)
-                                k)]
-                             v))
+                   (assoc-in partition [partition-key k] v))
                  partition))
              {}
              (util/with-defaults shape args)))
@@ -169,13 +154,14 @@
                           :scheme         :https
                           :server-port    443
                           :uri            (get-in operation [:http :requestUri])
-                          :headers        (common/headers service operation)}]
+                          :headers        (common/headers service operation)}
+        s3? (= "S3" (:serviceId metadata))]
     (if-not input-shape
       http-request
       (let [location->args (partition-args input-shape request)
             body-args      (:body location->args)]
         (-> http-request
-            (update :uri serialize-uri input-shape (:uri location->args))
+            (update :uri serialize-uri input-shape (:uri location->args) s3?)
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))

@@ -69,9 +69,9 @@
                                                       default-stack/default-stack))
         result-chan                          (or (:ch op-map) (a/promise-chan))
         {:keys [api retriable? backoff]} (client/-get-info client)
-        service (service/service-description (name api))
         validation-error                     (and (validate-requests? client)
-                                                  (validate service op-map))]
+                                                  api
+                                                  (validate (service/service-description (name api)) op-map))]
     (if validation-error
       (a/put! result-chan validation-error)
       (retry/with-retry

@@ -187,6 +187,35 @@
           (print (str "</" (name (:tag e)) ">")))
         (print " />")))))
 
+(defn replace-double-slash [s]
+  (str/replace s #"//" "/"))
+
+(defn trim-dotdot
+  "Replace `foo/..` with `` in a uri"
+  [s]
+  (let [s* (-> s
+               (str/replace #"[^./]+/\.\." "")
+               replace-double-slash)]
+    (if (not= s s*)
+      (recur s*)
+      s)))
+
+(defn trim-dot-slash
+  "Strip `./` in a uri"
+  [s]
+  (str/replace s #"(^|/)\./" ""))
+
+(defn remove-leading-slash [s]
+  (str/replace s #"^/" ""))
+
+(defn uri-normalize [uri]
+  (-> uri
+      replace-double-slash
+      remove-leading-slash
+      trim-dot-slash
+      trim-dotdot
+      (->> (apply str "/"))))
+
 (defn uri-encode
   "Escape (%XX) special characters in the string `s`.
 
@@ -205,8 +234,8 @@
              (str/replace "+" "%20")
              (str/replace "*" "%2A")
              (str/replace "%7E" "~"))
-       exclude-slashes?
-       (str/replace "%2F" "/")))))
+         exclude-slashes?
+         (str/replace "%2F" "/")))))
 
 (defn query-string
   "Create a query string from a list of parameters. Values must all be
