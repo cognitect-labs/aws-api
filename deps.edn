@@ -15,17 +15,17 @@
                                            org.clojure/test.check      {:mvn/version "0.10.0"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
                                            http-kit/http-kit           {:mvn/version "2.3.0"}
-                                           com.cognitect.aws/endpoints {:mvn/version "1.1.11.718"}
-                                           com.cognitect.aws/s3        {:mvn/version "784.2.593.0"}}}
+                                           com.cognitect.aws/endpoints {:mvn/version "1.1.11.893"}
+                                           com.cognitect.aws/s3        {:mvn/version "809.2.784.0"}}}
            :test            {:extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
                                                                      :sha     "cb96e80f6f3d3b307c59cbeb49bb0dcb3a2a780b"}}
                              :main-opts  ["-m" "cognitect.test-runner"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
-                             :extra-deps  {org.clojure/test.check      {:mvn/version "0.10.0"}
+                             :extra-deps  {org.clojure/test.check      {:mvn/version "1.1.0"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.28"}
-                                           com.cognitect.aws/dynamodb  {:mvn/version "746.2.533.0"}
-                                           com.cognitect.aws/ec2       {:mvn/version "746.2.533.0"}
-                                           com.cognitect.aws/iam       {:mvn/version "746.2.533.0"}
-                                           com.cognitect.aws/lambda    {:mvn/version "746.2.533.0"}
-                                           com.cognitect.aws/ssm       {:mvn/version "747.2.533.0"}
-                                           com.cognitect.aws/sts       {:mvn/version "747.2.533.0"}}}}}
+                                           com.cognitect.aws/dynamodb  {:mvn/version "809.2.784.0"}
+                                           com.cognitect.aws/ec2       {:mvn/version "809.2.784.0"}
+                                           com.cognitect.aws/iam       {:mvn/version "801.2.704.0"}
+                                           com.cognitect.aws/lambda    {:mvn/version "809.2.734.0"}
+                                           com.cognitect.aws/ssm       {:mvn/version "809.2.784.0"}
+                                           com.cognitect.aws/sts       {:mvn/version "809.2.784.0"}}}}}
