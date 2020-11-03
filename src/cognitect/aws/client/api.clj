@@ -64,13 +64,18 @@
                           Valid values:
                           - :cognitect.aws.alpha.workflow/default (default)
                           - :cognitect.aws.alpha.workflow/presigned-url
+                          - :cognitect.aws.alpha.workflow/test
+                          When `:test`, don't send the request to AWS, and return a fake response using the API's response spec
+
+  :test-handler         - optional. When in :test mode, a middleware function [handler -> [req -> resp]], the request map. Call the handler to get the default behavior
+
 
   By default, all clients use shared http-client, credentials-provider, and
   region-provider instances which use a small collection of daemon threads.
 
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
-           http-client workflow]
+           http-client workflow test-handler]
     :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
@@ -98,7 +103,8 @@
                                    (region/basic-region-provider region)))
     :credentials-provider credentials-provider
     :validate-requests?   (atom nil)
-    :workflow             workflow}))
+    :workflow             workflow
+    :test-handler         test-handler}))
 
 (defn default-http-client
   "Create an http-client to share across multiple aws-api clients."
@@ -121,6 +127,9 @@
                           Valid values:
                           - :cognitect.aws.alpha.workflow/default (default)
                           - :cognitect.aws.alpha.workflow/presigned-url
+                          - :cognitect.aws.alpha.workflow/test
+
+  :test-handler          - optional when using the test workflow, a function of [context request -> response] to change test behavior
 
   After invoking (cognitect.aws.client.api/validate-requests true), validates
   :request in op-map.

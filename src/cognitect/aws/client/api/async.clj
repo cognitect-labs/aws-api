@@ -51,7 +51,8 @@
 (def ^{:private true :skip-wiki true} workflow-stacks
   {:cognitect.aws.alpha.workflow/default             default-stack/default-stack
    :cognitect.aws.alpha.workflow/presigned-url       presigned-url-stack/presigned-url-stack
-   :cognitect.aws.alpha.workflow/fetch-presigned-url presigned-url-stack/fetch-presigned-url-stack})
+   :cognitect.aws.alpha.workflow/fetch-presigned-url presigned-url-stack/fetch-presigned-url-stack
+   :cognitect.aws.alpha.workflow/test                default-stack/test-stack})
 
 (defn invoke
   "Async version of cognitect.aws.client.api/invoke. Returns
@@ -65,7 +66,7 @@
   [client op-map]
   (let [workflow-steps                       (or (:workflow-steps op-map) ;; internal use only
                                                  (get workflow-stacks
-                                                      (or (:workflow op-map) (:workflow client))
+                                                      (or (:workflow op-map) (-> client .info :workflow))
                                                       default-stack/default-stack))
         result-chan                          (or (:ch op-map) (a/promise-chan))
         {:keys [api retriable? backoff]} (client/-get-info client)

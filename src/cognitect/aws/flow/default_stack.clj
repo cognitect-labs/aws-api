@@ -4,6 +4,8 @@
 (ns ^:skip-wiki cognitect.aws.flow.default-stack
   "Impl, don't call directly."
   (:require [clojure.core.async :as a]
+            [clojure.spec.alpha :as s]
+            [clojure.test.check.generators :as gen]
             [cognitect.aws.client :as client]
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as util]
@@ -130,3 +132,35 @@
    send-request              ;; action
    decode-response           ;; post-process
    ])
+
+(defstep test-send-request [context]
+  (let [{:keys [api op test-handler]} context
+        service (service/service-description (name api))
+        response-spec (or (service/response-spec-key service op) (s/spec any?))
+        default-handler (fn [request] (when response-spec
+                                        (gen/generate (s/gen response-spec))))]
+    (if test-handler
+      (let [response (test-handler default-handler context)]
+        (if-let [error (s/explain-data response-spec response)]
+          (throw (ex-info "test response did not conform" error))
+          response))
+      (default-handler context))))
+
+(def test-stack
+  [load-service              ;; resolution
+   check-op                  ;; validation
+   add-http-client           ;; resolution
+
+   add-region-provider       ;; resolution
+   provide-region            ;; resolution
+   (credentials-stack/process-credentials)
+   add-endpoint-provider     ;; resolution
+   provide-endpoint          ;; resolution
+
+   build-http-request        ;; process
+   apply-endpoint            ;; process / modification
+   body-to-byte-buffer       ;; process / modification
+   http-interceptors         ;; process / modification
+   sign-request              ;; process / modification
+
+   test-send-request])
