@@ -86,23 +86,24 @@
 
 (defn parse-date
   [{:keys [timestampFormat]} data]
-  (cond (= "rfc822" timestampFormat)
-        (util/parse-date util/rfc822-date-format data)
-        (= "iso8601"timestampFormat)
-        (parse-date* data
-                     util/iso8601-date-format
-                     util/iso8601-msecs-date-format)
-        (int? data)
-        (java.util.Date. (* 1000 ^int data))
-        (double? data)
-        (java.util.Date. (* 1000 (long data)))
-        (re-matches #"^\d+$" data)
-        (java.util.Date. (* 1000 (long (read-string data))))
-        :else
-        (parse-date* data
-                     util/iso8601-date-format
-                     util/iso8601-msecs-date-format
-                     util/rfc822-date-format)))
+  (when data
+    (cond (= "rfc822" timestampFormat)
+          (util/parse-date util/rfc822-date-format data)
+          (= "iso8601"timestampFormat)
+          (parse-date* data
+                       util/iso8601-date-format
+                       util/iso8601-msecs-date-format)
+          (int? data)
+          (java.util.Date. (* 1000 ^int data))
+          (double? data)
+          (java.util.Date. (* 1000 (long data)))
+          (re-matches #"^\d+$" data)
+          (java.util.Date. (* 1000 (long (read-string data))))
+          :else
+          (parse-date* data
+                       util/iso8601-date-format
+                       util/iso8601-msecs-date-format
+                       util/rfc822-date-format))))
 
 ;; ----------------------------------------------------------------------------------------
 ;; JSON Parser & Serializer
