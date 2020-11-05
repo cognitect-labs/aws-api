@@ -88,8 +88,8 @@
   [{:keys [timestampFormat]} data]
   (when data
     (cond (= "rfc822" timestampFormat)
-          (util/parse-date util/rfc822-date-format data)
-          (= "iso8601"timestampFormat)
+          (parse-date* data util/rfc822-date-format)
+          (= "iso8601" timestampFormat)
           (parse-date* data
                        util/iso8601-date-format
                        util/iso8601-msecs-date-format)
