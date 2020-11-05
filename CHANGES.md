@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.484 / 2020-11-05
 
 * make date parsing more tolerant [#155](https://github.com/cognitect-labs/aws-api/issues/155)
 
