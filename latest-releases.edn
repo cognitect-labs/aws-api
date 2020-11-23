@@ -1,5 +1,7 @@
 {com.cognitect.aws/api {:mvn/version "0.8.484"},
  com.cognitect.aws/endpoints {:mvn/version "1.1.11.906"},
+ com.cognitect.aws/AWS242AppRegistry
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSMigrationHub
  {:mvn/version "796.2.657.0", :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
@@ -19,6 +21,7 @@
  com.cognitect.aws/apigatewayv2
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/appconfig {:mvn/version "801.2.697.0", :aws/serviceFullName "Amazon AppConfig"},
+ com.cognitect.aws/appflow {:mvn/version "810.2.797.0", :aws/serviceFullName "Amazon Appflow"},
  com.cognitect.aws/application-autoscaling
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Application Auto Scaling"},
  com.cognitect.aws/application-insights
@@ -32,6 +35,7 @@
  {:mvn/version "773.2.578.0", :aws/serviceFullName "AWS Auto Scaling Plans"},
  com.cognitect.aws/backup {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS Backup"},
  com.cognitect.aws/batch {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Batch"},
+ com.cognitect.aws/braket {:mvn/version "810.2.797.0", :aws/serviceFullName "Braket"},
  com.cognitect.aws/budgets {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
  {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS Cost Explorer Service"},
@@ -84,6 +88,7 @@
  {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Connect Participant Service"},
  com.cognitect.aws/cur
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Cost and Usage Report Service"},
+ com.cognitect.aws/databrew {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Glue DataBrew"},
  com.cognitect.aws/dataexchange
  {:mvn/version "801.2.698.0", :aws/serviceFullName "AWS Data Exchange"},
  com.cognitect.aws/datapipeline
@@ -170,6 +175,8 @@
  com.cognitect.aws/honeycode {:mvn/version "801.2.709.0", :aws/serviceFullName "Amazon Honeycode"},
  com.cognitect.aws/iam
  {:mvn/version "801.2.704.0", :aws/serviceFullName "AWS Identity and Access Management"},
+ com.cognitect.aws/identitystore
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS SSO Identity Store"},
  com.cognitect.aws/imagebuilder
  {:mvn/version "809.2.784.0", :aws/serviceFullName "EC2 Image Builder"},
  com.cognitect.aws/importexport
@@ -263,6 +270,8 @@
  com.cognitect.aws/mturk-requester
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Mechanical Turk"},
  com.cognitect.aws/neptune {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Neptune"},
+ com.cognitect.aws/network-firewall
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Network Firewall"},
  com.cognitect.aws/networkmanager
  {:mvn/version "780.2.584.0", :aws/serviceFullName "AWS Network Manager"},
  com.cognitect.aws/opsworks {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS OpsWorks"},
@@ -317,6 +326,8 @@
  com.cognitect.aws/s3
  {:mvn/version "809.2.797.0", :aws/serviceFullName "Amazon Simple Storage Service"},
  com.cognitect.aws/s3control {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS S3 Control"},
+ com.cognitect.aws/s3outposts
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "Amazon S3 on Outposts"},
  com.cognitect.aws/sagemaker
  {:mvn/version "809.2.797.0", :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
@@ -352,6 +363,8 @@
  com.cognitect.aws/ssm
  {:mvn/version "809.2.797.0", :aws/serviceFullName "Amazon Simple Systems Manager (SSM)"},
  com.cognitect.aws/sso {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Single Sign-On"},
+ com.cognitect.aws/sso-admin
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Single Sign-On Admin"},
  com.cognitect.aws/sso-oidc {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS SSO OIDC"},
  com.cognitect.aws/states {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Step Functions"},
  com.cognitect.aws/storagegateway
@@ -365,6 +378,10 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Simple Workflow Service"},
  com.cognitect.aws/synthetics {:mvn/version "809.2.797.0", :aws/serviceFullName "Synthetics"},
  com.cognitect.aws/textract {:mvn/version "809.2.797.0", :aws/serviceFullName "Amazon Textract"},
+ com.cognitect.aws/timestream-query
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "Amazon Timestream Query"},
+ com.cognitect.aws/timestream-write
+ {:mvn/version "810.2.797.0", :aws/serviceFullName "Amazon Timestream Write"},
  com.cognitect.aws/transcribe
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transfer
