@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.484"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.909"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.911"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSMigrationHub
@@ -59,7 +59,7 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon CloudSearch Domain"},
  com.cognitect.aws/cloudtrail {:mvn/version "810.2.801.0", :aws/serviceFullName "AWS CloudTrail"},
  com.cognitect.aws/codeartifact {:mvn/version "810.2.801.0", :aws/serviceFullName "CodeArtifact"},
- com.cognitect.aws/codebuild {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS CodeBuild"},
+ com.cognitect.aws/codebuild {:mvn/version "810.2.802.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecommit {:mvn/version "801.2.704.0", :aws/serviceFullName "AWS CodeCommit"},
  com.cognitect.aws/codedeploy {:mvn/version "799.2.681.0", :aws/serviceFullName "AWS CodeDeploy"},
  com.cognitect.aws/codeguru-reviewer
@@ -94,6 +94,8 @@
  {:mvn/version "773.2.579.0", :aws/serviceFullName "Amazon Connect Participant Service"},
  com.cognitect.aws/cur
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Cost and Usage Report Service"},
+ com.cognitect.aws/customer-profiles
+ {:mvn/version "810.2.802.0", :aws/serviceFullName "Amazon Connect Customer Profiles"},
  com.cognitect.aws/databrew {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS Glue DataBrew"},
  com.cognitect.aws/dataexchange
  {:mvn/version "801.2.698.0", :aws/serviceFullName "AWS Data Exchange"},
@@ -308,8 +310,6 @@
  com.cognitect.aws/polly {:mvn/version "809.2.797.0", :aws/serviceFullName "Amazon Polly"},
  com.cognitect.aws/pricing
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Price List Service"},
- com.cognitect.aws/profile
- {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Connect Customer Profiles"},
  com.cognitect.aws/qldb {:mvn/version "801.2.698.0", :aws/serviceFullName "Amazon QLDB"},
  com.cognitect.aws/qldb-session
  {:mvn/version "801.2.686.0", :aws/serviceFullName "Amazon QLDB Session"},
