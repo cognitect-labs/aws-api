@@ -64,8 +64,7 @@
   region-provider instances which use a small collection of daemon threads.
 
   Alpha. Subject to change."
-  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint endpoint-override
-           http-client]
+  [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client]
     :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
