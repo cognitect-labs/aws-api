@@ -11,11 +11,13 @@
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.protocols.query :as query]))
 
+(set! *warn-on-reflection* true)
+
 (defn serialized-name
   [shape default]
   (or (:queryName shape)
       (when-let [name (:locationName shape)]
-        (apply str (Character/toUpperCase (first name)) (rest name)))
+        (apply str (Character/toUpperCase ^Character (first name)) (rest name)))
       default))
 
 (defmulti serialize

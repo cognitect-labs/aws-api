@@ -12,6 +12,8 @@
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import (java.io File)))
 
+(set! *warn-on-reflection* true)
+
 (defn ^:skip-wiki valid-region
   "For internal use. Don't call directly.
 

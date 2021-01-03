@@ -9,6 +9,8 @@
             [clojure.java.io :as io]
             [cognitect.aws.shape :as shape]))
 
+(set! *warn-on-reflection* true)
+
 (def base-ns "cognitect.aws")
 
 (def base-resource-path "cognitect/aws")

@@ -6,6 +6,8 @@
   (:require [cognitect.aws.service :as service]
             [cognitect.aws.util :as util]))
 
+(set! *warn-on-reflection* true)
+
 (defmulti modify-http-request (fn [service op-map http-request]
                                 (service/service-name service)))
 

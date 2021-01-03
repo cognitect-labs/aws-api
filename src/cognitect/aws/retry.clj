@@ -4,6 +4,8 @@
 (ns cognitect.aws.retry
   (:require [clojure.core.async :as a]))
 
+(set! *warn-on-reflection* true)
+
 (defn ^:skip-wiki with-retry
   "For internal use. Do not call directly.
 

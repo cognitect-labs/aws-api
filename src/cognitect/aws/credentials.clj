@@ -11,11 +11,14 @@
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
-  (:import (java.util.concurrent Executors ExecutorService ScheduledExecutorService
+  (:import (java.util Date)
+           (java.util.concurrent Executors ExecutorService ScheduledExecutorService
                                  ScheduledFuture TimeUnit ThreadFactory)
            (java.io File)
            (java.net URI)
            (java.time Duration Instant)))
+
+(set! *warn-on-reflection* true)
 
 (defprotocol CredentialsProvider
   (fetch [provider]
@@ -245,13 +248,13 @@
   based on `:Expiration` in credentials.  If `credentials` contains no
   `:Expiration`, defaults to 3600.
 
-  `:Expiration` can be a java.util.Date, or a string parsable
-  by java.time.Instant/parse (returned by ec2/ecs instance credentials)
-  or a java.util.Date (returned from :AssumeRole on aws sts client)."
+  `:Expiration` can be a string parsable by java.time.Instant/parse
+  (returned by ec2/ecs instance credentials) or a java.util.Date
+  (returned from :AssumeRole on aws sts client)."
   [{:keys [Expiration] :as credentials}]
   (if Expiration
-    (let [expiration (if (inst? Expiration)
-                       (.toInstant Expiration)
+    (let [expiration (if (instance? Date Expiration)
+                       (.toInstant ^Date Expiration)
                        (Instant/parse Expiration))]
       (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
            60))

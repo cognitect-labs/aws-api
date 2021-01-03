@@ -12,6 +12,8 @@
             [cognitect.aws.region :as region]
             [cognitect.aws.util :as util]))
 
+(set! *warn-on-reflection* true)
+
 (defn descriptor-resource-path [] (format "%s/endpoints.edn" service/base-resource-path))
 
 (defn read-endpoints-description []

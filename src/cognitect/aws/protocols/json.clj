@@ -9,6 +9,8 @@
             [cognitect.aws.shape :as shape]
             [cognitect.aws.protocols.common :as common]))
 
+(set! *warn-on-reflection* true)
+
 (defmulti serialize
   (fn [_ shape data] (:type shape)))
 

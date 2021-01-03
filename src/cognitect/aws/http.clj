@@ -4,6 +4,8 @@
             [clojure.core.async :as a]
             [cognitect.aws.dynaload :as dynaload]))
 
+(set! *warn-on-reflection* true)
+
 (defprotocol HttpClient
   (-submit [_ request channel]
     "Submit an http request, channel will be filled with response. Returns ch.

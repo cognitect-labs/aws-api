@@ -7,6 +7,8 @@
             [cognitect.aws.util :as util])
   (:import (java.util Date)))
 
+(set! *warn-on-reflection* true)
+
 (def status-codes->anomalies
   {403 :cognitect.anomalies/forbidden
    404 :cognitect.anomalies/not-found

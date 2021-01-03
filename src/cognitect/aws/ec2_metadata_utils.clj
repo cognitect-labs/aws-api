@@ -11,6 +11,8 @@
             [cognitect.aws.retry :as retry])
   (:import (java.net URI)))
 
+(set! *warn-on-reflection* true)
+
 (def ^:const ec2-metadata-service-override-system-property "com.amazonaws.sdk.ec2MetadataServiceEndpointOverride")
 (def ^:const dynamic-data-root "/latest/dynamic/")
 (def ^:const security-credentials-path "/latest/meta-data/iam/security-credentials/")

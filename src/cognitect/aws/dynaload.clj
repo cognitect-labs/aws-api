@@ -1,5 +1,7 @@
 (ns ^:skip-wiki cognitect.aws.dynaload)
 
+(set! *warn-on-reflection* true)
+
 (defonce ^:private dynalock (Object.))
 
 (defn load-ns [ns]

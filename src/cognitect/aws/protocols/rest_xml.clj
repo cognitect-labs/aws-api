@@ -8,6 +8,8 @@
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.protocols.rest :as rest]))
 
+(set! *warn-on-reflection* true)
+
 (defmethod client/build-http-request "rest-xml"
   [{:keys [shapes operations metadata] :as service} op-map]
   (rest/build-http-request service

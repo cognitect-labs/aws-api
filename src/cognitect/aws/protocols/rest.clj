@@ -12,6 +12,8 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]))
 
+(set! *warn-on-reflection* true)
+
 ;; ----------------------------------------------------------------------------------------
 ;; Serializer
 ;; ----------------------------------------------------------------------------------------
@@ -25,13 +27,13 @@
   [uri-template {:keys [required] :as input-shape} args]
   (str/replace uri-template
                #"\{([^}]+)\}"
-               (fn [[_ param]]
+               (fn [[_ ^String param]]
                  (or (if (.endsWith param "+")
                        (some-> args
                                (get (keyword (.substring param 0 (dec (count param)))))
                                util/url-encode
-                               (.replace "%2F" "/")
-                               (.replace "%7E" "~")
+                               (str/replace "%2F" "/")
+                               (str/replace "%7E" "~")
                                remove-leading-slash)
                        (some-> args
                                (get (keyword param))
@@ -50,7 +52,7 @@
 
 (defn append-querystring
   "Append the map of arguments args to the uri's querystring."
-  [uri shape args]
+  [^String uri shape args]
   (if-let [qs (util/query-string (mapcat (fn [[k v]]
                                            (when-let [member-shape (shape/member-shape shape k)]
                                              (serialize-qs-args member-shape
