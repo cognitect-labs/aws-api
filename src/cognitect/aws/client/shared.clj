@@ -3,6 +3,8 @@
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.region :as region]))
 
+(set! *warn-on-reflection* true)
+
 (declare http-client)
 
 (def ^:private shared-http-client

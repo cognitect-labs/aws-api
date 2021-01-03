@@ -19,6 +19,8 @@
             [cognitect.aws.signers] ;; implements multimethods
             [cognitect.aws.util :as util]))
 
+(set! *warn-on-reflection* true)
+
 (declare ops)
 
 (defn client

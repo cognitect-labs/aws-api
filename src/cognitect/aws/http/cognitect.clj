@@ -2,6 +2,8 @@
   (:require [cognitect.http-client :as impl]
             [cognitect.aws.http :as aws]))
 
+(set! *warn-on-reflection* true)
+
 (defn create
   []
   (let [c (impl/create {:trust-all true})]  ;; FIX :trust-all

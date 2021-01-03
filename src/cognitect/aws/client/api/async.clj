@@ -9,6 +9,8 @@
             [cognitect.aws.service :as service]
             [cognitect.aws.dynaload :as dynaload]))
 
+(set! *warn-on-reflection* true)
+
 (defn ^:skip-wiki validate-requests?
   "For internal use. Don't call directly."
   [client]
