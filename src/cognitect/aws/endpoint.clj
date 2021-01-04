@@ -69,9 +69,9 @@
   :partition            The name of the partition.
   :region               The region of the endpoint.
   :hostname             The hostname to use.
-  :ssl-common-name      The ssl-common-name to use (optional).
-  :credential-scope     The Signature v4 credential scope (optional).
-  :signature-versions   A list of possible signature versions (optional).
+  :sslCommonName        The sslCommonName to use (optional).
+  :credentialScope      The Signature v4 credential scope (optional).
+  :signatureVersions    A list of possible signature versions (optional).
   :protocols            A list of supported protocols."
   [service-key region]
   (some #(partition-resolve % service-key region)
