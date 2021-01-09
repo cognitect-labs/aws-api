@@ -8,6 +8,7 @@
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [clojure.core.async :as a]
+            [clojure.string :as str]
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
@@ -122,8 +123,8 @@
    (valid-credentials credentials nil))
   ([{:keys [aws/access-key-id aws/secret-access-key] :as credentials}
     credential-source]
-   (if (and (some-> access-key-id not-empty)
-            (some-> secret-access-key not-empty))
+   (if (and (not (str/blank? access-key-id))
+            (not (str/blank? secret-access-key)))
      credentials
      (when credential-source
        (log/info (str "Unable to fetch credentials from " credential-source "."))
@@ -202,7 +203,8 @@
      (fetch [_]
        (valid-credentials
         {:aws/access-key-id     (u/getProperty "aws.accessKeyId")
-         :aws/secret-access-key (u/getProperty "aws.secretKey")}
+         :aws/secret-access-key (u/getProperty "aws.secretKey")
+         :aws/session-token     (u/getProperty "aws.sessionToken")}
         "system properties")))))
 
 (defn profile-credentials-provider

@@ -56,20 +56,36 @@
            (is (nil? (credentials/fetch p)))))))))
 
 (deftest system-properites-credentials-provider-test
+  (testing "all vars present"
+    (with-redefs [u/getProperty (tu/stub-getProperty {"aws.accessKeyId"  "foo"
+                                                      "aws.secretKey"    "bar"
+                                                      "aws.sessionToken" "baz"})]
+      (is (= {:aws/access-key-id     "foo"
+              :aws/secret-access-key "bar"
+              :aws/session-token     "baz"}
+             (credentials/fetch
+              (credentials/system-property-credentials-provider))))))
   (testing "required vars present"
     (with-redefs [u/getProperty (tu/stub-getProperty {"aws.accessKeyId" "foo"
-                                                      "aws.secretKey" "bar"})]
-      (is (map? (credentials/fetch
-                 (credentials/system-property-credentials-provider))))))
+                                                      "aws.secretKey"   "bar"})]
+      (is (= {:aws/access-key-id     "foo"
+              :aws/secret-access-key "bar"
+              :aws/session-token     nil}
+             (credentials/fetch
+              (credentials/system-property-credentials-provider))))))
   (testing "required vars blank"
     (doall
      (for [props [{}
                   {"aws.accessKeyId" "foo"}
                   {"aws.secretKey" "bar"}
                   {"aws.accessKeyId" ""
-                   "aws.secretKey" "bar"}
+                   "aws.secretKey"   "bar"}
+                  {"aws.accessKeyId" " "
+                   "aws.secretKey"   "bar"}
                   {"aws.accessKeyId" "foo"
-                   "aws.secretKey" ""}]]
+                   "aws.secretKey"   ""}
+                  {"aws.accessKeyId" "foo"
+                   "aws.secretKey"   " "}]]
        (with-redefs [u/getProperty (tu/stub-getProperty props)]
          (let [p (credentials/system-property-credentials-provider)]
            (is (nil? (credentials/fetch p)))))))))
