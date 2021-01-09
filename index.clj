@@ -32,7 +32,7 @@
    :name "client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 24,
+   :line 26,
    :var-type "function",
    :arglists
    ([{:keys
@@ -42,7 +42,6 @@
        retriable?
        backoff
        credentials-provider
-       endpoint
        endpoint-override
        http-client],
       :or {endpoint-override {}}}]),
@@ -55,7 +54,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 107,
+   :line 108,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -67,7 +66,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 207,
+   :line 208,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -79,7 +78,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 171,
+   :line 172,
    :var-type "function",
    :arglists
    ([{:keys
@@ -94,7 +93,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 112,
+   :line 113,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -106,7 +105,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 161,
+   :line 162,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -118,7 +117,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 140,
+   :line 141,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -130,7 +129,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 147,
+   :line 148,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -142,7 +141,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 216,
+   :line 217,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -154,7 +153,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 131,
+   :line 132,
    :var-type "function",
    :arglists ([client] [client bool]),
    :doc
@@ -166,7 +165,7 @@
    :name "credentials-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 25,
+   :line 27,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -178,7 +177,7 @@
    :name "http-client",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 17,
+   :line 19,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -190,7 +189,7 @@
    :name "region-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 33,
+   :line 35,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -202,7 +201,7 @@
    :name "auto-refreshing-credentials",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 103,
+   :line 107,
    :deprecated true,
    :var-type "function",
    :arglists ([provider] [provider scheduler]),
@@ -214,7 +213,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 319,
+   :line 324,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -226,7 +225,7 @@
    :name "cached-credentials-with-auto-refresh",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 74,
+   :line 78,
    :var-type "function",
    :arglists ([provider] [provider scheduler]),
    :doc
@@ -238,11 +237,11 @@
    :name "calculate-ttl",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 243,
+   :line 248,
    :var-type "function",
    :arglists ([{:keys [Expiration], :as credentials}]),
    :doc
-   "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a java.util.Date, or a string parsable\nby java.time.Instant/parse (returned by ec2/ecs instance credentials)\nor a java.util.Date (returned from :AssumeRole on aws sts client).",
+   "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a string parsable by java.time.Instant/parse\n(returned by ec2/ecs instance credentials) or a java.util.Date\n(returned from :AssumeRole on aws sts client).",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/calculate-ttl"}
@@ -250,7 +249,7 @@
    :name "chain-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 132,
+   :line 136,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -262,7 +261,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 260,
+   :line 265,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -274,7 +273,7 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 301,
+   :line 306,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -286,7 +285,7 @@
    :name "environment-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 159,
+   :line 163,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -309,7 +308,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 333,
+   :line 338,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -321,7 +320,7 @@
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 280,
+   :line 285,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -333,7 +332,7 @@
    :name "profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 205,
+   :line 210,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -345,7 +344,7 @@
    :name "stop",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 108,
+   :line 112,
    :var-type "function",
    :arglists ([credentials]),
    :doc
@@ -357,7 +356,7 @@
    :name "system-property-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 183,
+   :line 187,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -369,7 +368,7 @@
    :name "chain-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 26,
+   :line 28,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -381,7 +380,7 @@
    :name "default-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 98,
+   :line 100,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -393,7 +392,7 @@
    :name "environment-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 40,
+   :line 42,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -415,7 +414,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 114,
+   :line 116,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -427,7 +426,7 @@
    :name "instance-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 86,
+   :line 88,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -439,7 +438,7 @@
    :name "profile-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 56,
+   :line 58,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -451,7 +450,7 @@
    :name "system-property-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 48,
+   :line 50,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -463,7 +462,7 @@
    :name "capped-exponential-backoff",
    :file "src/cognitect/aws/retry.clj",
    :source-url nil,
-   :line 26,
+   :line 28,
    :var-type "function",
    :arglists ([base max-backoff max-retries]),
    :doc
@@ -475,7 +474,7 @@
    :name "default-backoff",
    :file "src/cognitect/aws/retry.clj",
    :source-url nil,
-   :line 39,
+   :line 41,
    :var-type "var",
    :doc
    "Returns (capped-exponential-backoff 100 20000 3).\n\nAlpha. Subject to change.",
@@ -486,7 +485,7 @@
    :name "default-retriable?",
    :file "src/cognitect/aws/retry.clj",
    :source-url nil,
-   :line 45,
+   :line 47,
    :var-type "var",
    :doc
    "A fn of http-response which returns true if http-response contains\na cognitect.anomalies/category of :cognitect.anomalies/busy or\n:cognitect.anomalies/unavailable\n\nAlpha. Subject to change.",
@@ -497,7 +496,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api/async.clj",
    :source-url nil,
-   :line 49,
+   :line 51,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
