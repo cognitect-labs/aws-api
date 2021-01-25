@@ -190,6 +190,7 @@
   Look at the following properties:
   * aws.accessKeyId  required
   * aws.secretKey    required
+  * aws.sessionToken optional
 
   Returns nil if any of the required properties is blank.
 
@@ -322,18 +323,20 @@
     (instance-profile-credentials-provider http-client)]))
 
 (defn basic-credentials-provider
-  "Given a map with :access-key-id and :secret-access-key,
+  "Given a map with :access-key-id and :secret-access-key
+  and optionally :session-token,
   returns an implementation of CredentialsProvider which returns
   those credentials on fetch.
 
   Alpha. Subject to change."
-  [{:keys [access-key-id secret-access-key]}]
+  [{:keys [access-key-id secret-access-key session-token]}]
   (assert access-key-id "Missing")
   (assert secret-access-key "Missing")
   (reify CredentialsProvider
     (fetch [_]
       {:aws/access-key-id     access-key-id
-       :aws/secret-access-key secret-access-key})))
+       :aws/secret-access-key secret-access-key
+       :aws/session-token     session-token})))
 
 (defn fetch-async
   "Returns a channel that will produce the result of calling fetch on
