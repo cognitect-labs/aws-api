@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.498"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.11.946"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.11.955"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSMigrationHub
@@ -25,19 +25,19 @@
  com.cognitect.aws/apigatewayv2
  {:mvn/version "811.2.824.0", :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/appconfig {:mvn/version "801.2.697.0", :aws/serviceFullName "Amazon AppConfig"},
- com.cognitect.aws/appflow {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Appflow"},
+ com.cognitect.aws/appflow {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Appflow"},
  com.cognitect.aws/appintegrations
  {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon AppIntegrations Service"},
  com.cognitect.aws/application-autoscaling
- {:mvn/version "811.2.824.0", :aws/serviceFullName "Application Auto Scaling"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Application Auto Scaling"},
  com.cognitect.aws/application-insights
  {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon CloudWatch Application Insights"},
- com.cognitect.aws/appmesh {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS App Mesh"},
+ com.cognitect.aws/appmesh {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS App Mesh"},
  com.cognitect.aws/appstream {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon AppStream"},
- com.cognitect.aws/appsync {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS AppSync"},
- com.cognitect.aws/athena {:mvn/version "801.2.687.0", :aws/serviceFullName "Amazon Athena"},
+ com.cognitect.aws/appsync {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS AppSync"},
+ com.cognitect.aws/athena {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/auditmanager
- {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Audit Manager"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Audit Manager"},
  com.cognitect.aws/autoscaling {:mvn/version "811.2.824.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
  {:mvn/version "811.2.824.0", :aws/serviceFullName "AWS Auto Scaling Plans"},
@@ -46,7 +46,7 @@
  com.cognitect.aws/braket {:mvn/version "810.2.797.0", :aws/serviceFullName "Braket"},
  com.cognitect.aws/budgets {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
- {:mvn/version "811.2.824.0", :aws/serviceFullName "AWS Cost Explorer Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Cost Explorer Service"},
  com.cognitect.aws/chime {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Chime"},
  com.cognitect.aws/cloud9 {:mvn/version "809.2.734.0", :aws/serviceFullName "AWS Cloud9"},
  com.cognitect.aws/clouddirectory
@@ -61,9 +61,9 @@
  {:mvn/version "811.2.824.0", :aws/serviceFullName "Amazon CloudSearch"},
  com.cognitect.aws/cloudsearchdomain
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon CloudSearch Domain"},
- com.cognitect.aws/cloudtrail {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS CloudTrail"},
+ com.cognitect.aws/cloudtrail {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS CloudTrail"},
  com.cognitect.aws/codeartifact {:mvn/version "810.2.801.0", :aws/serviceFullName "CodeArtifact"},
- com.cognitect.aws/codebuild {:mvn/version "810.2.802.0", :aws/serviceFullName "AWS CodeBuild"},
+ com.cognitect.aws/codebuild {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecommit {:mvn/version "801.2.704.0", :aws/serviceFullName "AWS CodeCommit"},
  com.cognitect.aws/codedeploy {:mvn/version "799.2.681.0", :aws/serviceFullName "AWS CodeDeploy"},
  com.cognitect.aws/codeguru-reviewer
@@ -71,7 +71,7 @@
  com.cognitect.aws/codeguruprofiler
  {:mvn/version "803.2.717.0", :aws/serviceFullName "Amazon CodeGuru Profiler"},
  com.cognitect.aws/codepipeline
- {:mvn/version "811.2.824.0", :aws/serviceFullName "AWS CodePipeline"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS CodePipeline"},
  com.cognitect.aws/codestar {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS CodeStar"},
  com.cognitect.aws/codestar-connections
  {:mvn/version "810.2.801.0", :aws/serviceFullName "AWS CodeStar connections"},
@@ -88,8 +88,8 @@
  com.cognitect.aws/comprehendmedical
  {:mvn/version "801.2.708.0", :aws/serviceFullName "AWS Comprehend Medical"},
  com.cognitect.aws/compute-optimizer
- {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Compute Optimizer"},
- com.cognitect.aws/config {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Config"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Compute Optimizer"},
+ com.cognitect.aws/config {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
@@ -100,15 +100,15 @@
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Cost and Usage Report Service"},
  com.cognitect.aws/customer-profiles
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Connect Customer Profiles"},
- com.cognitect.aws/databrew {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Glue DataBrew"},
+ com.cognitect.aws/databrew {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Glue DataBrew"},
  com.cognitect.aws/dataexchange
- {:mvn/version "801.2.698.0", :aws/serviceFullName "AWS Data Exchange"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Data Exchange"},
  com.cognitect.aws/datapipeline
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Data Pipeline"},
  com.cognitect.aws/datasync {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/dax
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
- com.cognitect.aws/detective {:mvn/version "796.2.650.0", :aws/serviceFullName "Amazon Detective"},
+ com.cognitect.aws/detective {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Detective"},
  com.cognitect.aws/devicefarm {:mvn/version "784.2.595.0", :aws/serviceFullName "AWS Device Farm"},
  com.cognitect.aws/devices
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS IoT 1-Click Devices Service"},
@@ -119,7 +119,7 @@
  com.cognitect.aws/discovery
  {:mvn/version "788.2.608.0", :aws/serviceFullName "AWS Application Discovery Service"},
  com.cognitect.aws/dlm
- {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon Data Lifecycle Manager"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Data Lifecycle Manager"},
  com.cognitect.aws/dms
  {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Database Migration Service"},
  com.cognitect.aws/docdb
@@ -129,7 +129,7 @@
  com.cognitect.aws/ebs
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
@@ -139,11 +139,11 @@
  com.cognitect.aws/ecs
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
- {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elastic-inference
  {:mvn/version "796.2.663.0", :aws/serviceFullName "Amazon Elastic  Inference"},
  com.cognitect.aws/elasticache
- {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon ElastiCache"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon ElastiCache"},
  com.cognitect.aws/elasticbeanstalk
  {:mvn/version "810.2.801.0", :aws/serviceFullName "AWS Elastic Beanstalk"},
  com.cognitect.aws/elasticfilesystem
@@ -151,7 +151,7 @@
  com.cognitect.aws/elasticloadbalancing
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticloadbalancingv2
- {:mvn/version "809.2.797.0", :aws/serviceFullName "Elastic Load Balancing"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticmapreduce
  {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Elastic MapReduce"},
  com.cognitect.aws/elastictranscoder
@@ -159,7 +159,7 @@
  com.cognitect.aws/email
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Simple Email Service"},
  com.cognitect.aws/emr-containers
- {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon EMR Containers"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon EMR Containers"},
  com.cognitect.aws/entitlement-marketplace
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Marketplace Entitlement Service"},
  com.cognitect.aws/es
@@ -179,10 +179,10 @@
  com.cognitect.aws/frauddetector
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Fraud Detector"},
  com.cognitect.aws/fsx {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon FSx"},
- com.cognitect.aws/gamelift {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon GameLift"},
+ com.cognitect.aws/gamelift {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon GameLift"},
  com.cognitect.aws/glacier {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
- {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Global Accelerator"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Global Accelerator"},
  com.cognitect.aws/glue {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Glue"},
  com.cognitect.aws/greengrass {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Greengrass"},
  com.cognitect.aws/greengrassv2
@@ -196,7 +196,7 @@
  {:mvn/version "811.2.824.0", :aws/serviceFullName "Amazon HealthLake"},
  com.cognitect.aws/honeycode {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Honeycode"},
  com.cognitect.aws/iam
- {:mvn/version "801.2.704.0", :aws/serviceFullName "AWS Identity and Access Management"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Identity and Access Management"},
  com.cognitect.aws/identitystore
  {:mvn/version "810.2.797.0", :aws/serviceFullName "AWS SSO Identity Store"},
  com.cognitect.aws/imagebuilder
@@ -223,20 +223,20 @@
  com.cognitect.aws/iotsecuretunneling
  {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS IoT Secure Tunneling"},
  com.cognitect.aws/iotsitewise
- {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS IoT SiteWise"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS IoT SiteWise"},
  com.cognitect.aws/iotthingsgraph
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS IoT Things Graph"},
  com.cognitect.aws/iotwireless
- {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS IoT Wireless"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS IoT Wireless"},
  com.cognitect.aws/ivs
- {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Interactive Video Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Interactive Video Service"},
  com.cognitect.aws/kafka
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Managed Streaming for Kafka"},
  com.cognitect.aws/kendra
  {:mvn/version "810.2.817.0", :aws/serviceFullName "AWSKendraFrontendService"},
  com.cognitect.aws/kinesis {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Kinesis"},
  com.cognitect.aws/kinesis-video-archived-media
- {:mvn/version "796.2.665.0", :aws/serviceFullName "Amazon Kinesis Video Streams Archived Media"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Kinesis Video Streams Archived Media"},
  com.cognitect.aws/kinesis-video-media
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Kinesis Video Streams Media"},
  com.cognitect.aws/kinesis-video-signaling
@@ -251,22 +251,22 @@
  {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Key Management Service"},
  com.cognitect.aws/lakeformation
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Lake Formation"},
- com.cognitect.aws/lambda {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Lambda"},
+ com.cognitect.aws/lambda {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Lambda"},
  com.cognitect.aws/lex-models
  {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Lex Model Building Service"},
  com.cognitect.aws/license-manager
  {:mvn/version "810.2.805.0", :aws/serviceFullName "AWS License Manager"},
- com.cognitect.aws/lightsail {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Lightsail"},
+ com.cognitect.aws/lightsail {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Lightsail"},
  com.cognitect.aws/location
- {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon Location Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Location Service"},
  com.cognitect.aws/logs
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon CloudWatch Logs"},
  com.cognitect.aws/lookoutvision
- {:mvn/version "810.2.801.0", :aws/serviceFullName "Amazon Lookout for Vision"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Lookout for Vision"},
  com.cognitect.aws/machinelearning
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Machine Learning"},
- com.cognitect.aws/macie {:mvn/version "801.2.684.0", :aws/serviceFullName "Amazon Macie"},
- com.cognitect.aws/macie2 {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Macie 2"},
+ com.cognitect.aws/macie {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Macie"},
+ com.cognitect.aws/macie2 {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Macie 2"},
  com.cognitect.aws/managedblockchain
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Managed Blockchain"},
  com.cognitect.aws/marketplace-catalog
@@ -276,9 +276,9 @@
  com.cognitect.aws/mediaconnect
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
- {:mvn/version "811.2.824.0", :aws/serviceFullName "AWS Elemental MediaConvert"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Elemental MediaLive"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Elemental MediaPackage"},
  com.cognitect.aws/mediapackage-vod
@@ -288,7 +288,7 @@
  com.cognitect.aws/mediastore-data
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Elemental MediaStore Data Plane"},
  com.cognitect.aws/mediatailor
- {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS MediaTailor"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS MediaTailor"},
  com.cognitect.aws/meteringmarketplace
  {:mvn/version "809.2.797.0", :aws/serviceFullName "AWSMarketplace Metering"},
  com.cognitect.aws/migrationhub-config
@@ -312,17 +312,17 @@
  com.cognitect.aws/opsworks {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS OpsWorks"},
  com.cognitect.aws/opsworkscm {:mvn/version "801.2.701.0", :aws/serviceFullName "AWS OpsWorks CM"},
  com.cognitect.aws/organizations
- {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS Organizations"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/outposts {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Outposts"},
  com.cognitect.aws/personalize
  {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Personalize"},
  com.cognitect.aws/personalize-events
- {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Personalize Events"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Personalize Events"},
  com.cognitect.aws/personalize-runtime
  {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon Personalize Runtime"},
  com.cognitect.aws/pi
  {:mvn/version "810.2.817.0", :aws/serviceFullName "AWS Performance Insights"},
- com.cognitect.aws/pinpoint {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Pinpoint"},
+ com.cognitect.aws/pinpoint {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Pinpoint"},
  com.cognitect.aws/pinpoint-email
  {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon Pinpoint Email Service"},
  com.cognitect.aws/pinpoint-sms-voice
@@ -332,18 +332,18 @@
  {:mvn/version "770.2.568.0", :aws/serviceFullName "AWS Price List Service"},
  com.cognitect.aws/qldb {:mvn/version "801.2.698.0", :aws/serviceFullName "Amazon QLDB"},
  com.cognitect.aws/qldb-session
- {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon QLDB Session"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon QLDB Session"},
  com.cognitect.aws/quicksight
- {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon QuickSight"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon QuickSight"},
  com.cognitect.aws/ram
  {:mvn/version "796.2.662.0", :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rds
- {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Relational Database Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Relational Database Service"},
  com.cognitect.aws/rds-data
- {:mvn/version "795.2.645.0", :aws/serviceFullName "AWS RDS DataService"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS RDS DataService"},
  com.cognitect.aws/redshift {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon Redshift"},
  com.cognitect.aws/redshift-data
- {:mvn/version "810.2.801.0", :aws/serviceFullName "Redshift Data API Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Redshift Data API Service"},
  com.cognitect.aws/rekognition
  {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon Rekognition"},
  com.cognitect.aws/resource-groups
@@ -351,7 +351,7 @@
  com.cognitect.aws/resourcegroupstaggingapi
  {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Resource Groups Tagging API"},
  com.cognitect.aws/robomaker {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS RoboMaker"},
- com.cognitect.aws/route53 {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon Route 53"},
+ com.cognitect.aws/route53 {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon Route 53"},
  com.cognitect.aws/route53domains
  {:mvn/version "796.2.660.0", :aws/serviceFullName "Amazon Route 53 Domains"},
  com.cognitect.aws/route53resolver
@@ -364,11 +364,11 @@
  {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon SageMaker Runtime"},
  com.cognitect.aws/s3
  {:mvn/version "810.2.817.0", :aws/serviceFullName "Amazon Simple Storage Service"},
- com.cognitect.aws/s3control {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS S3 Control"},
+ com.cognitect.aws/s3control {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS S3 Control"},
  com.cognitect.aws/s3outposts
  {:mvn/version "810.2.797.0", :aws/serviceFullName "Amazon S3 on Outposts"},
  com.cognitect.aws/sagemaker
- {:mvn/version "811.2.834.0", :aws/serviceFullName "Amazon SageMaker Service"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "796.2.657.0", :aws/serviceFullName "Amazon Augmented AI Runtime"},
  com.cognitect.aws/sagemaker-edge
@@ -382,7 +382,7 @@
  com.cognitect.aws/secretsmanager
  {:mvn/version "802.2.713.0", :aws/serviceFullName "AWS Secrets Manager"},
  com.cognitect.aws/securityhub
- {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS SecurityHub"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS SecurityHub"},
  com.cognitect.aws/serverlessrepo
  {:mvn/version "794.2.637.0", :aws/serviceFullName "AWSServerlessApplicationRepository"},
  com.cognitect.aws/service-quotas
@@ -433,14 +433,14 @@
  com.cognitect.aws/waf {:mvn/version "796.2.666.0", :aws/serviceFullName "AWS WAF"},
  com.cognitect.aws/waf-regional
  {:mvn/version "796.2.666.0", :aws/serviceFullName "AWS WAF Regional"},
- com.cognitect.aws/wafv2 {:mvn/version "809.2.784.0", :aws/serviceFullName "AWS WAFV2"},
+ com.cognitect.aws/wafv2 {:mvn/version "811.2.844.0", :aws/serviceFullName "AWS WAFV2"},
  com.cognitect.aws/wellarchitected
  {:mvn/version "811.2.834.0", :aws/serviceFullName "AWS Well-Architected Tool"},
  com.cognitect.aws/workdocs {:mvn/version "793.2.629.0", :aws/serviceFullName "Amazon WorkDocs"},
  com.cognitect.aws/worklink {:mvn/version "801.2.687.0", :aws/serviceFullName "Amazon WorkLink"},
- com.cognitect.aws/workmail {:mvn/version "809.2.784.0", :aws/serviceFullName "Amazon WorkMail"},
+ com.cognitect.aws/workmail {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon WorkMail"},
  com.cognitect.aws/workmailmessageflow
- {:mvn/version "770.2.568.0", :aws/serviceFullName "Amazon WorkMail Message Flow"},
+ {:mvn/version "811.2.844.0", :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
  {:mvn/version "810.2.805.0", :aws/serviceFullName "Amazon WorkSpaces"},
  com.cognitect.aws/xray {:mvn/version "809.2.797.0", :aws/serviceFullName "AWS X-Ray"}}
