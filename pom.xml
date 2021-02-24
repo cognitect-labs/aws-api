@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.cognitect</groupId>
       <artifactId>http-client</artifactId>
-      <version>0.1.105</version>
+      <version>0.1.106</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
