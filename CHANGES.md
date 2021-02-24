@@ -1,5 +1,10 @@
 # aws-api
 
+## 0.8.505 / 2021-02-23
+
+* upgrade to cognitect/http-client-0.1.106
+  * upgrade to org.eclipse.jetty/jetty-client-9.4.36.v20210114 [#173](https://github.com/cognitect-labs/aws-api/issues/173)
+
 ## 0.8.484 / 2020-11-05
 
 * make date parsing more tolerant [#155](https://github.com/cognitect-labs/aws-api/issues/155)
