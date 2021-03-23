@@ -13,7 +13,7 @@
 ;; what ops are available
 (aws/ops ssm-client)
 
-(-> (aws/ops client) keys sort)
+(-> (aws/ops ssm-client) keys sort)
 
 ;; print docs
 (aws/doc ssm-client :PutParameter)
