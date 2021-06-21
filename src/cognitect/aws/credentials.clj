@@ -255,9 +255,10 @@
   (returned from :AssumeRole on aws sts client)."
   [{:keys [Expiration] :as credentials}]
   (if Expiration
-    (let [expiration (if (instance? Date Expiration)
-                       (.toInstant ^Date Expiration)
-                       (Instant/parse Expiration))]
+    (let [expiration (cond
+                       (instance? Date Expiration)         (.toInstant ^Date Expiration)
+                       (instance? CharSequence Expiration) (Instant/parse Expiration)
+                       :default Expiration)]
       (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
            60))
     3600))
