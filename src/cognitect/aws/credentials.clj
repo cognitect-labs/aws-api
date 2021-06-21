@@ -245,22 +245,36 @@
             (catch Throwable t
               (log/error t "Error fetching credentials from aws profiles file")))))))))
 
+(defn- ->instant
+  "Takes various types representing a time value and return an Instant
+  object of the same instant in time. The supported conversions are:
+  java.util.Date, CharSequence, Number, and Instant objects, which are
+  returned outright."
+  [t]
+  (cond
+    (instance? Date t)         (.toInstant ^Date t)
+    (instance? CharSequence t) (Instant/parse t)
+    (number? t)                (Instant/ofEpochMilli (.longValue ^Number t))
+    :default t))
+
 (defn calculate-ttl
   "Primarily for internal use, returns time to live (ttl, in seconds),
   based on `:Expiration` in credentials.  If `credentials` contains no
   `:Expiration`, defaults to 3600.
 
   `:Expiration` can be a string parsable by java.time.Instant/parse
-  (returned by ec2/ecs instance credentials) or a java.util.Date
-  (returned from :AssumeRole on aws sts client)."
+  (returned by ec2/ecs instance credentials), a java.util.Date
+  (returned from :AssumeRole on aws sts client), a numeric value
+  representing milliseconds since the epoch of 1970-01-01T00:00:00Z,
+  or an Instant object, which is used outright."
   [{:keys [Expiration] :as credentials}]
   (if Expiration
-    (let [expiration (cond
-                       (instance? Date Expiration)         (.toInstant ^Date Expiration)
-                       (instance? CharSequence Expiration) (Instant/parse Expiration)
-                       :default Expiration)]
-      (max (- (.getSeconds (Duration/between (Instant/now) ^Instant expiration)) 300)
-           60))
+    (let [expiration (->instant Expiration)]
+      (-> (Instant/now)
+          (Duration/between ^Instant expiration)
+          .getSeconds
+          (- 300)
+          (max 60)))
     3600))
 
 (defn container-credentials-provider
