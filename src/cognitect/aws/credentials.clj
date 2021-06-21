@@ -246,7 +246,7 @@
               (log/error t "Error fetching credentials from aws profiles file")))))))))
 
 (defn- ->instant
-  "Takes various types representing a time value and return an Instant
+  "Takes various types representing a time value and returns an Instant
   object of the same instant in time. The supported conversions are:
   java.util.Date, CharSequence, Number, and Instant objects, which are
   returned outright."
@@ -266,15 +266,14 @@
   (returned by ec2/ecs instance credentials), a java.util.Date
   (returned from :AssumeRole on aws sts client), a numeric value
   representing milliseconds since the epoch of 1970-01-01T00:00:00Z,
-  or an Instant object, which is used outright."
+  or an Instant object."
   [{:keys [Expiration] :as credentials}]
   (if Expiration
-    (let [expiration (->instant Expiration)]
-      (-> (Instant/now)
-          (Duration/between ^Instant expiration)
-          .getSeconds
-          (- 300)
-          (max 60)))
+    (-> (Instant/now)
+        (Duration/between ^Instant (->instant Expiration))
+        .getSeconds
+        (- 300)
+        (max 60))
     3600))
 
 (defn container-credentials-provider
