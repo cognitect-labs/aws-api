@@ -213,7 +213,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 324,
+   :line 338,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -237,11 +237,11 @@
    :name "calculate-ttl",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 248,
+   :line 260,
    :var-type "function",
    :arglists ([{:keys [Expiration], :as credentials}]),
    :doc
-   "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a string parsable by java.time.Instant/parse\n(returned by ec2/ecs instance credentials) or a java.util.Date\n(returned from :AssumeRole on aws sts client).",
+   "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a string parsable by java.time.Instant/parse\n(returned by ec2/ecs instance credentials), a java.util.Date\n(returned from :AssumeRole on aws sts client), a numeric value\nrepresenting milliseconds since the epoch of 1970-01-01T00:00:00Z,\nor an Instant object.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/calculate-ttl"}
@@ -261,7 +261,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 265,
+   :line 279,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -273,7 +273,7 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 306,
+   :line 320,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -308,7 +308,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 338,
+   :line 352,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -320,7 +320,7 @@
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 285,
+   :line 299,
    :var-type "function",
    :arglists ([http-client]),
    :doc
