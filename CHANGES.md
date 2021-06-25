@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* add support for calculating TTL values based on supplied Java Instant objects or Longs representing milliseconds since the epoch time [#160](https://github.com/cognitect-labs/aws-api/issues/160)
+
 ## 0.8.505 / 2021-02-23
 
 * upgrade to cognitect/http-client-0.1.106
