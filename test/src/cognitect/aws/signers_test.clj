@@ -125,7 +125,11 @@
   (testing "key with no value"
     (is (= "policy=" (#'signers/canonical-query-string {:uri "my-bucket?policy"})))))
 
-(s/fdef signers/uri-encode
+(s/fdef signers/default-uri-encode
+  :args (s/cat :string (s/and string? not-empty) :extra-chars (s/? string?))
+  :ret string?)
+
+(s/fdef signers/uri-encode-twice
   :args (s/cat :string (s/and string? not-empty) :extra-chars (s/? string?))
   :ret string?)
 
@@ -133,16 +137,35 @@
   (testing "with *unchecked-math* true"
     (set! *unchecked-math* true)
     (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res)))
+    (let [dres (first (stest/check `signers/default-uri-encode))
+          tres (first (stest/check `signers/uri-encode-twice))]
+      (is (true? (-> dres :clojure.spec.test.check/ret :result))
+          dres)
+      (is (true? (-> tres :clojure.spec.test.check/ret :result))
+          tres)))
 
   (testing "with *unchecked-math* false (default)"
     (set! *unchecked-math* false)
     (require '[cognitect.aws.signers :as signers] :reload)
-    (let [res (first (stest/check `signers/uri-encode))]
-      (is (true? (-> res :clojure.spec.test.check/ret :result))
-          res))))
+    (let [dres (first (stest/check `signers/default-uri-encode))
+          tres (first (stest/check `signers/uri-encode-twice))]
+      (is (true? (-> dres :clojure.spec.test.check/ret :result))
+          dres)
+      (is (true? (-> tres :clojure.spec.test.check/ret :result))
+          tres)))
+
+  (testing "ARN encoding, per https://github.com/cognitect-labs/aws-api/issues/193"
+    (let [arn "/2015-03-31/functions/arn:aws:lambda:us-east-1:111111111111:function:test/invocations"
+          spc "/has space"
+          utf "/ሴ"]
+      (is (= "/2015-03-31/functions/arn%253Aaws%253Alambda%253Aus-east-1%253A111111111111%253Afunction%253Atest/invocations"
+             (signers/uri-encode-twice arn "/")))
+
+      (is (= "/has%20space"
+             (signers/uri-encode-twice spc "/")))
+
+      (is (= "/%E1%88%B4"
+             (signers/uri-encode-twice utf "/"))))))
 
 (comment
   (run-tests)

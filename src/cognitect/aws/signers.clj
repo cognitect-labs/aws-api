@@ -12,7 +12,7 @@
 
 (set! *warn-on-reflection* true)
 
-(defn uri-encode
+(defn default-uri-encode
   "Escape (%XX) special characters in the string `s`.
 
   Letters, digits, and the characters `_-~.` are never encoded.
@@ -20,7 +20,25 @@
   The optional `extra-chars` specifies extra characters to not encode."
   ([^String s]
    (when s
-     (uri-encode s "")))
+     (default-uri-encode s "")))
+  ([^String s extra-chars]
+   (when s
+     (let [safe-chars (->> extra-chars
+                           (into #{\_ \- \~ \.})
+                           (into #{} (map int)))
+           builder    (StringBuilder.)]
+       (doseq [b (.getBytes s "UTF-8")]
+         (.append builder
+                  (if (or (Character/isLetterOrDigit ^int b)
+                          (contains? safe-chars b))
+                    (char b)
+                    (format "%%%02X" b))))
+       (.toString builder)))))
+
+(defn uri-encode-twice
+  ([^String s]
+   (when s
+     (uri-encode-twice s "")))
   ([^String s extra-chars]
    (when s
      (let [safe-chars (->> extra-chars
@@ -49,10 +67,10 @@
   (-> request-method name str/upper-case))
 
 (defn- canonical-uri
-  [{:keys [uri]}]
+  [{:keys [uri]} & {:keys [uri-encode]}]
   (let [encoded-path (-> uri
                          (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
-                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.
+                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.                       
                          (URI.)
                          (.normalize)
                          (.getPath)
@@ -69,7 +87,7 @@
            (map #(str/split % #"=" 2))
            ;; TODO (dchelimsky 2019-01-30) decoding first because sometimes
            ;; it's already been encoding. Look into avoiding that!
-           (map (fn [kv] (map #(uri-encode (URLDecoder/decode %)) kv)))
+           (map (fn [kv] (map #(default-uri-encode (URLDecoder/decode %)) kv)))
            (sort (fn [[k1 v1] [k2 v2]]
                    (if (= k1 k2)
                      (compare v1 v2)
@@ -101,9 +119,9 @@
   (util/hex-encode (util/sha-256 (:body request))))
 
 (defn canonical-request
-  [{:keys [headers body content-length] :as request}]
+  [{:keys [headers body content-length] :as request} & {:keys [uri-encode]}]
   (str/join "\n" [(canonical-method request)
-                  (canonical-uri request)
+                  (canonical-uri request :uri-encode uri-encode)
                   (canonical-query-string request)
                   (canonical-headers-string request)
                   (signed-headers request)
@@ -111,8 +129,8 @@
                       (hashed-body request))]))
 
 (defn string-to-sign
-  [request auth-info]
-  (let [bytes (.getBytes ^String (canonical-request request))]
+  [request auth-info & {:keys [uri-encode]}]
+  (let [bytes (.getBytes ^String (canonical-request request :uri-encode uri-encode))]
     (str/join "\n" ["AWS4-HMAC-SHA256"
                     (get-in request [:headers "x-amz-date"])
                     (credential-scope auth-info request)
@@ -129,13 +147,13 @@
       (util/hmac-sha-256 "aws4_request")))
 
 (defn signature
-  [auth-info request]
+  [auth-info request & {:keys [uri-encode]}]
   (util/hex-encode
    (util/hmac-sha-256 (signing-key request auth-info)
-                      (string-to-sign request auth-info))))
+                      (string-to-sign request auth-info :uri-encode uri-encode))))
 
 (defn v4-sign-http-request
-  [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
+  [service endpoint credentials http-request & {:keys [content-sha256-header? uri-encode]}]
   (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
         auth-info      {:access-key-id     access-key-id
                         :secret-access-key secret-access-key
@@ -152,16 +170,34 @@
                       (:access-key-id auth-info)
                       (credential-scope auth-info req)
                       (signed-headers req)
-                      (signature auth-info req)))))
+                      (signature auth-info req :uri-encode uri-encode)))))
 
 (defmethod client/sign-http-request "v4"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request))
+  (v4-sign-http-request service endpoint credentials http-request :uri-encode uri-encode-twice))
 
 (defmethod client/sign-http-request "s3"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
+  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true :uri-encode default-uri-encode))
 
 (defmethod client/sign-http-request "s3v4"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
+  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true :uri-encode uri-encode-twice))
+
+(comment
+
+  (canonical-uri {:uri "/2015-03-31/functions/arn:aws:lambda:us-east-1:068723471644:function:test/invocations"}
+                 :uri-encode default-uri-encode)
+
+  "/2015-03-31/functions/arn%3Aaws%3Alambda%3Aus-east-1%3A068723471644%3Afunction%3Atest/invocations"
+
+  (canonical-uri {:uri "/has space/"}
+                 :uri-encode default-uri-encode)
+
+  "/has%20space/"
+
+  (canonical-uri {:uri "/ሴ"}
+                 :uri-encode default-uri-encode)
+
+  "/%E1%88%B4"
+)
