@@ -41,17 +41,14 @@
      (uri-encode-twice s "")))
   ([^String s extra-chars]
    (when s
-     (let [safe-chars (->> extra-chars
-                           (into #{\_ \- \~ \.})
-                           (into #{} (map int)))
-           builder    (StringBuilder.)]
-       (doseq [b (.getBytes s "UTF-8")]
-         (.append builder
-                  (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? safe-chars b))
-                    (char b)
-                    (format "%%%02X" b))))
-       (.toString builder)))))
+     (-> s
+         (str/replace #":" "%3A")
+         (str/replace #"\?" "%3F")
+         (str/replace #"#" "%23")
+         (str/replace #"\[" "%26")
+         (str/replace #"\]" "%3D")
+         (str/replace #"@" "%3D")
+         (default-uri-encode extra-chars)))))
 
 (defn credential-scope
   [{:keys [region service] :as auth-info} request]
@@ -66,14 +63,18 @@
   [{:keys [request-method]}]
   (-> request-method name str/upper-case))
 
+(defn- get-path [uri]
+  (-> uri
+      (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
+      (str/replace #"\s" "%20"); (URI.) throws Exception on space.
+      (URI.)
+      (.normalize)
+      (.getPath)))
+
 (defn- canonical-uri
   [{:keys [uri]} & {:keys [uri-encode]}]
   (let [encoded-path (-> uri
-                         (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
-                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.                       
-                         (URI.)
-                         (.normalize)
-                         (.getPath)
+                         get-path
                          (uri-encode "/"))]
     (if (.isEmpty ^String encoded-path)
       "/"
@@ -184,20 +185,3 @@
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true :uri-encode uri-encode-twice))
 
-(comment
-
-  (canonical-uri {:uri "/2015-03-31/functions/arn:aws:lambda:us-east-1:068723471644:function:test/invocations"}
-                 :uri-encode default-uri-encode)
-
-  "/2015-03-31/functions/arn%3Aaws%3Alambda%3Aus-east-1%3A068723471644%3Afunction%3Atest/invocations"
-
-  (canonical-uri {:uri "/has space/"}
-                 :uri-encode default-uri-encode)
-
-  "/has%20space/"
-
-  (canonical-uri {:uri "/ሴ"}
-                 :uri-encode default-uri-encode)
-
-  "/%E1%88%B4"
-)
