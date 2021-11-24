@@ -1,5 +1,9 @@
 # aws-api
 
+## next
+
+* upgrade to core.async-1.5.640
+
 ## 0.8.515 / 2021-06-25
 
 * add support for calculating TTL values based on supplied Java Instant objects or Longs representing milliseconds since the epoch time [#160](https://github.com/cognitect-labs/aws-api/issues/160)

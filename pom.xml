@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
-      <version>1.3.622</version>
+      <version>1.5.640</version>
     </dependency>
   </dependencies>
   <profiles>
