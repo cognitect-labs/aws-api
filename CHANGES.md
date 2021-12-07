@@ -1,8 +1,9 @@
 # aws-api
 
-## next
+## 0.8.532 / 2021-12-07
 
-* upgrade to core.async-1.5.640
+* upgrade to core.async-1.5.644
+* status 429 to :cognitect.anomalies/busy [#197](https://github.com/cognitect-labs/aws-api/issues/197)
 
 ## 0.8.515 / 2021-06-25
 
