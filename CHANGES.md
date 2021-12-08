@@ -1,5 +1,10 @@
 # aws-api
 
+## 0.8.536 / 2021-12-08
+
+* upgrade to core.async-1.5.644
+* upgrade to http-client-1.0.110
+
 ## 0.8.532 / 2021-12-07
 
 * upgrade to core.async-1.5.640
