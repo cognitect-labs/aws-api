@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.cognitect</groupId>
       <artifactId>http-client</artifactId>
-      <version>0.1.106</version>
+      <version>1.0.110</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
-      <version>1.5.640</version>
+      <version>1.5.644</version>
     </dependency>
   </dependencies>
   <profiles>
