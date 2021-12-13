@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>data.json</artifactId>
-      <version>1.0.0</version>
+      <version>2.4.0</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -41,7 +41,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>tools.logging</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.cognitect</groupId>
