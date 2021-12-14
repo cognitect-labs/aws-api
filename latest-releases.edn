@@ -1,4 +1,4 @@
-{com.cognitect.aws/api {:mvn/version "0.8.536"},
+{com.cognitect.aws/api {:mvn/version "0.8.539"},
  com.cognitect.aws/endpoints {:mvn/version "1.1.12.110"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "814.2.986.0",
