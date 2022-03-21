@@ -16,7 +16,7 @@
 (def checksum-blacklist
   "Set of ops that should not get checksum headers.
 
-  TODO: see https://github.com/aws/aws-sdk-java-v2/blob/master/services/s3/src/main/java/software/amazon/awssdk/services/s3/internal/handlers/AddContentMd5HeaderInterceptor.java "
+  see https://github.com/aws/aws-sdk-java-v2/blob/30660f43ec485b20b39d7ea6743bdf43b2b7faa1/services/s3/src/main/java/software/amazon/awssdk/services/s3/internal/handlers/AddContentMd5HeaderInterceptor.java"
   #{:PutObject :UploadPart})
 
 (defmethod modify-http-request "s3" [service op-map http-request]
