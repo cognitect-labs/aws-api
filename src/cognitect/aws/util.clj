@@ -14,13 +14,14 @@
            [java.util UUID]
            [java.io InputStream]
            [java.nio.charset Charset]
-           [java.security MessageDigest]
+           [java.security MessageDigest NoSuchAlgorithmException]
            [javax.crypto Mac]
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
            [java.io ByteArrayInputStream ByteArrayOutputStream]
            [java.net URLEncoder]
-           [java.util Base64]))
+           [java.util Base64]
+           [java.util.zip CRC32 CRC32C]))
 
 (set! *warn-on-reflection* true)
 
@@ -257,6 +258,63 @@
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)
     (.digest hasher)))
+
+(defn ^bytes sha1
+  "returns an SHA-1 hash of the content of bb as a byte array
+  See: https://github.com/aws/aws-sdk-java-v2/blob/5cf596e1657d2560423b2bba304bb78d764ad5c7/core/sdk-core/src/main/java/software/amazon/awssdk/core/checksums/Sha1Checksum.java"
+  [^ByteBuffer bb]
+  (let [ba     (.array bb)
+        hasher (MessageDigest/getInstance "SHA-1")]
+    (.update hasher ^bytes ba)
+    (.digest hasher)))
+
+(defn ^bytes sha256
+  "returns an SHA-256 hash of the content of bb as a byte array
+  See: https://github.com/aws/aws-sdk-java-v2/blob/5cf596e1657d2560423b2bba304bb78d764ad5c7/core/sdk-core/src/main/java/software/amazon/awssdk/core/checksums/Sha256Checksum.java"
+  [^ByteBuffer bb]
+  (let [ba     (.array bb)
+        hasher (MessageDigest/getInstance "SHA-256")]
+    (.update hasher ^bytes ba)
+    (.digest hasher)))
+
+(defn ^bytes crc32
+  "returns an CRC-32 hash of the content of bb as a byte array
+  See: https://github.com/aws/aws-sdk-java-v2/blob/5cf596e1657d2560423b2bba304bb78d764ad5c7/core/sdk-core/src/main/java/software/amazon/awssdk/core/checksums/Crc32Checksum.java"
+  [^ByteBuffer bb]
+  (let [ba     (.array bb)
+        ^MessageDigest hasher (try (MessageDigest/getInstance "CRC-32") (catch NoSuchAlgorithmException _ nil))]
+    (if hasher
+      (do
+        (.update hasher ^bytes ba)
+        (.digest hasher))
+      (let [^CRC32 crc (CRC32.)]
+        (.update crc ^bytes ba)
+        (let [v (.getValue crc)
+              ^bytes ret (make-array Byte/TYPE 4)]
+          (aset-byte ret 3 (bit-shift-right (bit-and v 0xFF000000) 24))
+          (aset-byte ret 2 (bit-shift-right (bit-and v 0x00FF0000) 16))
+          (aset-byte ret 1 (bit-shift-right (bit-and v 0x0000FF00) 8))
+          (aset-byte ret 0 (bit-shift-right (bit-and v 0x000000FF) 0))
+          ret)))))
+
+(defn ^bytes crc32c
+  "returns an CRC-32C hash of the content of bb as a byte array"
+  [^ByteBuffer bb]
+  (let [ba     (.array bb)
+        ^MessageDigest hasher (try (MessageDigest/getInstance "CRC-32C") (catch NoSuchAlgorithmException _ nil))]
+    (if hasher
+      (do
+        (.update hasher ^bytes ba)
+        (.digest hasher))
+      (let [^CRC32C crc (CRC32C.)]
+        (.update crc ^bytes ba)
+        (let [v (.getValue crc)
+              ^bytes ret (make-array Byte/TYPE 4)]
+          (aset-byte ret 3 (bit-shift-right (bit-and v 0xFF000000) 24))
+          (aset-byte ret 2 (bit-shift-right (bit-and v 0x00FF0000) 16))
+          (aset-byte ret 1 (bit-shift-right (bit-and v 0x0000FF00) 8))
+          (aset-byte ret 0 (bit-shift-right (bit-and v 0x000000FF) 0))
+          ret)))))
 
 (defn uuid-string
   "returns a string representation of a randomly generated UUID"
