@@ -7,9 +7,7 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
-            [clojure.core.async :as a]
             [cognitect.aws.service :as service]
-            [cognitect.aws.region :as region]
             [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)

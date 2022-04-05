@@ -2,8 +2,7 @@
 ;; All rights reserved.
 
 (ns ^:skip-wiki cognitect.aws.config
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
+  (:require [clojure.string :as str]))
 
 (set! *warn-on-reflection* true)
 

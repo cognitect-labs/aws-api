@@ -8,8 +8,7 @@
             [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
-  (:import [java.util.concurrent Executors ExecutorService ThreadFactory]
-           [java.text SimpleDateFormat]
+  (:import [java.text SimpleDateFormat]
            [java.util Date TimeZone]
            [java.util UUID]
            [java.io InputStream]

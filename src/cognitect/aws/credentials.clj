@@ -7,16 +7,14 @@
   Alpha. Subject to change."
   (:require [clojure.java.io :as io]
             [clojure.tools.logging :as log]
-            [clojure.core.async :as a]
             [clojure.string :as str]
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
             [cognitect.aws.ec2-metadata-utils :as ec2])
   (:import (java.util Date)
-           (java.util.concurrent Executors ExecutorService ScheduledExecutorService
+           (java.util.concurrent Executors ScheduledExecutorService
                                  ScheduledFuture TimeUnit ThreadFactory)
            (java.io File)
-           (java.net URI)
            (java.time Duration Instant)))
 
 (set! *warn-on-reflection* true)
