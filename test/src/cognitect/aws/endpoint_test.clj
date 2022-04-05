@@ -2,8 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.endpoint-test
-  (:require [clojure.test :refer :all]
-            [clojure.spec.alpha :as s]
+  (:require [clojure.test :refer [deftest is testing]]
             [cognitect.aws.endpoint :as endpoint]))
 
 (def endpoints-excerpt
@@ -35,18 +34,12 @@
 (deftest test-resolve-endpoints
   (testing "resolves regionalized endpoints"
     (with-redefs [endpoint/resolver (constantly endpoints-excerpt)]
-      (is (= "ec2.us-east-1.amazonaws.com" (:hostname (endpoint/resolve :ec2 :us-east-1))))))
+      (is (= "ec2.us-east-1.amazonaws.com" (:hostname (endpoint/resolve* :ec2 :us-east-1))))))
   (testing "resolves global endpoints"
     (with-redefs [endpoint/resolver (constantly endpoints-excerpt)]
       (is (= "iam.amazonaws.com"
-             (:hostname (endpoint/resolve :iam :us-east-1))))))
+             (:hostname (endpoint/resolve* :iam :us-east-1))))))
   (testing "uses defaults to resolve unspecified endpoints"
     (with-redefs [endpoint/resolver (constantly endpoints-excerpt)]
       (is (= "i-do-not-exist.us-east-1.amazonaws.com"
-             (:hostname (endpoint/resolve :i-do-not-exist :us-east-1)))))))
-
-
-(comment
-  (run-tests)
-
-  )
+             (:hostname (endpoint/resolve* :i-do-not-exist :us-east-1)))))))

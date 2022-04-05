@@ -210,15 +210,6 @@
   [readable]
   (json/read-str (slurp readable) :key-fn keyword))
 
-(defn map-vals
-  "Apply f to the values with the given keys, or all values if `ks` is not specified."
-  ([f m]
-   (map-vals f m (keys m)))
-  ([f m ks]
-   (into m
-         (for [[k v] (select-keys m ks)]
-           [k (f v)]))))
-
 (defprotocol Base64Encodable
   (base64-encode [data]))
 

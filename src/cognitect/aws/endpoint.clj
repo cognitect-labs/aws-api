@@ -24,28 +24,35 @@
   []
   (read-endpoints-description))
 
-(defn render-template
-  [template args]
+(defn render-uri
+  "Given a template, e.g. \"{a}.{b}.{c}\", and a map of replacements
+  with keys matching those in the template, replaces {a} with the
+  value bound to :a in replacements, then {b}, then {c}."
+  [replacements template]
   (str/replace template
                #"\{([^}]+)\}"
-               #(get args (second %))))
+               #(get replacements (second %))))
 
 (defn service-resolve
   "Resolve the endpoint for the given service."
   [partition service-name service region-key]
-  (let [endpoint (get-in service [:endpoints region-key])
-        region   (name region-key)
-        result   (merge (:defaults partition)
-                        (:defaults service)
-                        endpoint
-                        {:partition (:partition partition)
-                         :region    region
-                         :dnsSuffix (:dnsSuffix partition)})]
-    (util/map-vals #(render-template % {"service"   service-name
-                                        "region"    region
-                                        "dnsSuffix" (:dnsSuffix partition)})
-                   result
-                   [:hostname :sslCommonName])))
+  (let [endpoint  (get-in service [:endpoints region-key])
+        region    (name region-key)
+        result    (merge (:defaults partition)
+                                (:defaults service)
+                                endpoint
+                                {:partition (:partition partition)
+                                 :region    region
+                                 :dnsSuffix (:dnsSuffix partition)})
+        uri-parts {"service"   service-name
+                   "region"    region
+                   "dnsSuffix" (:dnsSuffix partition)}]
+    (cond-> result
+      (:hostname result)
+      (update :hostname (partial render-uri uri-parts))
+
+      (:sslCommonName result)
+      (update :sslCommonName (partial render-uri uri-parts)))))
 
 (defn partition-resolve
   [{:keys [services] :as partition} service-key region-key]
