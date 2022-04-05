@@ -3,7 +3,7 @@
 
 (ns cognitect.aws.signers-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]

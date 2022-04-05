@@ -4,10 +4,9 @@
 (ns cognitect.aws.protocols-test
   "Test the protocols implementations."
   (:require [clojure.string :as str]
-            [clojure.test :refer :all]
+            [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
-            [clojure.walk :as walk]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [cognitect.aws.util :as util]

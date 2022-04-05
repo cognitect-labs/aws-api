@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 {:paths   ["src" "resources"]
- :deps    {org.clojure/clojure       {:mvn/version "1.10.1"}
+ :deps    {org.clojure/clojure       {:mvn/version "1.11.0"}
            org.clojure/core.async    {:mvn/version "1.5.644"}
            org.clojure/tools.logging {:mvn/version "1.2.1"}
            org.clojure/data.json     {:mvn/version "2.4.0"}
@@ -12,21 +12,19 @@
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io       {:mvn/version "2.8.0"}
-                                           org.clojure/test.check      {:mvn/version "1.1.0"}
+                                           org.clojure/test.check      {:mvn/version "1.1.1"}
                                            org.slf4j/slf4j-log4j12     {:mvn/version "1.7.30"}
                                            http-kit/http-kit           {:mvn/version "2.5.0"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.11.926"}
                                            com.cognitect.aws/s3        {:mvn/version "810.2.817.0"}}}
-           :test            {:extra-deps {com.cognitect/test-runner
-                                          {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                           :sha     "cb96e80f6f3d3b307c59cbeb49bb0dcb3a2a780b"}}
+           :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.0" :git/sha "b3fd0d2"}}
                              :main-opts  ["-m" "cognitect.test-runner"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
-                             :extra-deps  {org.clojure/test.check      {:mvn/version "1.1.0"}
-                                           org.slf4j/slf4j-log4j12     {:mvn/version "1.7.30"}
-                                           com.cognitect.aws/dynamodb  {:mvn/version "810.2.801.0"}
-                                           com.cognitect.aws/ec2       {:mvn/version "810.2.817.0"}
-                                           com.cognitect.aws/iam       {:mvn/version "801.2.704.0"}
-                                           com.cognitect.aws/lambda    {:mvn/version "810.2.817.0"}
-                                           com.cognitect.aws/ssm       {:mvn/version "810.2.817.0"}
-                                           com.cognitect.aws/sts       {:mvn/version "809.2.784.0"}}}}}
+                             :extra-deps  {org.clojure/test.check     {:mvn/version "1.1.0"}
+                                           org.slf4j/slf4j-log4j12    {:mvn/version "1.7.30"}
+                                           com.cognitect.aws/dynamodb {:mvn/version "810.2.801.0"}
+                                           com.cognitect.aws/ec2      {:mvn/version "810.2.817.0"}
+                                           com.cognitect.aws/iam      {:mvn/version "801.2.704.0"}
+                                           com.cognitect.aws/lambda   {:mvn/version "810.2.817.0"}
+                                           com.cognitect.aws/ssm      {:mvn/version "810.2.817.0"}
+                                           com.cognitect.aws/sts      {:mvn/version "809.2.784.0"}}}}}
