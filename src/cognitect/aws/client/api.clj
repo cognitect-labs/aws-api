@@ -10,14 +10,14 @@
             [cognitect.aws.client :as client]
             [cognitect.aws.retry :as retry]
             [cognitect.aws.client.shared :as shared]
-            [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.credentials]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.http :as http]
             [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
             [cognitect.aws.client.api.async :as api.async]
-            [cognitect.aws.signers] ;; implements multimethods
-            [cognitect.aws.util :as util]))
+            ;; implements multimethods
+            [cognitect.aws.signers]))
 
 (set! *warn-on-reflection* true)
 
@@ -82,7 +82,6 @@
                                    :else           (shared/region-provider))
         credentials-provider (or credentials-provider (shared/credentials-provider))
         endpoint-provider    (endpoint/default-endpoint-provider
-                              api
                               (get-in service [:metadata :endpointPrefix])
                               endpoint-override)]
     (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))

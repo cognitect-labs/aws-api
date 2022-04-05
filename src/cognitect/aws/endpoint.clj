@@ -7,8 +7,7 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
-            [cognitect.aws.service :as service]
-            [cognitect.aws.util :as util]))
+            [cognitect.aws.service :as service]))
 
 (set! *warn-on-reflection* true)
 
@@ -89,7 +88,7 @@
 (defprotocol EndpointProvider
   (-fetch [provider region]))
 
-(defn default-endpoint-provider [api endpointPrefix endpoint-override]
+(defn default-endpoint-provider [endpointPrefix endpoint-override]
   (reify EndpointProvider
     (-fetch [_ region]
       (if-let [ep (resolve (keyword endpointPrefix) (keyword region))]

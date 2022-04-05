@@ -9,7 +9,6 @@
             [cognitect.aws.util :as util]
             [cognitect.aws.protocols.common :as common]
             [cognitect.aws.service :as service]
-            [cognitect.aws.client :as client]
             [cognitect.aws.shape :as shape]))
 
 (set! *warn-on-reflection* true)
@@ -24,7 +23,7 @@
 (defn serialize-uri
   "Take a URI template, an input-shape, and a map of values and replace the parameters by their values.
   Throws if args is missing any keys that are required in input-shape."
-  [uri-template {:keys [required] :as input-shape} args]
+  [uri-template {:keys [required] :as _input-shape} args]
   (str/replace uri-template
                #"\{([^}]+)\}"
                (fn [[_ ^String param]]
@@ -159,7 +158,7 @@
              (util/with-defaults shape args)))
 
 (defn build-http-request
-  [{:keys [shapes operations metadata] :as service} {:keys [op request] :as op-map} serialize-body-args]
+  [{:keys [operations] :as service} {:keys [op request]} serialize-body-args]
   (let [operation        (get operations op)
         input-shape-name (-> operation :input :shape)
         input-shape      (service/shape service (:input operation))

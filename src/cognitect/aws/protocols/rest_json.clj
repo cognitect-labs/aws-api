@@ -14,7 +14,12 @@
 (set! *warn-on-reflection* true)
 
 (defmulti serialize
-  (fn [_ shape data] (:type shape)))
+  "json body args serializer passed to rest/build-http-request
+
+  Obs: this fn doesn't use the first arg, but the one in rest-xml
+  does, and this function gets invoked by rest/build-http-request,
+  which requires a 3 arg serialize fn."
+  (fn [_ shape _data] (:type shape)))
 
 (defmethod serialize :default
   [_ shape data]
@@ -32,9 +37,7 @@
 
 (defmethod client/build-http-request "rest-json"
   [service op-map]
-  (rest/build-http-request service
-                           op-map
-                           serialize))
+  (rest/build-http-request service op-map serialize))
 
 (defmulti parser (fn [http-response] (get-in http-response [:headers "content-type"])))
 

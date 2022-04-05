@@ -10,15 +10,17 @@
 
 (set! *warn-on-reflection* true)
 
+(defn serialize
+  "xml body args serializer passed to rest/build-http-request"
+  [shape-name shape data]
+  (when data
+    (shape/xml-serialize shape
+                         data
+                         (or (:locationName shape) shape-name))))
+
 (defmethod client/build-http-request "rest-xml"
-  [{:keys [shapes operations metadata] :as service} op-map]
-  (rest/build-http-request service
-                           op-map
-                           (fn [shape-name shape data]
-                             (when data
-                               (shape/xml-serialize shape
-                                                    data
-                                                    (or (:locationName shape) shape-name))))))
+  [service op-map]
+  (rest/build-http-request service op-map serialize))
 
 (defmethod client/parse-http-response "rest-xml"
   [service op-map http-response]

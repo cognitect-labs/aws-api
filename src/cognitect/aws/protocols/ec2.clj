@@ -3,12 +3,9 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols.ec2
   "Impl, don't call directly."
-  (:require [clojure.string :as str]
-            [cognitect.aws.util :as util]
+  (:require [cognitect.aws.util :as util]
             [cognitect.aws.client :as client]
-            [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.common :as common]
             [cognitect.aws.protocols.query :as query]))
 
 (set! *warn-on-reflection* true)
