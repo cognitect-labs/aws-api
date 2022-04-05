@@ -39,11 +39,11 @@
   (let [endpoint  (get-in service [:endpoints region-key])
         region    (name region-key)
         result    (merge (:defaults partition)
-                                (:defaults service)
-                                endpoint
-                                {:partition (:partition partition)
-                                 :region    region
-                                 :dnsSuffix (:dnsSuffix partition)})
+                         (:defaults service)
+                         endpoint
+                         {:partition (:partition partition)
+                          :region    region
+                          :dnsSuffix (:dnsSuffix partition)})
         uri-parts {"service"   service-name
                    "region"    region
                    "dnsSuffix" (:dnsSuffix partition)}]
