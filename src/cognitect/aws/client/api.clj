@@ -26,10 +26,9 @@
 (defn client
   "Given a config map, create a client for specified api. Supported keys:
 
-  :api                  - required, this or api-descriptor required, the name of the api
-                          you want to interact with e.g. :s3, :cloudformation, etc
-  :http-client          - optional, to share http-clients across aws-clients.
-                          See default-http-client.
+  :api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc
+  :http-client          - optional, to share http-clients across aws-clients
+                          Default: default-http-client
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
                           protocol, defaults to cognitect.aws.region/default-region-provider.
                           Ignored if :region is also provided
@@ -37,9 +36,8 @@
                           want to interact with, defaults to region provided by
                           by the region-provider
   :credentials-provider - optional, implementation of
-                          cognitect.aws.credentials/CredentialsProvider
-                          protocol, defaults to
-                          cognitect.aws.credentials/default-credentials-provider
+                          cognitect.aws.credentials/CredentialsProvider protocol
+                          Default: cognitect.aws.credentials/default-credentials-provider
   :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                             :protocol     - :http or :https
                             :hostname     - string
@@ -51,16 +49,14 @@
                           Also supports a string representing just the hostname, though
                           support for a string is deprectated and may be removed in the
                           future.
-  :retriable?           - optional, fn of http-response (see cognitect.aws.http/submit).
-                          Should return a boolean telling the client whether or
-                          not the request is retriable.  The default,
-                          cognitect.aws.retry/default-retriable?, returns
-                          true when the response indicates that the service is
-                          busy or unavailable.
+  :retriable?           - optional, predicate fn of http-response (see cognitect.aws.http/submit),
+                          which should return a truthy value if the request is
+                          retriable.
+                          Default: cognitect.aws.retry/default-retriable?
   :backoff              - optional, fn of number of retries so far. Should return
                           number of milliseconds to wait before the next retry
                           (if the request is retriable?), or nil if it should stop.
-                          Defaults to cognitect.aws.retry/default-backoff.
+                          Default: cognitect.aws.retry/default-backoff.
 
   By default, all clients use shared http-client, credentials-provider, and
   region-provider instances which use a small collection of daemon threads.

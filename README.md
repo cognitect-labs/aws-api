@@ -258,9 +258,93 @@ contributed significantly to research and design:
 
 ## Troubleshooting
 
-### General
+### Retriable errors
 
-#### nodename nor servname provided, or not known
+When the aws-api client encounters an error, it uses two funtions
+to determine whether to retry the request:
+
+``` clojure
+(retriable? [anomaly]
+  ;; return a truthy value when the anomaly* indicates the request is retriable.
+  )
+
+;; If retriable? returns a truty value, then
+
+(backoff [n-tries-so-far]
+  ;; return the number of milliseconds to wait before trying again,
+  ;; or nil, which indicates that we have reached the max number
+  ;; of retries and should not try again.
+  )
+```
+
+*see [Cognitect anomalies](https://github.com/cognitect-labs/anomalies)
+
+The defaults for these are:
+
+``` clojure
+cognitect.aws.retry/default-retriable?
+cognitect.aws.retry/default-backoff
+```
+
+You can override these defaults by passing functions to
+`cognitect.aws.client.api/client` bound to the keys `:retriable?` and
+`:backoff`, e.g.
+
+``` clojure
+(cognitect.aws.client.api/client
+  {:api        :iam
+   :retriable? custom-retriable-fn
+   :backoff    custom-backoff-fn})
+
+```
+
+#### retriable?
+
+The default retriable predicate returns a truthy
+value when the value of `:cognitect.anomalies/category` is any of:
+
+- `:cognitect.anomalies/busy`p
+- `:cognitect.anomalies/interrupted`
+- `:cognitect.anomalies/unavailable`
+
+Because we do not control the sources of these errors, we cannot guarantee
+that every retriable error will be recognized. If you encounter an error
+that you think should be retriable, you can supply a custom predicate bound
+to the `:retriable?` key when you create a client.
+
+``` clojure
+(cognitect.aws.client.api/client
+  {:api        :iam
+   :retriable? (fn [{:keys [cognitect.anomalies/category] :as error-info] ,,)})
+```
+
+Only `cognitect.anomalies/category` is controlled by aws-api, and you
+should inspect the actual error to understand what other information is
+available to you to decide whether or not a request is retriable.
+
+#### backoff
+
+Once the aws-api client determines that a request is retriable, it
+invokes a backoff function to determine how long to wait. The default
+backoff is a capped, exponential backoff, which returns `nil` after
+max-retries have already been attempted.
+
+If you wish to override this backoff strategy, you can supply a custom
+function bound to the `:backoff` key when you create a client.
+
+``` clojure
+(cognitect.aws.client.api/client
+  {:api     :iam
+   :backoff (fn [n-tries-so-far] ,,)})
+```
+
+Don't forget to account for termination by retuning nil after some number of retries.
+
+You an also use `cognitect.aws.retry/capped-exponential-backoff` to
+generate a function with different values for base, max-backoff, and
+max-retries, and then pass that to `client`.
+
+### nodename nor servname provided, or not known
 
 This indicates that the configured endpoint is incorrect for the service/op
 you are trying to perform.
@@ -275,7 +359,7 @@ e.g.
              :endpoint-override {:hostname (str my-account-id ".s3-control.us-east-1.amazonaws.com")}})
 ```
 
-#### No known endpoint.
+### No known endpoint.
 
 This indicates that the data in the `com.cognitect.aws/endpoints` lib
 (which is derived from
@@ -286,7 +370,7 @@ access.
 Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html),
 and supply the correct endpoint as described in [nodename nor servname provided, or not known](#nodename-nor-servname-provided-or-not-known), above.
 
-#### Ops limit reached
+### Ops limit reached
 
 The underlying http-client has a `:pending-ops-limit` configuration
 which, when reached, results in an exception with the message "Ops
@@ -297,9 +381,7 @@ aws-client. You may wish to explicitly stop
 (`com.cognitect.aws.api/stop`) these aws-clients when the are not
 longer in use to conserve resources.
 
-### S3 Issues
-
-#### "Invalid 'Location' header: null"
+### S3: "Invalid 'Location' header: null"
 
 This indicates that you are trying to access an S3 resource (bucket or object)
 that resides in a different region from the client's region.
