@@ -8,8 +8,7 @@
 (require '[clojure.core.async :as a]
          '[clojure.java.io :as io]
          '[clojure.data.json :as json]
-         '[cognitect.aws.client.api :as aws]
-         '[cognitect.aws.client.api.async :as aws.async])
+         '[cognitect.aws.client.api :as aws])
 
 ;; 0 Create a client to talk to DynamoDB
 (def ddb (aws/client {:api :dynamodb}))
