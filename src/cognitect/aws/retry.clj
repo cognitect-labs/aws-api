@@ -45,12 +45,14 @@
   (capped-exponential-backoff 100 20000 3))
 
 (def default-retriable?
-  "A fn of http-response which returns true if http-response contains
-  a cognitect.anomalies/category of :cognitect.anomalies/busy or
-  :cognitect.anomalies/unavailable
+  "A fn of an http-response map which returns a truthy value
+  if (:cognitect.anomalies/category http-response) is any of:
+    - :cognitect.anomalies/busy
+    - :cognitect.anomalies/interrupted
+    - :cognitect.anomalies/unavailable
 
   Alpha. Subject to change."
-  (fn [http-response]
-    (contains? #{:cognitect.anomalies/busy
-                 :cognitect.anomalies/unavailable}
-               (:cognitect.anomalies/category http-response))))
+  (comp #{:cognitect.anomalies/busy
+          :cognitect.anomalies/interrupted
+          :cognitect.anomalies/unavailable}
+        :cognitect.anomalies/category))
