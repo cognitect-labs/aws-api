@@ -226,7 +226,8 @@
                                      (u/getProperty "aws.profile")
                                      "default")))
   ([profile-name]
-   (profile-credentials-provider profile-name (or (io/file (u/getenv "AWS_CREDENTIAL_PROFILES_FILE"))
+   (profile-credentials-provider profile-name (or (some-> (u/getenv "AWS_SHARED_CREDENTIALS_FILE") io/file)  ;; aws-cli and java sdk v2
+                                                  (some-> (u/getenv "AWS_CREDENTIAL_PROFILES_FILE") io/file) ;; java sdk v1
                                                   (io/file (u/getProperty "user.home") ".aws" "credentials"))))
   ([profile-name ^File f]
    (cached-credentials-with-auto-refresh

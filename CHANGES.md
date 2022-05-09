@@ -3,6 +3,7 @@
 ## DEV
 
 * consider `cognitect.anomalies/interrupted` from the http-client retriable
+* check `AWS_SHARED_CREDENTIALS_FILE` as well as `AWS_CREDENTIAL_PROFILES_FILE`
 
 ## 0.8.536 / 2021-12-08
 
