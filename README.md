@@ -265,14 +265,15 @@ to determine whether to retry the request:
 
 ``` clojure
 (retriable? [anomaly]
-  ;; return a truthy value when the anomaly* indicates the request is retriable.
+  ;; should return a truthy value when the anomaly* indicates that
+  ;; the request is retriable.
   )
 
-;; If retriable? returns a truty value, then
+;; Then, if retriable? returns a truthy value:
 
 (backoff [n-tries-so-far]
-  ;; return the number of milliseconds to wait before trying again,
-  ;; or nil, which indicates that we have reached the max number
+  ;; should return the number of milliseconds to wait before trying
+  ;; again, or nil, which indicates that we have reached the max number
   ;; of retries and should not try again.
   )
 ```
@@ -298,19 +299,21 @@ You can override these defaults by passing functions to
 
 ```
 
-#### retriable?
+#### default retriable?
 
-The default retriable predicate returns a truthy
-value when the value of `:cognitect.anomalies/category` is any of:
+The default retriable predicate,
+`cognitect.aws.retry/default-retriable?`, returns a truthy value when
+the value of `:cognitect.anomalies/category` is any of:
 
-- `:cognitect.anomalies/busy`p
+- `:cognitect.anomalies/busy`
 - `:cognitect.anomalies/interrupted`
 - `:cognitect.anomalies/unavailable`
 
-Because we do not control the sources of these errors, we cannot guarantee
-that every retriable error will be recognized. If you encounter an error
-that you think should be retriable, you can supply a custom predicate bound
-to the `:retriable?` key when you create a client.
+Because we do not control the sources of these errors, we cannot
+guarantee that every retriable error will be recognized. If you
+encounter an error that you think should be retriable, you can supply
+a custom predicate bound to the `:retriable?` key when you create a
+client.
 
 ``` clojure
 (cognitect.aws.client.api/client
@@ -319,15 +322,14 @@ to the `:retriable?` key when you create a client.
 ```
 
 Only `cognitect.anomalies/category` is controlled by aws-api, and you
-should inspect the actual error to understand what other information is
-available to you to decide whether or not a request is retriable.
+should inspect the actual error to understand what other information
+is available to you to decide whether or not a request is retriable.
 
-#### backoff
+#### default backoff
 
-Once the aws-api client determines that a request is retriable, it
-invokes a backoff function to determine how long to wait. The default
-backoff is a capped, exponential backoff, which returns `nil` after
-max-retries have already been attempted.
+The default backoff, `cognitect.aws.retry/default-backoff`, is a
+capped, exponential backoff, which returns `nil` after max-retries
+have already been attempted.
 
 If you wish to override this backoff strategy, you can supply a custom
 function bound to the `:backoff` key when you create a client.
