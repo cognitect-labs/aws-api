@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* consider `cognitect.anomalies/interrupted` from the http-client retriable
+
 ## 0.8.536 / 2021-12-08
 
 * upgrade to core.async-1.5.644
