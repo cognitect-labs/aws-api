@@ -2,9 +2,9 @@
 ;; All rights reserved.
 
 {:paths   ["src" "resources"]
- :deps    {org.clojure/clojure       {:mvn/version "1.11.0"}
-           org.clojure/core.async    {:mvn/version "1.5.644"}
-           org.clojure/tools.logging {:mvn/version "1.2.1"}
+ :deps    {org.clojure/clojure       {:mvn/version "1.11.1"}
+           org.clojure/core.async    {:mvn/version "1.5.648"}
+           org.clojure/tools.logging {:mvn/version "1.2.4"}
            org.clojure/data.json     {:mvn/version "2.4.0"}
            org.clojure/data.xml      {:mvn/version "0.2.0-alpha6"}
            com.cognitect/http-client {:mvn/version "1.0.110"}}
