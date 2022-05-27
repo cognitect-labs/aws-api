@@ -3,7 +3,7 @@
 ## 0.8.561 / 2022-05-27
 
 * consider `cognitect.anomalies/interrupted` from the http-client retriable
-* check `AWS_SHARED_CREDENTIALS_FILE` as well as `AWS_CREDENTIAL_PROFILES_FILE`
+* check `AWS_SHARED_CREDENTIALS_FILE` as well as `AWS_CREDENTIAL_PROFILES_FILE` [#188](https://github.com/cognitect-labs/aws-api/issues/188)
 * send accept header for json APIs [#206](https://github.com/cognitect-labs/aws-api/issues/206)
 
 ## 0.8.536 / 2021-12-08
