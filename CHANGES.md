@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.561 / 2022-05-27
 
 * consider `cognitect.anomalies/interrupted` from the http-client retriable
 * check `AWS_SHARED_CREDENTIALS_FILE` as well as `AWS_CREDENTIAL_PROFILES_FILE`
