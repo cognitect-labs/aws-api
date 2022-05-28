@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* fix bug to ensure :endpoint is included in datafied client
+
 ## 0.8.561 / 2022-05-27
 
 * consider `cognitect.anomalies/interrupted` from the http-client retriable
