@@ -3,7 +3,7 @@
 
 (ns cognitect.aws.signers-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :as t :refer [deftest is testing]]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [cognitect.aws.client :as client]
@@ -58,7 +58,7 @@
                                                              (ByteArrayInputStream.)
                                                              (BOMInputStream.)))]
                                 (into [] (line-seq rdr)))
-        [headers [empty-line & rest]] (split-with (complement empty?) rest)
+        [headers [_empty-line & rest]] (split-with (complement empty?) rest)
         body (str/join "\n" rest)]
     (merge {:body (.getBytes ^String body "UTF-8")}
            (parse-request-line request-line)
@@ -145,7 +145,7 @@
           res))))
 
 (comment
-  (run-tests)
+  (t/run-tests)
 
   (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
 

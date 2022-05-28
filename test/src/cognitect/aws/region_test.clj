@@ -2,12 +2,13 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.region-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [clojure.java.io :as io]
             [clojure.core.async :as a]
             [cognitect.aws.region :as region]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
+            [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
             [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test]))
 
 (use-fixtures :once ec2-metadata-utils-test/test-server)
@@ -42,10 +43,10 @@
 
 (deftest instance-region-provider-test
   (testing "provider caches the fetched value"
-    (let [orig-get-region-fn cognitect.aws.ec2-metadata-utils/get-ec2-instance-region
+    (let [orig-get-region-fn ec2-metadata-utils/get-ec2-instance-region
           request-counter    (atom 0)
           fetch-counter      (atom 0)]
-      (with-redefs [cognitect.aws.ec2-metadata-utils/get-ec2-instance-region
+      (with-redefs [ec2-metadata-utils/get-ec2-instance-region
                     (fn [http]
                       (swap! fetch-counter inc)
                       (orig-get-region-fn http))]
@@ -58,8 +59,3 @@
           (is (apply = "us-east-1" (map #(a/<!! %) chans)))
           (is (= num-requests @request-counter))
           (is (= 1 @fetch-counter))))))())
-
-(comment
-  (run-tests)
-
-  )

@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.ec2-metadata-utils-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is use-fixtures]]
             [clojure.core.async :as a]
             [cognitect.aws.http :as http]
             [cognitect.aws.client.shared :as shared]
@@ -34,8 +34,3 @@
                              (doto (a/promise-chan)
                                (a/>!! {:cognitect.anomalies/category :cognitect.anomalies/busy})))]
     (is (nil? (ec2-metadata-utils/get-ec2-instance-region *http-client*)))))
-
-(comment
-  (run-tests)
-
-  )

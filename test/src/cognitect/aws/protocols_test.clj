@@ -4,7 +4,7 @@
 (ns cognitect.aws.protocols-test
   "Test the protocols implementations."
   (:require [clojure.string :as str]
-            [clojure.test :refer [deftest is testing use-fixtures]]
+            [clojure.test :as t :refer [deftest is testing use-fixtures]]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
             [clojure.spec.alpha :as s]
@@ -42,7 +42,7 @@
   (is (= expected uri)))
 
 (defn test-request-headers
-  [expected {:keys [headers] :as foo}]
+  [expected {:keys [headers]}]
   (doseq [[k v] expected
           :let [s (str/lower-case (name k))]]
     (is (contains? headers s))
@@ -71,7 +71,7 @@
   we accept strings for blob types, but this library does not.  Use
   this multimethod to xform strings to byte arrays before submitting
   requests to invoke."
-  (fn [protocol test-name test-case]
+  (fn [protocol test-name _test-case]
     [protocol test-name]))
 
 (defmethod with-blob-xforms :default
@@ -123,10 +123,7 @@
 (defn timestamp->date [secs]
   (Date. (* secs 1000)))
 
-(defn xform-timestamp-params [test-case ks]
-  (update-params test-case ks timestamp->date))
-
-(defmulti with-timestamp-xforms (fn [protocol description response]
+(defmulti with-timestamp-xforms (fn [protocol description _response]
                                 [protocol description]))
 
 (defmethod with-timestamp-xforms :default
@@ -188,7 +185,7 @@
   [_ _ test-case]
   (update-params test-case [:TimeArg] timestamp->date))
 
-(defmulti with-parsed-streams (fn [protocol description response]
+(defmulti with-parsed-streams (fn [protocol description _response]
                                 [protocol description]))
 
 (def read-blob (comp slurp io/reader))
@@ -230,7 +227,7 @@
 
 (defn date->ms [d] (when d (int (/ (.getTime d) 1000))))
 
-(defmulti with-parsed-dates (fn [protocol description response]
+(defmulti with-parsed-dates (fn [protocol description _response]
                                 [protocol description]))
 
 (defmethod with-parsed-dates :default
@@ -311,7 +308,7 @@
                date->ms))
 
 (defn stringify-keys [m] (reduce-kv (fn [m k v] (assoc m (name k) v)) {} m))
-(defmulti with-string-keyed-maps (fn [protocol description response] [protocol description]))
+(defmulti with-string-keyed-maps (fn [protocol description _response] [protocol description]))
 (defmethod with-string-keyed-maps :default [_ _ response] response)
 (defmethod with-string-keyed-maps ["ec2" "Normal map"] [_ _ response] (update response :Map stringify-keys))
 (defmethod with-string-keyed-maps ["ec2" "Flattened map"] [_ _ response] (update response :Map stringify-keys))
@@ -324,7 +321,7 @@
 (defmethod with-string-keyed-maps ["rest-xml" "Flattened map"] [_ _ response] (update response :Map stringify-keys))
 (defmethod with-string-keyed-maps ["rest-xml" "Named map"] [_ _ response] (update response :Map stringify-keys))
 
-(defmulti test-request-body (fn [protocol expected request] protocol))
+(defmulti test-request-body (fn [protocol _expected _request] protocol))
 
 (defmethod test-request-body :default
   [_ expected {:keys [body]}]
@@ -352,7 +349,7 @@
     (if (str/blank? expected)
       (is (nil? body-str))
       (if-let [expected-json (try (json/read-str expected)
-                                  (catch Throwable t))]
+                                  (catch Throwable _t))]
         (is (= expected-json (json/read-str body-str)))
         ;; streaming, no JSON payload, we compare strings directly
         (is (= expected body-str))))))
@@ -370,7 +367,7 @@
     (is (= (parse-query-string expected)
            (parse-query-string body)))))
 
-(defmulti run-test (fn [io protocol description service test-case] io))
+(defmulti run-test (fn [io _protocol _description _service _test-case] io))
 
 (defmethod run-test "input"
   [_ protocol description service test-case]
@@ -400,7 +397,7 @@
                                                       {:status  (:status_code response)
                                                        :headers (:headers response)
                                                        :body    (util/->bbuf (:body response))})]
-      (when-let [anomaly (:cognitect.anomalies/category parsed-response)]
+      (when (:cognitect.anomalies/category parsed-response)
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
       (is (= (->> result
@@ -437,6 +434,6 @@
       (test-protocol protocol))))
 
 (comment
-  (run-tests)
+  (t/run-tests)
 
   )

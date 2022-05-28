@@ -2,7 +2,7 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.retry-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [clojure.core.async :as a]
             [cognitect.aws.retry :as retry]))
 
@@ -72,7 +72,3 @@
                         (a/promise-chan)
                         retry/default-retriable?
                         (retry/capped-exponential-backoff 50 500 max-retries)))))))))
-
-(comment
-  (run-tests)
-  )
