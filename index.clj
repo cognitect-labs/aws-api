@@ -22,6 +22,10 @@
    :name "cognitect.aws.retry",
    :wiki-url "cognitect.aws.retry-api.html",
    :source-url nil}
+  {:doc nil,
+   :name "scratch",
+   :wiki-url "scratch-api.html",
+   :source-url nil}
   {:doc
    "API functions for using a client to interact with AWS services.",
    :name "cognitect.aws.client.api.async",
@@ -46,7 +50,7 @@
        http-client],
       :or {endpoint-override {}}}]),
    :doc
-   "Given a config map, create a client for specified api. Supported keys:\n\n:api                  - required, this or api-descriptor required, the name of the api\n                        you want to interact with e.g. :s3, :cloudformation, etc\n:http-client          - optional, to share http-clients across aws-clients.\n                        See default-http-client.\n:region-provider      - optional, implementation of aws-clojure.region/RegionProvider\n                        protocol, defaults to cognitect.aws.region/default-region-provider.\n                        Ignored if :region is also provided\n:region               - optional, the aws region serving the API endpoints you\n                        want to interact with, defaults to region provided by\n                        by the region-provider\n:credentials-provider - optional, implementation of\n                        cognitect.aws.credentials/CredentialsProvider\n                        protocol, defaults to\n                        cognitect.aws.credentials/default-credentials-provider\n:endpoint-override    - optional, map to override parts of the endpoint. Supported keys:\n                          :protocol     - :http or :https\n                          :hostname     - string\n                          :port         - int\n                          :path         - string\n                        If the hostname includes an AWS region, be sure use the same\n                        region for the client (either via out of process configuration\n                        or the :region key supplied to this fn).\n                        Also supports a string representing just the hostname, though\n                        support for a string is deprectated and may be removed in the\n                        future.\n:retriable?           - optional, fn of http-response (see cognitect.aws.http/submit).\n                        Should return a boolean telling the client whether or\n                        not the request is retriable.  The default,\n                        cognitect.aws.retry/default-retriable?, returns\n                        true when the response indicates that the service is\n                        busy or unavailable.\n:backoff              - optional, fn of number of retries so far. Should return\n                        number of milliseconds to wait before the next retry\n                        (if the request is retriable?), or nil if it should stop.\n                        Defaults to cognitect.aws.retry/default-backoff.\n\nBy default, all clients use shared http-client, credentials-provider, and\nregion-provider instances which use a small collection of daemon threads.\n\nAlpha. Subject to change.",
+   "Given a config map, create a client for specified api. Supported keys:\n\n:api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc\n:http-client          - optional, to share http-clients across aws-clients\n                        Default: default-http-client\n:region-provider      - optional, implementation of aws-clojure.region/RegionProvider\n                        protocol, defaults to cognitect.aws.region/default-region-provider.\n                        Ignored if :region is also provided\n:region               - optional, the aws region serving the API endpoints you\n                        want to interact with, defaults to region provided by\n                        by the region-provider\n:credentials-provider - optional, implementation of\n                        cognitect.aws.credentials/CredentialsProvider protocol\n                        Default: cognitect.aws.credentials/default-credentials-provider\n:endpoint-override    - optional, map to override parts of the endpoint. Supported keys:\n                          :protocol     - :http or :https\n                          :hostname     - string\n                          :port         - int\n                          :path         - string\n                        If the hostname includes an AWS region, be sure use the same\n                        region for the client (either via out of process configuration\n                        or the :region key supplied to this fn).\n                        Also supports a string representing just the hostname, though\n                        support for a string is deprectated and may be removed in the\n                        future.\n:retriable?           - optional, predicate fn of http-response (see cognitect.aws.http/submit),\n                        which should return a truthy value if the request is\n                        retriable.\n                        Default: cognitect.aws.retry/default-retriable?\n:backoff              - optional, fn of number of retries so far. Should return\n                        number of milliseconds to wait before the next retry\n                        (if the request is retriable?), or nil if it should stop.\n                        Default: cognitect.aws.retry/default-backoff.\n\nBy default, all clients use shared http-client, credentials-provider, and\nregion-provider instances which use a small collection of daemon threads.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/client"}
@@ -54,7 +58,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 108,
+   :line 103,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -66,7 +70,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 208,
+   :line 203,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -78,7 +82,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 172,
+   :line 167,
    :var-type "function",
    :arglists
    ([{:keys
@@ -93,7 +97,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 113,
+   :line 108,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -105,7 +109,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 162,
+   :line 157,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -117,7 +121,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 141,
+   :line 136,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -129,7 +133,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 148,
+   :line 143,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -141,7 +145,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 217,
+   :line 212,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -153,7 +157,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 132,
+   :line 127,
    :var-type "function",
    :arglists ([client] [client bool]),
    :doc
@@ -201,7 +205,7 @@
    :name "auto-refreshing-credentials",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 107,
+   :line 105,
    :deprecated true,
    :var-type "function",
    :arglists ([provider] [provider scheduler]),
@@ -213,7 +217,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 338,
+   :line 337,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -225,7 +229,7 @@
    :name "cached-credentials-with-auto-refresh",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 78,
+   :line 76,
    :var-type "function",
    :arglists ([provider] [provider scheduler]),
    :doc
@@ -237,7 +241,7 @@
    :name "calculate-ttl",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 260,
+   :line 259,
    :var-type "function",
    :arglists ([{:keys [Expiration], :as credentials}]),
    :doc
@@ -249,7 +253,7 @@
    :name "chain-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 136,
+   :line 134,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -261,7 +265,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 279,
+   :line 278,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -273,7 +277,7 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 320,
+   :line 319,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -285,7 +289,7 @@
    :name "environment-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 163,
+   :line 161,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -308,7 +312,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 352,
+   :line 351,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -320,7 +324,7 @@
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 299,
+   :line 298,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -332,7 +336,7 @@
    :name "profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 210,
+   :line 208,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -344,7 +348,7 @@
    :name "stop",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 112,
+   :line 110,
    :var-type "function",
    :arglists ([credentials]),
    :doc
@@ -356,7 +360,7 @@
    :name "system-property-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 187,
+   :line 185,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -368,7 +372,7 @@
    :name "chain-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 28,
+   :line 27,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -380,7 +384,7 @@
    :name "default-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 100,
+   :line 99,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -392,7 +396,7 @@
    :name "environment-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 42,
+   :line 41,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -414,7 +418,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 116,
+   :line 115,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -426,7 +430,7 @@
    :name "instance-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 88,
+   :line 87,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -438,7 +442,7 @@
    :name "profile-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 58,
+   :line 57,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -450,7 +454,7 @@
    :name "system-property-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 50,
+   :line 49,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -488,7 +492,7 @@
    :line 47,
    :var-type "var",
    :doc
-   "A fn of http-response which returns true if http-response contains\na cognitect.anomalies/category of :cognitect.anomalies/busy or\n:cognitect.anomalies/unavailable\n\nAlpha. Subject to change.",
+   "A fn of an http-response map which returns a truthy value\nif (:cognitect.anomalies/category http-response) is any of:\n  - :cognitect.anomalies/busy\n  - :cognitect.anomalies/interrupted\n  - :cognitect.anomalies/unavailable\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.retry",
    :wiki-url
    "/cognitect.aws.retry-api.html#cognitect.aws.retry/default-retriable?"}
