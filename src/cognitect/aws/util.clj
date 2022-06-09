@@ -23,11 +23,11 @@
 
 (set! *warn-on-reflection* true)
 
-(defn ^ThreadLocal date-format
+(defn  date-format
   "Return a thread-safe GMT date format that can be used with `format-date` and `parse-date`.
 
   See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4228335"
-  [^String fmt]
+  ^ThreadLocal [^String fmt]
   (proxy [ThreadLocal] []
     (initialValue []
       (doto (SimpleDateFormat. fmt)
@@ -98,7 +98,7 @@
     (.init mac (SecretKeySpec. key "HmacSHA256"))
     (.doFinal mac (.getBytes data "UTF-8"))))
 
-(defn ^bytes input-stream->byte-array [is]
+(defn input-stream->byte-array ^bytes [is]
   (let [os (ByteArrayOutputStream.)]
     (io/copy is os)
     (.toByteArray os)))
@@ -126,7 +126,7 @@
   (->bbuf [data]))
 
 (extend-protocol BBuffable
-  (class (byte-array 0))
+  (Class/forName "[B")
   (->bbuf [bs] (ByteBuffer/wrap bs))
 
   String
@@ -214,7 +214,7 @@
   (base64-encode [data]))
 
 (extend-protocol Base64Encodable
-  (class (byte-array 0))
+  (Class/forName "[B")
   (base64-encode [ba] (.encodeToString (Base64/getEncoder) ba))
 
   ByteBuffer
@@ -240,9 +240,9 @@
 
 (def ^Charset UTF8 (Charset/forName "UTF-8"))
 
-(defn ^bytes md5
+(defn md5
   "returns an MD5 hash of the content of bb as a byte array"
-  [^ByteBuffer bb]
+  ^bytes [^ByteBuffer bb]
   (let [ba     (.array bb)
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)

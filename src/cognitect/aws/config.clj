@@ -54,7 +54,7 @@
 
 (defn add-nested-kv [m line]
   (let [[k v] (split-kv line)]
-    (apply update-in m (:path m) assoc (split-kv line))))
+    (update-in m (:path m) assoc k v)))
 
 ;;; main
 

@@ -254,7 +254,7 @@
     (instance? Date t)         (.toInstant ^Date t)
     (instance? CharSequence t) (Instant/parse t)
     (number? t)                (Instant/ofEpochMilli (.longValue ^Number t))
-    :default t))
+    :else t))
 
 (defn calculate-ttl
   "Primarily for internal use, returns time to live (ttl, in seconds),
@@ -266,7 +266,7 @@
   (returned from :AssumeRole on aws sts client), a numeric value
   representing milliseconds since the epoch of 1970-01-01T00:00:00Z,
   or an Instant object."
-  [{:keys [Expiration] :as credentials}]
+  [{:keys [Expiration]}]
   (if Expiration
     (-> (Instant/now)
         (Duration/between ^Instant (->instant Expiration))

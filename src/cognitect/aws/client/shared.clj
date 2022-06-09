@@ -40,6 +40,7 @@
   []
   @shared-region-provider)
 
+#_:clj-kondo/ignore
 (defn ^:private shared-http-client?
   "For internal use.
 

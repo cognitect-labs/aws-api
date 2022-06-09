@@ -26,17 +26,17 @@
 
 (defmulti build-http-request
   "AWS request -> HTTP request."
-  (fn [service op-map]
+  (fn [service _op-map]
     (get-in service [:metadata :protocol])))
 
 (defmulti parse-http-response
   "HTTP response -> AWS response"
-  (fn [service op-map http-response]
+  (fn [service _op-map _http-response]
     (get-in service [:metadata :protocol])))
 
 (defmulti sign-http-request
   "Sign the HTTP request."
-  (fn [service endpoint credentials http-request]
+  (fn [service _endpoint _credentials _http-request]
     (get-in service [:metadata :signatureVersion])))
 
 ;; TODO convey throwable back from impl
@@ -50,11 +50,7 @@
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
 
-(defn ^:private with-endpoint [req {:keys [protocol
-                                           hostname
-                                           port
-                                           path]
-                                    :as   endpoint}]
+(defn ^:private with-endpoint [req {:keys [protocol hostname port path]}]
   (cond-> (-> req
               (assoc-in [:headers "host"] hostname)
               (assoc :server-name hostname))

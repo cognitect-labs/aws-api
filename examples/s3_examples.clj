@@ -5,6 +5,7 @@
          '[clojure.spec.alpha :as s]
          '[clojure.spec.gen.alpha :as gen]
          '[clojure.java.io :as io]
+         '[clojure.repl :as repl]
          '[cognitect.aws.client.api :as aws]
          '[cognitect.aws.client.api.async :as aws.async])
 
@@ -38,7 +39,7 @@
 (def bucket-name (str "cognitect-aws-test-" (.getEpochSecond (java.time.Instant/now))))
 
 ;; see how submit works
-(clojure.repl/doc aws/invoke)
+(repl/doc aws/invoke)
 
 ;; doit
 (aws/invoke s3 {:op :ListBuckets})

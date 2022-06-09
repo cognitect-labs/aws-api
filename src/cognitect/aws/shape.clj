@@ -106,10 +106,8 @@
                        util/rfc822-date-format))))
 
 ;; ----------------------------------------------------------------------------------------
-;; JSON Parser & Serializer
+;; JSON helpers/handlers
 ;; ----------------------------------------------------------------------------------------
-
-;; shared data structure handlers
 
 (defn handle-map [shape data f]
   (when data
@@ -121,22 +119,18 @@
 
 (defn handle-list [shape data f]
   (when data
-    (mapv #(f (list-member-shape shape) %)
+    (mapv (partial f (list-member-shape shape))
           ;; sometimes the spec says list, but AWS sends a scalar
           (if (sequential? data) data [data]))))
 
-;; parser
+;; ----------------------------------------------------------------------------------------
+;; JSON Parser
+;; ----------------------------------------------------------------------------------------
 
 (defmulti json-parse*
-  (fn [shape data] (:type shape)))
+  (fn [shape _data] (:type shape)))
 
-(defmethod json-parse* :default
-  [_ data]
-  data)
-
-(defmethod json-parse* "blob"
-  [_ data]
-  (util/base64-decode data))
+(defmethod json-parse* :default [_shape data] data)
 
 (defmethod json-parse* "structure"
   [shape data]
@@ -158,29 +152,28 @@
   [shape data]
   (handle-list shape data json-parse*))
 
-(defmethod json-parse* "timestamp"
+(defmethod json-parse* "blob" [_shape data] (util/base64-decode data))
+(defmethod json-parse* "timestamp" [shape data] (parse-date shape data))
+
+;; ----------------------------------------------------------------------------------------
+;; JSON Serializer
+;; ----------------------------------------------------------------------------------------
+
+(defmulti json-serialize* (fn [shape _data] (:type shape)))
+
+(defn json-serialize
+  "Serialize the shape's data into a JSON string."
   [shape data]
-  (parse-date shape data))
+  (json/write-str (json-serialize* shape data)))
 
-;; serializer
+(defn json-parse
+  "Parse the JSON string to return an instance of the shape."
+  [shape s]
+  (json-parse* shape (json/read-str s :key-fn keyword)))
 
-(defmulti json-serialize*
-  (fn [shape instance] (:type shape)))
+(defmethod json-serialize* :default [_shape data] data)
 
-(defmethod json-serialize* :default
-  [shape data]
-  data)
-
-(defmethod json-serialize* "blob"
-  [_ data]
-  (util/base64-encode data))
-
-(defmethod json-serialize* "timestamp"
-  [shape data]
-  (format-date shape data (comp read-string util/format-timestamp)))
-
-(defmethod json-serialize* "structure"
-  [shape data]
+(defmethod json-serialize* "structure" [shape data]
   (when data
     (reduce-kv (fn [m k v]
                  (if-let [member-shape (member-shape shape k)]
@@ -192,116 +185,34 @@
                {}
                data)))
 
-(defmethod json-serialize* "map"
-  [shape data]
+(defmethod json-serialize* "map" [shape data]
   (handle-map shape data json-serialize*))
 
 (defmethod json-serialize* "list"
   [shape data]
   (handle-list shape data json-serialize*))
 
-;; entry point fns
+(defmethod json-serialize* "blob" [_shape data]
+  (util/base64-encode data))
 
-(defn json-parse
-  "Parse the JSON string to return an instance of the shape."
-  [shape s]
-  (json-parse* shape (json/read-str s :key-fn keyword)))
-
-(defn json-serialize
-  "Serialize the shape's instance into a JSON string."
-  [shape instance]
-  (json/write-str (json-serialize* shape instance)))
+(defmethod json-serialize* "timestamp" [shape data]
+  (format-date shape data (comp read-string util/format-timestamp)))
 
 ;; ----------------------------------------------------------------------------------------
-;; XML Parser & Serializer
+;; XML Parser
 ;; ----------------------------------------------------------------------------------------
 
-(declare xml-parse* xml-serialize*)
+(defmulti xml-parse*
+  (fn [shape _nodes] (:type shape)))
 
 ;; TODO: ResponseMetadata in root
 (defn xml-parse
-  "Parse the XML string and return an instance of the shape."
+  "Parse the XML string and return data representing of the shape."
   [shape s]
   (let [root (util/xml-read s)]
     (if (:resultWrapper shape)
       (xml-parse* shape (:content root))
       (xml-parse* shape [root]))))
-
-(defn xml-serialize
-  "Serialize the shape's instance into a XML string.
-  el-name is the name of the root element."
-  [shape instance el-name]
-  (with-out-str
-    (util/xml-write (xml-serialize* shape instance el-name))))
-
-(defmulti xml-serialize*
-  (fn [shape args el-name] (:type shape)))
-
-(defmethod xml-serialize* :default
-  [shape args el-name]
-  {:tag el-name
-   :content [(str args)]})
-
-(defmethod xml-serialize* "boolean"
-  [_ args el-name]
-  {:tag el-name
-   :content [(if args "true" "false")]})
-
-(defmethod xml-serialize* "blob"
-  [_ args el-name]
-  {:tag el-name
-   :content [(util/base64-encode args)]})
-
-(defmethod xml-serialize* "timestamp"
-  [shape args el-name]
-  {:tag el-name
-   :content [(format-date shape args (partial util/format-date util/iso8601-date-format))]})
-
-(defmethod xml-serialize* "structure"
-  [shape args el-name]
-  (reduce-kv (fn [node k v]
-               (if (and (not (nil? v)) (contains? (:members shape) k))
-                 (let [member-shape (member-shape shape k)
-                       member-name (get member-shape :locationName (name k))]
-                   (if (:xmlAttribute member-shape)
-                     (assoc-in node [:attrs member-name] v)
-                     (let [member (xml-serialize* member-shape v member-name)]
-                       (update node :content
-                               (if (vector? member) concat conj) ; to support flattened list
-                               member))))
-                 node))
-             {:tag el-name
-              :attrs (if-let [{:keys [prefix uri]} (:xmlNamespace shape)]
-                       {(str "xmlns" (when prefix (str ":" prefix))) uri}
-                       {})
-              :content []}
-             args))
-
-(defmethod xml-serialize* "list"
-  [shape args el-name]
-  (let [member-shape (list-member-shape shape)]
-    (if (:flattened shape)
-      (mapv #(xml-serialize* member-shape % el-name) args)
-      (let [member-name (get member-shape :locationName"member")]
-        {:tag el-name
-         :content (mapv #(xml-serialize* member-shape % member-name) args)}))))
-
-(defmethod xml-serialize* "map"
-  [shape args el-name]
-  (let [key-shape (key-shape shape)
-        key-name (get key-shape :locationName "key")
-        value-shape (value-shape shape)
-        value-name (get value-shape :locationName "value")]
-    {:tag el-name
-     :content (reduce-kv (fn [serialized k v]
-                           (conj serialized {:tag "entry"
-                                             :content [(xml-serialize* key-shape (name k) key-name)
-                                                       (xml-serialize* value-shape v value-name)]}))
-                         []
-                         args)}))
-
-(defmulti xml-parse*
-  (fn [shape nodes] (:type shape)))
 
 (defmethod xml-parse* "structure"
   [shape nodes]
@@ -390,26 +301,99 @@
 (defmethod xml-parse* "list"
   [shape nodes]
   (let [member-shape (list-member-shape shape)
-        member-name (get member-shape :locationName "member")
         members (if (:flattened shape)
                   nodes
                   (:content (first nodes)))]
     (mapv #(xml-parse* member-shape [%])
           members)))
 
-(defn data
+(defn ^:private content
   [nodes]
   (-> nodes first :content first))
 
-(defmethod xml-parse* "string"    [_ nodes] (or (data nodes) ""))
-(defmethod xml-parse* "character" [_ nodes] (or (data nodes) ""))
-(defmethod xml-parse* "boolean"   [_ nodes] (= (data nodes) "true"))
-(defmethod xml-parse* "double"    [_ nodes] (Double/parseDouble ^String (data nodes)))
-(defmethod xml-parse* "float"     [_ nodes] (Double/parseDouble ^String (data nodes)))
-(defmethod xml-parse* "long"      [_ nodes] (Long/parseLong ^String (data nodes)))
-(defmethod xml-parse* "integer"   [_ nodes] (Long/parseLong ^String (data nodes)))
-(defmethod xml-parse* "blob"      [_ nodes] (util/base64-decode (data nodes)))
-(defmethod xml-parse* "timestamp"
-  [shape nodes]
-  (let [ts (data nodes)]
-    (parse-date shape (data nodes))))
+(defmethod xml-parse* "string"    [_shape nodes] (or (content nodes) ""))
+(defmethod xml-parse* "character" [_shape nodes] (or (content nodes) ""))
+(defmethod xml-parse* "boolean"   [_shape nodes] (= "true" (content nodes)))
+(defmethod xml-parse* "double"    [_shape nodes] (Double/parseDouble ^String (content nodes)))
+(defmethod xml-parse* "float"     [_shape nodes] (Double/parseDouble ^String (content nodes)))
+(defmethod xml-parse* "long"      [_shape nodes] (Long/parseLong ^String (content nodes)))
+(defmethod xml-parse* "integer"   [_shape nodes] (Long/parseLong ^String (content nodes)))
+(defmethod xml-parse* "blob"      [_shape nodes] (util/base64-decode (content nodes)))
+(defmethod xml-parse* "timestamp" [shape nodes] (parse-date shape (content nodes)))
+
+;; ----------------------------------------------------------------------------------------
+;; XML Serializer
+;; ----------------------------------------------------------------------------------------
+
+(defmulti xml-serialize*
+  (fn [shape _args _el-name] (:type shape)))
+
+(defn xml-serialize
+  "Serialize the shape's data into a XML string.
+  el-name is the name of the root element."
+  [shape data el-name]
+  (with-out-str
+    (util/xml-write (xml-serialize* shape data el-name))))
+
+(defmethod xml-serialize* :default
+  [_shape args el-name]
+  {:tag el-name
+   :content [(str args)]})
+
+(defmethod xml-serialize* "boolean"
+  [_shape args el-name]
+  {:tag el-name
+   :content [(if args "true" "false")]})
+
+(defmethod xml-serialize* "blob"
+  [_shape args el-name]
+  {:tag el-name
+   :content [(util/base64-encode args)]})
+
+(defmethod xml-serialize* "timestamp"
+  [shape args el-name]
+  {:tag el-name
+   :content [(format-date shape args (partial util/format-date util/iso8601-date-format))]})
+
+(defmethod xml-serialize* "structure"
+  [shape args el-name]
+  (reduce-kv (fn [node k v]
+               (if (and (not (nil? v)) (contains? (:members shape) k))
+                 (let [member-shape (member-shape shape k)
+                       member-name (get member-shape :locationName (name k))]
+                   (if (:xmlAttribute member-shape)
+                     (assoc-in node [:attrs member-name] v)
+                     (let [member (xml-serialize* member-shape v member-name)]
+                       (update node :content
+                               (if (vector? member) concat conj) ; to support flattened list
+                               member))))
+                 node))
+             {:tag el-name
+              :attrs (if-let [{:keys [prefix uri]} (:xmlNamespace shape)]
+                       {(str "xmlns" (when prefix (str ":" prefix))) uri}
+                       {})
+              :content []}
+             args))
+
+(defmethod xml-serialize* "list"
+  [shape args el-name]
+  (let [member-shape (list-member-shape shape)]
+    (if (:flattened shape)
+      (mapv #(xml-serialize* member-shape % el-name) args)
+      (let [member-name (get member-shape :locationName "member")]
+        {:tag el-name
+         :content (mapv #(xml-serialize* member-shape % member-name) args)}))))
+
+(defmethod xml-serialize* "map"
+  [shape args el-name]
+  (let [key-shape (key-shape shape)
+        key-name (get key-shape :locationName "key")
+        value-shape (value-shape shape)
+        value-name (get value-shape :locationName "value")]
+    {:tag el-name
+     :content (reduce-kv (fn [serialized k v]
+                           (conj serialized {:tag "entry"
+                                             :content [(xml-serialize* key-shape (name k) key-name)
+                                                       (xml-serialize* value-shape v value-name)]}))
+                         []
+                         args)}))

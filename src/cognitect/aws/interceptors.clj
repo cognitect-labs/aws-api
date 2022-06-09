@@ -8,10 +8,10 @@
 
 (set! *warn-on-reflection* true)
 
-(defmulti modify-http-request (fn [service op-map http-request]
+(defmulti modify-http-request (fn [service _op-map _http-request]
                                 (service/service-name service)))
 
-(defmethod modify-http-request :default [service op-map http-request] http-request)
+(defmethod modify-http-request :default [_service _op-map http-request] http-request)
 
 (def md5-blacklist
   "Set of ops that should not get the Content-MD5 header.
@@ -26,11 +26,13 @@
     (update http-request :headers assoc "Content-MD5" (-> http-request :body util/md5 util/base64-encode))
     http-request))
 
-(defmethod modify-http-request "apigatewaymanagementapi" [service op-map http-request]
+(defmethod modify-http-request "apigatewaymanagementapi" [_service op-map http-request]
   (if (= :PostToConnection (:op op-map))
-    (update http-request :uri #(str % (-> op-map :request :ConnectionId)))
+    (update http-request :uri str (-> op-map :request :ConnectionId))
     http-request))
 
 ;; See https://github.com/aws/aws-sdk-java-v2/blob/985ec92c0dfac868b33791fe4623296c68e2feab/services/glacier/src/main/java/software/amazon/awssdk/services/glacier/internal/GlacierExecutionInterceptor.java#L40
-(defmethod modify-http-request "glacier" [service op-map http-request]
-  (assoc-in http-request [:headers "x-amz-glacier-version"] (get-in service [:metadata :apiVersion])))
+(defmethod modify-http-request "glacier" [service _op-map http-request]
+  (assoc-in http-request
+            [:headers "x-amz-glacier-version"]
+            (get-in service [:metadata :apiVersion])))
