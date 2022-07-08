@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.568 / 2022-07-08
 
 * fix bug to ensure :endpoint is included in datafied client
 
