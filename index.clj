@@ -58,7 +58,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 103,
+   :line 104,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -70,7 +70,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 203,
+   :line 204,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -82,7 +82,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 167,
+   :line 168,
    :var-type "function",
    :arglists
    ([{:keys
@@ -97,7 +97,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 108,
+   :line 109,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -109,7 +109,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 157,
+   :line 158,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -121,7 +121,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 136,
+   :line 137,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -133,7 +133,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 143,
+   :line 144,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -145,7 +145,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 212,
+   :line 213,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -157,7 +157,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 127,
+   :line 128,
    :var-type "function",
    :arglists ([client] [client bool]),
    :doc
@@ -243,7 +243,7 @@
    :source-url nil,
    :line 259,
    :var-type "function",
-   :arglists ([{:keys [Expiration], :as credentials}]),
+   :arglists ([{:keys [Expiration]}]),
    :doc
    "Primarily for internal use, returns time to live (ttl, in seconds),\nbased on `:Expiration` in credentials.  If `credentials` contains no\n`:Expiration`, defaults to 3600.\n\n`:Expiration` can be a string parsable by java.time.Instant/parse\n(returned by ec2/ecs instance credentials), a java.util.Date\n(returned from :AssumeRole on aws sts client), a numeric value\nrepresenting milliseconds since the epoch of 1970-01-01T00:00:00Z,\nor an Instant object.",
    :namespace "cognitect.aws.credentials",
