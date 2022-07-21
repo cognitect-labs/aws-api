@@ -22,10 +22,6 @@
    :name "cognitect.aws.retry",
    :wiki-url "cognitect.aws.retry-api.html",
    :source-url nil}
-  {:doc nil,
-   :name "scratch",
-   :wiki-url "scratch-api.html",
-   :source-url nil}
   {:doc
    "API functions for using a client to interact with AWS services.",
    :name "cognitect.aws.client.api.async",
