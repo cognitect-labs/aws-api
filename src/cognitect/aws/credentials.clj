@@ -125,7 +125,7 @@
             (not (str/blank? secret-access-key)))
      credentials
      (when credential-source
-       (log/info (str "Unable to fetch credentials from " credential-source "."))
+       (log/debug (str "Unable to fetch credentials from " credential-source "."))
        nil))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
