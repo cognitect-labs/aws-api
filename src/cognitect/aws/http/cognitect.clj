@@ -6,7 +6,7 @@
 
 (defn create
   []
-  (let [c (impl/create {:trust-all true})]  ;; FIX :trust-all
+  (let [c (impl/create {})]
     (reify aws/HttpClient
       (-submit [_ request channel]
         (impl/submit c request channel))
