@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* upgrade to cognitect/http-client-1.0.115 to upgrade jetty [#215](https://github.com/cognitect-labs/aws-api/issues/215)
+
 ## 0.8.568 / 2022-07-08
 
 * fix bug to ensure :endpoint is included in datafied client
