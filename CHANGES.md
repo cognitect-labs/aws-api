@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.575 / 2022-07-25
 
 * upgrade to cognitect/http-client-1.0.115 to upgrade jetty [#215](https://github.com/cognitect-labs/aws-api/issues/215)
 * remove unused arg to http-client constructor [#203](https://github.com/cognitect-labs/aws-api/issues/203)
