@@ -142,6 +142,11 @@ indicates failure with an HTTP status code >= 400, the map will
 include a `:cognitect.anomalies/category` key, so you can check for
 the absence/presence of that key to determine success/failure.
 
+Note that AWS will sometimes (rarely, but not never) return a 200 with an error message in
+the response payload, e.g. https://aws.amazon.com/pt/premiumsupport/knowledge-center/s3-resolve-200-internalerror/. Since we don't have a consistent, reliable
+way to programatically check for this, aws-api does not convert these responses
+to anomalies.
+
 ## Credentials
 
 The aws-api client implicitly looks up credentials the same way the
