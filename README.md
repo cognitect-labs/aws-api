@@ -114,8 +114,21 @@ Do stuff:
 
 ``` clojure
 (aws/invoke s3 {:op :ListBuckets})
+;; => {:Buckets [{:Name <name> :CreationDate <date> ,,,}]}
+
 ;; http-request and http-response are in the metadata
 (meta *1)
+;; => {:http-request {:request-method :get,
+;;                    :scheme :https,
+;;                    :server-port 443,
+;;                    :uri "/",
+;;                    :headers {,,,},
+;;                    :server-name "s3.amazonaws.com",
+;;                    :body nil},
+;;     :http-response {:status 200,
+;;                     :headers {,,,},
+;;                     :body <input-stream>}
+clj꞉user꞉> 
 
 ;; create a bucket in the same region as the client
 (aws/invoke s3 {:op :CreateBucket :request {:Bucket "my-unique-bucket-name"}})
