@@ -204,6 +204,4 @@
       (is (= 60 (credentials/calculate-ttl c))))))
 
 (comment
-  (t/run-tests)
-
-  )
+  (t/run-tests))

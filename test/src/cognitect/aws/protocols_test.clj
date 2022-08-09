@@ -124,7 +124,7 @@
   (Date. (* secs 1000)))
 
 (defmulti with-timestamp-xforms (fn [protocol description _response]
-                                [protocol description]))
+                                  [protocol description]))
 
 (defmethod with-timestamp-xforms :default
   [_ _ response] response)
@@ -228,7 +228,7 @@
 (defn date->ms [d] (when d (int (/ (.getTime d) 1000))))
 
 (defmulti with-parsed-dates (fn [protocol description _response]
-                                [protocol description]))
+                              [protocol description]))
 
 (defmethod with-parsed-dates :default
   [_ _ response] response)
@@ -251,7 +251,7 @@
                          :TimeCustom
                          :TimeFormat
                          [:StructMember :foo]
-                         [:StructMember :bar] ]
+                         [:StructMember :bar]]
                date->ms))
 
 (defmethod with-parsed-dates ["query" "Timestamp members"]
@@ -260,7 +260,7 @@
                          :TimeCustom
                          :TimeFormat
                          [:StructMember :foo]
-                         [:StructMember :bar] ]
+                         [:StructMember :bar]]
                date->ms))
 
 (defmethod with-parsed-dates ["json" "Timestamp members"]
@@ -269,7 +269,7 @@
                          :TimeCustom
                          :TimeFormat
                          [:StructMember :foo]
-                         [:StructMember :bar] ]
+                         [:StructMember :bar]]
                date->ms))
 
 (defmethod with-parsed-dates ["json" "Timestamp members with doubles"]
@@ -285,7 +285,7 @@
                          :TimeFormat
                          :TimeFormatInHeader
                          [:StructMember :foo]
-                         [:StructMember :bar] ]
+                         [:StructMember :bar]]
                date->ms))
 
 (defmethod with-parsed-dates ["rest-json" "Timestamp members"]
@@ -297,7 +297,7 @@
                          :TimeFormat
                          :TimeFormatInHeader
                          [:StructMember :foo]
-                         [:StructMember :bar] ]
+                         [:StructMember :bar]]
                date->ms))
 
 (defmethod with-parsed-dates ["rest-json" "Complex Map Values"]
@@ -434,6 +434,4 @@
       (test-protocol protocol))))
 
 (comment
-  (t/run-tests)
-
-  )
+  (t/run-tests))

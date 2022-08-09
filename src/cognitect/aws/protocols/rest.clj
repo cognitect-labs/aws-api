@@ -214,8 +214,8 @@
                                                           (let [header-name (str/lower-case (name k))]
                                                             (if (.startsWith header-name prefix)
                                                               (assoc parsed
-                                                                (keyword (.substring (name k) (count prefix)))
-                                                                v)
+                                                                     (keyword (.substring (name k) (count prefix)))
+                                                                     v)
                                                               parsed)))
                                                         {}
                                                         headers)]

@@ -21,6 +21,4 @@
                           (protocols.rest/serialize-uri "/{Bucket}/{Key+}" {:required ["Bucket" "Key"]} {:Bucket "foo"})))))
 
 (comment
-  (run-tests)
-
-  )
+  (run-tests))

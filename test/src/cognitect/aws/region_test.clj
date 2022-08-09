@@ -58,4 +58,4 @@
                                           (region/fetch-async p)))]
           (is (apply = "us-east-1" (map #(a/<!! %) chans)))
           (is (= num-requests @request-counter))
-          (is (= 1 @fetch-counter))))))())
+          (is (= 1 @fetch-counter)))))) ())

@@ -11,41 +11,41 @@
 
 (def iam-info
   (json/write-str
-    {"Code" "Success"
-     "LastUpdated" "2014-04-07T08 18 41Z"
-     "InstanceProfileArn" "foobar"
-     "InstanceProfileId" "moobily"
-     "NewFeature" 12345}))
+   {"Code" "Success"
+    "LastUpdated" "2014-04-07T08 18 41Z"
+    "InstanceProfileArn" "foobar"
+    "InstanceProfileId" "moobily"
+    "NewFeature" 12345}))
 
 (def iam-cred-list
   "test1\ntest2")
 
 (def iam-cred
   (json/write-str
-    {"Code"  "Success"
-     "LastUpdated" "2014-04-07T08:18:41Z"
-     "Type" "AWS-HMAC"
-     "AccessKeyId" "foobar"
-     "SecretAccessKey" "it^s4$3cret!"
-     "Token" "norealvalue"
-     "Expiration" "2014-04-08T23:16:53Z"}))
+   {"Code"  "Success"
+    "LastUpdated" "2014-04-07T08:18:41Z"
+    "Type" "AWS-HMAC"
+    "AccessKeyId" "foobar"
+    "SecretAccessKey" "it^s4$3cret!"
+    "Token" "norealvalue"
+    "Expiration" "2014-04-08T23:16:53Z"}))
 
 (def instance-info
   (json/write-str
-    {"pendingTime" "2014-08-07T22:07:46Z"
-     "instanceType" "m1.small"
-     "imageId" "ami-a49665cc"
-     "instanceId" "i-6b2de041"
-     "billingProducts" ["foo"]
-     "architecture" "x86_64"
-     "accountId" "599169622985"
-     "kernelId" "aki-919dcaf8"
-     "ramdiskId" "baz"
-     "region" "us-east-1"
-     "version" "2010-08-31"
-     "availabilityZone" "us-east-1b"
-     "privateIp" "10.201.215.38"
-     "devpayProductCodes" ["bar"]}))
+   {"pendingTime" "2014-08-07T22:07:46Z"
+    "instanceType" "m1.small"
+    "imageId" "ami-a49665cc"
+    "instanceId" "i-6b2de041"
+    "billingProducts" ["foo"]
+    "architecture" "x86_64"
+    "accountId" "599169622985"
+    "kernelId" "aki-919dcaf8"
+    "ramdiskId" "baz"
+    "region" "us-east-1"
+    "version" "2010-08-31"
+    "availabilityZone" "us-east-1b"
+    "privateIp" "10.201.215.38"
+    "devpayProductCodes" ["bar"]}))
 
 (defn route
   [uri]
@@ -72,6 +72,4 @@
 (comment
   (def stop-fn (start 0))
 
-  (stop-fn)
-
-  )
+  (stop-fn))

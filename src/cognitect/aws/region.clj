@@ -78,11 +78,11 @@
    (reify RegionProvider
      (fetch [_]
        (when (.exists f)
-        (try
-          (let [profile (get (config/parse f) profile-name)]
-            (valid-region (get profile "region")))
-          (catch Throwable t
-            (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
+         (try
+           (let [profile (get (config/parse f) profile-name)]
+             (valid-region (get profile "region")))
+           (catch Throwable t
+             (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
 
 (defn instance-region-provider
   "Returns the region from the ec2 instance's metadata service,

@@ -177,7 +177,7 @@
       (print (str "<" (name (:tag e))))
       (when (:attrs e)
         (doseq [attr (:attrs e)]
-          (print (str " " (name (key attr)) "=\"" (val attr)"\""))))
+          (print (str " " (name (key attr)) "=\"" (val attr) "\""))))
       (if-not (empty? (:content e))
         (do
           (print ">")

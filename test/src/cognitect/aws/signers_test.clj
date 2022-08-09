@@ -13,7 +13,6 @@
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
 
-
 (def exclude-dir?
   "These dirs have subdirs with tests, but no tests directly in them."
   #{"post-sts-token"
@@ -149,6 +148,4 @@
 
   (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
 
-  (read-tests (io/file (io/resource "aws-sig-v4-test-suite")))
-
-  )
+  (read-tests (io/file (io/resource "aws-sig-v4-test-suite"))))

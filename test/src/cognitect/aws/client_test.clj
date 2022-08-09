@@ -61,8 +61,8 @@
                                         :credentials-provider
                                         (stub-credentials-provider nil)))]
       (is (re-find #"^Unable to fetch credentials"
-             (:cognitect.anomalies/message
-              (aws/invoke aws-client {:op :ListBuckets}))))))
+                   (:cognitect.anomalies/message
+                    (aws/invoke aws-client {:op :ListBuckets}))))))
   (testing "empty creds (regression test - should not hang)"
     (let [aws-client (aws/client (assoc params
                                         :credentials-provider
