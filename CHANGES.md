@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.584 / 2022-08-29
 
 * add keyword access to :region, :endoint, and :credentials on an aws client
 
