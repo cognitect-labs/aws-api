@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* add keyword access to :region, :endoint, and :credentials on an aws client
+
 ## 0.8.575 / 2022-07-25
 
 * upgrade to cognitect/http-client-1.0.115 to upgrade jetty [#215](https://github.com/cognitect-labs/aws-api/issues/215)
