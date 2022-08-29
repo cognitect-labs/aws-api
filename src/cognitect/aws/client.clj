@@ -9,7 +9,8 @@
             [cognitect.aws.interceptors :as interceptors]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.region :as region]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials])
+  (:import (clojure.lang ILookup)))
 
 (set! *warn-on-reflection* true)
 
@@ -22,7 +23,21 @@
   (withMeta [this m] (swap! client-meta merge m) this)
 
   ClientSPI
-  (-get-info [_] info))
+  (-get-info [_] info)
+
+  ILookup
+  (valAt [this k]
+    (.valAt this k nil))
+
+  (valAt [this k default]
+    (case k
+      :region
+      (some-> info :region-provider region/fetch)
+      :endpoint
+      (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
+      :credentials
+      (some-> info :credentials-provider credentials/fetch)
+      default)))
 
 (defmulti build-http-request
   "AWS request -> HTTP request."

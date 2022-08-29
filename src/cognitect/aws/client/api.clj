@@ -61,6 +61,9 @@
   By default, all clients use shared http-client, credentials-provider, and
   region-provider instances which use a small collection of daemon threads.
 
+  Primarily for debugging, clients support keyword access for :region, :endpoint,
+  and :credentials
+
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client]
     :or   {endpoint-override {}}}]

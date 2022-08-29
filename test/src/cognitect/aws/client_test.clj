@@ -92,3 +92,10 @@
     (is (api.async/validate-requests? aws-client))
     (api.async/validate-requests aws-client false)
     (is (not (api.async/validate-requests? aws-client)))))
+
+(deftest keyword-access
+  (let [client (aws/client params)]
+    (is (= :us-east-1 (:region client)))
+    (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
+    (is (= {:access-key-id "a", :secret-access-key "b"}
+           (:credentials client)))))
