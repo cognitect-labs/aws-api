@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.587 / 2022-08-30
 
 * add keyword access to :service (with :metadata) and :http-client
 
