@@ -98,4 +98,8 @@
     (is (= :us-east-1 (:region client)))
     (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
     (is (= {:access-key-id "a", :secret-access-key "b"}
-           (:credentials client)))))
+           (:credentials client)))
+    (is (= (:metadata (:service (client/-get-info client)))
+           (:metadata (:service client))))
+    (is (= (:http-client params)
+           (:http-client client)))))

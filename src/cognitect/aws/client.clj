@@ -37,6 +37,10 @@
       (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
       :credentials
       (some-> info :credentials-provider credentials/fetch)
+      :service
+      (some-> info :service (select-keys [:metadata]))
+      :http-client
+      (:http-client info)
       default)))
 
 (defmulti build-http-request

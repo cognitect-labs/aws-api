@@ -62,7 +62,7 @@
   region-provider instances which use a small collection of daemon threads.
 
   Primarily for debugging, clients support keyword access for :region, :endpoint,
-  and :credentials
+  :credentials, :service (with :metadata), and :http-client.
 
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client]
