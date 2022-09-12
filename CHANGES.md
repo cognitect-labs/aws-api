@@ -1,6 +1,6 @@
 # aws-api
 
-# DEV
+# 0.8.589 / 2022-09-12
 
 * add `api/invoke-async` and deprecate `api.async/invoke`
 * add test double client with custom handler support [#186](https://github.com/cognitect-labs/aws-api/issues/186)
