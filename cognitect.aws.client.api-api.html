@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -62,6 +62,8 @@ namespace.
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.client.api/invoke">invoke</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.client.api/invoke-async">invoke-async</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.client.api/ops">ops</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.client.api/request-spec-key">request-spec-key</a>
@@ -71,12 +73,6 @@ namespace.
       <a href="#cognitect.aws.client.api/stop">stop</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.client.api/validate-requests">validate-requests</a>
-    </div>
-    <br />
-  </div><div class="toc-section" style="margin-left: 1em;">
-    <a href="#cognitect.aws.client.api.async">cognitect.aws.client.api.async</a>
-    <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.api.async/invoke">invoke</a>
     </div>
     <br />
   </div>
@@ -212,6 +208,33 @@ Alpha. Subject to change.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="cognitect.aws.client.api/invoke-async">invoke-async</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (invoke-async client op-map)
+</pre>
+  <pre id="var-docstr">Package and send a request to AWS and return a channel which
+will contain the result.
+
+Supported keys in op-map:
+
+:ch                   - optional, channel to deliver the result
+:op                   - required, keyword, the op to perform
+:request              - required only for ops that require them.
+:retriable?           - optional, defaults to :retriable? on the client.
+                        See client.
+:backoff              - optional, defaults to :backoff on the client.
+                        See client.
+
+After invoking (cognitect.aws.client.api/validate-requests true), validates
+:request in op-map.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="cognitect.aws.client.api/ops">ops</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (ops client)
@@ -271,32 +294,9 @@ Alpha. Subject to change.</pre>
   <h2 id="cognitect.aws.client.api/validate-requests">validate-requests</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (validate-requests client)
-       (validate-requests client bool)
+       (validate-requests client validate-requests?)
 </pre>
   <pre id="var-docstr">Given true, uses clojure.spec to validate all invoke calls on client.
-
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div>
-<h2 id="namespace-name">cognitect.aws.client.api.async</h2>
-<pre id="namespace-docstr">API functions for using a client to interact with AWS services.</pre>
-
-
-<br />
-<div id="var-entry">
-  <hr />
-  <h2 id="cognitect.aws.client.api.async/invoke">invoke</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (invoke client op-map)
-</pre>
-  <pre id="var-docstr">Async version of cognitect.aws.client.api/invoke. Returns
-a core.async channel which delivers the result.
-
-Additional supported keys in op-map:
-
-:ch - optional, channel to deliver the result
 
 Alpha. Subject to change.</pre>
   

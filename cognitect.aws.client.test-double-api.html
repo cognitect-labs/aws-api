@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.retry - aws-api API documentation</title>
+    <title>cognitect.aws.client.test-double - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -52,24 +52,23 @@ namespace.
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
     <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.retry/capped-exponential-backoff">capped-exponential-backoff</a>
+      <a href="#cognitect.aws.client.test-double/-&gt;Client">-&gt;Client</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.retry/default-backoff">default-backoff</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.retry/default-retriable?">default-retriable?</a>
+      <a href="#cognitect.aws.client.test-double/client">client</a>
     </div>
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.retry</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.client.test-double</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.retry</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.client.test-double</span>
 <p></p>
 <h2>Overview</h2>
-<pre id="namespace-docstr"></pre>
+<pre id="namespace-docstr">Provides a test implementation of the aws client, which can be passed
+to the functions in the cognitect.aws.client.api ns.</pre>
 
 
 <br />
@@ -77,44 +76,36 @@ namespace.
 <div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.retry/capped-exponential-backoff">capped-exponential-backoff</h2>
+  <h2 id="cognitect.aws.client.test-double/-&gt;Client">-&gt;Client</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (capped-exponential-backoff base max-backoff max-retries)
+  <pre id="var-usage">Usage: (-&gt;Client info handlers)
 </pre>
-  <pre id="var-docstr">Returns a function of the num-retries (so far), which returns the
-lesser of max-backoff and an exponentially increasing multiple of
-base, or nil when (&gt;= num-retries max-retries).
-See with-retry to see how it is used.
-
-Alpha. Subject to change.</pre>
+  <pre id="var-docstr">Positional factory function for class cognitect.aws.client.test_double.Client.</pre>
   
   
   
 </div><div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.retry/default-backoff">default-backoff</h2>
-  <span id="var-type">var</span><br />
-  <pre id="var-usage"></pre>
-  <pre id="var-docstr">Returns (capped-exponential-backoff 100 20000 3).
+  <h2 id="cognitect.aws.client.test-double/client">client</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (client {:keys [api ops]})
+</pre>
+  <pre id="var-docstr">Given a map with :api and :ops, returns a test client that you can
+pass to `cognitect.aws.client.api/invoke` and
+`cognitect.aws.client.api/stop` in implementation code.
 
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.retry/default-retriable?">default-retriable?</h2>
-  <span id="var-type">var</span><br />
-  <pre id="var-usage"></pre>
-  <pre id="var-docstr">A fn of an http-response map which returns a truthy value
-if (:cognitect.anomalies/category http-response) is any of:
-  - :cognitect.anomalies/busy
-  - :cognitect.anomalies/interrupted
-  - :cognitect.anomalies/unavailable
+:ops should be a map of operation to one of
+- handler function of op-map that returns a response map
+- literal response map
 
-Alpha. Subject to change.</pre>
+Notes:
+- you must declare every op that will be invoked during a test
+- every op must be supported
+  - See (keys (cognitect.aws.client.api/ops test-client))
+- will validate request payloads passed to `invoke` by default
+  - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)
+- will not validate response payloads</pre>
   
   
   

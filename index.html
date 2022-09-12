@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -55,6 +55,10 @@ namespace.
     <br />
   </div><div class="toc-section" style="margin-left: 1em;">
     <a href="#cognitect.aws.client.shared">cognitect.aws.client.shared</a>
+    
+    <br />
+  </div><div class="toc-section" style="margin-left: 1em;">
+    <a href="#cognitect.aws.client.test-double">cognitect.aws.client.test-double</a>
     
     <br />
   </div><div class="toc-section" style="margin-left: 1em;">
@@ -87,14 +91,8 @@ namespace.
   
   
   Public variables and functions:
-  <span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/client">client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/default-http-client">default-http-client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc">doc</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc-str">doc-str</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke">invoke</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/ops">ops</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/request-spec-key">request-spec-key</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/response-spec-key">response-spec-key</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/stop">stop</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/validate-requests">validate-requests</a> </span><br />
-  <span id="subspace"><br />Variables and functions in
-    <span id="name">cognitect.aws.client.api.async</span>:
-    <span id="sub-var-link">
-      <a href="cognitect.aws.client.api-api.html#cognitect.aws.client.api.async/invoke">invoke</a>
-    </span>
-    <br />
-  </span>
+  <span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/client">client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/default-http-client">default-http-client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc">doc</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/doc-str">doc-str</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke">invoke</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke-async">invoke-async</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/ops">ops</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/request-spec-key">request-spec-key</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/response-spec-key">response-spec-key</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/stop">stop</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.api-api.html#cognitect.aws.client.api/validate-requests">validate-requests</a> </span><br />
+  
 </div><div id="namespace-entry">
   <br />
   <hr />
@@ -107,6 +105,20 @@ namespace.
   
   Public variables and functions:
   <span id="var-link"><a id="var-tag" href="cognitect.aws.client.shared-api.html#cognitect.aws.client.shared/credentials-provider">credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.shared-api.html#cognitect.aws.client.shared/http-client">http-client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.shared-api.html#cognitect.aws.client.shared/region-provider">region-provider</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.client.test-double">cognitect.aws.client.test-double</h2>
+  
+  <a id="api-link" href="cognitect.aws.client.test-double-api.html">Detailed API documentation</a><br />
+  <pre id="namespace-docstr">Provides a test implementation of the aws client, which can be passed
+to the functions in the cognitect.aws.client.api ns.</pre>
+  
+  
+  
+  Public variables and functions:
+  <span id="var-link"><a id="var-tag" href="cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/-&gt;Client">-&gt;Client</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/client">client</a> </span><br />
   
 </div><div id="namespace-entry">
   <br />

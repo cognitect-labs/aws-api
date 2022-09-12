@@ -9,6 +9,11 @@
    :wiki-url "cognitect.aws.client.shared-api.html",
    :source-url nil}
   {:doc
+   "Provides a test implementation of the aws client, which can be passed\nto the functions in the cognitect.aws.client.api ns.",
+   :name "cognitect.aws.client.test-double",
+   :wiki-url "cognitect.aws.client.test-double-api.html",
+   :source-url nil}
+  {:doc
    "Contains credentials providers and helpers for discovering credentials.\n\nAlpha. Subject to change.",
    :name "cognitect.aws.credentials",
    :wiki-url "cognitect.aws.credentials-api.html",
@@ -21,18 +26,13 @@
   {:doc nil,
    :name "cognitect.aws.retry",
    :wiki-url "cognitect.aws.retry-api.html",
-   :source-url nil}
-  {:doc
-   "API functions for using a client to interact with AWS services.",
-   :name "cognitect.aws.client.api.async",
-   :wiki-url "cognitect.aws.client.api.async-api.html",
    :source-url nil}),
  :vars
  ({:raw-source-url nil,
    :name "client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 26,
+   :line 24,
    :var-type "function",
    :arglists
    ([{:keys
@@ -54,7 +54,7 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 107,
+   :line 105,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -66,7 +66,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 207,
+   :line 229,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -78,7 +78,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 171,
+   :line 193,
    :var-type "function",
    :arglists
    ([{:keys
@@ -93,7 +93,7 @@
    :name "invoke",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 112,
+   :line 110,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
@@ -102,10 +102,22 @@
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke"}
   {:raw-source-url nil,
+   :name "invoke-async",
+   :file "src/cognitect/aws/client/api.clj",
+   :source-url nil,
+   :line 129,
+   :var-type "function",
+   :arglists ([client op-map]),
+   :doc
+   "Package and send a request to AWS and return a channel which\nwill contain the result.\n\nSupported keys in op-map:\n\n:ch                   - optional, channel to deliver the result\n:op                   - required, keyword, the op to perform\n:request              - required only for ops that require them.\n:retriable?           - optional, defaults to :retriable? on the client.\n                        See client.\n:backoff              - optional, defaults to :backoff on the client.\n                        See client.\n\nAfter invoking (cognitect.aws.client.api/validate-requests true), validates\n:request in op-map.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.client.api",
+   :wiki-url
+   "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke-async"}
+  {:raw-source-url nil,
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 161,
+   :line 183,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -117,7 +129,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 140,
+   :line 162,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -129,7 +141,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 147,
+   :line 169,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -141,7 +153,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 216,
+   :line 238,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -153,9 +165,9 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 131,
+   :line 150,
    :var-type "function",
-   :arglists ([client] [client bool]),
+   :arglists ([client] [client validate-requests?]),
    :doc
    "Given true, uses clojure.spec to validate all invoke calls on client.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
@@ -165,7 +177,7 @@
    :name "credentials-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 27,
+   :line 30,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -177,7 +189,7 @@
    :name "http-client",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 19,
+   :line 22,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -189,7 +201,7 @@
    :name "region-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 35,
+   :line 38,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -197,6 +209,30 @@
    :namespace "cognitect.aws.client.shared",
    :wiki-url
    "/cognitect.aws.client.shared-api.html#cognitect.aws.client.shared/region-provider"}
+  {:raw-source-url nil,
+   :name "->Client",
+   :file "src/cognitect/aws/client/test_double.clj",
+   :source-url nil,
+   :line 19,
+   :var-type "function",
+   :arglists ([info handlers]),
+   :doc
+   "Positional factory function for class cognitect.aws.client.test_double.Client.",
+   :namespace "cognitect.aws.client.test-double",
+   :wiki-url
+   "/cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/->Client"}
+  {:raw-source-url nil,
+   :name "client",
+   :file "src/cognitect/aws/client/test_double.clj",
+   :source-url nil,
+   :line 50,
+   :var-type "function",
+   :arglists ([{:keys [api ops]}]),
+   :doc
+   "Given a map with :api and :ops, returns a test client that you can\npass to `cognitect.aws.client.api/invoke` and\n`cognitect.aws.client.api/stop` in implementation code.\n\n:ops should be a map of operation to one of\n- handler function of op-map that returns a response map\n- literal response map\n\nNotes:\n- you must declare every op that will be invoked during a test\n- every op must be supported\n  - See (keys (cognitect.aws.client.api/ops test-client))\n- will validate request payloads passed to `invoke` by default\n  - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)\n- will not validate response payloads",
+   :namespace "cognitect.aws.client.test-double",
+   :wiki-url
+   "/cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/client"}
   {:raw-source-url nil,
    :name "auto-refreshing-credentials",
    :file "src/cognitect/aws/credentials.clj",
@@ -491,16 +527,4 @@
    "A fn of an http-response map which returns a truthy value\nif (:cognitect.anomalies/category http-response) is any of:\n  - :cognitect.anomalies/busy\n  - :cognitect.anomalies/interrupted\n  - :cognitect.anomalies/unavailable\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.retry",
    :wiki-url
-   "/cognitect.aws.retry-api.html#cognitect.aws.retry/default-retriable?"}
-  {:raw-source-url nil,
-   :name "invoke",
-   :file "src/cognitect/aws/client/api/async.clj",
-   :source-url nil,
-   :line 51,
-   :var-type "function",
-   :arglists ([client op-map]),
-   :doc
-   "Async version of cognitect.aws.client.api/invoke. Returns\na core.async channel which delivers the result.\n\nAdditional supported keys in op-map:\n\n:ch - optional, channel to deliver the result\n\nAlpha. Subject to change.",
-   :namespace "cognitect.aws.client.api.async",
-   :wiki-url
-   "/cognitect.aws.client.api-api.html#cognitect.aws.client.api.async/invoke"})}
+   "/cognitect.aws.retry-api.html#cognitect.aws.retry/default-retriable?"})}
