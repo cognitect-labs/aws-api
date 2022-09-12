@@ -4,13 +4,17 @@
 (ns ^:skip-wiki cognitect.aws.signers
   "Impl, don't call directly."
   (:require [clojure.string :as str]
-            [cognitect.aws.client :as client]
             [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
   (:import [java.net URI]
            [java.net URLDecoder]))
 
 (set! *warn-on-reflection* true)
+
+(defmulti sign-http-request
+  "Sign the HTTP request."
+  (fn [service _endpoint _credentials _http-request]
+    (get-in service [:metadata :signatureVersion])))
 
 (defn uri-encode
   "Escape (%XX) special characters in the string `s`.
@@ -154,14 +158,14 @@
                       (signed-headers req)
                       (signature auth-info req)))))
 
-(defmethod client/sign-http-request "v4"
+(defmethod sign-http-request "v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request))
 
-(defmethod client/sign-http-request "s3"
+(defmethod sign-http-request "s3"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
 
-(defmethod client/sign-http-request "s3v4"
+(defmethod sign-http-request "s3v4"
   [service endpoint credentials http-request]
   (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))

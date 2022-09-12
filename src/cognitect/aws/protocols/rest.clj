@@ -7,7 +7,7 @@
   Common feature across the rest protocols (rest-json, rest-xml). "
   (:require [clojure.string :as str]
             [cognitect.aws.util :as util]
-            [cognitect.aws.protocols.common :as common]
+            [cognitect.aws.protocols :as aws.protocols]
             [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]))
 
@@ -64,10 +64,10 @@
 
 (defmulti serialize-qs-args
   "Return a list of key-value pairs to serialize in the query string."
-  (fn [shape param-name args] (:type shape)))
+  (fn [shape _param-name _args] (:type shape)))
 
 (defmethod serialize-qs-args :default
-  [shape param-name args]
+  [_shape param-name args]
   (when-not (nil? args)
     [[param-name (str args)]]))
 
@@ -95,7 +95,7 @@
 
 (defmulti serialize-header-value
   "Serialize a primitive shape in a HTTP header."
-  (fn [shape args] (:type shape)))
+  (fn [shape _args] (:type shape)))
 
 (defmethod serialize-header-value :default    [_ args] (str args))
 (defmethod serialize-header-value "boolean"   [_ args] (if args "true" "false"))
@@ -166,7 +166,7 @@
                           :scheme         :https
                           :server-port    443
                           :uri            (get-in operation [:http :requestUri])
-                          :headers        (common/headers service operation)}]
+                          :headers        (aws.protocols/headers service operation)}]
     (if-not input-shape
       http-request
       (let [location->args (partition-args input-shape request)
@@ -184,7 +184,7 @@
 
 (defmulti parse-header-value
   "Parse a shape from an HTTP header value."
-  (fn [shape data] (:type shape)))
+  (fn [shape _data] (:type shape)))
 
 (defmethod parse-header-value "string"    [shape data]
   (cond
@@ -204,7 +204,7 @@
 
 (defn parse-non-payload-attrs
   "Parse HTTP status and headers for response data."
-  [{:keys [type members] :as output-shape} {:keys [status headers] :as http-response}]
+  [{:keys [members] :as output-shape} {:keys [status headers] :as _http-response}]
   (reduce (fn [parsed member-key]
             (let [member-shape (shape/member-shape output-shape member-key)]
               (case (:location member-shape)
@@ -248,7 +248,7 @@
         (parse-fn output-shape body-str)))))
 
 (defn parse-http-response
-  [service {:keys [op] :as op-map} {:keys [status body] :as http-response}
+  [service {:keys [op]} {:keys [status body] :as http-response}
    parse-body-str
    parse-error]
   (if (:cognitect.anomalies/category http-response)

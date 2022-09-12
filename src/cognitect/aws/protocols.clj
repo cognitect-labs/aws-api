@@ -1,13 +1,23 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(ns ^:skip-wiki cognitect.aws.protocols.common
+(ns ^:skip-wiki cognitect.aws.protocols
   "Impl, don't call directly. "
   (:require [clojure.data.json :as json]
             [cognitect.aws.util :as util])
   (:import (java.util Date)))
 
 (set! *warn-on-reflection* true)
+
+(defmulti parse-http-response
+  "HTTP response -> AWS response"
+  (fn [service _op-map _http-response]
+    (get-in service [:metadata :protocol])))
+
+(defmulti build-http-request
+  "AWS request -> HTTP request."
+  (fn [service _op-map]
+    (get-in service [:metadata :protocol])))
 
 (def status-codes->anomalies
   {403 :cognitect.anomalies/forbidden

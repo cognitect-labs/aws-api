@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns ^:skip-wiki cognitect.aws.dynaload)
 
 (set! *warn-on-reflection* true)

@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns cognitect.aws.client.shared
   (:require [cognitect.aws.http :as http]
             [cognitect.aws.credentials :as credentials]

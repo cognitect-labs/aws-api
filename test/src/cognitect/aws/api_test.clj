@@ -1,8 +1,8 @@
 (ns cognitect.aws.api-test
   (:require [clojure.datafy :as datafy]
             [clojure.test :as t :refer [deftest is testing]]
-            [cognitect.aws.client :as client]
             [cognitect.aws.client.api :as aws]
+            [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.client.shared :as shared]
             [cognitect.aws.http :as http]))
 
@@ -11,7 +11,7 @@
     (let [clients (repeatedly 5 #(aws/client {:api :s3 :region "us-east-1"}))]
       (is (= #{(shared/http-client)}
              (into #{(shared/http-client)}
-                   (->> clients (map (fn [c] (-> c client/-get-info :http-client))))))))))
+                   (->> clients (map (fn [c] (-> c client.protocol/-get-info :http-client))))))))))
 
 (deftest test-datafy
   (let [client (aws/client {:api :s3})

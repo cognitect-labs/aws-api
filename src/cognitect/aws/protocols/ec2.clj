@@ -3,10 +3,10 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols.ec2
   "Impl, don't call directly."
-  (:require [cognitect.aws.util :as util]
-            [cognitect.aws.client :as client]
+  (:require [cognitect.aws.protocols :as aws.protocols]
+            [cognitect.aws.protocols.query :as query]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.query :as query]))
+            [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
 
@@ -18,7 +18,7 @@
       default))
 
 (defmulti serialize
-  (fn [shape args serialized prefix] (:type shape)))
+  (fn [shape _args _serialized _prefix] (:type shape)))
 
 (defmethod serialize :default
   [shape args serialized prefix]
@@ -44,10 +44,10 @@
             serialized
             (map-indexed (fn [i member] [(inc i) member]) args))))
 
-(defmethod client/build-http-request "ec2"
+(defmethod aws.protocols/build-http-request "ec2"
   [service op-map]
   (query/build-query-http-request serialize service op-map))
 
-(defmethod client/parse-http-response "ec2"
-  [service {:keys [op] :as op-map} {:keys [status body] :as http-response}]
+(defmethod aws.protocols/parse-http-response "ec2"
+  [service op-map http-response]
   (query/build-query-http-response service op-map http-response))

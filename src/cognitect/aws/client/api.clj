@@ -3,20 +3,18 @@
 
 (ns cognitect.aws.client.api
   "API functions for using a client to interact with AWS services."
-  (:require [clojure.core.async :as a]
+  (:require [clojure.string :as str]
             [clojure.tools.logging :as log]
-            [clojure.string :as str]
-            [cognitect.aws.dynaload :as dynaload]
-            [cognitect.aws.client :as client]
-            [cognitect.aws.retry :as retry]
+            [cognitect.aws.client.impl :as client]
+            [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.client.shared :as shared]
             [cognitect.aws.credentials]
+            [cognitect.aws.dynaload :as dynaload]
             [cognitect.aws.endpoint :as endpoint]
             [cognitect.aws.http :as http]
-            [cognitect.aws.service :as service]
             [cognitect.aws.region :as region]
-            [cognitect.aws.client.api.async :as api.async]
-            ;; implements multimethods
+            [cognitect.aws.retry :as retry]
+            [cognitect.aws.service :as service]
             [cognitect.aws.signers]))
 
 (set! *warn-on-reflection* true)
@@ -86,7 +84,7 @@
     (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
     (client/->Client
      (atom {'clojure.core.protocols/datafy (fn [c]
-                                             (let [info (client/-get-info c)
+                                             (let [info (client.protocol/-get-info c)
                                                    region (region/fetch (:region-provider info))
                                                    endpoint (endpoint/fetch (:endpoint-provider info) region)]
                                                (-> info
@@ -126,7 +124,28 @@
 
   Alpha. Subject to change."
   [client op-map]
-  (a/<!! (api.async/invoke client op-map)))
+  (client.protocol/-invoke client op-map))
+
+(defn invoke-async
+  "Package and send a request to AWS and return a channel which
+  will contain the result.
+
+  Supported keys in op-map:
+
+  :ch                   - optional, channel to deliver the result
+  :op                   - required, keyword, the op to perform
+  :request              - required only for ops that require them.
+  :retriable?           - optional, defaults to :retriable? on the client.
+                          See client.
+  :backoff              - optional, defaults to :backoff on the client.
+                          See client.
+
+  After invoking (cognitect.aws.client.api/validate-requests true), validates
+  :request in op-map.
+
+  Alpha. Subject to change."
+  [client op-map]
+  (client.protocol/-invoke-async client op-map))
 
 (defn validate-requests
   "Given true, uses clojure.spec to validate all invoke calls on client.
@@ -134,22 +153,25 @@
   Alpha. Subject to change."
   ([client]
    (validate-requests client true))
-  ([client bool]
-   (api.async/validate-requests client bool)))
+  ([client validate-requests?]
+   (reset! (-> client client.protocol/-get-info :validate-requests?) validate-requests?)
+   (when validate-requests?
+     (service/load-specs (-> client client.protocol/-get-info :service)))
+   validate-requests?))
 
 (defn request-spec-key
   "Returns the key for the request spec for op.
 
   Alpha. Subject to change."
   [client op]
-  (service/request-spec-key (-> client client/-get-info :service) op))
+  (service/request-spec-key (-> client client.protocol/-get-info :service) op))
 
 (defn response-spec-key
   "Returns the key for the response spec for op.
 
   Alpha. Subject to change."
   [client op]
-  (service/response-spec-key (-> client client/-get-info :service) op))
+  (service/response-spec-key (-> client client.protocol/-get-info :service) op))
 
 (def ^:private pprint-ref (delay (dynaload/load-var 'clojure.pprint/pprint)))
 (defn ^:skip-wiki pprint
@@ -164,7 +186,7 @@
   Alpha. Subject to change."
   [client]
   (->> client
-       client/-get-info
+       client.protocol/-get-info
        :service
        service/docs))
 
@@ -222,6 +244,4 @@
 
   Alpha. Subject to change."
   [aws-client]
-  (let [{:keys [http-client]} (client/-get-info aws-client)]
-    (when-not (#'shared/shared-http-client? http-client)
-      (http/stop http-client))))
+  (client.protocol/-stop aws-client))

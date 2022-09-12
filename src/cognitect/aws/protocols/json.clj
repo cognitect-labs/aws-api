@@ -3,11 +3,10 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols.json
   "Impl, don't call directly."
-  (:require [cognitect.aws.service :as service]
-            [cognitect.aws.client :as client]
-            [cognitect.aws.util :as util]
+  (:require [cognitect.aws.protocols :as aws.protocols]
+            [cognitect.aws.service :as service]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.common :as common]))
+            [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
 
@@ -23,7 +22,7 @@
   (->> (util/with-defaults shape data)
        (shape/json-serialize shape)))
 
-(defmethod client/build-http-request "json"
+(defmethod aws.protocols/build-http-request "json"
   [service {:keys [op request]}]
   (let [operation   (get-in service [:operations op])
         input-shape (service/shape service (:input operation))]
@@ -31,10 +30,10 @@
      :scheme         :https
      :server-port    443
      :uri            "/"
-     :headers        (common/headers service operation)
+     :headers        (aws.protocols/headers service operation)
      :body           (serialize input-shape (or request {}))}))
 
-(defmethod client/parse-http-response "json"
+(defmethod aws.protocols/parse-http-response "json"
   [service {:keys [op]} {:keys [status body] :as http-response}]
   (if (:cognitect.anomalies/category http-response)
     http-response
@@ -45,4 +44,4 @@
         (if output-shape
           (shape/json-parse output-shape body-str)
           {})
-        (common/json-parse-error http-response)))))
+        (aws.protocols/json-parse-error http-response)))))

@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns ^:skip-wiki cognitect.aws.http
   "Impl, don't call directly."
   (:require [clojure.edn :as edn]

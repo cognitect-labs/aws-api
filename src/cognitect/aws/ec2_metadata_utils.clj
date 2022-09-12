@@ -17,7 +17,6 @@
 (def ^:const dynamic-data-root "/latest/dynamic/")
 (def ^:const security-credentials-path "/latest/meta-data/iam/security-credentials/")
 (def ^:const instance-identity-document "instance-identity/document")
-(def ^:const allowed-hosts #{"127.0.0.1" "localhost"})
 
 ;; ECS
 (def ^:const container-credentials-relative-uri-env-var "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")

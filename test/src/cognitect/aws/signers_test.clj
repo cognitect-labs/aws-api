@@ -3,13 +3,12 @@
 
 (ns cognitect.aws.signers-test
   "See http://docs.aws.amazon.com/general/latest/gr/signature-v4-test-suite.html"
-  (:require [clojure.test :as t :refer [deftest is testing]]
-            [clojure.string :as str]
-            [clojure.java.io :as io]
-            [cognitect.aws.client :as client]
-            [cognitect.aws.signers :as signers]
+  (:require [clojure.java.io :as io]
             [clojure.spec.alpha :as s]
-            [clojure.spec.test.alpha :as stest])
+            [clojure.spec.test.alpha :as stest]
+            [clojure.string :as str]
+            [clojure.test :as t :refer [deftest is testing]]
+            [cognitect.aws.signers :as signers])
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
 
@@ -102,7 +101,7 @@
         (let [service        {:metadata {:signatureVersion "v4"
                                          :endpointPrefix   "service"
                                          :uid              "service-2018-12-28"}}
-              signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
+              signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)]
           (is (= (get-in signed-request [:headers "authorization"])
                  authorization))))
       (testing "using signingName"
@@ -110,7 +109,7 @@
                                          :endpointPrefix   "incorrect"
                                          :signingName      "service"
                                          :uid              "service-2018-12-28"}}
-              signed-request (client/sign-http-request service {:region "us-east-1"} credentials request)]
+              signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)]
           (is (= (get-in signed-request [:headers "authorization"])
                  authorization)))))))
 

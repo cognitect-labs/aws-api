@@ -1,3 +1,6 @@
+;; Copyright (c) Cognitect, Inc.
+;; All rights reserved.
+
 (ns ^:skip-wiki cognitect.aws.http.cognitect
   (:require [cognitect.http-client :as impl]
             [cognitect.aws.http :as aws]))

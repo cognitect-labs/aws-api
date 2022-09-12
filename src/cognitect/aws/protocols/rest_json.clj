@@ -3,11 +3,10 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols.rest-json
   "Impl, don't call directly."
-  (:require [cognitect.aws.client :as client]
+  (:require [cognitect.aws.protocols :as aws.protocols]
+            [cognitect.aws.protocols.rest :as rest]
             [cognitect.aws.shape :as shape]
-            [cognitect.aws.util :as util]
-            [cognitect.aws.protocols.common :as common]
-            [cognitect.aws.protocols.rest :as rest]))
+            [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
 
@@ -33,14 +32,14 @@
   [_ shape data]
   (shape/format-date shape data))
 
-(defmethod client/build-http-request "rest-json"
+(defmethod aws.protocols/build-http-request "rest-json"
   [service op-map]
   (rest/build-http-request service op-map serialize))
 
-(defmethod client/parse-http-response "rest-json"
+(defmethod aws.protocols/parse-http-response "rest-json"
   [service op-map http-response]
   (rest/parse-http-response service
                             op-map
                             http-response
                             shape/json-parse
-                            common/json-parse-error))
+                            aws.protocols/json-parse-error))

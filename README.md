@@ -214,6 +214,10 @@ to the `client` constructor:
                                           :port     8000}}))
 ```
 
+## Testing
+
+See https://github.com/cognitect-labs/aws-api/blob/main/doc/testing.md
+
 ### PostToConnection
 
 The `:PostToConnection` operation on the `apigatewaymanagementapi`

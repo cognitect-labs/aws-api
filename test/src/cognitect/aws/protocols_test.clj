@@ -3,19 +3,20 @@
 
 (ns cognitect.aws.protocols-test
   "Test the protocols implementations."
-  (:require [clojure.string :as str]
-            [clojure.test :as t :refer [deftest is testing use-fixtures]]
+  (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
-            [clojure.data.json :as json]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
-            [cognitect.aws.util :as util]
-            [cognitect.aws.client :as client]
+            [clojure.string :as str]
+            [clojure.test :as t :refer [deftest is testing use-fixtures]]
+            [cognitect.aws.client.impl :as client]
+            [cognitect.aws.protocols :as aws.protocols]
+            [cognitect.aws.protocols.ec2]
             [cognitect.aws.protocols.json]
+            [cognitect.aws.protocols.query]
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
-            [cognitect.aws.protocols.query]
-            [cognitect.aws.protocols.ec2])
+            [cognitect.aws.util :as util])
   (:import (java.util Date)))
 
 (s/fdef cognitect.aws.util/query-string
@@ -377,7 +378,7 @@
              (with-timestamp-xforms protocol description))]
     (try
       (let [op-map       {:op (:name given) :request params}
-            http-request (client/build-http-request service op-map)]
+            http-request (aws.protocols/build-http-request service op-map)]
         (test-request-method (:method expected) http-request)
         (test-request-uri (:uri expected) http-request)
         (test-request-headers (:headers expected) http-request)
@@ -392,11 +393,11 @@
   [_ protocol description service {:keys [given response result] :as test-case}]
   (try
     (let [op-map          {:op (:name given)}
-          parsed-response (client/parse-http-response service
-                                                      op-map
-                                                      {:status  (:status_code response)
-                                                       :headers (:headers response)
-                                                       :body    (util/->bbuf (:body response))})]
+          parsed-response (aws.protocols/parse-http-response service
+                                                             op-map
+                                                             {:status  (:status_code response)
+                                                              :headers (:headers response)
+                                                              :body    (util/->bbuf (:body response))})]
       (when (:cognitect.anomalies/category parsed-response)
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))

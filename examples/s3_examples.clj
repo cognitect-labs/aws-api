@@ -6,8 +6,7 @@
          '[clojure.spec.gen.alpha :as gen]
          '[clojure.java.io :as io]
          '[clojure.repl :as repl]
-         '[cognitect.aws.client.api :as aws]
-         '[cognitect.aws.client.api.async :as aws.async])
+         '[cognitect.aws.client.api :as aws])
 
 ;; make a client
 (def s3 (aws/client {:api :s3}))
@@ -86,10 +85,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; see how submit works w/ async
-(clojure.repl/doc aws.async/invoke)
+(clojure.repl/doc aws/invoke-async)
 
 ;; async!
-(def c (aws.async/invoke s3 {:op :ListBuckets}))
+(def c (aws/invoke-async s3 {:op :ListBuckets}))
 
 (a/<!! c)
 
@@ -97,6 +96,6 @@
 
 ;; supply your own channel
 (let [ch (a/chan)]
-  (aws.async/invoke s3 {:op :ListBuckets
+  (aws/invoke-async s3 {:op :ListBuckets
                         :ch ch})
   (a/<!! ch))

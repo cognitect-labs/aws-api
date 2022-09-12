@@ -1,5 +1,5 @@
 (ns cognitect.aws.protocols.rest-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing]]
             [cognitect.aws.protocols.rest :as protocols.rest]))
 
 (deftest test-serialize-url
@@ -19,6 +19,3 @@
     (is (thrown-with-msg? Exception
                           #"missing"
                           (protocols.rest/serialize-uri "/{Bucket}/{Key+}" {:required ["Bucket" "Key"]} {:Bucket "foo"})))))
-
-(comment
-  (run-tests))

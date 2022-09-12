@@ -1,12 +1,13 @@
-(ns cognitect.aws.client-test
-  (:require [clojure.test :as t :refer [deftest testing is]]
+(ns cognitect.client.impl-test
+  "Tests for the production client implementation."
+  (:require [clojure.core.async :as a]
+            [clojure.test :as t :refer [deftest is testing]]
+            [cognitect.aws.client.impl :as client]
+            [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.client.api :as aws]
-            [cognitect.aws.client :as client]
-            [cognitect.aws.client.api.async :as api.async]
-            [cognitect.aws.http :as http]
-            [cognitect.aws.region :as region]
             [cognitect.aws.credentials :as creds]
-            [clojure.core.async :as a]))
+            [cognitect.aws.http :as http]
+            [cognitect.aws.region :as region]))
 
 (defn stub-http-client [result]
   (reify http/HttpClient
@@ -37,18 +38,48 @@
     (is (= {:cognitect.anomalies/category :does-not-matter}
            (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
 
-(deftest test-meta
-  (let [res (aws/invoke (aws/client params) {:op :ListBuckets})]
-    (testing "request meta includes :http-request"
-      (is (=  {:uri "/"
-               :server-name "s3.amazonaws.com"
-               :body nil}
-              (select-keys (:http-request (meta res)) [:uri :server-name :body]))))
-    (testing "request meta includes raw response"
-      (is (= {:cognitect.anomalies/category :cognitect.aws/test,
-              :cognitect.anomalies/message "test",
-              :body nil}
-             (:http-response (meta res)))))))
+(defn invocations
+  "Given client and op-map, return results of:
+    invoke (sync)
+    invoke-async with channel provided by user
+    invoke-async with no channel provided by user"
+  [client op-map]
+  [(aws/invoke client op-map)
+   (a/<!! (aws/invoke-async client op-map))
+   (let [ch (a/chan)
+         _  (aws/invoke-async client (assoc op-map :ch ch))]
+     (a/<!! ch))])
+
+(deftest test-invoke
+  (let [s3 (aws/client params)]
+    (testing "request meta"
+      (doseq [res (invocations s3 {:op :ListBuckets})]
+        (testing "includes raw response"
+          (is (= {:cognitect.anomalies/category :cognitect.aws/test,
+                  :cognitect.anomalies/message "test",
+                  :body nil}
+                 (:http-response (meta res)))))
+        (testing "includes :http-request"
+          (is (=  {:uri "/"
+                   :server-name "s3.amazonaws.com"
+                   :body nil}
+                  (select-keys (:http-request (meta res)) [:uri :server-name :body]))))))
+    (testing "returns :cognitect.anomalies/unsupported when op is not supported"
+      (doseq [res (invocations s3 {:op      :CreateBuckets
+                                   :request {}})]
+        (is (= :cognitect.anomalies/unsupported (:cognitect.anomalies/category res)))))
+    (testing "with validate-requests true"
+      (testing "returns :cognitect.anomalies/incorrect when request is invalid"
+        (aws/validate-requests s3 true)
+        (doseq [res (invocations s3 {:op      :CreateBucket
+                                     :request {:this :is :not :valid}})]
+          (is (= :cognitect.anomalies/incorrect (:cognitect.anomalies/category res))))))
+    (testing "with validate-requests false"
+      (testing "returns a different anomaly when request is invalid"
+        (aws/validate-requests s3 false)
+        (doseq [res (invocations s3 {:op      :CreateBucket
+                                     :request {:this :is :not :valid}})]
+          (is (= :cognitect.anomalies/fault (:cognitect.anomalies/category res))))))))
 
 (deftest test-providers
   (testing "base case"
@@ -85,21 +116,13 @@
                    (:cognitect.anomalies/message
                     (aws/invoke aws-client {:op :ListBuckets})))))))
 
-(deftest validate-requests?
-  (let [aws-client (aws/client params)]
-    (is (not (api.async/validate-requests? aws-client)))
-    (api.async/validate-requests aws-client true)
-    (is (api.async/validate-requests? aws-client))
-    (api.async/validate-requests aws-client false)
-    (is (not (api.async/validate-requests? aws-client)))))
-
 (deftest keyword-access
   (let [client (aws/client params)]
     (is (= :us-east-1 (:region client)))
     (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
     (is (= {:access-key-id "a", :secret-access-key "b"}
            (:credentials client)))
-    (is (= (:metadata (:service (client/-get-info client)))
+    (is (= (:metadata (:service (client.protocol/-get-info client)))
            (:metadata (:service client))))
     (is (= (:http-client params)
            (:http-client client)))))

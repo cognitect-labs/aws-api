@@ -3,10 +3,9 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols.rest-xml
   "Impl, don't call directly."
-  (:require [cognitect.aws.client :as client]
-            [cognitect.aws.shape :as shape]
-            [cognitect.aws.protocols.common :as common]
-            [cognitect.aws.protocols.rest :as rest]))
+  (:require [cognitect.aws.protocols :as aws.protocols]
+            [cognitect.aws.protocols.rest :as rest]
+            [cognitect.aws.shape :as shape]))
 
 (set! *warn-on-reflection* true)
 
@@ -18,14 +17,14 @@
                          data
                          (or (:locationName shape) shape-name))))
 
-(defmethod client/build-http-request "rest-xml"
+(defmethod aws.protocols/build-http-request "rest-xml"
   [service op-map]
   (rest/build-http-request service op-map serialize))
 
-(defmethod client/parse-http-response "rest-xml"
+(defmethod aws.protocols/parse-http-response "rest-xml"
   [service op-map http-response]
   (rest/parse-http-response service
                             op-map
                             http-response
                             shape/xml-parse
-                            common/xml-parse-error))
+                            aws.protocols/xml-parse-error))
