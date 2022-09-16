@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>data.xml</artifactId>
-      <version>0.2.0-alpha6</version>
+      <version>0.2.0-alpha8</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
