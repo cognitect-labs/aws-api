@@ -210,22 +210,10 @@
    :wiki-url
    "/cognitect.aws.client.shared-api.html#cognitect.aws.client.shared/region-provider"}
   {:raw-source-url nil,
-   :name "->Client",
-   :file "src/cognitect/aws/client/test_double.clj",
-   :source-url nil,
-   :line 19,
-   :var-type "function",
-   :arglists ([info handlers]),
-   :doc
-   "Positional factory function for class cognitect.aws.client.test_double.Client.",
-   :namespace "cognitect.aws.client.test-double",
-   :wiki-url
-   "/cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/->Client"}
-  {:raw-source-url nil,
    :name "client",
    :file "src/cognitect/aws/client/test_double.clj",
    :source-url nil,
-   :line 50,
+   :line 53,
    :var-type "function",
    :arglists ([{:keys [api ops]}]),
    :doc
