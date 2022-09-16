@@ -1,6 +1,6 @@
 # aws-api
 
-# DEV
+## 0.8.596 / 2022-09-16
 
 * upgrade to org.clojure/data.xml 0.2.0-alpha8. Fixes parsing issue [#205](https://github.com/cognitect-labs/aws-api/issues/205)
 
