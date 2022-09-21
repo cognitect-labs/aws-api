@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.596"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.12.303"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.12.307"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "822.2.1171.0", :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSApplicationCostProfiler
@@ -88,7 +88,7 @@
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon CloudSearch"},
  com.cognitect.aws/cloudsearchdomain
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon CloudSearch Domain"},
- com.cognitect.aws/cloudtrail {:mvn/version "823.2.1216.0", :aws/serviceFullName "AWS CloudTrail"},
+ com.cognitect.aws/cloudtrail {:mvn/version "825.2.1220.0", :aws/serviceFullName "AWS CloudTrail"},
  com.cognitect.aws/codeartifact {:mvn/version "822.2.1181.0", :aws/serviceFullName "CodeArtifact"},
  com.cognitect.aws/codebuild {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecommit {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS CodeCommit"},
@@ -103,7 +103,7 @@
  com.cognitect.aws/codestar-connections
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS CodeStar connections"},
  com.cognitect.aws/codestar-notifications
- {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS CodeStar Notifications"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "AWS CodeStar Notifications"},
  com.cognitect.aws/cognito-identity
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Cognito Identity"},
  com.cognitect.aws/cognito-idp
@@ -162,11 +162,11 @@
  com.cognitect.aws/drs
  {:mvn/version "823.2.1216.0", :aws/serviceFullName "Elastic Disaster Recovery Service"},
  com.cognitect.aws/ds {:mvn/version "822.2.1171.0", :aws/serviceFullName "AWS Directory Service"},
- com.cognitect.aws/dynamodb {:mvn/version "822.2.1205.0", :aws/serviceFullName "Amazon DynamoDB"},
+ com.cognitect.aws/dynamodb {:mvn/version "825.2.1220.0", :aws/serviceFullName "Amazon DynamoDB"},
  com.cognitect.aws/ebs
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "822.2.1181.0", :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
@@ -174,7 +174,7 @@
  com.cognitect.aws/ecr-public
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Elastic Container Registry Public"},
  com.cognitect.aws/ecs
- {:mvn/version "822.2.1171.0", :aws/serviceFullName "Amazon EC2 Container Service"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
  {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elastic-inference
@@ -343,7 +343,7 @@
  com.cognitect.aws/marketplacecommerceanalytics
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS Marketplace Commerce Analytics"},
  com.cognitect.aws/mediaconnect
- {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS MediaConnect"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
  {:mvn/version "822.2.1171.0", :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
@@ -425,7 +425,7 @@
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rbin {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon Recycle Bin"},
  com.cognitect.aws/rds
- {:mvn/version "822.2.1205.0", :aws/serviceFullName "Amazon Relational Database Service"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "Amazon Relational Database Service"},
  com.cognitect.aws/rds-data
  {:mvn/version "823.2.1216.0", :aws/serviceFullName "AWS RDS DataService"},
  com.cognitect.aws/redshift {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon Redshift"},
@@ -468,7 +468,7 @@
  com.cognitect.aws/s3outposts
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon S3 on Outposts"},
  com.cognitect.aws/sagemaker
- {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon SageMaker Service"},
+ {:mvn/version "825.2.1220.0", :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "822.2.1193.0", :aws/serviceFullName "Amazon Augmented AI Runtime"},
  com.cognitect.aws/sagemaker-edge
