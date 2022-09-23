@@ -3,7 +3,10 @@
 aws-api is a Clojure library which provides programmatic access to AWS
 services from your Clojure program.
 
-* [API Docs](https://cognitect-labs.github.io/aws-api/)
+## Docs
+
+* [API](https://cognitect-labs.github.io/aws-api/)
+* [Data types for :request maps](https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md)
 
 ## Rationale
 

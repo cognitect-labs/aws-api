@@ -121,6 +121,9 @@
 
   After invoking (cognitect.aws.client.api/validate-requests true), validates
   :request in op-map.
+   
+  See https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a
+  mapping of AWS types to Clojure/java types.
 
   Alpha. Subject to change."
   [client op-map]
@@ -229,6 +232,9 @@
 (defn doc
   "Given a client and an operation (keyword), prints documentation
   for that operation to the current value of *out*. Returns nil.
+   
+  See https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a
+  mapping of AWS types to Clojure/java types.
 
   Alpha. Subject to change."
   [client operation]
