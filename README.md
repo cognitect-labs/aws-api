@@ -264,11 +264,13 @@ patches.
 
 `aws-api` was extracted from an internal project at Cognitect, and
 some contributors are missing from the commit log.  Here are all the
-folks from Cognitect who either committed code directly, or
+folks from Cognitect and Nubank who either committed code directly, or
 contributed significantly to research and design:
 
 [Timothy Baldridge](https://github.com/halgari)<br/>
+[Scott Bale](https://github.com/scottbale)
 [David Chelimsky](https://github.com/dchelimsky)<br/>
+[Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
 [Benoît Fleury](https://github.com/benfle)<br/>
 [Fogus](https://github.com/fogus)<br/>
 [Stuart Halloway](https://github.com/stuarthalloway)<br/>
