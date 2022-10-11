@@ -268,7 +268,7 @@ folks from Cognitect and Nubank who either committed code directly, or
 contributed significantly to research and design:
 
 [Timothy Baldridge](https://github.com/halgari)<br/>
-[Scott Bale](https://github.com/scottbale)
+[Scott Bale](https://github.com/scottbale)<br/>
 [David Chelimsky](https://github.com/dchelimsky)<br/>
 [Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
 [Benoît Fleury](https://github.com/benfle)<br/>
