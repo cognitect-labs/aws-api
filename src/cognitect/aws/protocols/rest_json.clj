@@ -41,5 +41,4 @@
   (rest/parse-http-response service
                             op-map
                             http-response
-                            shape/json-parse
-                            aws.protocols/json-parse-error))
+                            shape/json-parse))

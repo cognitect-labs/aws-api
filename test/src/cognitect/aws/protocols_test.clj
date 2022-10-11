@@ -17,7 +17,8 @@
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
             [cognitect.aws.util :as util])
-  (:import (java.util Date)))
+  (:import (java.nio ByteBuffer)
+           (java.util Date)))
 
 (s/fdef cognitect.aws.util/query-string
   :args (s/cat :params (s/or :seq (s/coll-of (s/cat :key (s/or :kw simple-keyword? :str string?)
@@ -433,6 +434,34 @@
                       "rest-xml"
                       "rest-json"]]
       (test-protocol protocol))))
+
+(deftest test-parse-http-error-response
+  (testing "parse JSON-encoded error response body"
+    (let [response {:status 401
+                    :body   (ByteBuffer/wrap (.getBytes "{\"FOO\": \"abc\"}" "UTF-8"))}
+          parsed-response (aws.protocols/parse-http-error-response response)]
+      (is (= {:FOO "abc" :cognitect.anomalies/category :cognitect.anomalies/incorrect}
+             parsed-response))
+      (testing "http response is included as metadata on returned parsed error response"
+        (is (= response (meta parsed-response))))))
+  (testing "parse XML-encoded response body - issue 218: AWS returns XML-encoded 404 response when JSON-encoding was expected"
+    (let [response {:status 404
+                    :body   (ByteBuffer/wrap (.getBytes "<UnknownOperationException/>" "UTF-8"))}
+          parsed-response (aws.protocols/parse-http-error-response response)]
+      (is (= {:UnknownOperationException nil
+              :UnknownOperationExceptionAttrs {}
+              :cognitect.anomalies/category :cognitect.anomalies/not-found}
+             parsed-response))
+      (testing "http response is included as metadata on returned parsed error response"
+        (is (= response (meta parsed-response))))))
+  (testing "parse response with empty body"
+    (let [response {:status 404
+                    :body   nil}
+          parsed-response (aws.protocols/parse-http-error-response response)]
+      (is (= {:cognitect.anomalies/category :cognitect.anomalies/not-found}
+             parsed-response))
+      (testing "http response is included as metadata on returned parsed error response"
+        (is (= response (meta parsed-response)))))))
 
 (comment
   (t/run-tests))

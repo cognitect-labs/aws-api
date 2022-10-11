@@ -22,11 +22,13 @@
 
 ;; TODO convey throwable back from impl
 (defn ^:private handle-http-response
-  [service op-map http-response]
+  [service op-map {:keys [status] :as http-response}]
   (try
     (if (:cognitect.anomalies/category http-response)
       http-response
-      (aws.protocols/parse-http-response service op-map http-response))
+      (if (< status 400)
+        (aws.protocols/parse-http-response service op-map http-response)
+        (aws.protocols/parse-http-error-response http-response)))
     (catch Throwable t
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))

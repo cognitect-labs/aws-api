@@ -44,15 +44,21 @@
       (contains? #{"query" "ec2"} protocol)
       (assoc "content-type" "application/x-www-form-urlencoded; charset=utf-8"))))
 
-(defn parse-error*
-  [{:keys [status] :as http-response} response-body]
-  (with-meta (assoc response-body :cognitect.anomalies/category (status-code->anomaly status))
+(defn- parse-encoded-string*
+  "Given non-nil String, determine the encoding (currently either XML or JSON). Return a Map
+  representation of the encoded data."
+  [encoded-str]
+  (if (= \< (first encoded-str))
+    (-> encoded-str util/xml-read util/xml->map)
+    (-> encoded-str (json/read-str :key-fn keyword))))
+
+(defn parse-http-error-response
+  "Given an http error response (any status code 400 or above), return an aws-api-specific response
+  Map."
+  [{:keys [status body] :as http-response}]
+  (with-meta
+    (assoc
+     (some-> body util/bbuf->str parse-encoded-string*)
+     :cognitect.anomalies/category
+     (status-code->anomaly status))
     http-response))
-
-(defn xml-parse-error
-  [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body util/bbuf->str util/xml-read util/xml->map)))
-
-(defn json-parse-error
-  [{:keys [body] :as http-response}]
-  (parse-error* http-response (some-> body util/bbuf->str (json/read-str :key-fn keyword))))

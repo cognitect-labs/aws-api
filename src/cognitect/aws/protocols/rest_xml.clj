@@ -26,5 +26,4 @@
   (rest/parse-http-response service
                             op-map
                             http-response
-                            shape/xml-parse
-                            aws.protocols/xml-parse-error))
+                            shape/xml-parse))

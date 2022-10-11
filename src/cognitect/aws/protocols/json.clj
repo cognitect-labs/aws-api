@@ -34,14 +34,10 @@
      :body           (serialize input-shape (or request {}))}))
 
 (defmethod aws.protocols/parse-http-response "json"
-  [service {:keys [op]} {:keys [status body] :as http-response}]
-  (if (:cognitect.anomalies/category http-response)
-    http-response
-    (let [operation    (get-in service [:operations op])
-          output-shape (service/shape service (:output operation))
-          body-str     (util/bbuf->str body)]
-      (if (< status 400)
-        (if output-shape
-          (shape/json-parse output-shape body-str)
-          {})
-        (aws.protocols/json-parse-error http-response)))))
+  [service {:keys [op]} {:keys [body]}]
+  (let [operation (get-in service [:operations op])
+        output-shape (service/shape service (:output operation))
+        body-str (util/bbuf->str body)]
+    (if output-shape
+      (shape/json-parse output-shape body-str)
+      {})))
