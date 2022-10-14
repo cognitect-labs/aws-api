@@ -204,11 +204,16 @@ and before it checks your aws configuration.
 
 ## Endpoint Override
 
-Most of the time you can create a client and it figures out the correct endpoint for you,
-but there are exceptions. You may want to use a proxy server or connect to a local dynamodb,
-or perhaps you've found a bug that you could work around if you could supply the correct
-endpoint. All of this can be accomplished by supplying an `:endpoint-override` map
-to the `client` constructor:
+Most of the time you can create a client and it figures out the correct endpoint for you. The
+endpoints of most AWS API operations adhere to the pattern documented in [AWS Regions and
+Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html). But there are exceptions.
+
+* Some AWS APIs have operations which require custom endpoints (e.g. Kinesis Video [GetMedia](https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/API_dataplane_GetMedia.html)).
+* You may want to use a proxy server or connect to a local dynamodb.
+* Perhaps you've found a bug that you could work around if you could supply the correct endpoint.
+
+All of this can be accomplished by supplying an `:endpoint-override` map to the `client`
+constructor:
 
 ``` clojure
 (def ddb (aws/client {:api :dynamodb
@@ -367,7 +372,7 @@ function bound to the `:backoff` key when you create a client.
    :backoff (fn [n-tries-so-far] ,,)})
 ```
 
-Don't forget to account for termination by retuning nil after some number of retries.
+Don't forget to account for termination by returning nil after some number of retries.
 
 You an also use `cognitect.aws.retry/capped-exponential-backoff` to
 generate a function with different values for base, max-backoff, and
@@ -378,7 +383,7 @@ max-retries, and then pass that to `client`.
 This indicates that the configured endpoint is incorrect for the service/op
 you are trying to perform.
 
-Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html)
+Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html) for
 the proper endpoint and use the `:endpoint-override` key when creating a client,
 e.g.
 
@@ -386,6 +391,27 @@ e.g.
 (def s3-control {:api :s3control})
 (aws/client {:api :s3control
              :endpoint-override {:hostname (str my-account-id ".s3-control.us-east-1.amazonaws.com")}})
+```
+
+### UnknownOperationException
+
+AWS will return an `UnknownOperationException` response when a client is configured with (or defaults to) an incorrect endpoint.
+
+Remedy: check [AWS Regions and Endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html) for
+the proper endpoint and use the `:endpoint-override` key when creating a client.
+
+Note that some AWS APIs have custom endpoint requirements. For example, Kinesis Video [Get
+Media](https://docs.aws.amazon.com/kinesisvideostreams/latest/dg/API_dataplane_GetMedia.html)
+operation requires a custom endpoint, e.g.
+
+``` clojure
+(def kvs (aws/client {:api :kinesisvideo ... }))
+
+(def kvs-endpoint (:DataEndpoint (aws/invoke kvs {:op :GetDataEndpoint ... })))
+
+(aws/client {:api :kinesis-video-media
+             :region "us-east-1"
+             :endpoint-override {:hostname (str/replace kvs-endpoint #"https:\/\/" "")}})
 ```
 
 ### No known endpoint.

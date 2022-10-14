@@ -41,11 +41,11 @@
                             :hostname     - string
                             :port         - int
                             :path         - string
-                          If the hostname includes an AWS region, be sure use the same
+                          If the hostname includes an AWS region, be sure to use the same
                           region for the client (either via out of process configuration
                           or the :region key supplied to this fn).
                           Also supports a string representing just the hostname, though
-                          support for a string is deprectated and may be removed in the
+                          support for a string is deprecated and may be removed in the
                           future.
   :retriable?           - optional, predicate fn of http-response (see cognitect.aws.http/submit),
                           which should return a truthy value if the request is
