@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cognitect.aws</groupId>
   <artifactId>api</artifactId>
-  <version>DEV</version>
+  <version>0.8.611</version>
   <packaging>jar</packaging>
   <name>aws-api</name>
   <description>A Clojure API for the AWS API</description>
