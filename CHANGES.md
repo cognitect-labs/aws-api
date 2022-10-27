@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.612 / 2022-10-27
 * upgrade to org.clojure/core.async "1.6.673"
 * NOTE: this release requires clojure >= 1.10
 
