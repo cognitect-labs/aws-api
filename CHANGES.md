@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+* upgrade to org.clojure/core.async "1.6.673"
+* NOTE: this release requires clojure >= 1.10
+
 ## 0.8.603 / 2022-10-11
 
 * parse XML error messages from AWS even when we ask for JSON [#174](https://github.com/cognitect-labs/aws-api/issues/174)

@@ -3,7 +3,7 @@
 
 {:paths   ["src" "resources"]
  :deps    {org.clojure/clojure       {:mvn/version "1.11.1"}
-           org.clojure/core.async    {:mvn/version "1.5.648"}
+           org.clojure/core.async    {:mvn/version "1.6.673"}
            org.clojure/tools.logging {:mvn/version "1.2.4"}
            org.clojure/data.json     {:mvn/version "2.4.0"}
            org.clojure/data.xml      {:mvn/version "0.2.0-alpha8"}
@@ -13,16 +13,16 @@
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources"]
                              :extra-deps  {commons-io/commons-io       {:mvn/version "2.11.0"}
                                            org.clojure/test.check      {:mvn/version "1.1.1"}
-                                           org.slf4j/slf4j-reload4j    {:mvn/version "1.7.36"}
+                                           org.slf4j/slf4j-reload4j    {:mvn/version "2.0.3"}
                                            http-kit/http-kit           {:mvn/version "2.6.0"}
-                                           com.cognitect.aws/endpoints {:mvn/version "1.1.12.280"}
+                                           com.cognitect.aws/endpoints {:mvn/version "1.1.12.321"}
                                            com.cognitect.aws/s3        {:mvn/version "822.2.1145.0"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                              :main-opts  ["-m" "cognitect.test-runner"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
-                             :extra-deps  {com.cognitect.aws/dynamodb {:mvn/version "822.2.1171.0"}
-                                           com.cognitect.aws/ec2      {:mvn/version "822.2.1193.0"}
-                                           com.cognitect.aws/iam      {:mvn/version "822.2.1171.0"}
-                                           com.cognitect.aws/lambda   {:mvn/version "822.2.1145.0"}
-                                           com.cognitect.aws/ssm      {:mvn/version "822.2.1193.0"}
+                             :extra-deps  {com.cognitect.aws/dynamodb {:mvn/version "825.2.1220.0"}
+                                           com.cognitect.aws/ec2      {:mvn/version "825.2.1233.0"}
+                                           com.cognitect.aws/iam      {:mvn/version "825.2.1233.0"}
+                                           com.cognitect.aws/lambda   {:mvn/version "822.2.1205.0"}
+                                           com.cognitect.aws/ssm      {:mvn/version "825.2.1233.0"}
                                            com.cognitect.aws/sts      {:mvn/version "822.2.1145.0"}}}}}
