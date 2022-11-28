@@ -36,6 +36,7 @@
                                remove-leading-slash)
                        (some-> args
                                (get (keyword param))
+                               str
                                util/url-encode
                                remove-leading-slash))
                      ;; TODO (dchelimsky 2019-02-08) it's possible that 100% of
