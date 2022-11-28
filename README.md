@@ -278,6 +278,7 @@ contributed significantly to research and design:
 [Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
 [Benoît Fleury](https://github.com/benfle)<br/>
 [Fogus](https://github.com/fogus)<br/>
+[Kyle Gann](https://github.com/kgann)</br>
 [Stuart Halloway](https://github.com/stuarthalloway)<br/>
 [Rich Hickey](https://github.com/richhickey)<br/>
 [George Kierstein](https://github.com/MissInterpret)<br/>
