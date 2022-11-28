@@ -8,6 +8,10 @@
             [clojure.spec.test.alpha :as stest]
             [clojure.string :as str]
             [clojure.test :as t :refer [deftest is testing]]
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.properties :as prop]
+            [cognitect.aws.jdk :as jdk]
+            [cognitect.aws.generators :as g]
             [cognitect.aws.signers :as signers])
   (:import [java.io ByteArrayInputStream]
            [org.apache.commons.io.input BOMInputStream]))
@@ -141,6 +145,32 @@
     (let [res (first (stest/check `signers/uri-encode))]
       (is (true? (-> res :clojure.spec.test.check/ret :result))
           res))))
+
+(defspec aws-v4-signer-parity 1000
+  (prop/for-all [service (g/gen-service "v4")
+                 request g/gen-request]
+    (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
+          jdk-signed-request (jdk/v4-jdk-signed-request service credentials request)]
+      (is (= (get-in signed-request [:headers "authorization"])
+             (get (.getHeaders jdk-signed-request) "Authorization"))))))
+
+(defspec aws-s3v4-signer-parity 1000
+  (prop/for-all [service (g/gen-service "s3v4")
+                 request g/gen-request]
+    (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
+          jdk-signed-request (jdk/s3v4-jdk-signed-request service credentials request)]
+      (is (= (get-in signed-request [:headers "authorization"])
+             (get (.getHeaders jdk-signed-request) "Authorization"))))))
+
+(defspec aws-s3-signer-parity 1000
+  (prop/for-all [service (g/gen-service "s3")
+                 request g/gen-request]
+    (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
+          ;; https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingAWSSDK.html
+          ;; If you are sending direct REST calls to Amazon S3, you must modify your application to use the Signature Version 4 signing process.
+          jdk-signed-request (jdk/s3v4-jdk-signed-request service credentials request)]
+      (is (= (get-in signed-request [:headers "authorization"])
+             (get (.getHeaders jdk-signed-request) "Authorization"))))))
 
 (comment
   (t/run-tests)

@@ -184,7 +184,9 @@
   [^String s]
   (-> s
       (URLEncoder/encode "UTF-8")
-      (.replace "+" "%20")))
+      ;; https://github.com/aws/aws-sdk-java/blob/fd409de/aws-java-sdk-core/src/main/java/com/amazonaws/util/SdkHttpUtils.java#L77-L91
+      (.replace "+" "%20")
+      (.replace "*" "%2A")))
 
 (defn query-string
   "Create a query string from a list of parameters. Values must all be

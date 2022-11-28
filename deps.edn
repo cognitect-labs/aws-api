@@ -16,7 +16,8 @@
                                            org.slf4j/slf4j-reload4j    {:mvn/version "2.0.3"}
                                            http-kit/http-kit           {:mvn/version "2.6.0"}
                                            com.cognitect.aws/endpoints {:mvn/version "1.1.12.321"}
-                                           com.cognitect.aws/s3        {:mvn/version "822.2.1145.0"}}}
+                                           com.cognitect.aws/s3        {:mvn/version "822.2.1145.0"}
+                                           com.amazonaws/aws-java-sdk  {:mvn/version "1.12.344"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                              :main-opts  ["-m" "cognitect.test-runner"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]

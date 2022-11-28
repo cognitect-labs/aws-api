@@ -53,17 +53,30 @@
   (-> request-method name str/upper-case))
 
 (defn- canonical-uri
-  [{:keys [uri]}]
-  (let [encoded-path (-> uri
-                         (str/replace #"//+" "/") ; (URI.) throws Exception on '//'.
-                         (str/replace #"\s" "%20"); (URI.) throws Exception on space.
-                         (URI.)
-                         (.normalize)
-                         (.getPath)
-                         (uri-encode "/"))]
-    (if (.isEmpty ^String encoded-path)
+  [{:keys [uri]} {:keys [double-encode? normalize-uri?]}]
+  (let [[path _query] (str/split uri #"\?")
+        ^String encoded-path (-> path
+                                 (cond-> double-encode? (uri-encode "/"))
+                                 (str/replace #"^//+" "/") ; (URI.) throws Exception on '//' at beginning of string.
+                                 (str/replace #"\s" "%20"); (URI.) throws Exception on space.
+                                 (URI.)
+                                 (cond-> normalize-uri? (.normalize))
+                                 (.getPath)
+                                 (uri-encode "/"))]
+    (cond
+      (.isEmpty encoded-path)
       "/"
-      encoded-path)))
+
+      ;; https://github.com/aws/aws-sdk-java/blob/fd409de/aws-java-sdk-core/src/main/java/com/amazonaws/auth/AbstractAWSSigner.java#L392-L397
+      ;; Normalization can leave a trailing slash at the end of the resource path,
+      ;; even if the input path doesn't end with one. Example input: /foo/bar/.
+      ;; Remove the trailing slash if the input path doesn't end with one.
+      (and (not= encoded-path "/")
+           (str/ends-with? encoded-path "/")
+           (not (str/ends-with? path "/")))
+      (.substring encoded-path 0 (dec (.length encoded-path)))
+
+      :else encoded-path)))
 
 (defn- canonical-query-string
   [{:keys [uri query-string]}]
@@ -105,9 +118,9 @@
   (util/hex-encode (util/sha-256 (:body request))))
 
 (defn canonical-request
-  [{:keys [headers] :as request}]
+  [{:keys [headers] :as request} opts]
   (str/join "\n" [(canonical-method request)
-                  (canonical-uri request)
+                  (canonical-uri request opts)
                   (canonical-query-string request)
                   (canonical-headers-string request)
                   (signed-headers request)
@@ -115,8 +128,8 @@
                       (hashed-body request))]))
 
 (defn string-to-sign
-  [request auth-info]
-  (let [bytes (.getBytes ^String (canonical-request request))]
+  [request auth-info opts]
+  (let [bytes (.getBytes ^String (canonical-request request opts))]
     (str/join "\n" ["AWS4-HMAC-SHA256"
                     (get-in request [:headers "x-amz-date"])
                     (credential-scope auth-info request)
@@ -133,13 +146,13 @@
       (util/hmac-sha-256 "aws4_request")))
 
 (defn signature
-  [auth-info request]
+  [auth-info request opts]
   (util/hex-encode
    (util/hmac-sha-256 (signing-key request auth-info)
-                      (string-to-sign request auth-info))))
+                      (string-to-sign request auth-info opts))))
 
 (defn v4-sign-http-request
-  [service endpoint credentials http-request & {:keys [content-sha256-header?]}]
+  [service endpoint credentials http-request & {:keys [content-sha256-header? double-url-encode? normalize-uri-paths?]}]
   (let [{:keys [:aws/access-key-id :aws/secret-access-key :aws/session-token]} credentials
         auth-info      {:access-key-id     access-key-id
                         :secret-access-key secret-access-key
@@ -156,16 +169,27 @@
                       (:access-key-id auth-info)
                       (credential-scope auth-info req)
                       (signed-headers req)
-                      (signature auth-info req)))))
+                      (signature auth-info req {:double-encode? double-url-encode?
+                                                :normalize-uri? normalize-uri-paths?})))))
 
+;; https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
+;;
+;; Each path segment must be URI-encoded twice (except for Amazon S3 which only gets URI-encoded once).
+;;
+;; Normalize URI paths according to RFC 3986.
+;; In exception to this, you do not normalize URI paths for requests to Amazon S3
 (defmethod sign-http-request "v4"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request))
+  (v4-sign-http-request service endpoint credentials http-request
+                        :double-url-encode? true
+                        :normalize-uri-paths? true))
 
 (defmethod sign-http-request "s3"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
+  (v4-sign-http-request service endpoint credentials http-request
+                        :content-sha256-header? true))
 
 (defmethod sign-http-request "s3v4"
   [service endpoint credentials http-request]
-  (v4-sign-http-request service endpoint credentials http-request :content-sha256-header? true))
+  (v4-sign-http-request service endpoint credentials http-request
+                        :content-sha256-header? true))
