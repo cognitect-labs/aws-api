@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.615 / 2022-11-28
 * fix URI encoding for signing [#193](https://github.com/cognitect-labs/aws-api/issues/193)
   * h/t @kgann
 
