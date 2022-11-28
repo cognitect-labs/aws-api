@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+* fix URI encoding for signing [#193](https://github.com/cognitect-labs/aws-api/issues/193)
+  * h/t @kgann
+
 ## 0.8.612 / 2022-10-27
 * upgrade to org.clojure/core.async "1.6.673"
 * NOTE: this release requires clojure >= 1.10
