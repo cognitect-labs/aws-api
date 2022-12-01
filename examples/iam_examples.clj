@@ -1,15 +1,20 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(require '[cognitect.aws.client.api :as aws])
+(ns iam-examples
+  (:require [cognitect.aws.client.api :as aws]))
 
-;; make a client
-(def iam (aws/client {:api :iam}))
+(comment
 
-(aws/ops iam)
+  ;; make a client
+  (def iam (aws/client {:api :iam}))
 
-(-> (aws/ops iam) keys sort)
+  (aws/ops iam)
 
-(aws/doc iam :ListRoles)
+  (-> (aws/ops iam) keys sort)
 
-(aws/invoke iam {:op :ListRoles})
+  (aws/doc iam :ListRoles)
+
+  (aws/invoke iam {:op :ListRoles})
+
+  )

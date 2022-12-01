@@ -1,14 +1,19 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(require '[cognitect.aws.client.api :as aws])
+(ns ec2-examples
+  (:require [cognitect.aws.client.api :as aws]))
 
-(def ec2 (aws/client {:api :ec2}))
+(comment
 
-(aws/ops ec2)
+  (def ec2 (aws/client {:api :ec2}))
 
-(-> (aws/ops ec2) keys sort)
+  (aws/ops ec2)
 
-(aws/doc ec2 :DescribeAvailabilityZones)
+  (-> (aws/ops ec2) keys sort)
 
-(aws/invoke ec2 {:op :DescribeAvailabilityZones})
+  (aws/doc ec2 :DescribeAvailabilityZones)
+
+  (aws/invoke ec2 {:op :DescribeAvailabilityZones})
+
+  )

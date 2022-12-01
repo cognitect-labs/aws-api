@@ -1,101 +1,106 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(require '[clojure.core.async :as a]
-         '[clojure.spec.alpha :as s]
-         '[clojure.spec.gen.alpha :as gen]
-         '[clojure.java.io :as io]
-         '[clojure.repl :as repl]
-         '[cognitect.aws.client.api :as aws])
+(ns s3-examples
+  (:require [clojure.core.async :as a]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.java.io :as io]
+            [clojure.repl :as repl]
+            [cognitect.aws.client.api :as aws]))
 
-;; make a client
-(def s3 (aws/client {:api :s3}))
+(comment
 
-;; guard against invalid :request map
-(aws/validate-requests s3 true)
+  ;; make a client
+  (def s3 (aws/client {:api :s3}))
 
-;; what can it do?
-(aws/ops s3)
-;; op names
-(-> (aws/ops s3) keys sort)
+  ;; guard against invalid :request map
+  (aws/validate-requests s3 true)
 
-;; op doc-data
-(-> (aws/ops s3) :CreateBucket)
-;; a little more friendly
-(aws/doc s3 :CreateBucket)
+  ;; what can it do?
+  (aws/ops s3)
+  ;; op names
+  (-> (aws/ops s3) keys sort)
 
-;; specs
-(aws/request-spec-key s3 :CreateBucket)
-(s/describe (aws/request-spec-key s3 :CreateBucket))
-(gen/sample (s/gen (aws/request-spec-key s3 :CreateBucket)))
+  ;; op doc-data
+  (-> (aws/ops s3) :CreateBucket)
+  ;; a little more friendly
+  (aws/doc s3 :CreateBucket)
 
-(aws/response-spec-key s3 :CreateBucket)
-(s/describe (aws/response-spec-key s3 :CreateBucket))
-(gen/sample (s/gen (aws/response-spec-key s3 :CreateBucket)))
+  ;; specs
+  (aws/request-spec-key s3 :CreateBucket)
+  (s/describe (aws/request-spec-key s3 :CreateBucket))
+  (gen/sample (s/gen (aws/request-spec-key s3 :CreateBucket)))
 
-;; * use this bucket-name to avoid collisions with other devs
-;; * don't forget to delete the bucket when done exploring!
-(def bucket-name (str "cognitect-aws-test-" (.getEpochSecond (java.time.Instant/now))))
+  (aws/response-spec-key s3 :CreateBucket)
+  (s/describe (aws/response-spec-key s3 :CreateBucket))
+  (gen/sample (s/gen (aws/response-spec-key s3 :CreateBucket)))
 
-;; see how submit works
-(repl/doc aws/invoke)
+  ;; * use this bucket-name to avoid collisions with other devs
+  ;; * don't forget to delete the bucket when done exploring!
+  (def bucket-name (str "cognitect-aws-test-" (.getEpochSecond (java.time.Instant/now))))
 
-;; doit
-(aws/invoke s3 {:op :ListBuckets})
+  ;; see how submit works
+  (repl/doc aws/invoke)
 
-;; http-request and http-response are in metadata
-(meta *1)
+  ;; doit
+  (aws/invoke s3 {:op :ListBuckets})
 
-(aws/invoke s3 {:op :CreateBucket :request {:Bucket bucket-name}})
+  ;; http-request and http-response are in metadata
+  (meta *1)
 
-;; now you should see the bucket you just added
-(aws/invoke s3 {:op :ListBuckets})
+  (aws/invoke s3 {:op :CreateBucket :request {:Bucket bucket-name}})
 
-;; no objects yet ...
-(aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
+  ;; now you should see the bucket you just added
+  (aws/invoke s3 {:op :ListBuckets})
 
-;; Body is blob type, for which we accept a byte-array or an InputStream
-(aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
-                                         :Body (.getBytes "Oh hai!")}})
+  ;; no objects yet ...
+  (aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
 
-(aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
-                                         :Body (io/input-stream (.getBytes "Oh hai!"))}})
+  ;; Body is blob type, for which we accept a byte-array or an InputStream
+  (aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
+                                           :Body (.getBytes "Oh hai!")}})
 
-;; now you should see the object you just added
-(aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
+  (aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name :Key "hello.txt"
+                                           :Body (io/input-stream (.getBytes "Oh hai!"))}})
 
-;; Body is a blob type, which always returns an InputStream
-(aws/invoke s3 {:op :GetObject :request {:Bucket bucket-name :Key "hello.txt"}})
+  ;; now you should see the object you just added
+  (aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
 
-;; check it!
-(slurp (:Body *1))
+  ;; Body is a blob type, which always returns an InputStream
+  (aws/invoke s3 {:op :GetObject :request {:Bucket bucket-name :Key "hello.txt"}})
 
-(aws/invoke s3 {:op :DeleteObject :request {:Bucket bucket-name :Key "hello.txt"}})
+  ;; check it!
+  (slurp (:Body *1))
 
-(aws/invoke s3 {:op :DeleteObjects, :request {:Delete {:Objects [{:Key "hello.txt"}]}, :Bucket bucket-name}})
+  (aws/invoke s3 {:op :DeleteObject :request {:Bucket bucket-name :Key "hello.txt"}})
 
-;; poof, the object is gone!
-(aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
+  (aws/invoke s3 {:op :DeleteObjects, :request {:Delete {:Objects [{:Key "hello.txt"}]}, :Bucket bucket-name}})
 
-(aws/invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
+  ;; poof, the object is gone!
+  (aws/invoke s3 {:op :ListObjectsV2 :request {:Bucket bucket-name}})
 
-;; poof, the bucket is gone!
-(aws/invoke s3 {:op :ListBuckets})
+  (aws/invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
+
+  ;; poof, the bucket is gone!
+  (aws/invoke s3 {:op :ListBuckets})
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-;; see how submit works w/ async
-(clojure.repl/doc aws/invoke-async)
+  ;; see how submit works w/ async
+  (clojure.repl/doc aws/invoke-async)
 
-;; async!
-(def c (aws/invoke-async s3 {:op :ListBuckets}))
+  ;; async!
+  (def c (aws/invoke-async s3 {:op :ListBuckets}))
 
-(a/<!! c)
+  (a/<!! c)
 
-(meta *1)
+  (meta *1)
 
-;; supply your own channel
-(let [ch (a/chan)]
-  (aws/invoke-async s3 {:op :ListBuckets
-                        :ch ch})
-  (a/<!! ch))
+  ;; supply your own channel
+  (let [ch (a/chan)]
+    (aws/invoke-async s3 {:op :ListBuckets
+                          :ch ch})
+    (a/<!! ch))
+
+  )

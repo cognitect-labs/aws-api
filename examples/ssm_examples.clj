@@ -1,36 +1,41 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(require '[clojure.spec.alpha :as s]
-         '[clojure.pprint :as pp]
-         '[cognitect.aws.client.api :as aws])
+(ns ssm-examples 
+  (:require [clojure.spec.alpha :as s]
+            [clojure.pprint :as pp]
+            [cognitect.aws.client.api :as aws]))
 
-(def ssm-client (aws/client {:api :ssm}))
+(comment
 
-;; guard against invalid :request map
-(aws/validate-requests ssm-client true)
+  (def ssm-client (aws/client {:api :ssm}))
 
-;; what ops are available
-(aws/ops ssm-client)
+  ;; guard against invalid :request map
+  (aws/validate-requests ssm-client true)
 
-(-> (aws/ops ssm-client) keys sort)
+  ;; what ops are available
+  (aws/ops ssm-client)
 
-;; print docs
-(aws/doc ssm-client :PutParameter)
+  (-> (aws/ops ssm-client) keys sort)
 
-;; or describe args as data
-(pp/pprint (s/describe (aws/request-spec-key ssm-client :PutParameter)))
+  ;; print docs
+  (aws/doc ssm-client :PutParameter)
 
-;; describe an op param
-(s/form :cognitect.aws.ssm.PutParameterRequest/Type)
+  ;; or describe args as data
+  (pp/pprint (s/describe (aws/request-spec-key ssm-client :PutParameter)))
 
-;; jam!
-(aws/invoke ssm-client {:op      :PutParameter
-                        :request {:Name  "aws-api-example"
-                                  :Value "example-value"
-                                  :Type  "SecureString"}})
+  ;; describe an op param
+  (s/form :cognitect.aws.ssm.PutParameterRequest/Type)
 
-;; see spec fail
-(aws/invoke ssm-client {:op      :PutParameter
-                        :request {:Value "example-value"
-                                  :Type  "SecureString"}})
+  ;; jam!
+  (aws/invoke ssm-client {:op      :PutParameter
+                          :request {:Name  "aws-api-example"
+                                    :Value "example-value"
+                                    :Type  "SecureString"}})
+
+  ;; see spec fail
+  (aws/invoke ssm-client {:op      :PutParameter
+                          :request {:Value "example-value"
+                                    :Type  "SecureString"}})
+
+  )

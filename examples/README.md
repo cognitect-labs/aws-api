@@ -8,4 +8,6 @@ using the deps.edn in the project root, e.g.
 clj -A:dev:examples
 ```
 
-Then you can open any of the xxx_examples.clj files and start evaluating forms.
+Then you can open any of the xxx_examples.clj files and start evaluating forms. In each example
+namespace, forms are contained within a `comment` block to prevent their accidental side-effectful
+evaluation.

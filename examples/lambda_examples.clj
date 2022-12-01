@@ -1,14 +1,19 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-(require '[cognitect.aws.client.api :as aws])
+(ns lambda-examples 
+  (:require [cognitect.aws.client.api :as aws]))
 
-(def lambda (aws/client {:api :lambda}))
+(comment
 
-(aws/ops lambda)
+  (def lambda (aws/client {:api :lambda}))
 
-(-> (aws/ops lambda) keys sort)
+  (aws/ops lambda)
 
-(aws/doc lambda :ListFunctions)
+  (-> (aws/ops lambda) keys sort)
 
-(aws/invoke lambda {:op :ListFunctions})
+  (aws/doc lambda :ListFunctions)
+
+  (aws/invoke lambda {:op :ListFunctions})
+
+  )
