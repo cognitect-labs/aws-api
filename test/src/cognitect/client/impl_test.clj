@@ -118,6 +118,7 @@
 
 (deftest keyword-access
   (let [client (aws/client params)]
+    (is (= "s3" (:api client)))
     (is (= :us-east-1 (:region client)))
     (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
     (is (= {:access-key-id "a", :secret-access-key "b"}

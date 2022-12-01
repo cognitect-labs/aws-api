@@ -103,6 +103,8 @@
 
   (valAt [this k default]
     (case k
+      :api
+      (-> info :service :metadata :cognitect.aws/service-name)
       :region
       (some-> info :region-provider region/fetch)
       :endpoint

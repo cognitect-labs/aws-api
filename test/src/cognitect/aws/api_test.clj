@@ -16,6 +16,7 @@
 (deftest test-datafy
   (let [client (aws/client {:api :s3})
         data (datafy/datafy client)]
+    (is (= "s3" (:api data)))
     (is (map? (:service data)))
     (is (map? (:metadata (:service data))))
     (is (map? (:endpoint data)))

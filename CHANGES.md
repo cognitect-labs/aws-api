@@ -3,6 +3,7 @@
 ## DEV
 * ensure that serialize-uri can handle longs [#145](https://github.com/cognitect-labs/aws-api/issues/145)
   * h/t @ghost
+* add keyword access to :api on client
 
 ## 0.8.615 / 2022-11-28
 * fix URI encoding for signing [#193](https://github.com/cognitect-labs/aws-api/issues/193)
