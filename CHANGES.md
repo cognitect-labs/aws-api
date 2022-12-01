@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.620 / 2022-12-01
 * ensure that serialize-uri can handle longs [#145](https://github.com/cognitect-labs/aws-api/issues/145)
   * h/t @ghost
 * add keyword access to :api on client
