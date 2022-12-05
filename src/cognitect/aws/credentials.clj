@@ -153,8 +153,7 @@
                    (when-let [creds (fetch provider)]
                      (reset! cached-provider provider)
                      creds))
-                 providers))
-         "any source"))
+                 providers))))
       Stoppable
       (-stop [_] (run! -stop providers)))))
 

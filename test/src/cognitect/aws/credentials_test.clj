@@ -4,6 +4,8 @@
 (ns cognitect.aws.credentials-test
   (:require [clojure.test :as t :refer [deftest testing use-fixtures is]]
             [clojure.java.io :as io]
+            [clojure.tools.logging :as log]
+            [clojure.tools.logging.test :refer [with-log logged?]]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
@@ -36,6 +38,16 @@
       (is (= 1 @cnt)))
     (testing "The chain provider returns nil if none of the providers returns credentials."
       (is (nil? (credentials/fetch (credentials/chain-credentials-provider [p1])))))))
+
+(deftest valid-credentials-test
+  (with-log
+    (credentials/valid-credentials nil "x provider")
+    (is (logged? 'cognitect.aws.credentials :debug (str "Unable to fetch credentials from x provider."))))
+  (with-log
+    (credentials/valid-credentials {:aws/access-key-id     "id"
+                                    :aws/secret-access-key "secret"}
+                                   "x provider")
+    (is (logged? 'cognitect.aws.credentials :debug (str "Fetched credentials from x provider.")))))
 
 (deftest environment-credentials-provider-test
   (testing "required vars present"
