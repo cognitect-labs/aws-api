@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+* add keyword access to :api on the test double client [#224](https://github.com/cognitect-labs/aws-api/issues/224)
+
 ## 0.8.620 / 2022-12-01
 * ensure that serialize-uri can handle longs [#145](https://github.com/cognitect-labs/aws-api/issues/145)
   * h/t @ghost

@@ -7,7 +7,8 @@
   (:require [clojure.core.async :as a]
             [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.client.validation :as validation]
-            [cognitect.aws.service :as service]))
+            [cognitect.aws.service :as service])
+  (:import (clojure.lang ILookup)))
 
 (set! *warn-on-reflection* true)
 
@@ -17,6 +18,18 @@
    :op op})
 
 (deftype Client [info handlers]
+  ILookup
+  (valAt [this k]
+    (.valAt this k nil))
+
+  (valAt [_this k default]
+    (case k
+      :api
+      (-> info :service :metadata :cognitect.aws/service-name)
+      :service
+      (:service info))
+    default)
+
   client.protocol/Client
   (-get-info [_] info)
 
