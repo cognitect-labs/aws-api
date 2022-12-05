@@ -70,6 +70,8 @@
     (is (thrown-with-msg? RuntimeException
                           #"Operation not supported"
                           (client.test/client {:api :s3 :ops {:DoesNotExistInS3 {}}}))))
-
+  
   (testing "supports limited keyword access"
-    (is (= "s3" (:api (client.test/client {:api :s3}))))))
+    (let [c (client.test/client {:api :s3})]
+      (is (= "s3" (:api c)))
+      (is (map? (:service c))))))

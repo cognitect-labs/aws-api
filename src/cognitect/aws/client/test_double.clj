@@ -27,8 +27,8 @@
       :api
       (-> info :service :metadata :cognitect.aws/service-name)
       :service
-      (:service info))
-    default)
+      (:service info)
+      default))
 
   client.protocol/Client
   (-get-info [_] info)
