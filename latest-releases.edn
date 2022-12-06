@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.620"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.12.353"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.12.358"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "825.2.1262.0", :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSApplicationCostProfiler
@@ -44,7 +44,7 @@
  com.cognitect.aws/apprunner {:mvn/version "825.2.1250.0", :aws/serviceFullName "AWS App Runner"},
  com.cognitect.aws/appstream
  {:mvn/version "825.2.1250.0", :aws/serviceFullName "Amazon AppStream"},
- com.cognitect.aws/appsync {:mvn/version "825.2.1262.0", :aws/serviceFullName "AWS AppSync"},
+ com.cognitect.aws/appsync {:mvn/version "825.2.1268.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/arc-zonal-shift
  {:mvn/version "825.2.1263.0", :aws/serviceFullName "AWS ARC - Zonal Shift"},
  com.cognitect.aws/athena {:mvn/version "825.2.1266.0", :aws/serviceFullName "Amazon Athena"},
@@ -64,7 +64,7 @@
  com.cognitect.aws/braket {:mvn/version "822.2.1145.0", :aws/serviceFullName "Braket"},
  com.cognitect.aws/budgets {:mvn/version "822.2.1171.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
- {:mvn/version "825.2.1233.0", :aws/serviceFullName "AWS Cost Explorer Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "AWS Cost Explorer Service"},
  com.cognitect.aws/chime {:mvn/version "822.2.1193.0", :aws/serviceFullName "Amazon Chime"},
  com.cognitect.aws/chime-sdk-identity
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Chime SDK Identity"},
@@ -176,7 +176,7 @@
  com.cognitect.aws/ebs
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "825.2.1266.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "822.2.1181.0", :aws/serviceFullName "AWS EC2 Instance Connect"},
  com.cognitect.aws/ecr
@@ -184,7 +184,7 @@
  com.cognitect.aws/ecr-public
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "Amazon Elastic Container Registry Public"},
  com.cognitect.aws/ecs
- {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon EC2 Container Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
  {:mvn/version "825.2.1263.0", :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/elastic-inference
@@ -226,7 +226,7 @@
  com.cognitect.aws/fis
  {:mvn/version "821.2.1107.0", :aws/serviceFullName "AWS Fault Injection Simulator"},
  com.cognitect.aws/fms
- {:mvn/version "825.2.1250.0", :aws/serviceFullName "Firewall Management Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Firewall Management Service"},
  com.cognitect.aws/forecast
  {:mvn/version "822.2.1205.0", :aws/serviceFullName "Amazon Forecast Service"},
  com.cognitect.aws/forecastquery
@@ -299,7 +299,7 @@
  com.cognitect.aws/ivs
  {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon Interactive Video Service"},
  com.cognitect.aws/ivschat
- {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Interactive Video Service Chat"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Interactive Video Service Chat"},
  com.cognitect.aws/kafka
  {:mvn/version "825.2.1250.0", :aws/serviceFullName "Managed Streaming for Kafka"},
  com.cognitect.aws/kafkaconnect
@@ -359,9 +359,9 @@
  com.cognitect.aws/mediaconnect
  {:mvn/version "825.2.1220.0", :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
- {:mvn/version "825.2.1250.0", :aws/serviceFullName "AWS Elemental MediaConvert"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "825.2.1233.0", :aws/serviceFullName "AWS Elemental MediaLive"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "823.2.1216.0", :aws/serviceFullName "AWS Elemental MediaPackage"},
  com.cognitect.aws/mediapackage-vod
@@ -433,12 +433,12 @@
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon Pinpoint SMS Voice V2"},
  com.cognitect.aws/pipes
  {:mvn/version "825.2.1266.0", :aws/serviceFullName "Amazon EventBridge Pipes"},
- com.cognitect.aws/polly {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Polly"},
+ com.cognitect.aws/polly {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Polly"},
  com.cognitect.aws/pricing
  {:mvn/version "822.2.1171.0", :aws/serviceFullName "AWS Price List Service"},
  com.cognitect.aws/privatenetworks
  {:mvn/version "822.2.1193.0", :aws/serviceFullName "AWS Private 5G"},
- com.cognitect.aws/proton {:mvn/version "825.2.1262.0", :aws/serviceFullName "AWS Proton"},
+ com.cognitect.aws/proton {:mvn/version "825.2.1268.0", :aws/serviceFullName "AWS Proton"},
  com.cognitect.aws/qldb {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon QLDB"},
  com.cognitect.aws/qldb-session
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon QLDB Session"},
@@ -448,14 +448,14 @@
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "AWS Resource Access Manager"},
  com.cognitect.aws/rbin {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Recycle Bin"},
  com.cognitect.aws/rds
- {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Relational Database Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Relational Database Service"},
  com.cognitect.aws/rds-data
  {:mvn/version "825.2.1233.0", :aws/serviceFullName "AWS RDS DataService"},
  com.cognitect.aws/redshift {:mvn/version "825.2.1250.0", :aws/serviceFullName "Amazon Redshift"},
  com.cognitect.aws/redshift-data
  {:mvn/version "822.2.1171.0", :aws/serviceFullName "Redshift Data API Service"},
  com.cognitect.aws/redshift-serverless
- {:mvn/version "822.2.1181.0", :aws/serviceFullName "Redshift Serverless"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Redshift Serverless"},
  com.cognitect.aws/rekognition
  {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Rekognition"},
  com.cognitect.aws/resiliencehub
@@ -535,7 +535,7 @@
  com.cognitect.aws/snowball
  {:mvn/version "825.2.1233.0", :aws/serviceFullName "Amazon Import/Export Snowball"},
  com.cognitect.aws/sns
- {:mvn/version "823.2.1216.0", :aws/serviceFullName "Amazon Simple Notification Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Simple Notification Service"},
  com.cognitect.aws/sqs
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
@@ -570,7 +570,7 @@
  com.cognitect.aws/timestream-write
  {:mvn/version "822.2.1109.0", :aws/serviceFullName "Amazon Timestream Write"},
  com.cognitect.aws/transcribe
- {:mvn/version "825.2.1262.0", :aws/serviceFullName "Amazon Transcribe Service"},
+ {:mvn/version "825.2.1268.0", :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transfer
  {:mvn/version "825.2.1262.0", :aws/serviceFullName "AWS Transfer Family"},
  com.cognitect.aws/translate
