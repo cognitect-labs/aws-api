@@ -1,6 +1,7 @@
 # aws-api
 
 ## DEV
+* log the credentials provider that succeeded [#217](https://github.com/cognitect-labs/aws-api/issues/217)
 * add keyword access to :api on the test double client [#224](https://github.com/cognitect-labs/aws-api/issues/224)
 
 ## 0.8.620 / 2022-12-01
