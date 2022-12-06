@@ -4,7 +4,6 @@
 (ns cognitect.aws.credentials-test
   (:require [clojure.test :as t :refer [deftest testing use-fixtures is]]
             [clojure.java.io :as io]
-            [clojure.tools.logging :as log]
             [clojure.tools.logging.test :refer [with-log logged?]]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
