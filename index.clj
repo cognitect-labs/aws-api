@@ -213,7 +213,7 @@
    :name "client",
    :file "src/cognitect/aws/client/test_double.clj",
    :source-url nil,
-   :line 53,
+   :line 66,
    :var-type "function",
    :arglists ([{:keys [api ops]}]),
    :doc
@@ -237,7 +237,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 337,
+   :line 339,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -261,7 +261,7 @@
    :name "calculate-ttl",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 259,
+   :line 261,
    :var-type "function",
    :arglists ([{:keys [Expiration]}]),
    :doc
@@ -273,7 +273,7 @@
    :name "chain-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 134,
+   :line 137,
    :var-type "function",
    :arglists ([providers]),
    :doc
@@ -285,7 +285,7 @@
    :name "container-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 278,
+   :line 280,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -297,7 +297,7 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 319,
+   :line 321,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -309,7 +309,7 @@
    :name "environment-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 161,
+   :line 163,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -332,7 +332,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 351,
+   :line 353,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -344,7 +344,7 @@
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 298,
+   :line 300,
    :var-type "function",
    :arglists ([http-client]),
    :doc
@@ -356,7 +356,7 @@
    :name "profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 208,
+   :line 210,
    :var-type "function",
    :arglists ([] [profile-name] [profile-name f]),
    :doc
@@ -380,7 +380,7 @@
    :name "system-property-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 185,
+   :line 187,
    :var-type "function",
    :arglists ([]),
    :doc
