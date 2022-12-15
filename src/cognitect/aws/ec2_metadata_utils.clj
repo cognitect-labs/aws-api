@@ -21,6 +21,7 @@
 ;; ECS
 (def ^:const container-credentials-relative-uri-env-var "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
 (def ^:const container-credentials-full-uri-env-var "AWS_CONTAINER_CREDENTIALS_FULL_URI")
+(def ^:const container-authorization-token-env-var "AWS_CONTAINER_AUTHORIZATION_TOKEN")
 
 (def ^:const ec2-metadata-host "http://169.254.169.254")
 (def ^:const ecs-metadata-host "http://169.254.170.2")
@@ -45,14 +46,17 @@
 
 (defn- request-map
   [^URI uri]
-  {:scheme (.getScheme uri)
-   :server-name (.getHost uri)
-   :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
-                    (when (#{"https"} (.getScheme uri)) 443)
-                    80)
-   :uri (.getPath uri)
-   :request-method :get
-   :headers {:accept "*/*"}})
+  (let [auth-token (u/getenv container-authorization-token-env-var)]
+    {:scheme (.getScheme uri)
+     :server-name (.getHost uri)
+     :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
+                      (when (#{"https"} (.getScheme uri)) 443)
+                      80)
+     :uri (.getPath uri)
+     :request-method :get
+     :headers (cond-> {"Accept" "*/*"}
+                auth-token
+                (assoc "Authorization" auth-token))}))
 
 (defn get-data [uri http-client]
   (let [response (a/<!! (retry/with-retry
