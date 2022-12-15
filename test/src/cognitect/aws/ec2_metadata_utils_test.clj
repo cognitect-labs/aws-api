@@ -36,6 +36,7 @@
     (is (nil? (ec2-metadata-utils/get-ec2-instance-region *http-client*)))))
 
 (deftest request-map
-  (testing "port"
+  (testing "server-port"
     (is (= 443 (:server-port (#'ec2-metadata-utils/request-map (java.net.URI/create "https://169.254.169.254")))))
-    (is (= 80 (:server-port (#'ec2-metadata-utils/request-map (java.net.URI/create "http://169.254.169.254")))))))
+    (is (= 80 (:server-port (#'ec2-metadata-utils/request-map (java.net.URI/create "http://169.254.169.254")))))
+    (is (= 8081 (:server-port (#'ec2-metadata-utils/request-map (java.net.URI/create "http://169.254.169.254:8081")))))))
