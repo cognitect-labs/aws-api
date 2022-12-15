@@ -47,7 +47,9 @@
   [^URI uri]
   {:scheme (.getScheme uri)
    :server-name (.getHost uri)
-   :server-port (or (when (pos? (.getPort uri)) (.getPort uri)) (when (= (.getScheme uri) :https) 443) 80)
+   :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
+                    (when (#{"https"} (.getScheme uri)) 443)
+                    80)
    :uri (.getPath uri)
    :request-method :get
    :headers {:accept "*/*"}})
