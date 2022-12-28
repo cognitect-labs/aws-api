@@ -2,6 +2,7 @@
 
 ## DEV
 * fix URI parsing bug in ec2-metadata-utils (h/t @stevebuik)
+* add function to instrument test double client after initialization
 
 ## 0.8.630 / 2022-12-05
 * log the credentials provider that succeeded [#217](https://github.com/cognitect-labs/aws-api/issues/217)
