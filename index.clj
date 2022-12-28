@@ -213,14 +213,26 @@
    :name "client",
    :file "src/cognitect/aws/client/test_double.clj",
    :source-url nil,
-   :line 66,
+   :line 90,
    :var-type "function",
    :arglists ([{:keys [api ops]}]),
    :doc
-   "Given a map with :api and :ops, returns a test client that you can\npass to `cognitect.aws.client.api/invoke` and\n`cognitect.aws.client.api/stop` in implementation code.\n\n:ops should be a map of operation to one of\n- handler function of op-map that returns a response map\n- literal response map\n\nNotes:\n- you must declare every op that will be invoked during a test\n- every op must be supported\n  - See (keys (cognitect.aws.client.api/ops test-client))\n- will validate request payloads passed to `invoke` by default\n  - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)\n- will not validate response payloads",
+   "Given a map with :api and :ops (optional), returns a test double client that\nyou can pass to `cognitect.aws.client.api/invoke` and `cognitect.aws.client.api/stop`\nin implementation code.\n \nYou can provide :ops on creation or use `instrument` to add them later.\n\n:ops should be a map of operation (keyword) to one of\n- a function of op-map that returns a response map\n- a literal response map\n\nNotes:\n- you must instrument every op that will be invoked during a test\n- every op must be supported\n  - See (keys (cognitect.aws.client.api/ops <test-client>))\n- will validate request payloads passed to `invoke` by default\n  - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)\n- will not validate response payloads",
    :namespace "cognitect.aws.client.test-double",
    :wiki-url
    "/cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/client"}
+  {:raw-source-url nil,
+   :name "instrument",
+   :file "src/cognitect/aws/client/test_double.clj",
+   :source-url nil,
+   :line 83,
+   :var-type "function",
+   :arglists ([client ops]),
+   :doc
+   "Given a test double client and a `:ops` map of operations to handlers,\ninstruments the client with handlers. See `client` for more info about\n`:ops`.",
+   :namespace "cognitect.aws.client.test-double",
+   :wiki-url
+   "/cognitect.aws.client.test-double-api.html#cognitect.aws.client.test-double/instrument"}
   {:raw-source-url nil,
    :name "auto-refreshing-credentials",
    :file "src/cognitect/aws/credentials.clj",

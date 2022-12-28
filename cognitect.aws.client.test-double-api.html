@@ -53,6 +53,8 @@ namespace.
     <a href="#toc0">Overview</a>
     <div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.client.test-double/client">client</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.client.test-double/instrument">instrument</a>
     </div>
     <br />
   </div>
@@ -78,21 +80,36 @@ to the functions in the cognitect.aws.client.api ns.</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (client {:keys [api ops]})
 </pre>
-  <pre id="var-docstr">Given a map with :api and :ops, returns a test client that you can
-pass to `cognitect.aws.client.api/invoke` and
-`cognitect.aws.client.api/stop` in implementation code.
+  <pre id="var-docstr">Given a map with :api and :ops (optional), returns a test double client that
+you can pass to `cognitect.aws.client.api/invoke` and `cognitect.aws.client.api/stop`
+in implementation code.
+ 
+You can provide :ops on creation or use `instrument` to add them later.
 
-:ops should be a map of operation to one of
-- handler function of op-map that returns a response map
-- literal response map
+:ops should be a map of operation (keyword) to one of
+- a function of op-map that returns a response map
+- a literal response map
 
 Notes:
-- you must declare every op that will be invoked during a test
+- you must instrument every op that will be invoked during a test
 - every op must be supported
-  - See (keys (cognitect.aws.client.api/ops test-client))
+  - See (keys (cognitect.aws.client.api/ops &lt;test-client&gt;))
 - will validate request payloads passed to `invoke` by default
   - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)
 - will not validate response payloads</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.client.test-double/instrument">instrument</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (instrument client ops)
+</pre>
+  <pre id="var-docstr">Given a test double client and a `:ops` map of operations to handlers,
+instruments the client with handlers. See `client` for more info about
+`:ops`.</pre>
   
   
   
