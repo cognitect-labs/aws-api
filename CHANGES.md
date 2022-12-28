@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.635 / 2022-12-28
 * fix URI parsing bug in ec2-metadata-utils (h/t @stevebuik)
 * add function to instrument test double client after initialization
 
