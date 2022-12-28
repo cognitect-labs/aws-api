@@ -2,7 +2,7 @@
 
 aws-api provides a [test double](http://xunitpatterns.com/Test%20Double.html)
 implementation to test code that uses aws-api offline and even with no AWS
-account. To use it, you must declare a handler fn or literal response for every
+account. To use it, instrument a handler fn or literal response for every
 op that will be invoked (via `aws/invoke` or `aws/invoke-async`) during a
 test, e.g.
 
@@ -31,7 +31,18 @@ test, e.g.
 ;; test using a literal response
 (let [test-s3-client
       (test/client {:api :s3
-                    :ops {:ListBuckets {:Location "a-location"}}})]
+                    :ops {:CreateBucket {:Location "a-location"}}})]
+  (let [res (do-something test-s3-client)]
+    ;; make assertions about res
+    ))
+
+;; instrument test client after initialization
+(let [test-s3-client (test/client {:api :s3})]
+  (test/instrument test-s3-client {:CreateBucket {:Location "a-location"}})
+  (let [res (do-something test-s3-client)]
+    ;; make assertions about res
+    )
+  (test/instrument test-s3-client {:CreateBucket {:Location "another-location"}})
   (let [res (do-something test-s3-client)]
     ;; make assertions about res
     ))
@@ -48,18 +59,18 @@ any other type of test double.
 
 ### Features
 
-- you can bind literal values or handler functions to the keys in the map bound to :ops
+- bind literal values or handler functions to keys in a map bound to :ops
   - literal values will be returned as/is
   - handlers should be functions of the op-map passed to invoke and return a value valid
     for the op
 
 ### Helpful Feedback
 
-`client` will throw when you declare an op that is not supported by the service
+`client` will throw when you instrument an op that is not supported by the service
 
 `invoke` will return an anomaly when
 - you invoke an op that is not supported by the service
-- you invoke an op that was not instrumented in the client constructor
+- you invoke an op that was not instrumented in the client
 - you invoke with an invalid :request payload
 
 `invoke-async` will put an anomaly on the channel it returns, following
@@ -71,5 +82,5 @@ the same conditions as `invoke`
   by the normal aws api client
 - as much as we'd love to, we have no reliable way to validate or generate responses that
   mimic those produced by AWS, therefore
-  - you must declare a handler or response map for every op that will be invoked during a test
+  - you must instrument a handler or response map for every op that will be invoked during a test
   - `client` will not validate the response payloads you provide
