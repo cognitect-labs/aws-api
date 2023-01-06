@@ -224,7 +224,9 @@ constructor:
 
 ## Testing
 
-See https://github.com/cognitect-labs/aws-api/blob/main/doc/testing.md
+aws-api provides a test-double client you can use to simulate `aws/invoke` in your tests.
+
+See https://github.com/cognitect-labs/aws-api/blob/main/doc/testing.md.
 
 ### PostToConnection
 
@@ -259,11 +261,10 @@ are managed by aws-api.
 
 ## Contributing
 
-This library is open source, developed internally by Cognitect.
+aws-api is open source, developed internally at Nubank.
 Issues can be filed using GitHub issues for this project. Because
-aws-api is incorporated into products and client projects, we prefer
-to do development internally and are not accepting pull requests or
-patches.
+aws-api is incorporated into products, we prefer to do development
+internally and are not accepting pull requests or patches.
 
 ## Contributors
 
@@ -283,6 +284,7 @@ contributed significantly to research and design:
 [Rich Hickey](https://github.com/richhickey)<br/>
 [George Kierstein](https://github.com/MissInterpret)<br/>
 [Carin Meier](https://github.com/gigasquid)<br/>
+[Joe Lane](https://github.com/MageMasher)<br/>
 [Alex Miller](https://github.com/puredanger)<br/>
 [Michael Nygard](https://github.com/mtnygard)<br/>
 [Ghadi Shayban](https://github.com/ghadishayban)<br/>
