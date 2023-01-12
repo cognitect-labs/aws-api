@@ -172,6 +172,10 @@
                       (signature auth-info req {:double-encode? double-url-encode?
                                                 :normalize-uri? normalize-uri-paths?})))))
 
+(defn bearer-sign-http-request
+  [service endpoint {:keys [token]} http-request & {:keys [content-sha256-header? double-url-encode? normalize-uri-paths?]}] 
+  (assoc-in http-request [:headers "authorization"] (str "Bearer " token)))
+
 ;; https://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 ;;
 ;; Each path segment must be URI-encoded twice (except for Amazon S3 which only gets URI-encoded once).
@@ -183,6 +187,12 @@
   (v4-sign-http-request service endpoint credentials http-request
                         :double-url-encode? true
                         :normalize-uri-paths? true))
+
+(defmethod sign-http-request "bearer"
+  [service endpoint credentials http-request]
+  (bearer-sign-http-request service endpoint credentials http-request
+                            :double-url-encode? true
+                            :normalize-uri-paths? true))
 
 (defmethod sign-http-request "s3"
   [service endpoint credentials http-request]

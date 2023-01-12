@@ -37,7 +37,9 @@
     (cond-> {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}
       (contains? #{"json" "rest-json"} protocol)
       (assoc "x-amz-target" (str targetPrefix "." (:name operation))
-             "content-type" (str "application/x-amz-json-" jsonVersion)
+             "content-type" (if (= protocol "rest-json") 
+                              "application/json"
+                              (str "application/x-amz-json-" jsonVersion))
              ;; NOTE: apigateway returns application/hal+json unless
              ;; we specify the accept header
              "accept"       "application/json")

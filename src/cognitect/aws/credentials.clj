@@ -10,8 +10,10 @@
             [clojure.string :as str]
             [cognitect.aws.util :as u]
             [cognitect.aws.config :as config]
-            [cognitect.aws.ec2-metadata-utils :as ec2])
+            [cognitect.aws.ec2-metadata-utils :as ec2]
+            [clojure.data.json :as json])
   (:import (java.util Date)
+           (java.time LocalDateTime)
            (java.util.concurrent Executors ScheduledExecutorService
                                  ScheduledFuture TimeUnit ThreadFactory)
            (java.io File)
@@ -245,6 +247,28 @@
                "aws profiles file"))
             (catch Throwable t
               (log/error t "Error fetching credentials from aws profiles file")))))))))
+
+(defn sha1-str 
+  "just stole from https://gist.github.com/hozumi/1472865"
+  [s] 
+  (->> (.digest (java.security.MessageDigest/getInstance "sha1") (.getBytes s))
+       (map #(.substring
+              (Integer/toString
+               (+ (bit-and % 0xff) 0x100) 16) 1))
+       (apply str)))
+
+(defn sso-token-provider 
+  [] 
+  (reify CredentialsProvider
+    (fetch [_]
+      (let [credentials (config/parse (io/file (u/getProperty "user.home") ".aws" "credentials"))
+            configs (config/parse (io/file (u/getProperty "user.home") ".aws" "config"))
+            profile (get configs "codecatalyst")
+            session-name (get profile "sso_session")
+            {sso-start-url "sso_start_url" sso-region "sso_region"} (get configs (str "sso-session " session-name))
+            token-file (json/read-str (slurp (io/file (u/getProperty "user.home") ".aws" "sso" "cache" (str (sha1-str session-name) ".json"))))
+            {access-token "accessToken"} token-file] 
+        {:token access-token :expiration (LocalDateTime/now)}))))
 
 (defn- ->instant
   "Takes various types representing a time value and returns an Instant
