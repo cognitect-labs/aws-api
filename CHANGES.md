@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+* add Authorization header to container credentials request when AWS_CONTAINER_AUTHORIZATION_TOKEN present [#225](https://github.com/cognitect-labs/aws-api/issues/225)
+
 ## 0.8.635 / 2022-12-28
 * fix URI parsing bug in ec2-metadata-utils (h/t @stevebuik)
 * add function to instrument test double client after initialization
