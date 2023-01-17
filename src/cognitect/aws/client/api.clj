@@ -109,7 +109,7 @@
   (http/resolve-http-client nil))
 
 (defn invoke
-  "Package and send a request to AWS and return the result.
+  "Packages and sends a request to AWS and returns the result.
 
   Supported keys in op-map:
 
@@ -120,18 +120,17 @@
   :backoff              - optional, defaults to :backoff on the client.
                           See client.
 
-  After invoking (cognitect.aws.client.api/validate-requests true), validates
-  :request in op-map.
-   
   See https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a
-  mapping of AWS types to Clojure/java types.
+  mapping of AWS types to Clojure/Java types.
+
+  Will validate :request after calling (validate-requests client true).
 
   Alpha. Subject to change."
   [client op-map]
   (client.protocol/-invoke client op-map))
 
 (defn invoke-async
-  "Package and send a request to AWS and return a channel which
+  "Packages and sends a request to AWS and returns a channel which
   will contain the result.
 
   Supported keys in op-map:
@@ -144,8 +143,10 @@
   :backoff              - optional, defaults to :backoff on the client.
                           See client.
 
-  After invoking (cognitect.aws.client.api/validate-requests true), validates
-  :request in op-map.
+  See https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a
+  mapping of AWS types to Clojure/Java types.
+
+  Will validate :request after calling (validate-requests client true).
 
   Alpha. Subject to change."
   [client op-map]
