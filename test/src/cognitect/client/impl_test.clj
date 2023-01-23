@@ -1,13 +1,15 @@
 (ns cognitect.client.impl-test
   "Tests for the production client implementation."
   (:require [clojure.core.async :as a]
+            [clojure.data.xml :as xml]
             [clojure.test :as t :refer [deftest is testing]]
+            [cognitect.aws.client.api :as aws]
             [cognitect.aws.client.impl :as client]
             [cognitect.aws.client.protocol :as client.protocol]
-            [cognitect.aws.client.api :as aws]
             [cognitect.aws.credentials :as creds]
             [cognitect.aws.http :as http]
-            [cognitect.aws.region :as region]))
+            [cognitect.aws.region :as region])
+  (:import (java.nio ByteBuffer)))
 
 (defn stub-http-client [result]
   (reify http/HttpClient
@@ -38,6 +40,25 @@
     (is (= {:cognitect.anomalies/category :does-not-matter}
            (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
 
+(def list-buckets-http-response
+  (xml/indent-str
+   (xml/element :ListAllMyBucketsResult {}
+                (xml/element :Buckets {}
+                             (xml/element :Bucket {}
+                                          (xml/element :CreationDate {} "2023-01-23T11:59:03.575496Z")
+                                          (xml/element :Name {} "test-bucket")))
+                (xml/element :Owner {}
+                             (xml/element :DisplayName {} "cognitect-aws")
+                             (xml/element :ID {} "a3a42310-42d0-46d1-9745-0cee9f4fb851")))))
+
+(def list-buckets-aws-client-response
+  {:Buckets
+   [{:Name "test-bucket",
+     :CreationDate #inst "2023-01-23T12:08:38.496-00:00"}],
+   :Owner
+   {:DisplayName "cognitect-aws",
+    :ID "a3a42310-42d0-46d1-9745-0cee9f4fb851"}})
+
 (defn invocations
   "Given client and op-map, return results of:
     invoke (sync)
@@ -49,6 +70,21 @@
    (let [ch (a/chan)
          _  (aws/invoke-async client (assoc op-map :ch ch))]
      (a/<!! ch))])
+
+(deftest test-invoke-happy-path
+  (let [;; taken from a real response to a real request
+        headers {"x-amz-request-id" "99FB3VJ1V9DECG8R"
+                 "x-amz-id-2" "su0gWxpn1f0Z4gdYQ7GJUeoYAgIF0lawNDI0NZY57Bv95H+/d3ZruWft3Qz3VB3zau6V/4TB7uo="
+                 "date" "Mon, 23 Jan 2023 12:18:59 GMT"
+                 "content-type" "application/xml"}
+        http-client (stub-http-client {:status 200
+                                       :headers headers
+                                       :body (ByteBuffer/wrap (.getBytes list-buckets-http-response))})
+        s3 (aws/client (assoc params :http-client http-client))]
+    (doseq [res (invocations s3 {:op :ListBuckets})]
+      (is (= list-buckets-aws-client-response res))
+      (is (= 200 (-> res meta :http-response :status)))
+      (is (= headers (-> res meta :http-response :headers))))))
 
 (deftest test-invoke
   (let [s3 (aws/client params)]
