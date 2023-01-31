@@ -259,6 +259,50 @@ credentials when you're running in EC2 or ECS. By default, each
 aws-api client uses a single, shared http-client, whose resources
 are managed by aws-api.
 
+The default http-client is the `cognitect.com/http-client`, which uses Jetty 9.
+
+## Customize the http-client
+
+It's possible to customize the http-client to be used to communicate to AWS services.
+A http client is eligible to be integrated with aws-api if it's an implementation of [HttpClient protocol](./src/cognitect/aws/http.clj).
+
+### java.net from Java 11 HTTP Client
+
+aws-api provides an implementation of java.net HTTPClient inside [`cognitect.aws.http.java-net`](./src/cognitect/aws/http/java_net.clj)
+
+### Bring your own HTTP Client
+
+Feel free to implement your own HTTP Client, the only rule is to follow the [HttpClient protocol](./src/cognitect/aws/http.clj).
+
+### How to customize
+
+#### Customize in a specific client
+
+You can customize the http-client of an AWS client:
+
+```clj
+(def s3 (aws/client {:api         :s3
+                     :http-client (cognitect.aws.http.java-net/create)}))
+```
+
+#### Set the default one to be used
+
+You can also set the default one to be used in all clients after the call of the function `set-default-http-client!`
+
+Example:
+
+```clj
+(aws/set-default-http-client! (cognitect.aws.http.java-net/create))
+```
+> Check the documentation of `set-default-http-client!` for more details.
+
+##### Additional: Remove `cognitect.com/http-client` from your dependencies
+
+As an additional step, you can remove `cognitect.com/http-client` and Jetty 9 from your dependencies if you are not using this client.
+
+
+``````
+
 ## Contributing
 
 aws-api is open source, developed internally at Nubank.
