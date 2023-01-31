@@ -105,59 +105,19 @@
   byte-array, an input-stream, or nil, in which case returns the
   sha-256 of the empty string."
   [data]
-  (cond (string? data)
-        (sha-256 (.getBytes ^String data "UTF-8"))
-        (instance? ByteBuffer data)
-        (sha-256 (.array ^ByteBuffer data))
-        :else
-        (let [digest (MessageDigest/getInstance "SHA-256")]
-          (when data
-            (.update digest ^bytes data))
-          (.digest digest))))
+  (if (or (nil? data)
+          (bytes? data))
+    (let [digest (MessageDigest/getInstance "SHA-256")]
+      (when data
+        (.update digest ^bytes data))
+      (.digest digest))
+    (sha-256 (->byte-array data))))
 
 (defn hmac-sha-256
   [key ^String data]
   (let [mac (Mac/getInstance "HmacSHA256")]
     (.init mac (SecretKeySpec. key "HmacSHA256"))
     (.doFinal mac (.getBytes data "UTF-8"))))
-
-(defn bbuf->bytes
-  [^ByteBuffer bbuf]
-  (when bbuf
-    (let [bytes (byte-array (.remaining bbuf))]
-      (.get (.duplicate bbuf) bytes)
-      bytes)))
-
-(defn bbuf->str
-  "Creates a string from java.nio.ByteBuffer object.
-   The encoding is fixed to UTF-8."
-  [^ByteBuffer bbuf]
-  (when-let [bytes (bbuf->bytes bbuf)]
-    (String. ^bytes bytes "UTF-8")))
-
-(defn bbuf->input-stream
-  [^ByteBuffer bbuf]
-  (when bbuf
-    (io/input-stream (bbuf->bytes bbuf))))
-
-(defprotocol BBuffable
-  (->bbuf [data]))
-
-(extend-protocol BBuffable
-  (Class/forName "[B")
-  (->bbuf [bs] (ByteBuffer/wrap bs))
-
-  String
-  (->bbuf [s] (->bbuf (.getBytes s "UTF-8")))
-
-  InputStream
-  (->bbuf [is] (->bbuf (input-stream->byte-array is)))
-
-  ByteBuffer
-  (->bbuf [bb] bb)
-
-  nil
-  (->bbuf [_]))
 
 (defn xml-read
   "Parse the UTF-8 XML string."
