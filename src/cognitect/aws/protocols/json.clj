@@ -31,13 +31,13 @@
      :server-port    443
      :uri            "/"
      :headers        (aws.protocols/headers service operation)
-     :body           (serialize input-shape (or request {}))}))
+     :body           (util/->byte-array (serialize input-shape (or request {})))}))
 
 (defmethod aws.protocols/parse-http-response "json"
   [service {:keys [op]} {:keys [body]}]
   (let [operation (get-in service [:operations op])
         output-shape (service/shape service (:output operation))
-        body-str (util/bbuf->str body)]
+        body-str (slurp body)]
     (if output-shape
       (shape/json-parse output-shape body-str)
       {})))

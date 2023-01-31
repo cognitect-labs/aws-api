@@ -76,6 +76,30 @@
             (recur (unchecked-inc-int i) (unchecked-add-int c 2)))
           (String. ca))))))
 
+(defn ^:private input-stream->byte-array ^bytes [is]
+  (let [os (ByteArrayOutputStream.)]
+    (io/copy is os)
+    (.toByteArray os)))
+
+(defprotocol ToByteArray
+  (->byte-array [data]))
+
+(extend-protocol ToByteArray
+  (Class/forName "[B")
+  (->byte-array [ba] ba)
+
+  InputStream
+  (->byte-array [is] (input-stream->byte-array is))
+
+  ByteBuffer
+  (->byte-array [bb] (.array ^ByteBuffer bb))
+
+  String
+  (->byte-array [^String s] (.getBytes s))
+
+  nil
+  (->byte-array [_]))
+
 (defn sha-256
   "Returns the sha-256 digest (bytes) of data, which can be a
   byte-array, an input-stream, or nil, in which case returns the
@@ -209,7 +233,10 @@
   ByteBuffer
   (base64-encode [bb] (base64-encode (.array bb)))
 
-  java.lang.String
+  InputStream
+  (base64-encode [bb] (base64-encode (input-stream->byte-array bb)))
+
+  String
   (base64-encode [s] (base64-encode (.getBytes s))))
 
 (defn base64-decode
@@ -228,9 +255,10 @@
       (json/read-str :key-fn keyword)))
 
 (defn md5
-  "returns an MD5 hash of the content of bb as a byte array"
-  ^bytes [^ByteBuffer bb]
-  (let [ba     (.array bb)
+  "returns an MD5 hash of the content of data, which can be a
+   byte-array, an input-stream, or string, as a byte array"
+  ^bytes [data]
+  (let [ba     (->byte-array data)
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)
     (.digest hasher)))

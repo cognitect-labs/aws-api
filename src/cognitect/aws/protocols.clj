@@ -58,7 +58,7 @@
   [{:keys [status body] :as http-response}]
   (with-meta
     (assoc
-     (some-> body util/bbuf->str parse-encoded-string*)
+     (some-> body slurp parse-encoded-string*)
      :cognitect.anomalies/category
      (status-code->anomaly status))
     http-response))

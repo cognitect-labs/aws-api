@@ -75,7 +75,7 @@
                                 creds
                                 (-> (aws.protocols/build-http-request service op-map)
                                     (with-endpoint endpoint)
-                                    (update :body util/->bbuf)
+                                    (update :body util/->byte-array)
                                     ((partial interceptors/modify-http-request service op-map))))]
               (swap! response-meta assoc :http-request http-request)
               (http/submit http-client http-request response-ch))
@@ -87,7 +87,7 @@
           (a/>! result-ch (with-meta
                             (handle-http-response service op-map response)
                             (swap! response-meta assoc
-                                   :http-response (update response :body util/bbuf->input-stream)))))
+                                   :http-response (update response :body identity)))))
         (catch Throwable t
           (put-throwable result-ch t response-meta op-map))))
     result-ch))

@@ -22,17 +22,16 @@
      :query-string           string, optional
      :request-method         :get/:post/:put/:head/:delete
      :headers                map from downcased string to string
-     :body                   ByteBuffer, optional
+     :body                   byte[], optional
      :timeout-msec           opt, total request send/receive timeout
      :meta                   opt, data to be added to the response map
 
      content-type must be specified in the headers map
-     content-length is derived from the ByteBuffer passed to body
 
      Response map:
 
      :status            integer HTTP status code
-     :body              ByteBuffer, optional
+     :body              byte[] or InputStream, optional
      :headers           map from downcased string to string
      :meta              opt, data from the request
 

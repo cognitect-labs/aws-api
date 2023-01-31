@@ -17,13 +17,12 @@
             [cognitect.aws.protocols.rest-json]
             [cognitect.aws.protocols.rest-xml]
             [cognitect.aws.util :as util])
-  (:import (java.nio ByteBuffer)
-           (java.util Date)))
+  (:import (java.util Date)))
 
 (s/fdef cognitect.aws.util/query-string
-  :args (s/cat :params (s/or :seq (s/coll-of (s/cat :key (s/or :kw simple-keyword? :str string?)
-                                                    :val string?))
-                             :map (s/map-of (s/or :kw simple-keyword? :str string?) string?))))
+        :args (s/cat :params (s/or :seq (s/coll-of (s/cat :key (s/or :kw simple-keyword? :str string?)
+                                                          :val string?))
+                                   :map (s/map-of (s/or :kw simple-keyword? :str string?) string?))))
 
 (defn instrument-fixture [f]
   (try
@@ -69,12 +68,12 @@
   (update data :params update-many paths fn))
 
 (defmulti with-blob-xforms
-  "The botocore tests we're taking advantage of here all assume that
-  we accept strings for blob types, but this library does not.  Use
-  this multimethod to xform strings to byte arrays before submitting
-  requests to invoke."
-  (fn [protocol test-name _test-case]
-    [protocol test-name]))
+          "The botocore tests we're taking advantage of here all assume that
+          we accept strings for blob types, but this library does not.  Use
+          this multimethod to xform strings to byte arrays before submitting
+          requests to invoke."
+          (fn [protocol test-name _test-case]
+            [protocol test-name]))
 
 (defmethod with-blob-xforms :default
   [_ _ test-case] test-case)
@@ -329,12 +328,12 @@
   [_ expected {:keys [body]}]
   (if (str/blank? expected)
     (is (nil? body))
-    (is (= expected body))))
+    (is (= expected (String. body)))))
 
 (defmethod test-request-body "json"
   [_ expected http-request]
   (is (= (some-> expected json/read-str)
-         (some-> http-request :body json/read-str))))
+         (some-> http-request :body String. json/read-str))))
 
 (defmethod test-request-body "rest-xml"
   [_ expected {:keys [body]}]
@@ -347,7 +346,7 @@
 
 (defmethod test-request-body "rest-json"
   [_ expected http-request]
-  (let [body-str (some-> http-request :body)]
+  (let [body-str (some-> http-request :body String.)]
     (if (str/blank? expected)
       (is (nil? body-str))
       (if-let [expected-json (try (json/read-str expected)
@@ -367,7 +366,7 @@
   (if (str/blank? expected)
     (is (nil? body))
     (is (= (parse-query-string expected)
-           (parse-query-string body)))))
+           (parse-query-string (String. body))))))
 
 (defmulti run-test (fn [io _protocol _description _service _test-case] io))
 
@@ -386,9 +385,9 @@
         (test-request-body (get-in service [:metadata :protocol]) (:body expected) http-request))
       (catch Exception e
         (is (nil?
-             {:expected  expected
-              :test-case test-case
-              :exception e}))))))
+              {:expected  expected
+               :test-case test-case
+               :exception e}))))))
 
 (defmethod run-test "output"
   [_ protocol description service {:keys [given response result] :as test-case}]
@@ -398,7 +397,7 @@
                                                              op-map
                                                              {:status  (:status_code response)
                                                               :headers (:headers response)
-                                                              :body    (util/->bbuf (:body response))})]
+                                                              :body    (io/input-stream (.getBytes (:body response) "UTF-8"))})]
       (when (:cognitect.anomalies/category parsed-response)
         (throw (or (::client/throwable parsed-response)
                    (ex-info "Client Error." parsed-response))))
@@ -423,7 +422,7 @@
        (testing (str input-or-output " of " protocol " : " (:description test))
          (doseq [{:keys [given] :as test-case} (:cases test)
                  :let                          [service (assoc (select-keys test [:metadata :shapes])
-                                                               :operations {(:name given) given})]]
+                                                          :operations {(:name given) given})]]
            (run-test input-or-output protocol (:description test) service test-case)))))))
 
 (deftest test-protocols
@@ -438,7 +437,7 @@
 (deftest test-parse-http-error-response
   (testing "parse JSON-encoded error response body"
     (let [response {:status 401
-                    :body   (ByteBuffer/wrap (.getBytes "{\"FOO\": \"abc\"}" "UTF-8"))}
+                    :body   (io/input-stream (.getBytes "{\"FOO\": \"abc\"}" "UTF-8"))}
           parsed-response (aws.protocols/parse-http-error-response response)]
       (is (= {:FOO "abc" :cognitect.anomalies/category :cognitect.anomalies/incorrect}
              parsed-response))
@@ -446,7 +445,7 @@
         (is (= response (meta parsed-response))))))
   (testing "parse XML-encoded response body - issue 218: AWS returns XML-encoded 404 response when JSON-encoding was expected"
     (let [response {:status 404
-                    :body   (ByteBuffer/wrap (.getBytes "<UnknownOperationException/>" "UTF-8"))}
+                    :body   (io/input-stream (.getBytes "<UnknownOperationException/>" "UTF-8"))}
           parsed-response (aws.protocols/parse-http-error-response response)]
       (is (= {:UnknownOperationException nil
               :UnknownOperationExceptionAttrs {}

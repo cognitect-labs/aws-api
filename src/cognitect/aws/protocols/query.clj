@@ -94,8 +94,8 @@
      :server-port    443
      :uri            "/"
      :headers        (aws.protocols/headers service operation)
-     :body           (util/query-string
-                      (serialize input-shape request params []))}))
+     :body           (util/->byte-array (util/query-string
+                                          (serialize input-shape request params [])))}))
 
 (defmethod aws.protocols/build-http-request "query"
   [service req-map]
@@ -105,8 +105,8 @@
   [service {:keys [op]} {:keys [body]}]
   (let [operation (get-in service [:operations op])]
     (if-let [output-shape (service/shape service (:output operation))]
-      (shape/xml-parse output-shape (util/bbuf->str body))
-      (util/xml->map (util/xml-read (util/bbuf->str body))))))
+      (shape/xml-parse output-shape (slurp body))
+      (util/xml->map (util/xml-read (slurp body))))))
 
 (defmethod aws.protocols/parse-http-response "query"
   [service op-map http-response]

@@ -177,7 +177,7 @@
             (update :uri append-querystring input-shape (:querystring location->args))
             (update :headers merge (serialize-headers input-shape (merge (location->args :header)
                                                                          (location->args :headers))))
-            (assoc :body (serialize-body input-shape-name input-shape body-args serialize-body-args)))))))
+            (assoc :body (util/->byte-array (serialize-body input-shape-name input-shape body-args serialize-body-args))))))))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Parser
@@ -240,11 +240,11 @@
   (if-let [payload-name (:payload output-shape)]
     (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
       {(keyword payload-name) (condp = (:type body-shape)
-                                "blob"   (util/bbuf->input-stream body)
-                                "string" (util/bbuf->str body)
-                                (parse-fn body-shape (util/bbuf->str body)))})
+                                "blob"   body
+                                "string" (slurp body)
+                                (parse-fn body-shape (slurp body)))})
     ;; No payload
-    (let [body-str (util/bbuf->str body)]
+    (let [body-str (when body (slurp body))]
       (when-not (str/blank? body-str)
         (parse-fn output-shape body-str)))))
 
