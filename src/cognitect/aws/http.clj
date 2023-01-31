@@ -31,13 +31,11 @@
      Response map:
 
      :status            integer HTTP status code
-     :body              byte[] or InputStream, optional
+     :body              InputStream, optional
      :headers           map from downcased string to string
      :meta              opt, data from the request
 
-     On error, response map is per cognitect.anomalies.
-
-     Alpha. This will absolutely change.")
+     On error, response map is per cognitect.anomalies.")
   (-stop [_] "Stops the client, releasing resources"))
 
 (defn submit
