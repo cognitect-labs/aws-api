@@ -1,4 +1,4 @@
-(ns integration.iam
+(ns integration.iam-test
   (:require [clojure.test :refer :all]
             [cognitect.aws.client.api :as aws]
             [integration.aux :as aux]

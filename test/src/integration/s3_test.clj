@@ -1,4 +1,4 @@
-(ns integration.s3
+(ns integration.s3-test
   (:require [clojure.test :refer :all]
             [cognitect.aws.client.api :as aws]
             [clojure.java.io :as io]

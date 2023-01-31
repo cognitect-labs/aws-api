@@ -1,4 +1,4 @@
-(ns integration.dynamodb
+(ns integration.dynamodb-test
   (:require [clojure.test :refer :all]
             [integration.aux :as aux]
             [cognitect.aws.client.api :as aws]
