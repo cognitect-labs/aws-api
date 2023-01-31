@@ -76,7 +76,7 @@
             (recur (unchecked-inc-int i) (unchecked-add-int c 2)))
           (String. ca))))))
 
-(defn ^:private input-stream->byte-array ^bytes [is]
+(defn input-stream->byte-array ^bytes [is]
   (let [os (ByteArrayOutputStream.)]
     (io/copy is os)
     (.toByteArray os)))
@@ -120,11 +120,6 @@
   (let [mac (Mac/getInstance "HmacSHA256")]
     (.init mac (SecretKeySpec. key "HmacSHA256"))
     (.doFinal mac (.getBytes data "UTF-8"))))
-
-(defn input-stream->byte-array ^bytes [is]
-  (let [os (ByteArrayOutputStream.)]
-    (io/copy is os)
-    (.toByteArray os)))
 
 (defn bbuf->bytes
   [^ByteBuffer bbuf]

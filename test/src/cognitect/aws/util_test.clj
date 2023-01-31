@@ -1,7 +1,8 @@
 (ns cognitect.aws.util-test
   (:require [clojure.test :as t :refer [deftest is testing]]
             [clojure.java.io :as io]
-            [cognitect.aws.util :as util])
+            [cognitect.aws.util :as util]
+            [cognitect.aws.test.utils :as test.utils])
   (:import [java.nio ByteBuffer]
            [java.util Random]
            [java.util Arrays]))
@@ -27,7 +28,7 @@
   (testing "does not consume a ByteBuffer"
     (let [bb (ByteBuffer/wrap (.getBytes "hi"))]
       (util/sha-256 bb)
-      (is (= "hi" (util/bbuf->str bb))))))
+      (is (= "hi" (test.utils/bbuf->str bb))))))
 
 (deftest test-xml-read
   (testing "removes whitespace-only nodes, preserving whitespace in single text nodes"
