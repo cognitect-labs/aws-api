@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [cognitect.aws.client.api :as aws]
             [clojure.java.io :as io]
-            [integration.aux :as aux])
+            [integration.aux :as aux]
+            [cognitect.aws.http.java-net :as java-http-client])
   (:import (java.time Instant)))
 
 (defn bucket-exists? [s3 bucket-name]
@@ -63,3 +64,40 @@
         (aws/invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
 
         (is (not (bucket-exists? s3 bucket-name))))))
+
+(deftest ^:integration test-s3-with-java-net
+  (let [s3 (aws/client {:api         :s3
+                        :http-client (java-http-client/create)})
+        bucket-name (str "aws-api-test-bucket-" (.getEpochSecond (Instant/now)))]
+    (testing ":CreateBucket"
+      (aws/invoke s3 {:op :CreateBucket :request {:Bucket bucket-name}})
+
+      (is (bucket-exists? s3 bucket-name)))
+
+    (testing ":PutObject with byte-array"
+      (aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name
+                                               :Key    "hello.txt"
+                                               :Body   (.getBytes "Hello!")}})
+      (is (= "Hello!" (->> (aws/invoke s3 {:op      :GetObject
+                                           :request {:Bucket bucket-name
+                                                     :Key    "hello.txt"}})
+                           :Body
+                           slurp))))
+
+    (testing ":PutObject with input-stream"
+      (aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name
+                                               :Key    "hai.txt"
+                                               :Body   (io/input-stream (.getBytes "Oh hai!"))}})
+      (is (= "Oh hai!" (->> (aws/invoke s3 {:op      :GetObject
+                                            :request {:Bucket bucket-name
+                                                      :Key    "hai.txt"}})
+                            :Body
+                            slurp))))
+
+    (test-delete-object s3 bucket-name "hello.txt")
+    (test-delete-object s3 bucket-name "hai.txt")
+
+    (testing ":DeleteBucket"
+      (aws/invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
+
+      (is (not (bucket-exists? s3 bucket-name))))))
