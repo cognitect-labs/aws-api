@@ -4,7 +4,8 @@
 (ns assume-role-example
   (:require [clojure.data.json :as json]
             [cognitect.aws.client.api :as aws]
-            [cognitect.aws.credentials :as credentials]))
+            [cognitect.aws.credentials :as credentials]
+            [cognitect.aws.http.java-net :as java-http-client]))
 
 (defn assumed-role-credentials-provider 
   "make a credentials provider that can assume a role"
@@ -26,6 +27,10 @@
 (comment
 
   (def iam (aws/client {:api :iam}))
+
+  ; or make a client with java-http-client wrapper
+  (def s3 (aws/client {:api         :s3
+                       :http-client (java-http-client/create)}))
 
   (->> (aws/invoke iam {:op :ListRoles}) :Roles (map :RoleName))
 

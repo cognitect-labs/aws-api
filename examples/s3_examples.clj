@@ -7,12 +7,17 @@
             [clojure.spec.gen.alpha :as gen]
             [clojure.java.io :as io]
             [clojure.repl :as repl]
-            [cognitect.aws.client.api :as aws]))
+            [cognitect.aws.client.api :as aws]
+            [cognitect.aws.http.java-net :as java-http-client]))
 
 (comment
 
   ;; make a client
   (def s3 (aws/client {:api :s3}))
+
+  ; or make a client with java-http-client wrapper
+  (def s3 (aws/client {:api         :s3
+                       :http-client (java-http-client/create)}))
 
   ;; guard against invalid :request map
   (aws/validate-requests s3 true)

@@ -4,11 +4,16 @@
 (ns ssm-examples 
   (:require [clojure.spec.alpha :as s]
             [clojure.pprint :as pp]
-            [cognitect.aws.client.api :as aws]))
+            [cognitect.aws.client.api :as aws]
+            [cognitect.aws.http.java-net :as java-http-client]))
 
 (comment
 
   (def ssm-client (aws/client {:api :ssm}))
+
+  ; or make a client with java-http-client wrapper
+  (def s3 (aws/client {:api         :s3
+                       :http-client (java-http-client/create)}))
 
   ;; guard against invalid :request map
   (aws/validate-requests ssm-client true)
