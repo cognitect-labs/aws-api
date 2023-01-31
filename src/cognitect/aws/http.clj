@@ -3,8 +3,7 @@
 
 (ns ^:skip-wiki cognitect.aws.http
   "Impl, don't call directly."
-  (:require [clojure.edn :as edn]
-            [clojure.core.async :as a]
+  (:require [clojure.core.async :as a]
             [cognitect.aws.dynaload :as dynaload]))
 
 (set! *warn-on-reflection* true)
@@ -55,34 +54,19 @@
   [c]
   (satisfies? HttpClient c))
 
-(defn read-config
-  [url]
-  (-> url slurp edn/read-string))
-
-;; TODO consider providing config arguments to http constructor
-(defn- configured-client
-  "If a single cognitect_aws_http.edn is found on the classpath,
-  returns the symbol bound to :constructor-var.
-
-  Throws if 0 or > 1 cognitect_aws_http.edn files are found.
-  "
-  []
-  (let [cl   (.. Thread currentThread getContextClassLoader)
-        cfgs (enumeration-seq (.getResources cl "cognitect_aws_http.edn"))]
-    (case (count cfgs)
-      0 (throw (RuntimeException. "Could not find cognitect_aws_http.edn on classpath."))
-      1 (-> cfgs first read-config :constructor-var)
-
-      (throw (ex-info "Found too many http-client cfgs. Pick one." {:config cfgs})))))
+(def ^:private cognitect-http-client-ref
+     (delay (dynaload/load-var 'cognitect.aws.http.cognitect/create)))
 
 (defn resolve-http-client
   [http-client-or-sym]
-  (let [c (or (when (symbol? http-client-or-sym)
-                (let [ctor @(dynaload/load-var http-client-or-sym)]
-                  (ctor)))
-              http-client-or-sym
-              (let [ctor @(dynaload/load-var (configured-client))]
-                (ctor)))]
+  (let [c (cond (client? http-client-or-sym)
+                http-client-or-sym
+
+                (fn? http-client-or-sym)
+                (http-client-or-sym)
+
+                :else
+                (@cognitect-http-client-ref))]
     (when-not (client? c)
       (throw (ex-info "not an http client" {:provided http-client-or-sym
                                             :resolved c})))

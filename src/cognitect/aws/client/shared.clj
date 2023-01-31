@@ -8,16 +8,8 @@
 
 (set! *warn-on-reflection* true)
 
-(declare http-client)
-
 (def ^:private shared-http-client
-  (delay (http/resolve-http-client nil)))
-
-(def ^:private shared-credentials-provider
-  (delay (credentials/default-credentials-provider (http-client))))
-
-(def ^:private  shared-region-provider
-  (delay (region/default-region-provider (http-client))))
+     (atom nil))
 
 (defn http-client
   "Returns the globally shared instance of http-client (created on the
@@ -25,7 +17,11 @@
 
   Alpha. Subject to change."
   []
-  @shared-http-client)
+  (or @shared-http-client
+      (reset! shared-http-client (http/resolve-http-client nil))))
+
+(def ^:private shared-credentials-provider
+     (delay (credentials/default-credentials-provider (http-client))))
 
 (defn credentials-provider
   "Returns the globally shared instance of credentials-provider, which
@@ -34,6 +30,9 @@
   Alpha. Subject to change."
   []
   @shared-credentials-provider)
+
+(def ^:private shared-region-provider
+     (delay (region/default-region-provider (http-client))))
 
 (defn region-provider
   "Returns the globally shared instance of region-provider, which
@@ -44,10 +43,10 @@
   @shared-region-provider)
 
 #_:clj-kondo/ignore
-(defn ^:private shared-http-client?
+(defn shared-http-client?
   "For internal use.
 
   Alpha. Subject to change."
   [candidate-http-client]
   (identical? candidate-http-client
-              (and (realized? shared-http-client) @shared-http-client)))
+              @shared-http-client))

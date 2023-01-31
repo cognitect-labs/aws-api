@@ -145,5 +145,5 @@
 
   (-stop [aws-client]
     (let [{:keys [http-client]} (client.protocol/-get-info aws-client)]
-      (when-not (#'shared/shared-http-client? http-client)
+      (when-not (shared/shared-http-client? http-client)
         (http/stop http-client)))))

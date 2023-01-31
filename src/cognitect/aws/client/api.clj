@@ -108,6 +108,20 @@
   []
   (http/resolve-http-client nil))
 
+(defn default-http-client
+  "Create an http-client to share across multiple aws-api clients."
+  ([]
+   (default-http-client nil))
+  ([http-client-constructor-or-instance]
+   (http/resolve-http-client http-client-constructor-or-instance)))
+
+(defn set-default-http-client!
+  "Create a new instance of the default http-client to share explicitly across multiple aws-api clients.
+   An HTTP Client implemented through HttpClient protocol can be provided by a constructor function to be executed or the instance directly."
+  [http-client-constructor-or-instance]
+  (reset! #'shared/shared-http-client
+          (http/resolve-http-client http-client-constructor-or-instance)))
+
 (defn invoke
   "Packages and sends a request to AWS and returns the result.
 
