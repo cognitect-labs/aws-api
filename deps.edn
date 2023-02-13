@@ -19,7 +19,11 @@
                                            com.cognitect.aws/s3        {:mvn/version "822.2.1145.0"}
                                            com.amazonaws/aws-java-sdk  {:mvn/version "1.12.344"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
-                             :main-opts  ["-m" "cognitect.test-runner"]}
+                             :main-opts  ["-m" "cognitect.test-runner"
+                                          "-e" "integration"]}
+           :test-integration {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+                              :main-opts  ["-m" "cognitect.test-runner"
+                                           "-i" "integration"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
                              :extra-deps  {com.cognitect.aws/dynamodb {:mvn/version "825.2.1220.0"}
                                            com.cognitect.aws/ec2      {:mvn/version "825.2.1233.0"}
