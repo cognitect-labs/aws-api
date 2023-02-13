@@ -289,6 +289,7 @@ contributed significantly to research and design:
 [Michael Nygard](https://github.com/mtnygard)<br/>
 [Ghadi Shayban](https://github.com/ghadishayban)<br/>
 [Joseph Smith](https://github.com/solussd)<br/>
+[Thayanne Sousa](https://github.com/thayannevls)<br/>
 [Marshall Thompson](https://github.com/Glassonion)
 
 ## Troubleshooting
