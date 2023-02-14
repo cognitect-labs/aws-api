@@ -8,7 +8,9 @@
             [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.credentials :as creds]
             [cognitect.aws.http :as http]
-            [cognitect.aws.region :as region])
+            [cognitect.aws.region :as region]
+            [cognitect.aws.util :as util]
+            [clojure.java.io :as io])
   (:import (java.nio ByteBuffer)))
 
 (defn stub-http-client [result]
@@ -157,3 +159,21 @@
            (:metadata (:service client))))
     (is (= (:http-client params)
            (:http-client client)))))
+
+(deftest read-input-stream-once
+  (let [retries (atom 3)
+        reqs (atom [])
+        client (aws/client (assoc params
+                                  :retriable? (fn [_]
+                                                (swap! retries dec)
+                                                (pos? @retries))
+                                  :http-client (reify http/HttpClient
+                                                 (-submit [_ req ch]
+                                                          (swap! reqs conj req)
+                                                          (a/go (a/>! ch :ok))
+                                                          ch)
+                                                 (-stop [_]))))]
+    (aws/invoke client {:op :PutObject :request {:Bucket "test-bucket"
+                                                 :Key "test-object"
+                                                 :Body (io/input-stream (.getBytes "test"))}})
+    (is (= #{"test"} (into #{} (map (comp util/bbuf->str :body)) @reqs)))))

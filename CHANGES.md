@@ -1,10 +1,15 @@
 # aws-api
 
+## DEV
+* ensure that we only read InputStream request bodies once [#231](https://github.com/cognitect-labs/aws-api/issues/231)
+  * h/t @jetmind
+
 ## 0.8.641 / 2023-01-17
 * add Authorization header to container credentials request when AWS_CONTAINER_AUTHORIZATION_TOKEN present [#225](https://github.com/cognitect-labs/aws-api/issues/225)
 
 ## 0.8.635 / 2022-12-28
-* fix URI parsing bug in ec2-metadata-utils (h/t @stevebuik)
+* fix URI parsing bug in ec2-metadata-utils
+  * h/t @stevebuik
 * add function to instrument test double client after initialization
 
 ## 0.8.630 / 2022-12-05

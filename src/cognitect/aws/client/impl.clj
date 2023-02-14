@@ -49,7 +49,7 @@
                              assoc :op-map op-map))))
 
 (defn ^:private send-request
-  [client op-map]
+  [client op-map http-request]
   (let [{:keys [service http-client region-provider credentials-provider endpoint-provider]}
         (client.protocol/-get-info client)
         response-meta (atom {})
@@ -73,9 +73,8 @@
             (let [http-request (signers/sign-http-request
                                 service endpoint
                                 creds
-                                (-> (aws.protocols/build-http-request service op-map)
+                                (-> http-request
                                     (with-endpoint endpoint)
-                                    (update :body util/->bbuf)
                                     ((partial interceptors/modify-http-request service op-map))))]
               (swap! response-meta assoc :http-request http-request)
               (http/submit http-client http-request response-ch))
@@ -135,11 +134,15 @@
         (a/put! result-chan (validation/invalid-request-anomaly spec request))
 
         :else
-        (retry/with-retry
-          #(send-request client op-map)
-          result-chan
-          (or (:retriable? op-map) retriable?)
-          (or (:backoff op-map) backoff)))
+        ;; In case :body is an InputStream, ensure that we only read
+        ;; it once by reading it before we send it to with-retry.
+        (let [req (-> (aws.protocols/build-http-request service op-map)
+                      (update :body util/->bbuf))]
+          (retry/with-retry
+            #(send-request client op-map req)
+            result-chan
+            (or (:retriable? op-map) retriable?)
+            (or (:backoff op-map) backoff))))
 
       result-chan))
 
