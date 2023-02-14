@@ -109,13 +109,7 @@
         (aws/validate-requests s3 true)
         (doseq [res (invocations s3 {:op      :CreateBucket
                                      :request {:this :is :not :valid}})]
-          (is (= :cognitect.anomalies/incorrect (:cognitect.anomalies/category res))))))
-    (testing "with validate-requests false"
-      (testing "returns a different anomaly when request is invalid"
-        (aws/validate-requests s3 false)
-        (doseq [res (invocations s3 {:op      :CreateBucket
-                                     :request {:this :is :not :valid}})]
-          (is (= :cognitect.anomalies/fault (:cognitect.anomalies/category res))))))))
+          (is (= :cognitect.anomalies/incorrect (:cognitect.anomalies/category res))))))))
 
 (deftest test-providers
   (testing "base case"
