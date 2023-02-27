@@ -3,6 +3,7 @@
 ## DEV
 * ensure that we only read InputStream request bodies once [#231](https://github.com/cognitect-labs/aws-api/issues/231)
   * h/t @jetmind
+* convey :document types in response payloads [#232](https://github.com/cognitect-labs/aws-api/issues/232)
 
 ## 0.8.641 / 2023-01-17
 * add Authorization header to container credentials request when AWS_CONTAINER_AUTHORIZATION_TOKEN present [#225](https://github.com/cognitect-labs/aws-api/issues/225)

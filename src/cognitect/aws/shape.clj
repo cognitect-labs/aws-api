@@ -135,14 +135,16 @@
 (defmethod json-parse* "structure"
   [shape data]
   (when data
-    (reduce (fn [m k]
-              (let [member-shape (member-shape shape k)
-                    location-name (or (keyword (:locationName member-shape)) k)]
-                (if (contains? data location-name)
-                  (assoc m k (json-parse* member-shape (get data location-name)))
-                  m)))
-            {}
-            (-> shape :members keys))))
+    (if (:document shape)
+      data
+      (reduce (fn [m k]
+                (let [member-shape (member-shape shape k)
+                      location-name (or (keyword (:locationName member-shape)) k)]
+                  (if (contains? data location-name)
+                    (assoc m k (json-parse* member-shape (get data location-name)))
+                    m)))
+              {}
+              (-> shape :members keys)))))
 
 (defmethod json-parse* "map"
   [shape data]
