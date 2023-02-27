@@ -51,7 +51,6 @@
 
 (defn update-version-in [fname latest libname]
   (let [version (get-in latest [(symbol "com.cognitect.aws" libname) :mvn/version])]
-    version
     (update-file fname
                  #(if (re-find (re-pattern (str "com.cognitect.aws\\/" libname "\\s+\\{:mvn\\/version")) %)
                     (str/replace-first % (re-pattern "\\d+(.\\d+)+") version)
@@ -64,7 +63,7 @@
 
 (defn update-versions-in-deps []
   (let [latest (latest-releases)]
-    (doseq [svc ["endpoints" "dynamodb" "ec2" "iam" "lambda" "s3" "ssm" "sts"]]
+    (doseq [svc (map name (keys latest))]
       (update-version-in "deps.edn" latest svc))))
 
 (defn update-changelog [version]
