@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.652 / 2023-02-28
 * ensure that we only read InputStream request bodies once [#231](https://github.com/cognitect-labs/aws-api/issues/231)
   * h/t @jetmind
 * convey :document types in response payloads [#232](https://github.com/cognitect-labs/aws-api/issues/232)
