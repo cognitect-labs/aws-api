@@ -66,7 +66,7 @@
    :name "doc",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 233,
+   :line 234,
    :var-type "function",
    :arglists ([client operation]),
    :doc
@@ -78,7 +78,7 @@
    :name "doc-str",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 197,
+   :line 198,
    :var-type "function",
    :arglists
    ([{:keys
@@ -97,7 +97,7 @@
    :var-type "function",
    :arglists ([client op-map]),
    :doc
-   "Package and send a request to AWS and return the result.\n\nSupported keys in op-map:\n\n:op                   - required, keyword, the op to perform\n:request              - required only for ops that require them.\n:retriable?           - optional, defaults to :retriable? on the client.\n                        See client.\n:backoff              - optional, defaults to :backoff on the client.\n                        See client.\n\nAfter invoking (cognitect.aws.client.api/validate-requests true), validates\n:request in op-map.\n \nSee https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a\nmapping of AWS types to Clojure/java types.\n\nAlpha. Subject to change.",
+   "Packages and sends a request to AWS and returns the result.\n\nSupported keys in op-map:\n\n:op                   - required, keyword, the op to perform\n:request              - required only for ops that require them.\n:retriable?           - optional, defaults to :retriable? on the client.\n                        See client.\n:backoff              - optional, defaults to :backoff on the client.\n                        See client.\n\nSee https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a\nmapping of AWS types to Clojure/Java types.\n\nWill validate :request after calling (validate-requests client true).\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke"}
@@ -105,11 +105,11 @@
    :name "invoke-async",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 133,
+   :line 132,
    :var-type "function",
    :arglists ([client op-map]),
    :doc
-   "Package and send a request to AWS and return a channel which\nwill contain the result.\n\nSupported keys in op-map:\n\n:ch                   - optional, channel to deliver the result\n:op                   - required, keyword, the op to perform\n:request              - required only for ops that require them.\n:retriable?           - optional, defaults to :retriable? on the client.\n                        See client.\n:backoff              - optional, defaults to :backoff on the client.\n                        See client.\n\nAfter invoking (cognitect.aws.client.api/validate-requests true), validates\n:request in op-map.\n\nAlpha. Subject to change.",
+   "Packages and sends a request to AWS and returns a channel which\nwill contain the result.\n\nSupported keys in op-map:\n\n:ch                   - optional, channel to deliver the result\n:op                   - required, keyword, the op to perform\n:request              - required only for ops that require them.\n:retriable?           - optional, defaults to :retriable? on the client.\n                        See client.\n:backoff              - optional, defaults to :backoff on the client.\n                        See client.\n\nSee https://github.com/cognitect-labs/aws-api/blob/main/doc/types.md for a\nmapping of AWS types to Clojure/Java types.\n\nWill validate :request after calling (validate-requests client true).\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/invoke-async"}
@@ -117,7 +117,7 @@
    :name "ops",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 187,
+   :line 188,
    :var-type "function",
    :arglists ([client]),
    :doc
@@ -129,7 +129,7 @@
    :name "request-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 166,
+   :line 167,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -141,7 +141,7 @@
    :name "response-spec-key",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 173,
+   :line 174,
    :var-type "function",
    :arglists ([client op]),
    :doc
@@ -153,7 +153,7 @@
    :name "stop",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 245,
+   :line 246,
    :var-type "function",
    :arglists ([aws-client]),
    :doc
@@ -165,7 +165,7 @@
    :name "validate-requests",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 154,
+   :line 155,
    :var-type "function",
    :arglists ([client] [client validate-requests?]),
    :doc
