@@ -32,6 +32,21 @@
         :cognitect.anomalies/incorrect
         :cognitect.anomalies/fault)))
 
+(defn ^:private error-message
+  "Attempt to extract an error message from well known locations in an
+   error response map."
+  [response-map]
+  (or (:__type response-map)
+      (:Code (:Error response-map))))
+
+(defn ^:private error-message->anomaly
+  "Given an error message extracted from an error response body *that we
+   understand*, returns the appropriate anomaly category."
+  [error-message]
+  (condp = error-message
+    "ThrottlingException" :cognitect.anomalies/busy
+    nil))
+
 (defn headers [service operation]
   (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
     (cond-> {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}
@@ -56,9 +71,9 @@
   "Given an http error response (any status code 400 or above), return an aws-api-specific response
   Map."
   [{:keys [status body] :as http-response}]
-  (with-meta
-    (assoc
-     (some-> body util/bbuf->str parse-encoded-string*)
-     :cognitect.anomalies/category
-     (status-code->anomaly status))
-    http-response))
+  (let [response-map (some-> body util/bbuf->str parse-encoded-string*)
+        category (or (error-message->anomaly (error-message response-map))
+                     (status-code->anomaly status))]
+    (with-meta
+      (assoc response-map :cognitect.anomalies/category category)
+      http-response)))

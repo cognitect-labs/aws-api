@@ -446,7 +446,7 @@
         (is (= response (meta parsed-response))))))
   (testing "parse XML-encoded response body - issue 218: AWS returns XML-encoded 404 response when JSON-encoding was expected"
     (let [response {:status 404
-                    :body   (ByteBuffer/wrap (.getBytes "<UnknownOperationException/>" "UTF-8"))}
+                    :body   (util/->bbuf "<UnknownOperationException/>")}
           parsed-response (aws.protocols/parse-http-error-response response)]
       (is (= {:UnknownOperationException nil
               :UnknownOperationExceptionAttrs {}
@@ -462,6 +462,19 @@
              parsed-response))
       (testing "http response is included as metadata on returned parsed error response"
         (is (= response (meta parsed-response)))))))
+
+(deftest anomaly-tranformations
+  (testing "ThrottlingException gets :cognitect.anomalies/busy"
+    (is (= :cognitect.anomalies/busy
+           (:cognitect.anomalies/category
+            (aws.protocols/parse-http-error-response
+             {:status 400
+              :body (util/->bbuf (json/json-str {:__type "ThrottlingException"}))}))))
+    (is (= :cognitect.anomalies/busy
+           (:cognitect.anomalies/category
+            (aws.protocols/parse-http-error-response
+             {:status 400
+              :body (util/->bbuf "<Error><Code>ThrottlingException</Code></Error>")}))))))
 
 (comment
   (t/run-tests))
