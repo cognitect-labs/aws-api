@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+* make ThrottlingException retriable [#233](https://github.com/cognitect-labs/aws-api/issues/233)
+
 ## 0.8.652 / 2023-02-28
 * ensure that we only read InputStream request bodies once [#231](https://github.com/cognitect-labs/aws-api/issues/231)
   * h/t @jetmind
