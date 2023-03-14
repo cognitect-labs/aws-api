@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.656 / 2023-03-14
 * make ThrottlingException retriable [#233](https://github.com/cognitect-labs/aws-api/issues/233)
 
 ## 0.8.652 / 2023-02-28
