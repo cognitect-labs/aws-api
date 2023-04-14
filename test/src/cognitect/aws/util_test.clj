@@ -27,7 +27,31 @@
   (testing "does not consume a ByteBuffer"
     (let [bb (ByteBuffer/wrap (.getBytes "hi"))]
       (util/sha-256 bb)
-      (is (= "hi" (util/bbuf->str bb))))))
+      (is (= "hi" (util/bbuf->str bb)))))
+  (testing "Respects ByteBuffer arrays"
+    (let [bb (ByteBuffer/wrap (.getBytes "bye"))
+          positioned-bb (-> (.getBytes "hi bye")
+                            ByteBuffer/wrap
+                            (.position 3))
+          direct-bb (-> (ByteBuffer/allocateDirect 10)
+                        (.put (ByteBuffer/wrap (.getBytes "bye")))
+                        .flip)]
+      (= (seq (util/sha-256 bb))
+         (seq (util/sha-256 positioned-bb))
+         (seq (util/sha-256 direct-bb))))))
+
+(deftest test-md5
+  (testing "Respects positioned ByteBuffer arrays and direct ByteBuffers"
+    (let [bb (ByteBuffer/wrap (.getBytes "bye"))
+          positioned-bb (-> (.getBytes "hi bye")
+                            ByteBuffer/wrap
+                            (.position 3))
+          direct-bb (-> (ByteBuffer/allocateDirect 10)
+                     (.put (ByteBuffer/wrap (.getBytes "bye")))
+                     .flip)]
+      (= (util/md5 bb)
+         (util/md5 positioned-bb)
+         (util/md5 direct-bb)))))
 
 (deftest test-xml-read
   (testing "removes whitespace-only nodes, preserving whitespace in single text nodes"

@@ -22,6 +22,26 @@
 
 (set! *warn-on-reflection* true)
 
+(defprotocol ByteSource
+  (slurp-bytes [_] "Returns copy unless owner always treats arrays as values. Does not consume owner."))
+
+(extend-protocol ByteSource
+  ByteBuffer
+  (slurp-bytes
+    [buff]
+    (let [buff (.duplicate buff)
+          n (.remaining buff)
+          bytes (byte-array n)]
+      (.get buff bytes)
+      bytes)))
+
+(defn alias-buf-bytes
+  "Avoids copy if possible."
+  [^ByteBuffer buff]
+  (if (and (.hasArray buff) (= (.remaining buff) (alength (.array buff))))
+    (.array buff)
+    (slurp-bytes buff)))
+
 (defn  date-format
   "Return a thread-safe GMT date format that can be used with `format-date` and `parse-date`.
 
@@ -84,7 +104,7 @@
   (cond (string? data)
         (sha-256 (.getBytes ^String data "UTF-8"))
         (instance? ByteBuffer data)
-        (sha-256 (.array ^ByteBuffer data))
+        (sha-256 (alias-buf-bytes data))
         :else
         (let [digest (MessageDigest/getInstance "SHA-256")]
           (when data
@@ -207,7 +227,7 @@
   (base64-encode [ba] (.encodeToString (Base64/getEncoder) ba))
 
   ByteBuffer
-  (base64-encode [bb] (base64-encode (.array bb)))
+  (base64-encode [bb] (base64-encode (alias-buf-bytes bb)))
 
   java.lang.String
   (base64-encode [s] (base64-encode (.getBytes s))))
@@ -230,7 +250,7 @@
 (defn md5
   "returns an MD5 hash of the content of bb as a byte array"
   ^bytes [^ByteBuffer bb]
-  (let [ba     (.array bb)
+  (let [ba     (alias-buf-bytes bb)
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)
     (.digest hasher)))
