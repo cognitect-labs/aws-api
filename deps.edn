@@ -15,8 +15,8 @@
                                            org.clojure/test.check      {:mvn/version "1.1.1"}
                                            org.slf4j/slf4j-reload4j    {:mvn/version "2.0.3"}
                                            http-kit/http-kit           {:mvn/version "2.6.0"}
-                                           com.cognitect.aws/endpoints {:mvn/version "1.1.12.437"}
-                                           com.cognitect.aws/s3        {:mvn/version "825.2.1250.0"}
+                                           com.cognitect.aws/endpoints {:mvn/version "1.1.12.450"}
+                                           com.cognitect.aws/s3        {:mvn/version "845.2.1359.0"}
                                            com.amazonaws/aws-java-sdk  {:mvn/version "1.12.344"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                              :main-opts  ["-m" "cognitect.test-runner"
@@ -26,8 +26,8 @@
                                            "-i" "integration"]}
            :examples        {:extra-paths ["examples" "examples/resources" "dev/resources"]
                              :extra-deps  {com.cognitect.aws/dynamodb {:mvn/version "845.2.1345.0"}
-                                           com.cognitect.aws/ec2      {:mvn/version "845.2.1345.0"}
+                                           com.cognitect.aws/ec2      {:mvn/version "845.2.1359.0"}
                                            com.cognitect.aws/iam      {:mvn/version "845.2.1345.0"}
-                                           com.cognitect.aws/lambda   {:mvn/version "845.2.1345.0"}
+                                           com.cognitect.aws/lambda   {:mvn/version "845.2.1359.0"}
                                            com.cognitect.aws/ssm      {:mvn/version "845.2.1345.0"}
                                            com.cognitect.aws/sts      {:mvn/version "835.2.1307.0"}}}}}
