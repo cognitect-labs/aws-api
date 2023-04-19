@@ -15,6 +15,19 @@
           output (util/input-stream->byte-array (io/input-stream input))]
       (is (Arrays/equals ^bytes input ^bytes output)))))
 
+(deftest test-bbuff->byte-array
+  (testing "return ByteBuffer starting at the current position"
+    (let [bb (ByteBuffer/wrap (.getBytes "bye"))
+          positioned-bb (-> (.getBytes "hi bye")
+                            ByteBuffer/wrap
+                            (.position 3))
+          direct-bb (-> (ByteBuffer/allocateDirect 10)
+                        (.put (ByteBuffer/wrap (.getBytes "bye")))
+                        .flip)]
+      (= (seq (util/bbuff->byte-array bb))
+         (seq (util/bbuff->byte-array positioned-bb))
+         (seq (util/bbuff->byte-array direct-bb))))))
+
 (deftest test-sha-256
   (testing "returns sha for empty string if given nil"
     (is (= (seq (util/sha-256 nil))
@@ -27,7 +40,31 @@
   (testing "does not consume a ByteBuffer"
     (let [bb (ByteBuffer/wrap (.getBytes "hi"))]
       (util/sha-256 bb)
-      (is (= "hi" (util/bbuf->str bb))))))
+      (is (= "hi" (util/bbuf->str bb)))))
+  (testing "return ByteBuffer content starting at current the position"
+    (let [bb (ByteBuffer/wrap (.getBytes "bye"))
+          positioned-bb (-> (.getBytes "hi bye")
+                            ByteBuffer/wrap
+                            (.position 3))
+          direct-bb (-> (ByteBuffer/allocateDirect 10)
+                        (.put (ByteBuffer/wrap (.getBytes "bye")))
+                        .flip)]
+      (= (seq (util/sha-256 bb))
+         (seq (util/sha-256 positioned-bb))
+         (seq (util/sha-256 direct-bb))))))
+
+(deftest test-md5
+  (testing "Respects positioned ByteBuffer arrays and direct ByteBuffers"
+    (let [bb (ByteBuffer/wrap (.getBytes "bye"))
+          positioned-bb (-> (.getBytes "hi bye")
+                            ByteBuffer/wrap
+                            (.position 3))
+          direct-bb (-> (ByteBuffer/allocateDirect 10)
+                        (.put (ByteBuffer/wrap (.getBytes "bye")))
+                        .flip)]
+      (= (util/md5 bb)
+         (util/md5 positioned-bb)
+         (util/md5 direct-bb)))))
 
 (deftest test-xml-read
   (testing "removes whitespace-only nodes, preserving whitespace in single text nodes"

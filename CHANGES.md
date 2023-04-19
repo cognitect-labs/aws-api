@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+Safely return byte arrays from ByteBuffers, honoring the `position` and `remaining` attributes, copying the underlying byte array when necessary.
+
 ## 0.8.656 / 2023-03-14
 * make ThrottlingException retriable [#233](https://github.com/cognitect-labs/aws-api/issues/233)
 

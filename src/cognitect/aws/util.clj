@@ -76,6 +76,27 @@
             (recur (unchecked-inc-int i) (unchecked-add-int c 2)))
           (String. ca))))))
 
+(defprotocol ByteSource
+  (slurp-bytes [_] "Returns copy unless owner always treats arrays as values. Does not consume owner."))
+
+(extend-protocol ByteSource
+  ByteBuffer
+  (slurp-bytes
+    [buff]
+    (let [buff (.duplicate buff)
+          n (.remaining buff)
+          bytes (byte-array n)]
+      (.get buff bytes)
+      bytes)))
+
+(defn bbuff->byte-array
+  "Returns a byte array with the content that is between the ByteBuffer current position and limit."
+  [^ByteBuffer buff]
+  (if (and (.hasArray buff)
+           (= (.remaining buff) (alength (.array buff))))
+    (.array buff)
+    (slurp-bytes buff)))
+
 (defn sha-256
   "Returns the sha-256 digest (bytes) of data, which can be a
   byte-array, an input-stream, or nil, in which case returns the
@@ -84,7 +105,7 @@
   (cond (string? data)
         (sha-256 (.getBytes ^String data "UTF-8"))
         (instance? ByteBuffer data)
-        (sha-256 (.array ^ByteBuffer data))
+        (sha-256 (bbuff->byte-array ^ByteBuffer data))
         :else
         (let [digest (MessageDigest/getInstance "SHA-256")]
           (when data
@@ -207,7 +228,7 @@
   (base64-encode [ba] (.encodeToString (Base64/getEncoder) ba))
 
   ByteBuffer
-  (base64-encode [bb] (base64-encode (.array bb)))
+  (base64-encode [bb] (base64-encode (bbuff->byte-array bb)))
 
   java.lang.String
   (base64-encode [s] (base64-encode (.getBytes s))))
@@ -230,7 +251,7 @@
 (defn md5
   "returns an MD5 hash of the content of bb as a byte array"
   ^bytes [^ByteBuffer bb]
-  (let [ba     (.array bb)
+  (let [ba     (bbuff->byte-array bb)
         hasher (MessageDigest/getInstance "MD5")]
     (.update hasher ^bytes ba)
     (.digest hasher)))

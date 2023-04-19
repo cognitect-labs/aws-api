@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [cognitect.aws.client.api :as aws]
             [clojure.java.io :as io])
-  (:import (java.time Instant)))
+  (:import (java.nio ByteBuffer)
+           (java.time Instant)))
 
 (defn ensure-test-profile
   [f]
@@ -46,10 +47,21 @@
                                                       :Key    "hai.txt"}})
                             :Body
                             slurp))))
+
+    (testing ":PutObject with ByteBuffer"
+      (aws/invoke s3 {:op :PutObject :request {:Bucket bucket-name
+                                               :Key    "oi.txt"
+                                               :Body   (ByteBuffer/wrap (.getBytes "Oi!"))}})
+      (is (= "Oi!" (->> (aws/invoke s3 {:op      :GetObject
+                                            :request {:Bucket bucket-name
+                                                      :Key    "oi.txt"}})
+                            :Body
+                            slurp))))
     
     (testing ":DeleteObjects and :DeleteBucket"
       (aws/invoke s3 {:op :DeleteObjects :request {:Bucket bucket-name
                                                    :Delete {:Objects [{:Key "hello.txt"}
-                                                                      {:Key "hai.txt"}]}}})
+                                                                      {:Key "hai.txt"}
+                                                                      {:Key "oi.txt"}]}}})
       (aws/invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
       (is (not (bucket-listed? (aws/invoke s3 {:op :ListBuckets}) bucket-name))))))
