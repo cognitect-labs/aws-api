@@ -1,7 +1,10 @@
 # aws-api
 
 ## DEV
-Safely return byte arrays from ByteBuffers, honoring the `position` and `remaining` attributes, copying the underlying byte array when necessary.
+* Safely return byte arrays from ByteBuffers, honoring the `position` and `remaining` attributes, copying the underlying byte array when necessary.
+* Upgrade to com.cognitect/http-client "1.0.123", which includes status and headers in the anomaly returned when there is a 301
+  * Fixes [#171](https://github.com/cognitect-labs/aws-api/issues/171)
+  * Improves [#15](https://github.com/cognitect-labs/aws-api/issues/15)
 
 ## 0.8.656 / 2023-03-14
 * make ThrottlingException retriable [#233](https://github.com/cognitect-labs/aws-api/issues/233)

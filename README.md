@@ -445,7 +445,12 @@ longer in use to conserve resources.
 This indicates that you are trying to access an S3 resource (bucket or object)
 that resides in a different region from the client's region.
 
-Remedy: create a new s3 client in the same region you are trying to access.
+As of v0.8.662, the anomaly also includes status 301 and the "x-amz-bucket-region" header.
+
+Remedy as of 0.8.662: detect the 301 and create a new client in the region bound to the
+"x-amz-bucket-region" header. We may automate this in a future release.
+
+Remedy before 0.8.662: create a new s3 client in the same region you are trying to access.
 
 ## Copyright and License
 
