@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.666 / 2023-04-27
 * 301 gets cognitect.anomalies/incorrect instead of cognitect.anomalies/fault [#237](https://github.com/cognitect-labs/aws-api/issues/237)
 
 ## 0.8.664 / 2023-04-26
