@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+* 301 gets cognitect.anomalies/incorrect instead of cognitect.anomalies/fault [#237](https://github.com/cognitect-labs/aws-api/issues/237)
+
 ## 0.8.664 / 2023-04-26
 * Safely return byte arrays from ByteBuffers, honoring the `position` and `remaining` attributes, copying the underlying byte array when necessary.
 * Upgrade to com.cognitect/http-client "1.0.123", which includes status and headers in the anomaly returned when there is a 301

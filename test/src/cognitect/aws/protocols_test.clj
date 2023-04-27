@@ -464,6 +464,11 @@
         (is (= response (meta parsed-response)))))))
 
 (deftest anomaly-tranformations
+  (testing "301 gets :cognitect.anomalies/incorrect"
+    (is (= :cognitect.anomalies/incorrect
+           (:cognitect.anomalies/category
+            (aws.protocols/parse-http-error-response
+             {:status 301})))))
   (testing "ThrottlingException gets :cognitect.anomalies/busy"
     (is (= :cognitect.anomalies/busy
            (:cognitect.anomalies/category

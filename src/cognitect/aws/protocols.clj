@@ -20,7 +20,8 @@
     (get-in service [:metadata :protocol])))
 
 (def status-codes->anomalies
-  {403 :cognitect.anomalies/forbidden
+  {301 :cognitect.anomalies/incorrect
+   403 :cognitect.anomalies/forbidden
    404 :cognitect.anomalies/not-found
    429 :cognitect.anomalies/busy
    503 :cognitect.anomalies/busy
