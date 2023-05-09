@@ -1,7 +1,6 @@
 # aws-api
 
-aws-api is a Clojure library which provides programmatic access to AWS
-services from your Clojure program.
+aws-api provides programmatic access to AWS services from Clojure programs.
 
 ## Docs
 
@@ -17,9 +16,8 @@ generate mechanical transformations from application data to wire data
 and back. This is exactly what we want from a Clojure API.
 
 Using the AWS Java SDK directly via interop requires knowledge of
-OO hierarchies of what are basically data classes, and while the
-existing Clojure wrappers hide much of this from you, they don't
-hide it from your process.
+OO hierarchies of data classes, and while the existing Clojure wrappers
+hide much of this from you, they don't hide it from your process.
 
 aws-api is an idiomatic, data-oriented Clojure library for
 invoking AWS APIs.  While the library offers some helper and
@@ -36,10 +34,9 @@ outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
 
-Each AWS SDK has its own copy of the data
-descriptions in their github repos. We use
-[aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
-the source for these, and release individual artifacts for each api.
+Most AWS SDKs have their own copies of these data descriptions in their
+github repos. We use [aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
+the source for these, and release separate artifacts for each api.
 The [api descriptors](https://github.com/aws/aws-sdk-js/tree/master/apis)
 include the AWS `api-version` in their filenames (and in their data). For
 example you'll see both of the following files listed:
@@ -64,13 +61,13 @@ generator, and tag `v2.351.0` of aws-sdk-js.
 
 ## Usage
 
-### deps
+### dependencies
 
 To use aws-api in your application, you depend on
 `com.cognitect.aws/api`, `com.cognitect.aws/endpoints` and the service(s)
 of your choice, e.g. `com.cognitect.aws/s3`.
 
-To use, for example, the s3 api, add the following to deps.edn
+To use the s3 api, for example, add the following to deps.edn:
 
 ``` clojure
 {:deps {com.cognitect.aws/api       {:mvn/version "0.8.666"}
@@ -78,12 +75,12 @@ To use, for example, the s3 api, add the following to deps.edn
         com.cognitect.aws/s3        {:mvn/version "847.2.1365.0"}}}
 ```
 
-* See [latest releases](latest-releases.edn) for a list of the latest releases of
+* See [latest releases](latest-releases.edn) for a listing of the latest releases of
 `api`, `endpoints`, and all supported services.
 
 ### explore!
 
-Fire up a repl using that deps.edn, and then you can do things like this:
+Fire up a REPL using that deps.edn, and then you can do things like this:
 
 ``` clojure
 (require '[cognitect.aws.client.api :as aws])
@@ -259,39 +256,6 @@ credentials when you're running in EC2 or ECS. By default, each
 aws-api client uses a single, shared http-client, whose resources
 are managed by aws-api.
 
-## Contributing
-
-aws-api is open source, developed internally at Nubank.
-Issues can be filed using GitHub issues for this project. Because
-aws-api is incorporated into products, we prefer to do development
-internally and are not accepting pull requests or patches.
-
-## Contributors
-
-`aws-api` was extracted from an internal project at Cognitect, and
-some contributors are missing from the commit log.  Here are all the
-folks from Cognitect and Nubank who either committed code directly, or
-contributed significantly to research and design:
-
-[Timothy Baldridge](https://github.com/halgari)<br/>
-[Scott Bale](https://github.com/scottbale)<br/>
-[David Chelimsky](https://github.com/dchelimsky)<br/>
-[Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
-[Benoît Fleury](https://github.com/benfle)<br/>
-[Fogus](https://github.com/fogus)<br/>
-[Kyle Gann](https://github.com/kgann)</br>
-[Stuart Halloway](https://github.com/stuarthalloway)<br/>
-[Rich Hickey](https://github.com/richhickey)<br/>
-[George Kierstein](https://github.com/MissInterpret)<br/>
-[Carin Meier](https://github.com/gigasquid)<br/>
-[Joe Lane](https://github.com/MageMasher)<br/>
-[Alex Miller](https://github.com/puredanger)<br/>
-[Michael Nygard](https://github.com/mtnygard)<br/>
-[Ghadi Shayban](https://github.com/ghadishayban)<br/>
-[Joseph Smith](https://github.com/solussd)<br/>
-[Thayanne Sousa](https://github.com/thayannevls)<br/>
-[Marshall Thompson](https://github.com/Glassonion)
-
 ## Troubleshooting
 
 ### Retriable errors
@@ -442,15 +406,48 @@ longer in use to conserve resources.
 
 ### S3: "Invalid 'Location' header: null"
 
-This indicates that you are trying to access an S3 resource (bucket or object)
-that resides in a different region from the client's region.
+This indicates that you are trying to access a resource that resides in a
+different region from the client's region.
 
-As of v0.8.662, the anomaly also includes status 301 and the "x-amz-bucket-region" header.
+As of v0.8.662, the anomaly also includes status 301 and the "x-amz-bucket-region" header,
+so you can now detect the 301 and create a new client in the region bound to the
+"x-amz-bucket-region" header.
 
-Remedy as of 0.8.662: detect the 301 and create a new client in the region bound to the
-"x-amz-bucket-region" header. We may automate this in a future release.
+If you're using a version older than 0.8.662, you'll have to figure out the region
+out of band (AWS console, etc).
 
-Remedy before 0.8.662: create a new s3 client in the same region you are trying to access.
+## Contributing
+
+aws-api is open source, developed internally at Nubank.
+Issues can be filed using GitHub issues for this project. Because
+aws-api is incorporated into products, we prefer to do development
+internally and are not accepting pull requests or patches.
+
+## Contributors
+
+`aws-api` was extracted from an internal project at Cognitect, and
+some contributors are missing from the commit log.  Here are all the
+folks from Cognitect and Nubank who either committed code directly, or
+contributed significantly to research and design:
+
+[Timothy Baldridge](https://github.com/halgari)<br/>
+[Scott Bale](https://github.com/scottbale)<br/>
+[David Chelimsky](https://github.com/dchelimsky)<br/>
+[Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
+[Benoît Fleury](https://github.com/benfle)<br/>
+[Fogus](https://github.com/fogus)<br/>
+[Kyle Gann](https://github.com/kgann)</br>
+[Stuart Halloway](https://github.com/stuarthalloway)<br/>
+[Rich Hickey](https://github.com/richhickey)<br/>
+[George Kierstein](https://github.com/MissInterpret)<br/>
+[Carin Meier](https://github.com/gigasquid)<br/>
+[Joe Lane](https://github.com/MageMasher)<br/>
+[Alex Miller](https://github.com/puredanger)<br/>
+[Michael Nygard](https://github.com/mtnygard)<br/>
+[Ghadi Shayban](https://github.com/ghadishayban)<br/>
+[Joseph Smith](https://github.com/solussd)<br/>
+[Thayanne Sousa](https://github.com/thayannevls)<br/>
+[Marshall Thompson](https://github.com/Glassonion)
 
 ## Copyright and License
 
