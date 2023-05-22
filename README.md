@@ -407,7 +407,10 @@ longer in use to conserve resources.
 ### S3: "Invalid 'Location' header: null"
 
 This indicates that you are trying to access a resource that resides in a
-different region from the client's region.
+different region from that of the client.
+
+As of v0.8.670, instead of this error, you'll see an AWS-provided payload decorated
+with information about how to recover.
 
 As of v0.8.662, the anomaly also includes status 301 and the "x-amz-bucket-region" header,
 so you can now detect the 301 and create a new client in the region bound to the
