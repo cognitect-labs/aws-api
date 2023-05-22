@@ -9,7 +9,7 @@
 
 (defn create
   []
-  (let [c (impl/create {})]
+  (let [c (impl/create {:follow-redirects false})]
     (reify aws/HttpClient
       (-submit [_ request channel]
         (impl/submit c request channel))

@@ -19,34 +19,48 @@
   (fn [service _op-map]
     (get-in service [:metadata :protocol])))
 
-(def status-codes->anomalies
-  {301 :cognitect.anomalies/incorrect
-   403 :cognitect.anomalies/forbidden
-   404 :cognitect.anomalies/not-found
-   429 :cognitect.anomalies/busy
-   503 :cognitect.anomalies/busy
-   504 :cognitect.anomalies/unavailable})
-
-(defn status-code->anomaly [code]
-  (or (get status-codes->anomalies code)
-      (if (<= 400 code 499)
-        :cognitect.anomalies/incorrect
-        :cognitect.anomalies/fault)))
+(defn ^:private status-code->anomaly-category [code]
+  (case code
+    403 :cognitect.anomalies/forbidden
+    404 :cognitect.anomalies/not-found
+    429 :cognitect.anomalies/busy
+    503 :cognitect.anomalies/busy
+    504 :cognitect.anomalies/unavailable
+    (if (<= 300 code 499)
+      :cognitect.anomalies/incorrect
+      :cognitect.anomalies/fault)))
 
 (defn ^:private error-message
   "Attempt to extract an error message from well known locations in an
-   error response map."
+   error response body. Returns nil if none are found."
   [response-map]
   (or (:__type response-map)
       (:Code (:Error response-map))))
 
-(defn ^:private error-message->anomaly
+(defn ^:private error-message->anomaly-category
   "Given an error message extracted from an error response body *that we
-   understand*, returns the appropriate anomaly category."
+   understand*, returns the appropriate anomaly category, or nil if none
+   are found."
   [error-message]
   (condp = error-message
     "ThrottlingException" :cognitect.anomalies/busy
     nil))
+
+(defn ^:private anomaly-category
+  "Given an http-response with the body already coerced to a Clojure map,
+   attempt to return an anomaly-category for a specific error message or
+   status. Returns nil if none are found."
+  [{:keys [status body]}]
+  (or (error-message->anomaly-category (error-message body))
+      (status-code->anomaly-category status)))
+
+(defn ^:private anomaly-message
+  "Given 301 with an x-amz-bucket-region header, returns a clear message with direction
+   for the user to resubmit the request to the correct region. Else returns nil."
+  [response-map]
+  (when-let [region (and (= 301 (:status response-map))
+                         (get (:headers response-map) "x-amz-bucket-region"))]
+    (str "The bucket is in this region: " region ". Please use this region to retry the request.")))
 
 (defn headers [service operation]
   (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
@@ -69,12 +83,14 @@
     (-> encoded-str (json/read-str :key-fn keyword))))
 
 (defn parse-http-error-response
-  "Given an http error response (any status code 400 or above), return an aws-api-specific response
+  "Given an http error response (any status code 300 or above), return an aws-api-specific response
   Map."
-  [{:keys [status body] :as http-response}]
-  (let [response-map (some-> body util/bbuf->str parse-encoded-string*)
-        category (or (error-message->anomaly (error-message response-map))
-                     (status-code->anomaly status))]
+  [http-response]
+  (let [http-response* (update http-response :body #(some-> % util/bbuf->str parse-encoded-string*))
+        category (anomaly-category http-response*)
+        message (anomaly-message http-response*)]
     (with-meta
-      (assoc response-map :cognitect.anomalies/category category)
+      (cond-> (:body http-response*)
+        category (assoc :cognitect.anomalies/category category)
+        message  (assoc :cognitect.anomalies/message message))
       http-response)))

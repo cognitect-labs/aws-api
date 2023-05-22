@@ -469,6 +469,12 @@
            (:cognitect.anomalies/category
             (aws.protocols/parse-http-error-response
              {:status 301})))))
+  (testing "301 with x-amz-bucket-region header gets custom anomalies/message"
+    (is (= "The bucket is in this region: us-east-1. Please use this region to retry the request."
+           (:cognitect.anomalies/message
+            (aws.protocols/parse-http-error-response
+             {:status 301
+              :headers {"x-amz-bucket-region" "us-east-1"}})))))
   (testing "ThrottlingException gets :cognitect.anomalies/busy"
     (is (= :cognitect.anomalies/busy
            (:cognitect.anomalies/category

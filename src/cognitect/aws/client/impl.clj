@@ -26,7 +26,7 @@
   (try
     (if (:cognitect.anomalies/category http-response)
       http-response
-      (if (< status 400)
+      (if (< status 300)
         (aws.protocols/parse-http-response service op-map http-response)
         (aws.protocols/parse-http-error-response http-response)))
     (catch Throwable t
