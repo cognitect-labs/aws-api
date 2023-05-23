@@ -1,5 +1,12 @@
 # aws-api
 
+## DEV
+* bug fix: add type-hint to resolve performance warning [#239](https://github.com/cognitect-labs/aws-api/issues/239)
+
+## 0.8.670 / 2023-05-22
+* upgrade cognitect http-client to 1.0.125 and set follow-redirects false
+  * Fixes [#15](https://github.com/cognitect-labs/aws-api/issues/15)
+
 ## 0.8.666 / 2023-04-27
 * 301 gets cognitect.anomalies/incorrect instead of cognitect.anomalies/fault [#237](https://github.com/cognitect-labs/aws-api/issues/237)
 

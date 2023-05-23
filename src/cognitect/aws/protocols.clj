@@ -19,7 +19,7 @@
   (fn [service _op-map]
     (get-in service [:metadata :protocol])))
 
-(defn ^:private status-code->anomaly-category [code]
+(defn ^:private status-code->anomaly-category [^long code]
   (case code
     403 :cognitect.anomalies/forbidden
     404 :cognitect.anomalies/not-found
