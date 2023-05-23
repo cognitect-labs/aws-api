@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.673 / 2023-05-23
 * bug fix: add type-hint to resolve performance warning [#239](https://github.com/cognitect-labs/aws-api/issues/239)
 
 ## 0.8.670 / 2023-05-22
