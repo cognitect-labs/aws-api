@@ -3,7 +3,8 @@
 ## 0.8.673 / 2023-05-23
 * bug fix: add type-hint to resolve performance warning [#239](https://github.com/cognitect-labs/aws-api/issues/239)
 
-## 0.8.670 / 2023-05-22
+## ~~0.8.670 / 2023-05-22~~
+* WARNING: introduced performance warning. Use >= 0.8.673 instead.
 * upgrade cognitect http-client to 1.0.125 and set follow-redirects false
   * Fixes [#15](https://github.com/cognitect-labs/aws-api/issues/15)
 
