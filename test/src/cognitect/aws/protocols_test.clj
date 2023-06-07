@@ -455,13 +455,14 @@
       (testing "http response is included as metadata on returned parsed error response"
         (is (= response (meta parsed-response))))))
   (testing "parse response with empty body"
-    (let [response {:status 404
-                    :body   nil}
-          parsed-response (aws.protocols/parse-http-error-response response)]
-      (is (= {:cognitect.anomalies/category :cognitect.anomalies/not-found}
-             parsed-response))
-      (testing "http response is included as metadata on returned parsed error response"
-        (is (= response (meta parsed-response)))))))
+    (doseq [body [nil (util/->bbuf "")]]
+      (let [response {:status 404
+                      :body   body}
+            parsed-response (aws.protocols/parse-http-error-response response)]
+        (is (= {:cognitect.anomalies/category :cognitect.anomalies/not-found}
+               parsed-response))
+        (testing "http response is included as metadata on returned parsed error response"
+          (is (= response (meta parsed-response))))))))
 
 (deftest anomaly-tranformations
   (testing "301 gets :cognitect.anomalies/incorrect"

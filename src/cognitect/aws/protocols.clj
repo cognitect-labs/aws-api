@@ -74,19 +74,22 @@
       (contains? #{"query" "ec2"} protocol)
       (assoc "content-type" "application/x-www-form-urlencoded; charset=utf-8"))))
 
-(defn- parse-encoded-string*
+(defn ^:private parse-encoded-string
   "Given non-nil String, determine the encoding (currently either XML or JSON). Return a Map
-  representation of the encoded data."
+   representation of the encoded data.
+
+   Returns nil if encoded-str is nil."
   [encoded-str]
-  (if (= \< (first encoded-str))
-    (-> encoded-str util/xml-read util/xml->map)
-    (-> encoded-str (json/read-str :key-fn keyword))))
+  (when (seq encoded-str)
+    (if (= \< (first encoded-str))
+      (-> encoded-str util/xml-read util/xml->map)
+      (-> encoded-str (json/read-str :key-fn keyword)))))
 
 (defn parse-http-error-response
   "Given an http error response (any status code 300 or above), return an aws-api-specific response
   Map."
   [http-response]
-  (let [http-response* (update http-response :body #(some-> % util/bbuf->str parse-encoded-string*))
+  (let [http-response* (update http-response :body #(some-> % util/bbuf->str parse-encoded-string))
         category (anomaly-category http-response*)
         message (anomaly-message http-response*)]
     (with-meta
