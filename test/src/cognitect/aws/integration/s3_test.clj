@@ -1,17 +1,12 @@
-(ns cognitect.aws.http.java.integration-test
+(ns cognitect.aws.integration.s3-test
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [cognitect.aws.client.api :as aws]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [cognitect.aws.integration.fixtures :as fixtures])
   (:import (java.nio ByteBuffer)
            (java.time Instant)))
 
-(defn ensure-test-profile
-  [f]
-  (if (= "aws-api-test" (System/getenv "AWS_PROFILE"))
-    (f)
-    (println "AWS_PROFILE is not configured, so not running integration tests. See README.")))
-
-(use-fixtures :once ensure-test-profile)
+(use-fixtures :once fixtures/ensure-test-profile)
 
 (defn bucket-listed? [list-buckets-response bucket-name]
   (contains? (->> list-buckets-response
