@@ -4,6 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.protocols
   "Impl, don't call directly. "
   (:require [clojure.data.json :as json]
+            [clojure.string :as str]
             [cognitect.aws.util :as util])
   (:import (java.util Date)))
 
@@ -21,6 +22,7 @@
 
 (defn ^:private status-code->anomaly-category [^long code]
   (case code
+    304 :cognitect.anomalies/conflict
     403 :cognitect.anomalies/forbidden
     404 :cognitect.anomalies/not-found
     429 :cognitect.anomalies/busy
@@ -30,19 +32,42 @@
       :cognitect.anomalies/incorrect
       :cognitect.anomalies/fault)))
 
-(defn ^:private error-message
-  "Attempt to extract an error message from well known locations in an
-   error response body. Returns nil if none are found."
-  [response-map]
-  (or (:__type response-map)
-      (:Code (:Error response-map))))
+(defn sanitize-error-code
+  "Per https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html#operation-error-serialization:
+    If a : character is present, then take only the contents before the first : character in the value.
+    If a # character is present, then take only the contents after the first # character in the value."
+  [error-code]
+  (some-> error-code
+          (str/split #":")
+          first
+          (str/split #"#" 2)
+          last))
 
-(defn ^:private error-message->anomaly-category
+(defn error-code
+  "Attempt to extract an error code from well known locations in an
+   error response body. Returns nil if none are found.
+
+   See:
+     https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html#operation-error-serialization
+     https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html#operation-error-serialization
+     https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html#operation-error-serialization
+     https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#error-response-serialization
+     https://smithy.io/2.0/aws/protocols/aws-query-protocol.html#operation-error-serialization
+     https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html#operation-error-serialization"
+  [http-response]
+  (or (-> http-response :headers (get "x-amzn-errortype"))
+      (-> http-response :body :__type)
+      (-> http-response :body :code)
+      (-> http-response :body :Error :Code)
+      (-> http-response :body :ErrorResponse :Error :Code)
+      (-> http-response :body :Response :Errors :Error :Code)))
+
+(defn ^:private error-code->anomaly-category
   "Given an error message extracted from an error response body *that we
    understand*, returns the appropriate anomaly category, or nil if none
    are found."
-  [error-message]
-  (condp = error-message
+  [error-code]
+  (condp = error-code
     "ThrottlingException" :cognitect.anomalies/busy
     nil))
 
@@ -50,8 +75,8 @@
   "Given an http-response with the body already coerced to a Clojure map,
    attempt to return an anomaly-category for a specific error message or
    status. Returns nil if none are found."
-  [{:keys [status body]}]
-  (or (error-message->anomaly-category (error-message body))
+  [status sanitized-error-code]
+  (or (error-code->anomaly-category sanitized-error-code)
       (status-code->anomaly-category status)))
 
 (defn ^:private anomaly-message
@@ -88,12 +113,14 @@
 (defn parse-http-error-response
   "Given an http error response (any status code 300 or above), return an aws-api-specific response
   Map."
-  [http-response]
+  [{:keys [status] :as http-response}]
   (let [http-response* (update http-response :body #(some-> % util/bbuf->str parse-encoded-string))
-        category (anomaly-category http-response*)
+        sanitized-error-code (-> http-response* error-code sanitize-error-code)
+        category (anomaly-category (:status http-response) sanitized-error-code)
         message (anomaly-message http-response*)]
     (with-meta
-      (cond-> (:body http-response*)
+      (cond-> (assoc (:body http-response*) :cognitect.aws.http/status status)
         category (assoc :cognitect.anomalies/category category)
-        message  (assoc :cognitect.anomalies/message message))
+        message  (assoc :cognitect.anomalies/message message)
+        sanitized-error-code (assoc :cognitect.aws.error/code sanitized-error-code))
       http-response)))

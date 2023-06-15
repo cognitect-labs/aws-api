@@ -5,7 +5,7 @@ clone this repo and start a repl in your preferred environment
 using the deps.edn in the project root, e.g.
 
 ```
-clj -A:dev:examples
+clj -A:dev
 ```
 
 Then you can open any of the xxx_examples.clj files and start evaluating forms. In each example

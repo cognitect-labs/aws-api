@@ -2,15 +2,18 @@
   "Tests for the production client implementation."
   (:require [clojure.core.async :as a]
             [clojure.data.xml :as xml]
+            [clojure.java.io :as io]
             [clojure.test :as t :refer [deftest is testing]]
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.generators :as gen]
+            [clojure.test.check.properties :as prop]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.client.impl :as client]
             [cognitect.aws.client.protocol :as client.protocol]
             [cognitect.aws.credentials :as creds]
             [cognitect.aws.http :as http]
             [cognitect.aws.region :as region]
-            [cognitect.aws.util :as util]
-            [clojure.java.io :as io])
+            [cognitect.aws.util :as util])
   (:import (java.nio ByteBuffer)))
 
 (defn stub-http-client [result]
@@ -41,6 +44,14 @@
   (testing "returns http-response if it is an anomaly"
     (is (= {:cognitect.anomalies/category :does-not-matter}
            (#'client/handle-http-response {} {} {:cognitect.anomalies/category :does-not-matter})))))
+
+(defspec status-over-299-appears-in-response-body
+  (prop/for-all [status (gen/choose 300 599)]
+                (= status (:cognitect.aws.http/status (#'client/handle-http-response {} {} {:status status})))))
+
+(defspec status-below-300-does-not-appear-in-response-body
+  (prop/for-all [status (gen/choose 200 299)]
+                (nil? (:cognitect.aws.http/status (#'client/handle-http-response {} {} {:status status})))))
 
 (def list-buckets-http-response
   (xml/indent-str

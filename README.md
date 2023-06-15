@@ -146,19 +146,30 @@ clj꞉user꞉> 
 
 See the [examples](examples) directory for more examples.
 
-## Responses, success, failure
+## Responses, successes, redirects, and failures
 
-Barring client side exceptions, every operation on every service will
-return a map. If the operation is successful, the map will be in the
-shape described by `(-> client aws/ops op :response)`.  If AWS
-indicates failure with an HTTP status code >= 400, the map will
-include a `:cognitect.anomalies/category` key, so you can check for
-the absence/presence of that key to determine success/failure.
+Barring client side exceptions, every operation on every AWS service returns a map. If the operation is successful, the map is in the shape described by `(-> client aws/ops op :response)`. AWS documents
+all HTTP status codes >= 300 as errors (see https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html), so when AWS returns an HTTP status code >= 300, aws-api returns an [anomaly map](https://github.com/cognitect-labs/anomalies), identified by a `:cognitect.anomalies/category` key, with the HTTP status bound to a `:cognitect.aws.http/status` key. When AWS provides an error response in the HTTP response body, aws-api coerces it to clojure data, and merges that into the anomaly map. Additionally, when AWS provides an error code, aws-api will bind it to a `:cognitect.aws.error/code` key. Example:
 
-Note that AWS will sometimes (rarely, but not never) return a 200 with an error message in
-the response payload, e.g. https://aws.amazon.com/pt/premiumsupport/knowledge-center/s3-resolve-200-internalerror/. Since we don't have a consistent, reliable
-way to programatically check for this, aws-api does not convert these responses
-to anomalies.
+```clojure
+{:Error                                                        ;; provided by AWS
+ {:Message "The specified key does not exist."                 ;; provided by AWS
+  :Code "NoSuchKey"}                                           ;; provided by AWS
+ :cognitect.anomalies/category :cognitect.anomalies/not-found
+ :cognitect.aws.http/status 404
+ :cognitect.aws.error/code "NoSuchKey"}                        ;; derived from :Code, above
+```
+
+If you need more information when you receive an anomaly map, you can check `(-> response meta :http-response)` for the raw http response, including the `:status` and `:headers`.
+
+### S3 GetObject and Conditional Requests
+
+S3 [GetObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html) supports Conditional Requests with `:IfMatch`, `:IfNoneMatch`, `:IfModifiedSince`, and `:IfUnmodifiedSince`, which may result in 304s (for `:IfNoneMatch` and `:IfModifiedSince`) or 412s (for `:IfMatch`, and `:IfUnmodifiedSince`). AWS [documents all of these as errors](https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ErrorCodeList), and AWS SDKs throw exceptions for 412s *and* 304s. aws-api returns anomalies instead of throwing exceptions, so aws-api will return anomalies for both 412s and 304s.
+
+### Error responses with status 200
+
+Per https://aws.amazon.com/premiumsupport/knowledge-center/s3-resolve-200-internalerror/, AWS may return a 200 with an error response in the body,
+in which case you should look for an error code in the body.
 
 ## Credentials
 

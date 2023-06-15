@@ -5,6 +5,7 @@
   "Test the protocols implementations."
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
+            [clojure.set :as set]
             [clojure.spec.alpha :as s]
             [clojure.spec.test.alpha :as stest]
             [clojure.string :as str]
@@ -435,23 +436,25 @@
                       "rest-json"]]
       (test-protocol protocol))))
 
+(defn submap? [a b] (set/subset? (set a) (set b)))
+
 (deftest test-parse-http-error-response
   (testing "parse JSON-encoded error response body"
     (let [response {:status 401
                     :body   (ByteBuffer/wrap (.getBytes "{\"FOO\": \"abc\"}" "UTF-8"))}
           parsed-response (aws.protocols/parse-http-error-response response)]
-      (is (= {:FOO "abc" :cognitect.anomalies/category :cognitect.anomalies/incorrect}
-             parsed-response))
+      (is (submap? {:FOO "abc" :cognitect.anomalies/category :cognitect.anomalies/incorrect}
+                   parsed-response))
       (testing "http response is included as metadata on returned parsed error response"
         (is (= response (meta parsed-response))))))
   (testing "parse XML-encoded response body - issue 218: AWS returns XML-encoded 404 response when JSON-encoding was expected"
     (let [response {:status 404
                     :body   (util/->bbuf "<UnknownOperationException/>")}
           parsed-response (aws.protocols/parse-http-error-response response)]
-      (is (= {:UnknownOperationException nil
-              :UnknownOperationExceptionAttrs {}
-              :cognitect.anomalies/category :cognitect.anomalies/not-found}
-             parsed-response))
+      (is (submap? {:UnknownOperationException nil
+                    :UnknownOperationExceptionAttrs {}
+                    :cognitect.anomalies/category :cognitect.anomalies/not-found}
+                   parsed-response))
       (testing "http response is included as metadata on returned parsed error response"
         (is (= response (meta parsed-response))))))
   (testing "parse response with empty body"
@@ -459,34 +462,54 @@
       (let [response {:status 404
                       :body   body}
             parsed-response (aws.protocols/parse-http-error-response response)]
-        (is (= {:cognitect.anomalies/category :cognitect.anomalies/not-found}
-               parsed-response))
+        (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/not-found}
+                     parsed-response))
         (testing "http response is included as metadata on returned parsed error response"
           (is (= response (meta parsed-response))))))))
 
 (deftest anomaly-tranformations
   (testing "301 gets :cognitect.anomalies/incorrect"
-    (is (= :cognitect.anomalies/incorrect
-           (:cognitect.anomalies/category
-            (aws.protocols/parse-http-error-response
-             {:status 301})))))
+    (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/incorrect}
+                 (aws.protocols/parse-http-error-response {:status 301}))))
+  (testing "304 gets :cognitect.anomalies/conflict"
+    (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/conflict}
+                 (aws.protocols/parse-http-error-response {:status 304}))))
   (testing "301 with x-amz-bucket-region header gets custom anomalies/message"
-    (is (= "The bucket is in this region: us-east-1. Please use this region to retry the request."
-           (:cognitect.anomalies/message
-            (aws.protocols/parse-http-error-response
-             {:status 301
-              :headers {"x-amz-bucket-region" "us-east-1"}})))))
+    (is (submap? {:cognitect.anomalies/message
+                  "The bucket is in this region: us-east-1. Please use this region to retry the request."}
+                 (aws.protocols/parse-http-error-response
+                  {:status 301
+                   :headers {"x-amz-bucket-region" "us-east-1"}}))))
   (testing "ThrottlingException gets :cognitect.anomalies/busy"
-    (is (= :cognitect.anomalies/busy
-           (:cognitect.anomalies/category
-            (aws.protocols/parse-http-error-response
-             {:status 400
-              :body (util/->bbuf (json/json-str {:__type "ThrottlingException"}))}))))
-    (is (= :cognitect.anomalies/busy
-           (:cognitect.anomalies/category
-            (aws.protocols/parse-http-error-response
-             {:status 400
-              :body (util/->bbuf "<Error><Code>ThrottlingException</Code></Error>")}))))))
+    (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/busy}
+                 (aws.protocols/parse-http-error-response
+                  {:status 400
+                   :body (util/->bbuf (json/json-str {:__type "ThrottlingException"}))})))
+    (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/busy}
+                 (aws.protocols/parse-http-error-response
+                  {:status 400
+                   :body (util/->bbuf "<Error><Code>ThrottlingException</Code></Error>")})))))
+
+(deftest error-codes
+  "See: https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html#operation-error-serialization
+        https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html#operation-error-serialization
+        https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html#operation-error-serialization
+        https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#error-response-serialization
+        https://smithy.io/2.0/aws/protocols/aws-query-protocol.html#operation-error-serialization
+        https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html#operation-error-serialization"
+  (doseq [code ["FooError"
+                "FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/"
+                "aws.protocoltests.restjson#FooError"
+                "aws.protocoltests.restjson#FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/"
+                "aws.protocoltests.restjson#FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/#some-more-stuff"]]
+    (doseq [data [{:headers {"x-amzn-errortype" code}}
+                  {:body (util/->bbuf (json/json-str {:__type code}))}
+                  {:body (util/->bbuf (json/json-str {:code code}))}
+                  {:body (util/->bbuf (str "<Error><Code>" code "</Code></Error>"))}
+                  {:body (util/->bbuf (str "<ErrorResponse><Error><Code>" code "</Code></Error></ErrorResponse>"))}
+                  {:body (util/->bbuf (str "<Response><Errors><Error><Code>" code "</Code></Error></Errors></Response>"))}]]
+      (is (submap? {:cognitect.aws.error/code "FooError"}
+                   (aws.protocols/parse-http-error-response (assoc data :status 400)))))))
 
 (comment
   (t/run-tests))
