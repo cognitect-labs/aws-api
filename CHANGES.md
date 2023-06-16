@@ -1,10 +1,17 @@
 # aws-api
 
+## DEV
+* add `:cognitect.aws.http/status` and, when AWS provides an error code, `:cognitect.aws.error/code`, to error response maps
+
 ## 0.8.673 / 2023-05-23
 * bug fix: add type-hint to resolve performance warning [#239](https://github.com/cognitect-labs/aws-api/issues/239)
 
 ## ~~0.8.670 / 2023-05-22~~
 * WARNING: introduced performance warning; fixed in 0.8.673.
+* BREAKING CHANGE: Changes the behavior of GetObject such that a 304 results in an anomaly.
+  * This was reported in [#240](https://github.com/cognitect-labs/aws-api/issues/240), and after further review we decided to keep the new behavior in order to align with AWS semantics.
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
+    * https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
 * upgrade cognitect http-client to 1.0.125 and set follow-redirects false
   * Fixes [#15](https://github.com/cognitect-labs/aws-api/issues/15)
 
