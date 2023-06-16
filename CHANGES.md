@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.681 / 2023-06-16
 * add `:cognitect.aws.http/status` and, when AWS provides an error code, `:cognitect.aws.error/code`, to error response maps
 
 ## 0.8.673 / 2023-05-23
