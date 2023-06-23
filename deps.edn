@@ -19,10 +19,10 @@
                                            com.cognitect.aws/endpoints   {:mvn/version "1.1.12.489"}
                                            com.cognitect.aws/autoscaling {:mvn/version "847.2.1365.0"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "847.2.1398.0"}
-                                           com.cognitect.aws/ec2         {:mvn/version "847.2.1398.0"}
-                                           com.cognitect.aws/iam         {:mvn/version "847.2.1398.0"}
+                                           com.cognitect.aws/ec2         {:mvn/version "848.2.1400.0"}
+                                           com.cognitect.aws/iam         {:mvn/version "848.2.1400.0"}
                                            com.cognitect.aws/lambda      {:mvn/version "847.2.1398.0"}
-                                           com.cognitect.aws/s3          {:mvn/version "847.2.1398.0"}
+                                           com.cognitect.aws/s3          {:mvn/version "848.2.1400.0"}
                                            com.cognitect.aws/ssm         {:mvn/version "847.2.1365.0"}
                                            com.cognitect.aws/sts         {:mvn/version "847.2.1387.0"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
