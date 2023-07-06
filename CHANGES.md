@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.686 / 2023-07-06
 * Support list member values in request headers [#234](https://github.com/cognitect-labs/aws-api/issues/234)
 
 ## 0.8.681 / 2023-06-16
