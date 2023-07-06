@@ -115,12 +115,16 @@
                    (:jsonvalue member-shape)
                    (assoc serialized header-name (util/encode-jsonvalue v))
 
-                   (map? v)
+                   (#{"map" "structure"} (:type member-shape))
                    (reduce-kv (fn [serialized k v]
                                 (let [header-name (str header-name (name k))]
                                   (assoc serialized header-name (serialize-header-value member-shape v))))
                               serialized
                               v)
+
+                   (#{"list"} (:type member-shape))
+                   (let [list-member-shape (shape/list-member-shape member-shape)]
+                     (assoc serialized header-name (str/join "," (map (partial serialize-header-value list-member-shape) v))))
 
                    :else
                    (assoc serialized header-name (serialize-header-value member-shape v)))))
