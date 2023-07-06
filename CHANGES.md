@@ -1,5 +1,8 @@
 # aws-api
 
+## DEV
+* Support list member values in request headers [#234](https://github.com/cognitect-labs/aws-api/issues/234)
+
 ## 0.8.681 / 2023-06-16
 * add `:cognitect.aws.http/status` and, when AWS provides an error code, `:cognitect.aws.error/code`, to error response maps
 
