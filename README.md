@@ -71,8 +71,8 @@ To use the s3 api, for example, add the following to deps.edn:
 
 ``` clojure
 {:deps {com.cognitect.aws/api       {:mvn/version "0.8.686"}
-        com.cognitect.aws/endpoints {:mvn/version "1.1.12.489"}
-        com.cognitect.aws/s3        {:mvn/version "848.2.1400.0"}}}
+        com.cognitect.aws/endpoints {:mvn/version "1.1.12.504"}
+        com.cognitect.aws/s3        {:mvn/version "848.2.1413.0"}}}
 ```
 
 * See [latest releases](latest-releases.edn) for a listing of the latest releases of
