@@ -18,29 +18,29 @@
       default))
 
 (defmulti serialize
-  (fn [_service shape _args _serialized _prefix] (:type shape)))
+  (fn [_shapes shape _args _serialized _prefix] (:type shape)))
 
 (defmethod serialize :default
-  [service shape args serialized prefix]
-  (query/serialize service shape args serialized prefix))
+  [shapes shape args serialized prefix]
+  (query/serialize shapes shape args serialized prefix))
 
 (defmethod serialize "structure"
-  [service shape args serialized prefix]
+  [shapes shape args serialized prefix]
   (let [args (util/with-defaults shape args)]
     (reduce (fn [serialized k]
-              (let [member-shape (shape/resolve service (shape/structure-member-shape-ref shape k))
+              (let [member-shape (shape/resolve shapes (shape/structure-member-shape-ref shape k))
                     member-name  (serialized-name member-shape (name k))]
                 (if (contains? args k)
-                  (serialize service member-shape (k args) serialized (conj prefix member-name))
+                  (serialize shapes member-shape (k args) serialized (conj prefix member-name))
                   serialized)))
             serialized
             (keys (:members shape)))))
 
 (defmethod serialize "list"
-  [service shape args serialized prefix]
-  (let [member-shape (shape/resolve service (shape/list-member-shape-ref shape))]
+  [shapes shape args serialized prefix]
+  (let [member-shape (shape/resolve shapes (shape/list-member-shape-ref shape))]
     (reduce (fn [serialized [i member]]
-              (serialize service member-shape member serialized (conj prefix (str i))))
+              (serialize shapes member-shape member serialized (conj prefix (str i))))
             serialized
             (map-indexed (fn [i member] [(inc i) member]) args))))
 

@@ -490,13 +490,13 @@
                   {:status 400
                    :body (util/->bbuf "<Error><Code>ThrottlingException</Code></Error>")})))))
 
-(deftest error-codes
-  "See: https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html#operation-error-serialization
-        https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html#operation-error-serialization
-        https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html#operation-error-serialization
-        https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#error-response-serialization
-        https://smithy.io/2.0/aws/protocols/aws-query-protocol.html#operation-error-serialization
-        https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html#operation-error-serialization"
+(deftest ^{:doc "See: https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html#operation-error-serialization
+                      https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html#operation-error-serialization
+                      https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html#operation-error-serialization
+                      https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#error-response-serialization
+                      https://smithy.io/2.0/aws/protocols/aws-query-protocol.html#operation-error-serialization
+                      https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html#operation-error-serialization"}
+  error-codes
   (doseq [code ["FooError"
                 "FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/"
                 "aws.protocoltests.restjson#FooError"

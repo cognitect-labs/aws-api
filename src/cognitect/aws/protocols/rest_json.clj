@@ -16,20 +16,20 @@
   Obs: this fn doesn't use the 2nd arg, but the one in rest-xml
   does, and this function gets invoked by rest/build-http-request,
   which requires a 3 arg serialize fn."
-  (fn [_ _ shape _data] (:type shape)))
+  (fn [_shapes _ shape _data] (:type shape)))
 
 (defmethod serialize :default
-  [service _ shape data]
-  (shape/json-serialize service shape data))
+  [shapes _ shape data]
+  (shape/json-serialize shapes shape data))
 
 (defmethod serialize "structure"
-  [service _ shape data]
+  [shapes _ shape data]
   (some->> (util/with-defaults shape data)
            not-empty
-           (shape/json-serialize service shape)))
+           (shape/json-serialize shapes shape)))
 
 (defmethod serialize "timestamp"
-  [_service _ shape data]
+  [_shapes _ shape data]
   (shape/format-date shape data))
 
 (defmethod aws.protocols/build-http-request "rest-json"
