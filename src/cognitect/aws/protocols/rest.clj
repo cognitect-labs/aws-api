@@ -52,10 +52,11 @@
 
 (defn append-querystring
   "Append the map of arguments args to the uri's querystring."
-  [^String uri shape args]
+  [service ^String uri shape args]
   (if-let [qs (util/query-string (mapcat (fn [[k v]]
-                                           (when-let [member-shape (shape/member-shape shape k)]
-                                             (serialize-qs-args member-shape
+                                           (when-let [member-shape (shape/resolve service (shape/structure-member-shape-ref shape k))]
+                                             (serialize-qs-args service
+                                                                member-shape
                                                                 (or (:locationName member-shape)
                                                                     (name k))
                                                                 v)))
@@ -65,31 +66,33 @@
 
 (defmulti serialize-qs-args
   "Return a list of key-value pairs to serialize in the query string."
-  (fn [shape _param-name _args] (:type shape)))
+  (fn [_service shape _param-name _args] (:type shape)))
 
 (defmethod serialize-qs-args :default
-  [_shape param-name args]
+  [_service _shape param-name args]
   (when-not (nil? args)
     [[param-name (str args)]]))
 
 (defmethod serialize-qs-args "timestamp"
-  [shape param-name args]
+  [_service shape param-name args]
   (when-not (nil? args)
     [[param-name (shape/format-date shape
                                     args
                                     (partial util/format-date util/iso8601-date-format))]]))
 
 (defmethod serialize-qs-args "list"
-  [shape param-name args]
-  (mapcat #(serialize-qs-args (shape/list-member-shape shape)
+  [service shape param-name args]
+  (mapcat #(serialize-qs-args service
+                              (shape/resolve service (shape/list-member-shape-ref shape))
                               param-name
                               %)
           args))
 
 (defmethod serialize-qs-args "map"
-  [shape _ args]
+  [service shape _ args]
   (mapcat (fn [[k v]]
-            (serialize-qs-args (shape/value-shape shape)
+            (serialize-qs-args service
+                               (shape/resolve service (shape/map-value-shape-ref shape))
                                (name k)
                                v))
           args))
@@ -107,9 +110,9 @@
 
 (defn serialize-headers
   "Serialize the map of arguments into a map of HTTP headers."
-  [shape args]
+  [service shape args]
   (reduce-kv (fn [serialized k v]
-               (let [member-shape (shape/member-shape shape k)
+               (let [member-shape (shape/resolve service (shape/structure-member-shape-ref shape k))
                      header-name (str/lower-case (or (:locationName member-shape) (name k)))]
                  (cond
                    (:jsonvalue member-shape)
@@ -123,7 +126,7 @@
                               v)
 
                    (#{"list"} (:type member-shape))
-                   (let [list-member-shape (shape/list-member-shape member-shape)]
+                   (let [list-member-shape (shape/resolve service (shape/list-member-shape-ref member-shape))]
                      (assoc serialized header-name (str/join "," (map (partial serialize-header-value list-member-shape) v))))
 
                    :else
@@ -132,24 +135,24 @@
              args))
 
 (defn serialize-body
-  [input-shape-name input-shape args serialize]
+  [service input-shape-name input-shape args serialize]
   (if-let [payload-name (:payload input-shape)]
     ;; A member of the input shape is flagged as the payload member.
-    (let [payload-shape (shape/member-shape input-shape (keyword payload-name))]
+    (let [payload-shape (shape/resolve service (shape/structure-member-shape-ref input-shape (keyword payload-name)))]
       (if (contains? #{"blob" "string"} (:type payload-shape))
         ;; Streaming - return payload directly
         (get args (keyword payload-name))
         ;; Otherwise, serialize payload value to XML
         (when-let [body-arg (get args (keyword payload-name))]
-          (serialize input-shape-name payload-shape body-arg))))
+          (serialize service input-shape-name payload-shape body-arg))))
     ;; No payload attribute
-    (serialize input-shape-name input-shape args)))
+    (serialize service input-shape-name input-shape args)))
 
 (defn partition-args
   "Partition the arguments by their location."
-  [shape args]
+  [service shape args]
   (reduce-kv (fn [partition k v]
-               (if-let [member-shape (shape/member-shape shape k)]
+               (if-let [member-shape (shape/resolve service (shape/structure-member-shape-ref shape k))]
                  (let [partition-key (or (keyword (:location member-shape)) :body)]
                    (assoc-in partition
                              [partition-key
@@ -166,7 +169,7 @@
   [{:keys [operations] :as service} {:keys [op request]} serialize-body-args]
   (let [operation        (get operations op)
         input-shape-name (-> operation :input :shape)
-        input-shape      (service/shape service (:input operation))
+        input-shape      (shape/resolve service (:input operation))
         http-request     {:request-method (-> operation :http :method str/lower-case keyword)
                           :scheme         :https
                           :server-port    443
@@ -174,14 +177,14 @@
                           :headers        (aws.protocols/headers service operation)}]
     (if-not input-shape
       http-request
-      (let [location->args (partition-args input-shape request)
+      (let [location->args (partition-args service input-shape request)
             body-args      (:body location->args)]
         (-> http-request
             (update :uri serialize-uri input-shape (:uri location->args))
-            (update :uri append-querystring input-shape (:querystring location->args))
-            (update :headers merge (serialize-headers input-shape (merge (location->args :header)
-                                                                         (location->args :headers))))
-            (assoc :body (serialize-body input-shape-name input-shape body-args serialize-body-args)))))))
+            (update :uri (partial append-querystring service) input-shape (:querystring location->args))
+            (update :headers merge (serialize-headers service input-shape (merge (location->args :header)
+                                                                                 (location->args :headers))))
+            (assoc :body (serialize-body service input-shape-name input-shape body-args serialize-body-args)))))))
 
 ;; ----------------------------------------------------------------------------------------
 ;; Parser
@@ -209,9 +212,9 @@
 
 (defn parse-non-payload-attrs
   "Parse HTTP status and headers for response data."
-  [{:keys [members] :as output-shape} {:keys [status headers] :as _http-response}]
+  [service {:keys [members] :as output-shape} {:keys [status headers] :as _http-response}]
   (reduce (fn [parsed member-key]
-            (let [member-shape (shape/member-shape output-shape member-key)]
+            (let [member-shape (shape/resolve service (shape/structure-member-shape-ref output-shape member-key))]
               (case (:location member-shape)
                 "statusCode" (assoc parsed member-key status)
                 "headers" (let [prefix (str/lower-case (or (:locationName member-shape) ""))
@@ -240,23 +243,22 @@
 
 (defn parse-body
   "Parse the HTTP response body for response data."
-  [output-shape body parse-fn]
+  [service output-shape body parse-body-str]
   (if-let [payload-name (:payload output-shape)]
-    (let [body-shape (shape/member-shape output-shape (keyword payload-name))]
+    (let [body-shape (shape/resolve service (shape/structure-member-shape-ref output-shape (keyword payload-name)))]
       {(keyword payload-name) (condp = (:type body-shape)
                                 "blob"   (util/bbuf->input-stream body)
                                 "string" (util/bbuf->str body)
-                                (parse-fn body-shape (util/bbuf->str body)))})
+                                (parse-body-str service body-shape (util/bbuf->str body)))})
     ;; No payload
     (let [body-str (util/bbuf->str body)]
       (when-not (str/blank? body-str)
-        (parse-fn output-shape body-str)))))
+        (parse-body-str service output-shape body-str)))))
 
 (defn parse-http-response
-  [service {:keys [op]} {:keys [body] :as http-response}
-   parse-body-str]
+  [service {:keys [op]} {:keys [body] :as http-response} parse-body-str]
   (let [operation (get-in service [:operations op])
-        output-shape (service/shape service (:output operation))]
-    (merge (parse-non-payload-attrs output-shape http-response)
+        output-shape (shape/resolve service (:output operation))]
+    (merge (parse-non-payload-attrs service output-shape http-response)
            (when output-shape
-             (parse-body output-shape body parse-body-str)))))
+             (parse-body service output-shape body parse-body-str)))))

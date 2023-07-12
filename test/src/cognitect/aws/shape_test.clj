@@ -19,14 +19,16 @@
 (deftest parse-json-structure
   (testing "no shape"
     (is (= {}
-           (shape/json-parse* {:type "structure"}
+           (shape/json-parse* {}
+                              {:type "structure"}
                               [{:this "is" :a "doc"}]))))
   (testing "ignores unspecified members"
     (is (= {:a "b"}
-           (shape/json-parse* (with-meta {:type "structure" :members {:a {:type "string"}}}
-                                {:shapes {}})
+           (shape/json-parse* {}
+                              {:type "structure" :members {:a {:type "string"}}}
                               {:a "b" :extra "whatever"}))))
   (testing ":document true"
     (is (= [{:this "is" :a "doc"}]
-           (shape/json-parse* {:type "structure" :document true}
+           (shape/json-parse* {}
+                              {:type "structure" :document true}
                               [{:this "is" :a "doc"}])))))

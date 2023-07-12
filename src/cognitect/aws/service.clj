@@ -6,8 +6,7 @@
   (:require [clojure.string :as str]
             [clojure.walk :as walk]
             [clojure.edn :as edn]
-            [clojure.java.io :as io]
-            [cognitect.aws.shape :as shape]))
+            [clojure.java.io :as io]))
 
 (set! *warn-on-reflection* true)
 
@@ -31,11 +30,6 @@
   (if-let [resource (descriptor-resource service-name)]
     (read-service-description resource)
     (throw (ex-info (str "Cannot find resource " (descriptor-resource-path service-name) ".") {}))))
-
-(defn shape
-  "Returns the shape referred by `shape-ref`."
-  [service shape-ref]
-  (shape/with-resolver (select-keys service [:shapes]) shape-ref))
 
 (defn endpoint-prefix
   [service]

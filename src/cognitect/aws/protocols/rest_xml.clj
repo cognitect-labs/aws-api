@@ -11,9 +11,10 @@
 
 (defn serialize
   "xml body args serializer passed to rest/build-http-request"
-  [shape-name shape data]
+  [service shape-name shape data]
   (when data
-    (shape/xml-serialize shape
+    (shape/xml-serialize service
+                         shape
                          data
                          (or (:locationName shape) shape-name))))
 

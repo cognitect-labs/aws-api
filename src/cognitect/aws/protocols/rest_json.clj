@@ -13,23 +13,23 @@
 (defmulti serialize
   "json body args serializer passed to rest/build-http-request
 
-  Obs: this fn doesn't use the first arg, but the one in rest-xml
+  Obs: this fn doesn't use the 2nd arg, but the one in rest-xml
   does, and this function gets invoked by rest/build-http-request,
   which requires a 3 arg serialize fn."
-  (fn [_ shape _data] (:type shape)))
+  (fn [_ _ shape _data] (:type shape)))
 
 (defmethod serialize :default
-  [_ shape data]
-  (shape/json-serialize shape data))
+  [service _ shape data]
+  (shape/json-serialize service shape data))
 
 (defmethod serialize "structure"
-  [_ shape data]
+  [service _ shape data]
   (some->> (util/with-defaults shape data)
            not-empty
-           (shape/json-serialize shape)))
+           (shape/json-serialize service shape)))
 
 (defmethod serialize "timestamp"
-  [_ shape data]
+  [_service _ shape data]
   (shape/format-date shape data))
 
 (defmethod aws.protocols/build-http-request "rest-json"
