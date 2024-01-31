@@ -1,5 +1,12 @@
 # aws-api
 
+## DEV
+
+* upgrade to cognitect http-client 1.0.127
+  * upgrade to org.eclipse.jetty/jetty-client-9.4.53.v20231009 [#249](https://github.com/cognitect-labs/aws-api/issues/249)
+* upgrade to org.clojure/core.async 1.6.681
+* upgrade to org.clojure/data.json 2.5.0
+
 ## 0.8.686 / 2023-07-06
 * Support list member values in request headers [#234](https://github.com/cognitect-labs/aws-api/issues/234)
 

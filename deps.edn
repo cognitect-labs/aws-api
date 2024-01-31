@@ -3,11 +3,11 @@
 
 {:paths   ["src" "resources"]
  :deps    {org.clojure/clojure       {:mvn/version "1.11.1"}
-           org.clojure/core.async    {:mvn/version "1.6.673"}
+           org.clojure/core.async    {:mvn/version "1.6.681"}
            org.clojure/tools.logging {:mvn/version "1.2.4"}
-           org.clojure/data.json     {:mvn/version "2.4.0"}
+           org.clojure/data.json     {:mvn/version "2.5.0"}
            org.clojure/data.xml      {:mvn/version "0.2.0-alpha8"}
-           com.cognitect/http-client {:mvn/version "1.0.125"}}
+           com.cognitect/http-client {:mvn/version "1.0.127"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources" "examples" "examples/resources" "dev/resources"]
