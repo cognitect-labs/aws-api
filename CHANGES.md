@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.692 / 2024-01-31
 
 * upgrade to cognitect http-client 1.0.127
   * upgrade to org.eclipse.jetty/jetty-client-9.4.53.v20231009 [#249](https://github.com/cognitect-labs/aws-api/issues/249)
