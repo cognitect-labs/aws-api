@@ -1,7 +1,7 @@
 {com.cognitect.aws/api {:mvn/version "0.8.692"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.12.504"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.12.626"},
  com.cognitect.aws/AWS242AppRegistry
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
  com.cognitect.aws/AWSApplicationCostProfiler
  {:mvn/version "847.2.1365.0",
@@ -10,40 +10,40 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "Access Analyzer"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "Access Analyzer"},
  com.cognitect.aws/account
  {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS Account"},
  com.cognitect.aws/acm
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Certificate Manager"},
  com.cognitect.aws/acm-pca
- {:mvn/version "847.2.1398.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName
   "AWS Certificate Manager Private Certificate Authority"},
  com.cognitect.aws/alexaforbusiness
  {:mvn/version "847.2.1398.0",
   :aws/serviceFullName "Alexa For Business"},
  com.cognitect.aws/amp
- {:mvn/version "848.2.1413.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon Prometheus Service"},
  com.cognitect.aws/amplify
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS Amplify"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "AWS Amplify"},
  com.cognitect.aws/amplifybackend
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "AmplifyBackend"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "AmplifyBackend"},
  com.cognitect.aws/amplifyuibuilder
- {:mvn/version "847.2.1398.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AWS Amplify UI Builder"},
  com.cognitect.aws/apigateway
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon API Gateway"},
  com.cognitect.aws/apigatewaymanagementapi
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AmazonApiGatewayManagementApi"},
  com.cognitect.aws/apigatewayv2
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AmazonApiGatewayV2"},
  com.cognitect.aws/appconfig
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon AppConfig"},
  com.cognitect.aws/appconfigdata
  {:mvn/version "847.2.1365.0",
@@ -51,40 +51,43 @@
  com.cognitect.aws/appfabric
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "AppFabric"},
  com.cognitect.aws/appflow
- {:mvn/version "848.2.1413.0", :aws/serviceFullName "Amazon Appflow"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "Amazon Appflow"},
  com.cognitect.aws/appintegrations
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon AppIntegrations Service"},
  com.cognitect.aws/application-autoscaling
- {:mvn/version "847.2.1387.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Application Auto Scaling"},
  com.cognitect.aws/application-insights
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon CloudWatch Application Insights"},
  com.cognitect.aws/appmesh
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS App Mesh"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "AWS App Mesh"},
  com.cognitect.aws/apprunner
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS App Runner"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "AWS App Runner"},
  com.cognitect.aws/appstream
- {:mvn/version "848.2.1413.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
- {:mvn/version "847.2.1387.0", :aws/serviceFullName "AWS AppSync"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/arc-zonal-shift
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AWS ARC - Zonal Shift"},
  com.cognitect.aws/athena
- {:mvn/version "847.2.1398.0", :aws/serviceFullName "Amazon Athena"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/auditmanager
- {:mvn/version "847.2.1398.0",
+ {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AWS Audit Manager"},
  com.cognitect.aws/autoscaling
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "Auto Scaling"},
+ {:mvn/version "852.2.1525.0", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Auto Scaling Plans"},
+ com.cognitect.aws/b2bi
+ {:mvn/version "852.2.1525.0",
+  :aws/serviceFullName "AWS B2B Data Interchange"},
  com.cognitect.aws/backup
- {:mvn/version "847.2.1387.0", :aws/serviceFullName "AWS Backup"},
+ {:mvn/version "852.2.1526.0", :aws/serviceFullName "AWS Backup"},
  com.cognitect.aws/backup-gateway
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Backup Gateway"},
@@ -92,16 +95,30 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Backup Storage"},
  com.cognitect.aws/batch
- {:mvn/version "848.2.1413.0", :aws/serviceFullName "AWS Batch"},
+ {:mvn/version "852.2.1526.0", :aws/serviceFullName "AWS Batch"},
+ com.cognitect.aws/bcm-data-exports
+ {:mvn/version "852.2.1526.0",
+  :aws/serviceFullName "AWS Billing and Cost Management Data Exports"},
+ com.cognitect.aws/bedrock
+ {:mvn/version "852.2.1526.0", :aws/serviceFullName "Amazon Bedrock"},
+ com.cognitect.aws/bedrock-agent
+ {:mvn/version "852.2.1526.0",
+  :aws/serviceFullName "Agents for Amazon Bedrock"},
+ com.cognitect.aws/bedrock-agent-runtime
+ {:mvn/version "852.2.1526.0",
+  :aws/serviceFullName "Agents for Amazon Bedrock Runtime"},
+ com.cognitect.aws/bedrock-runtime
+ {:mvn/version "852.2.1526.0",
+  :aws/serviceFullName "Amazon Bedrock Runtime"},
  com.cognitect.aws/billingconductor
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1526.0",
   :aws/serviceFullName "AWSBillingConductor"},
  com.cognitect.aws/braket
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "Braket"},
+ {:mvn/version "852.2.1526.0", :aws/serviceFullName "Braket"},
  com.cognitect.aws/budgets
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS Budgets"},
+ {:mvn/version "852.2.1526.0", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1526.0",
   :aws/serviceFullName "AWS Cost Explorer Service"},
  com.cognitect.aws/chime
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "Amazon Chime"},
@@ -109,7 +126,7 @@
  {:mvn/version "848.2.1413.0",
   :aws/serviceFullName "Amazon Chime SDK Identity"},
  com.cognitect.aws/chime-sdk-media-pipelines
- {:mvn/version "847.2.1365.0",
+ {:mvn/version "852.2.1526.0",
   :aws/serviceFullName "Amazon Chime SDK Media Pipelines"},
  com.cognitect.aws/chime-sdk-meetings
  {:mvn/version "847.2.1365.0",
@@ -347,7 +364,7 @@
   :aws/serviceFullName "Amazon CloudWatch Evidently"},
  com.cognitect.aws/finspace
  {:mvn/version "847.2.1365.0",
-  :aws/serviceFullName "FinSpace Public API"},
+  :aws/serviceFullName "FinSpace User Environment Management service"},
  com.cognitect.aws/firehose
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon Kinesis Firehose"},
@@ -370,8 +387,6 @@
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "Amazon FSx"},
  com.cognitect.aws/gamelift
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "Amazon GameLift"},
- com.cognitect.aws/gamesparks
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "GameSparks"},
  com.cognitect.aws/glacier
  {:mvn/version "847.2.1365.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
@@ -559,8 +574,6 @@
  com.cognitect.aws/machinelearning
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon Machine Learning"},
- com.cognitect.aws/macie
- {:mvn/version "847.2.1365.0", :aws/serviceFullName "Amazon Macie"},
  com.cognitect.aws/macie2
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "Amazon Macie 2"},
  com.cognitect.aws/managedblockchain

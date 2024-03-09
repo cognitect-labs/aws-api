@@ -10,14 +10,14 @@
            com.cognitect/http-client {:mvn/version "1.0.127"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
-           :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources" "examples" "examples/resources" "dev/resources"]
+           :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources" "examples" "examples/resources"]
                              :extra-deps  {commons-io/commons-io         {:mvn/version "2.11.0"}
                                            org.clojure/test.check        {:mvn/version "1.1.1"}
                                            org.slf4j/slf4j-reload4j      {:mvn/version "2.0.3"}
                                            http-kit/http-kit             {:mvn/version "2.6.0"}
                                            com.amazonaws/aws-java-sdk    {:mvn/version "1.12.344"}
-                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.504"}
-                                           com.cognitect.aws/autoscaling {:mvn/version "847.2.1365.0"}
+                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.626"}
+                                           com.cognitect.aws/autoscaling {:mvn/version "852.2.1525.0"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "848.2.1413.0"}
                                            com.cognitect.aws/ec2         {:mvn/version "848.2.1413.0"}
                                            com.cognitect.aws/iam         {:mvn/version "848.2.1413.0"}
