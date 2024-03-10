@@ -16,15 +16,15 @@
                                            org.slf4j/slf4j-reload4j      {:mvn/version "2.0.3"}
                                            http-kit/http-kit             {:mvn/version "2.6.0"}
                                            com.amazonaws/aws-java-sdk    {:mvn/version "1.12.344"}
-                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.626"}
-                                           com.cognitect.aws/autoscaling {:mvn/version "852.2.1525.0"}
-                                           com.cognitect.aws/dynamodb    {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/ec2         {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/iam         {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/lambda      {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/s3          {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/ssm         {:mvn/version "848.2.1413.0"}
-                                           com.cognitect.aws/sts         {:mvn/version "847.2.1387.0"}}}
+                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.676"}
+                                           com.cognitect.aws/autoscaling {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/dynamodb    {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/ec2         {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/iam         {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/lambda      {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/s3          {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/ssm         {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/sts         {:mvn/version "857.2.1574.0"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                              :main-opts  ["-m" "cognitect.test-runner"
                                           "-e" "integration"]}
