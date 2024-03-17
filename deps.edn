@@ -22,7 +22,7 @@
                                            com.cognitect.aws/ec2         {:mvn/version "857.2.1574.0"}
                                            com.cognitect.aws/iam         {:mvn/version "857.2.1574.0"}
                                            com.cognitect.aws/lambda      {:mvn/version "857.2.1574.0"}
-                                           com.cognitect.aws/s3          {:mvn/version "857.2.1574.0"}
+                                           com.cognitect.aws/s3          {:mvn/version "848.2.1413.0"}
                                            com.cognitect.aws/ssm         {:mvn/version "857.2.1574.0"}
                                            com.cognitect.aws/sts         {:mvn/version "857.2.1574.0"}}}
            :test            {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
