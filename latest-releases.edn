@@ -10,7 +10,7 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Migration Hub"},
  com.cognitect.aws/accessanalyzer
- {:mvn/version "857.2.1574.0", :aws/serviceFullName "Access Analyzer"},
+ {:mvn/version "868.2.1584.0", :aws/serviceFullName "Access Analyzer"},
  com.cognitect.aws/account
  {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS Account"},
  com.cognitect.aws/acm
@@ -156,7 +156,7 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon CloudDirectory"},
  com.cognitect.aws/cloudformation
- {:mvn/version "868.2.1580.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "AWS CloudFormation"},
  com.cognitect.aws/cloudfront
  {:mvn/version "857.2.1574.0",
@@ -177,9 +177,9 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS CloudTrail Data Service"},
  com.cognitect.aws/codeartifact
- {:mvn/version "857.2.1574.0", :aws/serviceFullName "CodeArtifact"},
+ {:mvn/version "868.2.1584.0", :aws/serviceFullName "CodeArtifact"},
  com.cognitect.aws/codebuild
- {:mvn/version "868.2.1580.0", :aws/serviceFullName "AWS CodeBuild"},
+ {:mvn/version "868.2.1584.0", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecatalyst
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon CodeCatalyst"},
@@ -228,7 +228,7 @@
  com.cognitect.aws/config
  {:mvn/version "857.2.1574.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "868.2.1580.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "847.2.1365.0",
@@ -306,12 +306,12 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "AWS Directory Service"},
  com.cognitect.aws/dynamodb
- {:mvn/version "857.2.1574.0", :aws/serviceFullName "Amazon DynamoDB"},
+ {:mvn/version "868.2.1584.0", :aws/serviceFullName "Amazon DynamoDB"},
  com.cognitect.aws/ebs
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "868.2.1580.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "868.2.1580.0",
@@ -380,10 +380,10 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon CloudWatch Evidently"},
  com.cognitect.aws/finspace
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "FinSpace User Environment Management service"},
  com.cognitect.aws/firehose
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "Amazon Kinesis Firehose"},
  com.cognitect.aws/fis
  {:mvn/version "868.2.1580.0",
@@ -517,7 +517,7 @@
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Managed Streaming for Kafka Connect"},
  com.cognitect.aws/kendra
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "AWSKendraFrontendService"},
  com.cognitect.aws/kendra-ranking
  {:mvn/version "847.2.1365.0",
@@ -578,7 +578,7 @@
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon Location Service"},
  com.cognitect.aws/logs
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "Amazon CloudWatch Logs"},
  com.cognitect.aws/lookoutequipment
  {:mvn/version "857.2.1574.0",
@@ -601,7 +601,7 @@
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon Managed Blockchain"},
  com.cognitect.aws/managedblockchain-query
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "Amazon Managed Blockchain Query"},
  com.cognitect.aws/marketplace-agreement
  {:mvn/version "857.2.1574.0",
@@ -761,7 +761,7 @@
  com.cognitect.aws/polly
  {:mvn/version "857.2.1574.0", :aws/serviceFullName "Amazon Polly"},
  com.cognitect.aws/pricing
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "AWS Price List Service"},
  com.cognitect.aws/privatenetworks
  {:mvn/version "848.2.1413.0", :aws/serviceFullName "AWS Private 5G"},
@@ -821,7 +821,7 @@
  com.cognitect.aws/robomaker
  {:mvn/version "847.2.1365.0", :aws/serviceFullName "AWS RoboMaker"},
  com.cognitect.aws/rolesanywhere
- {:mvn/version "847.2.1387.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "IAM Roles Anywhere"},
  com.cognitect.aws/route53
  {:mvn/version "857.2.1574.0", :aws/serviceFullName "Amazon Route 53"},
@@ -878,7 +878,7 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon SageMaker Metrics Service"},
  com.cognitect.aws/savingsplans
- {:mvn/version "857.2.1574.0",
+ {:mvn/version "868.2.1584.0",
   :aws/serviceFullName "AWS Savings Plans"},
  com.cognitect.aws/scheduler
  {:mvn/version "857.2.1574.0",
@@ -891,7 +891,7 @@
  {:mvn/version "868.2.1580.0",
   :aws/serviceFullName "AWS Secrets Manager"},
  com.cognitect.aws/securityhub
- {:mvn/version "857.2.1574.0", :aws/serviceFullName "AWS SecurityHub"},
+ {:mvn/version "868.2.1584.0", :aws/serviceFullName "AWS SecurityHub"},
  com.cognitect.aws/securitylake
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon Security Lake"},
