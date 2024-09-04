@@ -44,11 +44,6 @@
       <version>1.2.4</version>
     </dependency>
     <dependency>
-      <groupId>com.cognitect</groupId>
-      <artifactId>http-client</artifactId>
-      <version>1.0.127</version>
-    </dependency>
-    <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>data.xml</artifactId>
       <version>0.2.0-alpha8</version>

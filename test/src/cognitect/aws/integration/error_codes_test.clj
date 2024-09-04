@@ -30,10 +30,10 @@
     (is (= "ValidationError"
            (:cognitect.aws.error/code
             (aws/invoke (aws/client {:api :autoscaling})
-                        {:op :PutScalingPolicy})))))
+                        {:op :DescribeTrafficSources})))))
 
   (testing "json"
     (is (= "ValidationException"
            (:cognitect.aws.error/code
             (aws/invoke (aws/client {:api :ssm})
-                        {:op :PutParameter}))))))
+                        {:op :DescribePatchGroupState}))))))

@@ -6,16 +6,16 @@
            org.clojure/core.async    {:mvn/version "1.6.681"}
            org.clojure/tools.logging {:mvn/version "1.2.4"}
            org.clojure/data.json     {:mvn/version "2.5.0"}
-           org.clojure/data.xml      {:mvn/version "0.2.0-alpha8"}
-           com.cognitect/http-client {:mvn/version "1.0.127"}}
+           org.clojure/data.xml      {:mvn/version "0.2.0-alpha8"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources" "examples" "examples/resources"]
-                             :extra-deps  {commons-io/commons-io         {:mvn/version "2.11.0"}
+                             :extra-deps  {commons-io/commons-io         {:mvn/version "2.16.1"}
                                            org.clojure/test.check        {:mvn/version "1.1.1"}
-                                           org.slf4j/slf4j-reload4j      {:mvn/version "2.0.3"}
-                                           http-kit/http-kit             {:mvn/version "2.6.0"}
-                                           com.amazonaws/aws-java-sdk    {:mvn/version "1.12.344"}
+                                           org.slf4j/slf4j-reload4j      {:mvn/version "2.0.13"}
+                                           http-kit/http-kit             {:mvn/version "2.7.0"}
+                                           com.amazonaws/aws-java-sdk-s3 {:mvn/version "1.12.702"}
+                                           com.cognitect/http-client     {:mvn/version "1.0.127"}
                                            com.cognitect.aws/endpoints   {:mvn/version "1.1.12.772"}
                                            com.cognitect.aws/autoscaling {:mvn/version "869.2.1687.0"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "869.2.1687.0"}

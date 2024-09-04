@@ -26,16 +26,16 @@
 
   :api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc
   :http-client          - optional, to share http-clients across aws-clients
-                          Default: default-http-client
+                          Default: cognitect.aws.client.shared/http-client
   :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                          protocol, defaults to cognitect.aws.region/default-region-provider.
+                          protocol, defaults to cognitect.aws.client.shared/region-provider.
                           Ignored if :region is also provided
   :region               - optional, the aws region serving the API endpoints you
                           want to interact with, defaults to region provided by
                           by the region-provider
   :credentials-provider - optional, implementation of
                           cognitect.aws.credentials/CredentialsProvider protocol
-                          Default: cognitect.aws.credentials/default-credentials-provider
+                          Default: cognitect.aws.client.shared/credentials-provider
   :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                             :protocol     - :http or :https
                             :hostname     - string
