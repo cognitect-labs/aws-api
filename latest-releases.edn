@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.692"},
- com.cognitect.aws/endpoints {:mvn/version "1.1.12.770"},
+ com.cognitect.aws/endpoints {:mvn/version "1.1.12.772"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -59,7 +59,7 @@
  {:mvn/version "852.2.1525.0",
   :aws/serviceFullName "Amazon CloudWatch Application Insights"},
  com.cognitect.aws/application-signals
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Amazon CloudWatch Application Signals"},
  com.cognitect.aws/appmesh
  {:mvn/version "852.2.1525.0", :aws/serviceFullName "AWS App Mesh"},
@@ -69,7 +69,7 @@
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
- {:mvn/version "869.2.1687.0", :aws/serviceFullName "AWS AppSync"},
+ {:mvn/version "870.2.1691.0", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/apptest
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName
@@ -105,7 +105,7 @@
  com.cognitect.aws/bedrock
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "Amazon Bedrock"},
  com.cognitect.aws/bedrock-agent
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Agents for Amazon Bedrock"},
  com.cognitect.aws/bedrock-agent-runtime
  {:mvn/version "869.2.1687.0",
@@ -201,7 +201,7 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon CodeGuru Profiler"},
  com.cognitect.aws/codepipeline
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "AWS CodePipeline"},
  com.cognitect.aws/codestar-connections
  {:mvn/version "868.2.1580.0",
@@ -230,7 +230,7 @@
  com.cognitect.aws/config
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "869.2.1687.0",
@@ -271,7 +271,7 @@
  com.cognitect.aws/datasync
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/datazone
- {:mvn/version "869.2.1687.0", :aws/serviceFullName "Amazon DataZone"},
+ {:mvn/version "870.2.1691.0", :aws/serviceFullName "Amazon DataZone"},
  com.cognitect.aws/dax
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
@@ -354,7 +354,7 @@
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticloadbalancingv2
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticmapreduce
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "Amazon EMR"},
@@ -388,13 +388,13 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon CloudWatch Evidently"},
  com.cognitect.aws/finspace
- {:mvn/version "868.2.1599.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "FinSpace User Environment Management service"},
  com.cognitect.aws/firehose
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "Amazon Kinesis Firehose"},
  com.cognitect.aws/fis
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "AWS Fault Injection Simulator"},
  com.cognitect.aws/fms
  {:mvn/version "869.2.1687.0",
@@ -413,7 +413,7 @@
  com.cognitect.aws/fsx
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "Amazon FSx"},
  com.cognitect.aws/gamelift
- {:mvn/version "869.2.1687.0", :aws/serviceFullName "Amazon GameLift"},
+ {:mvn/version "870.2.1691.0", :aws/serviceFullName "Amazon GameLift"},
  com.cognitect.aws/glacier
  {:mvn/version "847.2.1365.0", :aws/serviceFullName "Amazon Glacier"},
  com.cognitect.aws/globalaccelerator
@@ -548,7 +548,7 @@
  {:mvn/version "847.2.1365.0",
   :aws/serviceFullName "Amazon Kinesis Analytics"},
  com.cognitect.aws/kinesisanalyticsv2
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Amazon Kinesis Analytics"},
  com.cognitect.aws/kinesisvideo
  {:mvn/version "857.2.1574.0",
@@ -583,7 +583,7 @@
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "Amazon Location Service"},
  com.cognitect.aws/logs
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Amazon CloudWatch Logs"},
  com.cognitect.aws/lookoutequipment
  {:mvn/version "857.2.1574.0",
@@ -623,13 +623,13 @@
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "AWS Marketplace Commerce Analytics"},
  com.cognitect.aws/mediaconnect
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "857.2.1574.0",
@@ -779,7 +779,7 @@
  com.cognitect.aws/proton
  {:mvn/version "857.2.1574.0", :aws/serviceFullName "AWS Proton"},
  com.cognitect.aws/qapps
- {:mvn/version "869.2.1687.0", :aws/serviceFullName "QApps"},
+ {:mvn/version "870.2.1691.0", :aws/serviceFullName "QApps"},
  com.cognitect.aws/qbusiness
  {:mvn/version "869.2.1687.0", :aws/serviceFullName "QBusiness"},
  com.cognitect.aws/qconnect
@@ -871,12 +871,12 @@
  {:mvn/version "869.2.1687.0",
   :aws/serviceFullName "Amazon Simple Storage Service"},
  com.cognitect.aws/s3control
- {:mvn/version "868.2.1599.0", :aws/serviceFullName "AWS S3 Control"},
+ {:mvn/version "870.2.1691.0", :aws/serviceFullName "AWS S3 Control"},
  com.cognitect.aws/s3outposts
  {:mvn/version "857.2.1574.0",
   :aws/serviceFullName "Amazon S3 on Outposts"},
  com.cognitect.aws/sagemaker
- {:mvn/version "869.2.1687.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "847.2.1365.0",
@@ -999,7 +999,7 @@
  com.cognitect.aws/textract
  {:mvn/version "857.2.1574.0", :aws/serviceFullName "Amazon Textract"},
  com.cognitect.aws/timestream-influxdb
- {:mvn/version "868.2.1580.0",
+ {:mvn/version "870.2.1691.0",
   :aws/serviceFullName "Timestream InfluxDB"},
  com.cognitect.aws/timestream-query
  {:mvn/version "869.2.1687.0",

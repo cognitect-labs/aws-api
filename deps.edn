@@ -16,7 +16,7 @@
                                            org.slf4j/slf4j-reload4j      {:mvn/version "2.0.3"}
                                            http-kit/http-kit             {:mvn/version "2.6.0"}
                                            com.amazonaws/aws-java-sdk    {:mvn/version "1.12.344"}
-                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.770"}
+                                           com.cognitect.aws/endpoints   {:mvn/version "1.1.12.772"}
                                            com.cognitect.aws/autoscaling {:mvn/version "869.2.1687.0"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "869.2.1687.0"}
                                            com.cognitect.aws/ec2         {:mvn/version "869.2.1687.0"}
