@@ -3,39 +3,28 @@
 
 (ns cognitect.aws.ec2-metadata-utils-test
   (:require [clojure.core.async :as a]
-            [clojure.test :refer [deftest is testing use-fixtures]]
-            [cognitect.aws.client.shared :as shared]
+            [clojure.test :refer [deftest is testing]]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
             [cognitect.aws.http :as http]
-            [cognitect.aws.test.ec2-metadata-utils-server :as ec2-metadata-utils-server]
             [cognitect.aws.util :as u])
   (:import [java.net URI]))
 
-(def ^:dynamic *test-server-port*)
-(def ^:dynamic *http-client*)
-
-(defn test-server
-  [f]
-  ;; NOTE: starting w/ 0 generates a random port
-  (let [server-stop-fn   (ec2-metadata-utils-server/start 0)
-        test-server-port (-> server-stop-fn meta :local-port)]
-    (try
-      (System/setProperty ec2-metadata-utils/ec2-metadata-service-override-system-property
-                          (str "http://localhost:" test-server-port))
-      (binding [*test-server-port* test-server-port
-                *http-client*      (shared/http-client)]
-        (f))
-      (finally
-        (server-stop-fn)
-        (System/clearProperty ec2-metadata-utils/ec2-metadata-service-override-system-property)))))
-
-(use-fixtures :once test-server)
 
 (deftest returns-nil-after-retries
-  (with-redefs [http/submit (constantly
-                             (doto (a/promise-chan)
-                               (a/>!! {:cognitect.anomalies/category :cognitect.anomalies/busy})))]
-    (is (nil? (ec2-metadata-utils/get-ec2-instance-region *http-client*)))))
+  ;; Using a mock http client that keeps track of the number of http requests and always returns a
+  ;; busy response, assert that the expected number of requests were made and that ultimately a nil
+  ;; response was returned.
+  (let [expected-submit-count 4 ;; Expected to equal `max-retries` plus one.
+        actual-submit-count (atom 0)
+        response-chan (doto (a/promise-chan)
+                        (a/>!! {:cognitect.anomalies/category :cognitect.anomalies/busy}))
+        mock-http-client (reify http/HttpClient
+                           (-submit [_ _request _channel]
+                             (swap! actual-submit-count inc)
+                             response-chan)
+                           (-stop [_]))]
+    (is (nil? (ec2-metadata-utils/get-ec2-instance-region mock-http-client)))
+    (is (= expected-submit-count @actual-submit-count))))
 
 (deftest request-map
   (testing "server-port"
