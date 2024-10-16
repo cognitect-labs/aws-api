@@ -103,7 +103,8 @@
       :validate-requests?   (atom nil)})))
 
 (defn default-http-client
-  "Create an http-client to share across multiple aws-api clients."
+  "Returns a new instance of the default type of http client. This function may be used to create a
+  single http-client instance to share across multiple aws-api clients."
   []
   (http/resolve-http-client nil))
 

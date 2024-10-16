@@ -1,7 +1,7 @@
 ;; Copyright (c) Cognitect, Inc.
 ;; All rights reserved.
 
-{:paths   ["src" "resources"]
+{:paths   ["src"]
  :deps    {org.clojure/clojure       {:mvn/version "1.11.1"}
            org.clojure/core.async    {:mvn/version "1.6.681"}
            org.clojure/tools.logging {:mvn/version "1.2.4"}

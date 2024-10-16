@@ -64,19 +64,20 @@
 
 ;; TODO consider providing config arguments to http constructor
 (defn- configured-client
-  "If a single cognitect_aws_http.edn is found on the classpath,
-  returns the symbol bound to :constructor-var.
+  "If a single `cognitect_aws_http.edn` is found on the classpath,
+  returns the symbol bound to `:constructor-var`.
 
-  Throws if 0 or > 1 cognitect_aws_http.edn files are found.
-  "
+  If none are found, use this library's default.
+
+  Throws if more than one `cognitect_aws_http.edn` files are found."
   []
   (let [cl   (.. Thread currentThread getContextClassLoader)
         cfgs (enumeration-seq (.getResources cl "cognitect_aws_http.edn"))]
     (case (count cfgs)
-      0 (throw (RuntimeException. "Could not find cognitect_aws_http.edn on classpath."))
+      0 'cognitect.aws.http.default/create
       1 (-> cfgs first read-config :constructor-var)
 
-      (throw (ex-info "Found too many http-client cfgs. Pick one." {:config cfgs})))))
+      (throw (ex-info "Found more than one cognitect_aws_http.edn file in the classpath. There must be at most one." {:config cfgs})))))
 
 (defn resolve-http-client
   [http-client-or-sym]

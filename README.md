@@ -256,16 +256,90 @@ the `:path` in the `:endpoint-override` map.
 
 ## http-client
 
+An http client is used in the following contexts:
+
+* The aws-api client uses an http client to carry out the http communication with an AWS endpoint
+  when you invoke an operation.
+* When running in EC2 or ECS, an http client may be used by the credentials provider to fetch
+  credentials information from within the running instance.
+* When running in EC2 or ECS, an http client may be used by the region provider to fetch region
+  information from within the running instance.
+
+### Shared http-client
+
+By default, each aws-api client uses a single, shared http-client, whose resources are managed by
+aws-api. See the `cognitect.aws.client.shared` namespace.
+
+The `cognitect.aws.client.shared` namespace also defines a single, globally shared credentials
+provider as well as a single, globally shared region provider - both of these also use the shared
+http client.
+
+### Default http-client
+
+An http-client will be created from the `default-http-client` function of the
+`cognitect.aws.client.api` namespace - this function returns a new instance of the default type of
+http client.
+
+The globally shared http-client will be an instance of this default type of client.
+
+The http client returned by the `default-http-client` function will be one of the following:
+
+* If the version of Java is recent enough (Java 11 or newer), the returned http client is a Java
+  native implementation based on the
+  [java.net.http](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)
+  module.
+* If the Java version is older, the legacy http client based on `com.cognitect/http-client` will be
+  used. However, this requires that you provide the `com.cognitect/http-client` dependency.
+* It is possible to configure a custom type of default http client (see next section).
+* If none of these conditions are met, an exception will be thrown.
+
 NOTE: the behavior of `com.cognitect.aws.api/client` and `com.cognitect.aws.api/stop`
 changed as of release 0.8.430. See [Upgrade
 Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md)
 for more information.
 
-The aws-api client uses an http-client to send requests to AWS,
-including any operations you invoke _and_ fetching the region and
-credentials when you're running in EC2 or ECS. By default, each
-aws-api client uses a single, shared http-client, whose resources
-are managed by aws-api.
+### Overriding the http-client
+
+There are two ways of overriding the default http client behavior:
+
+* Setting the http client per each individual AWS client.
+* Changing the default type of http client (and, consequently, the globally shared http-client instance).
+
+#### Customize the http-client of an AWS client
+
+Http clients can be set on each individual AWS client. When you create an AWS client, you can set
+the http-client via the `:http-client` key.
+
+Example:
+```clj
+(require '[cognitect.aws.http.java :as http-java-client])
+
+(aws/client {:api :s3
+             :http-client http-java-client/create})
+```
+
+The value of `:http-client` can be either:
+
+* An http client instance.
+* A fully qualified symbol which resolves to a function of zero arguments which, when invoked,
+returns an http client instance.
+
+#### Override the default shared http client
+
+If you want to use a certain http-client by default in all clients, you can override the type of
+http client that is created by default, including for the globally shared http client instance.
+
+To do that, create a resource file called `cognitect_aws_http.edn` with content such as this:
+
+```edn
+{:constructor-var cognitect.aws.http.java/create}
+```
+
+The key must be the keyword `:constructor-var` and the value must be a fully qualified symbol which
+resolves to a function of zero arguments which, when invoked, returns an http client.
+
+This file must be available at runtime as a resource in the classpath of your application, and there
+must be at most one such file.
 
 ## Troubleshooting
 

@@ -1,6 +1,6 @@
 # aws-api
 
-## unreleased
+## DEV
 
 * New `java.net.http`-based HTTP client, without external dependencies
   * BREAKING: when running on java 8, an explicit dependency on `com.cognitect/http-client` is now required

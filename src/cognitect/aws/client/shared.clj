@@ -2,6 +2,8 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.client.shared
+  "Default, globally shared resources which are by default shared among all AWS clients and whose
+  lifecycles and resources are automatically managed."
   (:require [cognitect.aws.http :as http]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.region :as region]))
