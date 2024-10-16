@@ -31,7 +31,9 @@
       first))
 
 (defn version []
-  (str (version-prefix) "." (git-revision)))
+  (-> (:out (shell/sh "build/version"))
+      (str/split #"\n")
+      first))
 
 (defn update-file [fname* xform]
   (let [[fname ext] (str/split fname* #"\.")
@@ -67,12 +69,13 @@
       (update-version-in "deps.edn" latest svc))))
 
 (defn update-changelog [version]
-  (update-file "CHANGES.md"
-               #(if (re-find (re-pattern "## DEV") %)
-                  (str/replace-first %
-                                     (re-pattern "DEV")
-                                     (str version " / " (.format (java.text.SimpleDateFormat. "yyyy-MM-dd") (Date.))))
-                  %)))
+  (doseq [fname ["CHANGES.md" "UPGRADE.md"]]
+    (update-file fname
+                 #(if (re-find (re-pattern "## DEV") %)
+                    (str/replace-first %
+                                       (re-pattern "DEV")
+                                       (str version " / " (.format (java.text.SimpleDateFormat. "yyyy-MM-dd") (Date.))))
+                    %))))
 
 (defn update-api-version-in-latest-releases [version]
   (let [f    (io/file "latest-releases.edn")

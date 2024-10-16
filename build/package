@@ -6,9 +6,7 @@ echo "Cleaning..."
 rm -rf ./target
 
 echo "Calculating version..."
-prefix=`cat VERSION_PREFIX`
-suffix=`build/revision`
-version=$prefix.$suffix
+version=`build/version`
 echo $version
 
 target_name=api-${version}

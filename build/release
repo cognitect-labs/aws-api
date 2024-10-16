@@ -15,9 +15,7 @@ else
 fi
 
 echo "Calculating version..."
-prefix=`cat VERSION_PREFIX`
-suffix=`build/revision`
-version=$prefix.$suffix
+version=`build/version`
 echo $version
 
 target_name=api-${version}
@@ -31,10 +29,10 @@ echo "Tagging..."
 git tag -a v${version} -m "Release ${version}"
 git push origin v${version}
 
-echo "Updating README.md, CHANGES.md, and latest-releases.edn with ${version}"
+echo "Updating README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}"
 clj -A:update-versions --update-latest-releases --update-changelog --update-readme
-git commit -m "Update README.md, CHANGES.md, and latest-releases.edn with ${version}" \
-    README.md CHANGES.md latest-releases.edn
+git commit -m "Update README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}" \
+    README.md CHANGES.md UPGRADE.md latest-releases.edn
 git push
 
 echo "Updating gh-pages with new api docs"
