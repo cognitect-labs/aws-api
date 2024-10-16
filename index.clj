@@ -4,7 +4,8 @@
    :name "cognitect.aws.client.api",
    :wiki-url "cognitect.aws.client.api-api.html",
    :source-url nil}
-  {:doc nil,
+  {:doc
+   "Default, globally shared resources which are by default shared among all AWS clients and whose\nlifecycles and resources are automatically managed.",
    :name "cognitect.aws.client.shared",
    :wiki-url "cognitect.aws.client.shared-api.html",
    :source-url nil}
@@ -17,6 +18,10 @@
    "Contains credentials providers and helpers for discovering credentials.\n\nAlpha. Subject to change.",
    :name "cognitect.aws.credentials",
    :wiki-url "cognitect.aws.credentials-api.html",
+   :source-url nil}
+  {:doc nil,
+   :name "cognitect.aws.http.default",
+   :wiki-url "cognitect.aws.http.default-api.html",
    :source-url nil}
   {:doc
    "Region providers. Primarily for internal use, and subject to change.",
@@ -44,9 +49,11 @@
        credentials-provider
        endpoint-override
        http-client],
-      :or {endpoint-override {}}}]),
+      :or
+      {endpoint-override {},
+       credentials-provider (shared/credentials-provider)}}]),
    :doc
-   "Given a config map, create a client for specified api. Supported keys:\n\n:api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc\n:http-client          - optional, to share http-clients across aws-clients\n                        Default: default-http-client\n:region-provider      - optional, implementation of aws-clojure.region/RegionProvider\n                        protocol, defaults to cognitect.aws.region/default-region-provider.\n                        Ignored if :region is also provided\n:region               - optional, the aws region serving the API endpoints you\n                        want to interact with, defaults to region provided by\n                        by the region-provider\n:credentials-provider - optional, implementation of\n                        cognitect.aws.credentials/CredentialsProvider protocol\n                        Default: cognitect.aws.credentials/default-credentials-provider\n:endpoint-override    - optional, map to override parts of the endpoint. Supported keys:\n                          :protocol     - :http or :https\n                          :hostname     - string\n                          :port         - int\n                          :path         - string\n                        If the hostname includes an AWS region, be sure to use the same\n                        region for the client (either via out of process configuration\n                        or the :region key supplied to this fn).\n                        Also supports a string representing just the hostname, though\n                        support for a string is deprecated and may be removed in the\n                        future.\n:retriable?           - optional, predicate fn of http-response (see cognitect.aws.http/submit),\n                        which should return a truthy value if the request is\n                        retriable.\n                        Default: cognitect.aws.retry/default-retriable?\n:backoff              - optional, fn of number of retries so far. Should return\n                        number of milliseconds to wait before the next retry\n                        (if the request is retriable?), or nil if it should stop.\n                        Default: cognitect.aws.retry/default-backoff.\n\nBy default, all clients use shared http-client, credentials-provider, and\nregion-provider instances which use a small collection of daemon threads.\n\nPrimarily for debugging, clients support keyword access for :api (String), :region, :endpoint,\n:credentials, :service (with :metadata), and :http-client.\n\nAlpha. Subject to change.",
+   "Given a config map, create a client for specified api. Supported keys:\n\n:api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc\n:http-client          - optional, to share http-clients across aws-clients\n                        Default: cognitect.aws.client.shared/http-client\n:region-provider      - optional, implementation of aws-clojure.region/RegionProvider\n                        protocol, defaults to cognitect.aws.client.shared/region-provider.\n                        Ignored if :region is also provided\n:region               - optional, the aws region serving the API endpoints you\n                        want to interact with, defaults to region provided by\n                        the region-provider\n:credentials-provider - optional, implementation of\n                        cognitect.aws.credentials/CredentialsProvider protocol\n                        Default: cognitect.aws.client.shared/credentials-provider\n:endpoint-override    - optional, map to override parts of the endpoint. Supported keys:\n                          :protocol     - :http or :https\n                          :hostname     - string\n                          :port         - int\n                          :path         - string\n                        If the hostname includes an AWS region, be sure to use the same\n                        region for the client (either via out of process configuration\n                        or the :region key supplied to this fn).\n                        Also supports a string representing just the hostname, though\n                        support for a string is deprecated and may be removed in the\n                        future.\n:retriable?           - optional, predicate fn of http-response (see cognitect.aws.http/submit),\n                        which should return a truthy value if the request is\n                        retriable.\n                        Default: cognitect.aws.retry/default-retriable?\n:backoff              - optional, fn of number of retries so far. Should return\n                        number of milliseconds to wait before the next retry\n                        (if the request is retriable?), or nil if it should stop.\n                        Default: cognitect.aws.retry/default-backoff.\n\nBy default, all clients use shared http-client, credentials-provider, and\nregion-provider instances which use a small collection of daemon threads.\n\nPrimarily for debugging, clients support keyword access for :api (String), :region, :endpoint,\n:credentials, :service (with :metadata), and :http-client.\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/client"}
@@ -54,11 +61,11 @@
    :name "default-http-client",
    :file "src/cognitect/aws/client/api.clj",
    :source-url nil,
-   :line 106,
+   :line 105,
    :var-type "function",
    :arglists ([]),
    :doc
-   "Create an http-client to share across multiple aws-api clients.",
+   "Returns a new instance of the default type of http client. This function may be used to create a\nsingle http-client instance to share across multiple aws-api clients.",
    :namespace "cognitect.aws.client.api",
    :wiki-url
    "/cognitect.aws.client.api-api.html#cognitect.aws.client.api/default-http-client"}
@@ -177,7 +184,7 @@
    :name "credentials-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 30,
+   :line 32,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -189,7 +196,7 @@
    :name "http-client",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 22,
+   :line 24,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -201,7 +208,7 @@
    :name "region-provider",
    :file "src/cognitect/aws/client/shared.clj",
    :source-url nil,
-   :line 38,
+   :line 40,
    :var-type "function",
    :arglists ([]),
    :doc
@@ -249,7 +256,7 @@
    :name "basic-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 339,
+   :line 365,
    :var-type "function",
    :arglists ([{:keys [access-key-id secret-access-key]}]),
    :doc
@@ -309,11 +316,11 @@
    :name "default-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 321,
+   :line 345,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Returns a chain-credentials-provider with (in order):\n\n  environment-credentials-provider\n  system-property-credentials-provider\n  profile-credentials-provider\n  container-credentials-provider\n  instance-profile-credentials-provider\n\nAlpha. Subject to change.",
+   "Returns a chain-credentials-provider with (in order):\n\n  environment-credentials-provider\n  system-property-credentials-provider\n  profile-credentials-provider\n  container-credentials-provider\n  instance-profile-IMDSv2-credentials-provider\n  instance-profile-credentials-provider\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/default-credentials-provider"}
@@ -344,7 +351,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
-   :line 353,
+   :line 379,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -353,14 +360,27 @@
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch-async"}
   {:raw-source-url nil,
+   :name "instance-profile-IMDSv2-credentials-provider",
+   :file "src/cognitect/aws/credentials.clj",
+   :source-url nil,
+   :line 323,
+   :var-type "function",
+   :arglists ([http-client]),
+   :doc
+   "For internal use. Do not call directly.\n\nReturn credentials from IMDS v2 enabled EC2 metadata service iff neither of\nAWS_CONTAINER_CREDENTIALS_RELATIVE_URI or\nAWS_CONTAINER_CREDENTIALS_FULL_URI\nis set.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.credentials",
+   :wiki-url
+   "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-IMDSv2-credentials-provider"}
+  {:raw-source-url nil,
    :name "instance-profile-credentials-provider",
    :file "src/cognitect/aws/credentials.clj",
    :source-url nil,
    :line 300,
+   :deprecated true,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "For internal use. Do not call directly.\n\nReturn credentials from EC2 metadata service iff neither of\nAWS_CONTAINER_CREDENTIALS_RELATIVE_URI or\nAWS_CONTAINER_CREDENTIALS_FULL_URI\nis set.\n\nAlpha. Subject to change.",
+   "For internal use. Do not call directly.\n\nReturn credentials from EC2 metadata service iff neither of\nAWS_CONTAINER_CREDENTIALS_RELATIVE_URI or\nAWS_CONTAINER_CREDENTIALS_FULL_URI\nis set.\n\nDEPRECATED use `instance-profile-IMDSv2-credentials-provider`\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.credentials",
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-credentials-provider"}
@@ -401,6 +421,18 @@
    :wiki-url
    "/cognitect.aws.credentials-api.html#cognitect.aws.credentials/system-property-credentials-provider"}
   {:raw-source-url nil,
+   :name "create",
+   :file "src/cognitect/aws/http/default.clj",
+   :source-url nil,
+   :line 17,
+   :var-type "function",
+   :arglists ([]),
+   :doc
+   "Returns a new cognitect.aws.http/HttpClient.\n\n- If running JVM is JDK 11+, returns a client based on java.net.http.HttpClient.\n- If cognitect.http-client ns is available, returns a client based on it.\n\nIf none of these requirements are met, throws.",
+   :namespace "cognitect.aws.http.default",
+   :wiki-url
+   "/cognitect.aws.http.default-api.html#cognitect.aws.http.default/create"}
+  {:raw-source-url nil,
    :name "chain-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
@@ -416,11 +448,11 @@
    :name "default-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 99,
+   :line 115,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Returns a chain-region-provider with, in order:\n\n  environment-region-provider\n  system-property-region-provider\n  profile-region-provider\n  instance-region-provider\n\nAlpha. Subject to change.",
+   "Returns a chain-region-provider with, in order:\n\n  environment-region-provider\n  system-property-region-provider\n  profile-region-provider\n  instance-region-IMDS-v2-provider\n  instance-region-provider\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/default-region-provider"}
@@ -450,7 +482,7 @@
    :name "fetch-async",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
-   :line 115,
+   :line 133,
    :var-type "function",
    :arglists ([provider]),
    :doc
@@ -459,14 +491,27 @@
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/fetch-async"}
   {:raw-source-url nil,
+   :name "instance-region-IMDS-v2-provider",
+   :file "src/cognitect/aws/region.clj",
+   :source-url nil,
+   :line 102,
+   :var-type "function",
+   :arglists ([http-client]),
+   :doc
+   "Returns the region from the ec2 instance's IMDS v2 metadata service,\nor nil if the service can not be found.\n\nAlpha. Subject to change.",
+   :namespace "cognitect.aws.region",
+   :wiki-url
+   "/cognitect.aws.region-api.html#cognitect.aws.region/instance-region-IMDS-v2-provider"}
+  {:raw-source-url nil,
    :name "instance-region-provider",
    :file "src/cognitect/aws/region.clj",
    :source-url nil,
    :line 87,
+   :deprecated true,
    :var-type "function",
    :arglists ([http-client]),
    :doc
-   "Returns the region from the ec2 instance's metadata service,\nor nil if the service can not be found.\n\nAlpha. Subject to change.",
+   "Returns the region from the ec2 instance's metadata service,\nor nil if the service can not be found.\n\nDEPRECATED use `instance-region-IMDS-v2-provider`\n\nAlpha. Subject to change.",
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/instance-region-provider"}

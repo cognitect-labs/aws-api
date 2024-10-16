@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.http.default-api.html">cognitect.aws.http.default</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -61,6 +61,8 @@ namespace.
       <a href="#cognitect.aws.region/fetch">fetch</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.region/fetch-async">fetch-async</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.region/instance-region-IMDS-v2-provider">instance-region-IMDS-v2-provider</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
       <a href="#cognitect.aws.region/instance-region-provider">instance-region-provider</a>
     </div><div class="toc-entry" style="margin-left: 1em;">
@@ -112,6 +114,7 @@ Alpha. Subject to change.</pre>
   environment-region-provider
   system-property-region-provider
   profile-region-provider
+  instance-region-IMDS-v2-provider
   instance-region-provider
 
 Alpha. Subject to change.</pre>
@@ -159,6 +162,20 @@ Alpha. Subject to change.</pre>
 </div><div id="var-entry">
   <br />
   <hr />
+  <h2 id="cognitect.aws.region/instance-region-IMDS-v2-provider">instance-region-IMDS-v2-provider</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (instance-region-IMDS-v2-provider http-client)
+</pre>
+  <pre id="var-docstr">Returns the region from the ec2 instance's IMDS v2 metadata service,
+or nil if the service can not be found.
+
+Alpha. Subject to change.</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
   <h2 id="cognitect.aws.region/instance-region-provider">instance-region-provider</h2>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (instance-region-provider http-client)
@@ -166,9 +183,11 @@ Alpha. Subject to change.</pre>
   <pre id="var-docstr">Returns the region from the ec2 instance's metadata service,
 or nil if the service can not be found.
 
+DEPRECATED use `instance-region-IMDS-v2-provider`
+
 Alpha. Subject to change.</pre>
   
-  
+  <span class="var-deprecated"><span id="content">Deprecated since aws-api version true</span><br /></span>
   
 </div><div id="var-entry">
   <br />

@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.http.default-api.html">cognitect.aws.http.default</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -63,6 +63,10 @@ namespace.
     <br />
   </div><div class="toc-section" style="margin-left: 1em;">
     <a href="#cognitect.aws.credentials">cognitect.aws.credentials</a>
+    
+    <br />
+  </div><div class="toc-section" style="margin-left: 1em;">
+    <a href="#cognitect.aws.http.default">cognitect.aws.http.default</a>
     
     <br />
   </div><div class="toc-section" style="margin-left: 1em;">
@@ -99,7 +103,8 @@ namespace.
   <h2 id="cognitect.aws.client.shared">cognitect.aws.client.shared</h2>
   
   <a id="api-link" href="cognitect.aws.client.shared-api.html">Detailed API documentation</a><br />
-  <pre id="namespace-docstr"></pre>
+  <pre id="namespace-docstr">Default, globally shared resources which are by default shared among all AWS clients and whose
+lifecycles and resources are automatically managed.</pre>
   
   
   
@@ -133,7 +138,20 @@ Alpha. Subject to change.</pre>
   
   
   Public variables and functions:
-  <span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/auto-refreshing-credentials">auto-refreshing-credentials</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/basic-credentials-provider">basic-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/cached-credentials-with-auto-refresh">cached-credentials-with-auto-refresh</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/calculate-ttl">calculate-ttl</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/chain-credentials-provider">chain-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/container-credentials-provider">container-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/default-credentials-provider">default-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/environment-credentials-provider">environment-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch">fetch</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch-async">fetch-async</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-credentials-provider">instance-profile-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/profile-credentials-provider">profile-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/stop">stop</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/system-property-credentials-provider">system-property-credentials-provider</a> </span><br />
+  <span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/auto-refreshing-credentials">auto-refreshing-credentials</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/basic-credentials-provider">basic-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/cached-credentials-with-auto-refresh">cached-credentials-with-auto-refresh</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/calculate-ttl">calculate-ttl</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/chain-credentials-provider">chain-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/container-credentials-provider">container-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/default-credentials-provider">default-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/environment-credentials-provider">environment-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch">fetch</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/fetch-async">fetch-async</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-IMDSv2-credentials-provider">instance-profile-IMDSv2-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/instance-profile-credentials-provider">instance-profile-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/profile-credentials-provider">profile-credentials-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/stop">stop</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.credentials-api.html#cognitect.aws.credentials/system-property-credentials-provider">system-property-credentials-provider</a> </span><br />
+  
+</div><div id="namespace-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.http.default">cognitect.aws.http.default</h2>
+  
+  <a id="api-link" href="cognitect.aws.http.default-api.html">Detailed API documentation</a><br />
+  <pre id="namespace-docstr"></pre>
+  
+  
+  
+  Public variables and functions:
+  <span id="var-link"><a id="var-tag" href="cognitect.aws.http.default-api.html#cognitect.aws.http.default/create">create</a> </span><br />
   
 </div><div id="namespace-entry">
   <br />
@@ -146,7 +164,7 @@ Alpha. Subject to change.</pre>
   
   
   Public variables and functions:
-  <span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/chain-region-provider">chain-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/default-region-provider">default-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/environment-region-provider">environment-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/fetch">fetch</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/fetch-async">fetch-async</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/instance-region-provider">instance-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/profile-region-provider">profile-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/system-property-region-provider">system-property-region-provider</a> </span><br />
+  <span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/chain-region-provider">chain-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/default-region-provider">default-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/environment-region-provider">environment-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/fetch">fetch</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/fetch-async">fetch-async</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/instance-region-IMDS-v2-provider">instance-region-IMDS-v2-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/instance-region-provider">instance-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/profile-region-provider">profile-region-provider</a> </span><span id="var-link"><a id="var-tag" href="cognitect.aws.region-api.html#cognitect.aws.region/system-property-region-provider">system-property-region-provider</a> </span><br />
   
 </div><div id="namespace-entry">
   <br />

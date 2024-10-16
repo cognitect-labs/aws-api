@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.client.shared - aws-api API documentation</title>
+    <title>cognitect.aws.http.default - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -52,25 +52,20 @@ namespace.
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
     <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.shared/credentials-provider">credentials-provider</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.shared/http-client">http-client</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.shared/region-provider">region-provider</a>
+      <a href="#cognitect.aws.http.default/create">create</a>
     </div>
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.client.shared</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.http.default</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.client.shared</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.http.default</span>
 <p></p>
 <h2>Overview</h2>
-<pre id="namespace-docstr">Default, globally shared resources which are by default shared among all AWS clients and whose
-lifecycles and resources are automatically managed.</pre>
+<pre id="namespace-docstr"></pre>
 
 
 <br />
@@ -78,42 +73,16 @@ lifecycles and resources are automatically managed.</pre>
 <div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.client.shared/credentials-provider">credentials-provider</h2>
+  <h2 id="cognitect.aws.http.default/create">create</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (credentials-provider)
+  <pre id="var-usage">Usage: (create)
 </pre>
-  <pre id="var-docstr">Returns the globally shared instance of credentials-provider, which
-uses the globally shared instance of http-client.
+  <pre id="var-docstr">Returns a new cognitect.aws.http/HttpClient.
 
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.client.shared/http-client">http-client</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (http-client)
-</pre>
-  <pre id="var-docstr">Returns the globally shared instance of http-client (created on the
-first call).
+- If running JVM is JDK 11+, returns a client based on java.net.http.HttpClient.
+- If cognitect.http-client ns is available, returns a client based on it.
 
-Alpha. Subject to change.</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.client.shared/region-provider">region-provider</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (region-provider)
-</pre>
-  <pre id="var-docstr">Returns the globally shared instance of region-provider, which
-uses the globally shared instance of http-client.
-
-Alpha. Subject to change.</pre>
+If none of these requirements are met, throws.</pre>
   
   
   

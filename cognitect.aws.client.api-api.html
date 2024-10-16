@@ -35,7 +35,7 @@ namespace.
     <div class="NamespaceTOC">
       <span class="toc-header">Namespaces</span>
       <ul id="left-sidebar-list">
-        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
+        <li><a class="wiki_link" href="cognitect.aws.client.api-api.html">cognitect.aws.client.api</a></li><li><a class="wiki_link" href="cognitect.aws.client.shared-api.html">cognitect.aws.client.shared</a></li><li><a class="wiki_link" href="cognitect.aws.client.test-double-api.html">cognitect.aws.client.test-double</a></li><li><a class="wiki_link" href="cognitect.aws.credentials-api.html">cognitect.aws.credentials</a></li><li><a class="wiki_link" href="cognitect.aws.http.default-api.html">cognitect.aws.http.default</a></li><li><a class="wiki_link" href="cognitect.aws.region-api.html">cognitect.aws.region</a></li><li><a class="wiki_link" href="cognitect.aws.retry-api.html">cognitect.aws.retry</a></li>
       </ul>
     </div>
     
@@ -95,22 +95,22 @@ namespace.
   <hr />
   <h2 id="cognitect.aws.client.api/client">client</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client], :or {endpoint-override {}}})
+  <pre id="var-usage">Usage: (client {:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client], :or {endpoint-override {}, credentials-provider (shared/credentials-provider)}})
 </pre>
   <pre id="var-docstr">Given a config map, create a client for specified api. Supported keys:
 
 :api                  - required, name of the api you want to interact with e.g. s3, cloudformation, etc
 :http-client          - optional, to share http-clients across aws-clients
-                        Default: default-http-client
+                        Default: cognitect.aws.client.shared/http-client
 :region-provider      - optional, implementation of aws-clojure.region/RegionProvider
-                        protocol, defaults to cognitect.aws.region/default-region-provider.
+                        protocol, defaults to cognitect.aws.client.shared/region-provider.
                         Ignored if :region is also provided
 :region               - optional, the aws region serving the API endpoints you
                         want to interact with, defaults to region provided by
-                        by the region-provider
+                        the region-provider
 :credentials-provider - optional, implementation of
                         cognitect.aws.credentials/CredentialsProvider protocol
-                        Default: cognitect.aws.credentials/default-credentials-provider
+                        Default: cognitect.aws.client.shared/credentials-provider
 :endpoint-override    - optional, map to override parts of the endpoint. Supported keys:
                           :protocol     - :http or :https
                           :hostname     - string
@@ -148,7 +148,8 @@ Alpha. Subject to change.</pre>
   <span id="var-type">function</span><br />
   <pre id="var-usage">Usage: (default-http-client)
 </pre>
-  <pre id="var-docstr">Create an http-client to share across multiple aws-api clients.</pre>
+  <pre id="var-docstr">Returns a new instance of the default type of http client. This function may be used to create a
+single http-client instance to share across multiple aws-api clients.</pre>
   
   
   
