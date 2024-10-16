@@ -1,6 +1,6 @@
 # Upgrade Notes
 
-## DEV
+## 0.8.710-beta01 / 2024-10-16
 
 ### New Java-native HTTP client
 
