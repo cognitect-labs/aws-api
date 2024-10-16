@@ -32,7 +32,7 @@
                           Ignored if :region is also provided
   :region               - optional, the aws region serving the API endpoints you
                           want to interact with, defaults to region provided by
-                          by the region-provider
+                          the region-provider
   :credentials-provider - optional, implementation of
                           cognitect.aws.credentials/CredentialsProvider protocol
                           Default: cognitect.aws.client.shared/credentials-provider

@@ -345,7 +345,7 @@ must be at most one such file.
 
 ### Retriable errors
 
-When the aws-api client encounters an error, it uses two funtions
+When the aws-api client encounters an error, it uses two functions
 to determine whether to retry the request:
 
 ``` clojure
@@ -520,6 +520,7 @@ contributed significantly to research and design:
 
 [Timothy Baldridge](https://github.com/halgari)<br/>
 [Scott Bale](https://github.com/scottbale)<br/>
+[Marco Biscaro](https://github.com/marcobiscaro2112)<br/>
 [David Chelimsky](https://github.com/dchelimsky)<br/>
 [Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
 [Benoît Fleury](https://github.com/benfle)<br/>

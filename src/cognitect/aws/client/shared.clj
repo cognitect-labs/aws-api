@@ -18,7 +18,7 @@
 (def ^:private shared-credentials-provider
   (delay (credentials/default-credentials-provider (http-client))))
 
-(def ^:private  shared-region-provider
+(def ^:private shared-region-provider
   (delay (region/default-region-provider (http-client))))
 
 (defn http-client

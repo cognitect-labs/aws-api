@@ -39,7 +39,7 @@ we'll add a row to this table.
 `generator-rev` indicates the revision of the code we use to
 generate all the services and `source.repo.tag` is the tag in the aws
 repository from which we are generating service libraries. For example,
-`s3-631.2.346.0` is sourced from [aws-sdk-js](https://github.com/aws/aws-sdk-js),
+`s3-631.2.347.0` is sourced from [aws-sdk-js](https://github.com/aws/aws-sdk-js),
 per the table below, at the `2.347.0` tag.
 
 | generator-rev | source repository | example source tag | example service version |
