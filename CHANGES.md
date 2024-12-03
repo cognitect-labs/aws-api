@@ -1,5 +1,15 @@
 # aws-api
 
+## 0.8.711 / 2024-12-03
+
+* New `java.net.http`-based HTTP client, without external dependencies
+  * BREAKING: when running on java 8, an explicit dependency on `com.cognitect/http-client` is now required
+* Support IMDS v2 in default credentials and region provider chains [#243](https://github.com/cognitect-labs/aws-api/issues/243) [#165](https://github.com/cognitect-labs/aws-api/issues/165)
+
+See [Upgrade Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md) for more
+information about upgrading to this version.
+
+
 ## 0.8.710-beta01 / 2024-10-16
 
 * New `java.net.http`-based HTTP client, without external dependencies
