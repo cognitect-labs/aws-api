@@ -16,7 +16,7 @@ git rm -rf ./*
 cp -Rf ../target/autodoc/* ./
 git add -f .
 git commit -m "Updating gh-pages with new api docs"
-git push -fq origin gh-pages > /dev/null
+git push -fq ${AWS_API_REMOTE:-origin} gh-pages > /dev/null
 cd ..
 
 echo -e "Cleaning up\n"
