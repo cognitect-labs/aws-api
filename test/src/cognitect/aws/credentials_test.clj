@@ -129,7 +129,12 @@
         (is (= {:aws/access-key-id "TARDIGRADE_AWS_ACCESS_KEY"
                 :aws/secret-access-key "TARDIGRADE_AWS_SECRET_ACCESS_KEY"
                 :aws/session-token "TARDIGRADE_AWS_SESSION_TOKEN"}
-               (credentials/fetch (credentials/profile-credentials-provider))))))))
+               (credentials/fetch (credentials/profile-credentials-provider))))))
+    (testing "uses source_profile."
+      (is (= {:aws/access-key-id "DEFAULT_AWS_ACCESS_KEY"
+              :aws/secret-access-key "DEFAULT_AWS_SECRET_ACCESS_KEY"
+              :aws/session-token nil}
+             (credentials/fetch (credentials/profile-credentials-provider "sourced" test-config)))))))
 
 (deftest container-credentials-provider-test
   (testing "The provider reads container metadata correctly."
