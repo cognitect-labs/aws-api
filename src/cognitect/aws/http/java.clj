@@ -3,13 +3,17 @@
             [clojure.core.async :as async]
             [clojure.string :as string])
   (:import [java.io IOException]
+           [java.lang.invoke MethodHandle MethodHandles MethodType]
            [java.net URI]
            [java.net.http
-            HttpClient HttpClient$Redirect HttpRequest HttpRequest$Builder
+            HttpClient HttpClient$Builder HttpClient$Redirect HttpRequest HttpRequest$Builder
             HttpRequest$BodyPublishers HttpResponse HttpResponse$BodyHandlers]
            [java.nio ByteBuffer]
            [java.time Duration]
+           [java.util.concurrent ExecutorService Executors]
            [java.util.function Function]))
+
+(set! *warn-on-reflection* true)
 
 (defn ^:private dissoc-by
   [pred m]
@@ -31,10 +35,23 @@
    :delete "DELETE"
    :patch  "PATCH"})
 
+(def ^:private new-virtual-thread-executor-handle
+  (try
+    (.findStatic (MethodHandles/lookup) Executors "newVirtualThreadPerTaskExecutor" (MethodType/methodType ExecutorService))
+    (catch NoSuchMethodException _ nil)))
+
+(defn- use-virtual-thread-executor-if-available
+  ^HttpClient$Builder [^HttpClient$Builder builder]
+  (when new-virtual-thread-executor-handle
+    (let [executor (.invokeWithArguments ^MethodHandle new-virtual-thread-executor-handle (object-array 0))]
+      (.executor builder executor)))
+  builder)
+
 (defn http-client
   "Create and return a java.net.http.HttpClient with some reasonable defaults"
   []
   (-> (HttpClient/newBuilder)
+      (use-virtual-thread-executor-if-available)
       (.connectTimeout (Duration/ofMillis 10000))
       (.followRedirects HttpClient$Redirect/NEVER)
       (.build)))
