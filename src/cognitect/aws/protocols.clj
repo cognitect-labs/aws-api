@@ -6,7 +6,7 @@
   (:require [clojure.data.json :as json]
             [clojure.string :as str]
             [cognitect.aws.util :as util])
-  (:import (java.util Date)))
+  (:import (java.time ZoneOffset ZonedDateTime)))
 
 (set! *warn-on-reflection* true)
 
@@ -89,7 +89,7 @@
 
 (defn headers [service operation]
   (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
-    (cond-> {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}
+    (cond-> {"x-amz-date" (.format util/x-amz-date-format (ZonedDateTime/now ZoneOffset/UTC))}
       (contains? #{"json" "rest-json"} protocol)
       (assoc "x-amz-target" (str targetPrefix "." (:name operation))
              "content-type" (str "application/x-amz-json-" jsonVersion)

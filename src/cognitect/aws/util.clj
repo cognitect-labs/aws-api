@@ -8,8 +8,9 @@
             [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
-  (:import [java.text SimpleDateFormat]
-           [java.util Date TimeZone]
+  (:import [java.time ZoneOffset ZonedDateTime]
+           [java.time.format DateTimeFormatter]
+           [java.util Date]
            [java.util UUID]
            [java.io InputStream]
            [java.security MessageDigest]
@@ -22,21 +23,11 @@
 
 (set! *warn-on-reflection* true)
 
-(defn  date-format
-  "Return a thread-safe GMT date format that can be used with `format-date` and `parse-date`.
-
-  See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4228335"
-  ^ThreadLocal [^String fmt]
-  (proxy [ThreadLocal] []
-    (initialValue []
-      (doto (SimpleDateFormat. fmt)
-        (.setTimeZone (TimeZone/getTimeZone "GMT"))))))
-
 (defn format-date
   ([fmt]
    (format-date fmt (Date.)))
-  ([^ThreadLocal fmt inst]
-   (.format ^SimpleDateFormat (.get fmt) inst)))
+  ([^DateTimeFormatter fmt ^Date inst]
+   (.format fmt (.atZone (.toInstant inst) ZoneOffset/UTC))))
 
 (defn format-timestamp
   "Format a timestamp in milliseconds."
@@ -44,23 +35,34 @@
   (str (long (/ (.getTime ^Date inst) 1000))))
 
 (defn parse-date
-  [^ThreadLocal fmt s]
-  (.parse ^SimpleDateFormat (.get fmt) s))
+  [^DateTimeFormatter fmt ^String s]
+  (Date/from (.toInstant (ZonedDateTime/parse s fmt))))
 
-(def ^ThreadLocal x-amz-date-format
-  (date-format "yyyyMMdd'T'HHmmss'Z'"))
+(def ^DateTimeFormatter x-amz-date-format
+  "Custom formatter for x-amz-date header. Used exclusively for formatting.
 
-(def ^ThreadLocal x-amz-date-only-format
-  (date-format "yyyyMMdd"))
+  https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv-signing-elements.html#date
 
-(def ^ThreadLocal iso8601-date-format
-  (date-format "yyyy-MM-dd'T'HH:mm:ssXXX"))
+  e.g. '20220830T123600Z'"
+  (DateTimeFormatter/ofPattern "yyyyMMdd'T'HHmmssXXX"))
 
-(def ^ThreadLocal iso8601-msecs-date-format
-  (date-format "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"))
+(def ^DateTimeFormatter iso8601-date-format
+  "ISO 8601 formatter. Used exclusively for formatting. Fractions of seconds are always omitted.
 
-(def ^ThreadLocal rfc822-date-format
-  (date-format "EEE, dd MMM yyyy HH:mm:ss z"))
+  e.g. '2008-06-03T11:05:30Z'"
+  (DateTimeFormatter/ofPattern "yyyy-MM-dd'T'HH:mm:ssXXX"))
+
+(def ^DateTimeFormatter iso8601-msecs-date-format
+  "ISO 8601 formatter. Used exclusively for parsing. Fractions of seconds are optional.
+
+  e.g. '2008-06-03T11:05:30.123Z'"
+  DateTimeFormatter/ISO_OFFSET_DATE_TIME)
+
+(def ^DateTimeFormatter rfc822-date-format
+  "RFC 1123 formatter. Used for formatting and parsing.
+
+  e.g. 'Tue, 3 Jun 2008 11:05:30 GMT'"
+  DateTimeFormatter/RFC_1123_DATE_TIME)
 
 (let [hex-chars (char-array [\0 \1 \2 \3 \4 \5 \6 \7 \8 \9 \a \b \c \d \e \f])]
   (defn hex-encode

@@ -58,6 +58,9 @@
   :member)
 
 (defn format-date
+  "Formats a java.util.Date instance into a String, according to :timestampFormat of shape.
+
+  The output string is always truncated to seconds (milliseconds are discarded)."
   ([shape data]
    (format-date shape data util/format-timestamp))
   ([shape data default-format-fn]
@@ -67,21 +70,22 @@
      "unixTimestamp" (util/format-timestamp data)
      (default-format-fn data))))
 
-(defn- parse-date* [d & formats]
-  (->> formats
-       (map #(try (util/parse-date % d) (catch java.text.ParseException _ nil)))
-       (filter identity)
-       first))
+(defn- parse-date*
+  ([d fmt]
+   (try (util/parse-date fmt d) (catch java.time.format.DateTimeParseException _ nil)))
+  ([d fmt1 fmt2]
+   (or (parse-date* d fmt1) (parse-date* d fmt2))))
 
 (defn parse-date
+  "Parses a number or string into a java.util.Date instance, according to :timestampFormat of shape.
+
+  May return nil or throw if parsing fails."
   [{:keys [timestampFormat]} data]
   (when data
     (cond (= "rfc822" timestampFormat)
           (parse-date* data util/rfc822-date-format)
           (= "iso8601" timestampFormat)
-          (parse-date* data
-                       util/iso8601-date-format
-                       util/iso8601-msecs-date-format)
+          (parse-date* data util/iso8601-msecs-date-format)
           (int? data)
           (java.util.Date. (* 1000 ^int data))
           (double? data)
@@ -90,7 +94,6 @@
           (java.util.Date. (* 1000 (long (read-string data))))
           :else
           (parse-date* data
-                       util/iso8601-date-format
                        util/iso8601-msecs-date-format
                        util/rfc822-date-format))))
 

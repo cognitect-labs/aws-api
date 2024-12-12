@@ -16,6 +16,10 @@
   (fn [service _endpoint _credentials _http-request]
     (get-in service [:metadata :signatureVersion])))
 
+(def ^:private safe-chars
+  "ASCII codes for characters that are never encoded."
+  (set (mapv int "_-~.")))
+
 (defn uri-encode
   "Escape (%XX) special characters in the string `s`.
 
@@ -27,23 +31,33 @@
      (uri-encode s "")))
   ([^String s extra-chars]
    (when s
-     (let [safe-chars (->> extra-chars
-                           (into #{\_ \- \~ \.})
-                           (into #{} (map int)))
+     (let [extra-chars (set (mapv int extra-chars))
            builder    (StringBuilder.)]
        (doseq [b (.getBytes s "UTF-8")]
          (.append builder
                   (if (or (Character/isLetterOrDigit ^int b)
-                          (contains? safe-chars b))
+                          (contains? safe-chars b)
+                          (contains? extra-chars b))
                     (char b)
                     (format "%%%02X" b))))
        (.toString builder)))))
 
+(defn- request->x-amz-date-only
+  "Given a request map, reads the x-amz-date header,
+   parses it according to x-amz-date-format, and returns
+   the date-only formatted string.
+
+   e.g. given {:headers {\"x-amz-date\" \"20241127T021030Z\"}}
+        it returns \"20241127\"
+   "
+  [request]
+  (-> (get-in request [:headers "x-amz-date"])
+      (str/split #"T")
+      first))
+
 (defn credential-scope
   [{:keys [region service]} request]
-  (str/join "/" [(->> (get-in request [:headers "x-amz-date"])
-                      (util/parse-date util/x-amz-date-format)
-                      (util/format-date util/x-amz-date-only-format))
+  (str/join "/" [(request->x-amz-date-only request)
                  region
                  service
                  "aws4_request"]))
@@ -138,9 +152,7 @@
 (defn signing-key
   [request {:keys [secret-access-key region service]}]
   (-> (.getBytes (str "AWS4" secret-access-key) "UTF-8")
-      (util/hmac-sha-256 (->> (get-in request [:headers "x-amz-date"])
-                              (util/parse-date util/x-amz-date-format)
-                              (util/format-date util/x-amz-date-only-format)))
+      (util/hmac-sha-256 (request->x-amz-date-only request))
       (util/hmac-sha-256 region)
       (util/hmac-sha-256 service)
       (util/hmac-sha-256 "aws4_request")))

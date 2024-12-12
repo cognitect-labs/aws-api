@@ -67,7 +67,7 @@
 (def list-buckets-aws-client-response
   {:Buckets
    [{:Name "test-bucket",
-     :CreationDate #inst "2023-01-23T12:08:38.496-00:00"}],
+     :CreationDate #inst "2023-01-23T11:59:03.575-00:00"}],
    :Owner
    {:DisplayName "cognitect-aws",
     :ID "a3a42310-42d0-46d1-9745-0cee9f4fb851"}})
