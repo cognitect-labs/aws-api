@@ -2,25 +2,27 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.edn :as edn]
-            [clojure.pprint :as pprint]
+            [clojure.pprint]
             [clojure.java.shell :as shell])
-  (:import (java.util Date)))
+  (:import (java.io BufferedWriter)
+           (java.util Date)))
 
+(set! *warn-on-reflection* true)
 (set! *print-namespace-maps* false)
 
 (defn release-log-map []
-  (sorted-map-by (-> (fn [a b]
-                       (cond (= "api" (name a) (name b)) 0
-                             (= "api" (name a)) -1
-                             (= "api" (name b)) 1
-                             :else              0))
-                     (.thenComparing
-                      (fn [a b]
-                        (cond (= "endpoints" (name a) (name b)) 0
-                              (= "endpoints" (name a)) -1
-                              (= "endpoints" (name b)) 1
-                              :else 0)))
-                     (.thenComparing compare))))
+  (sorted-map-by (fn [a b]
+                   (cond
+                     ; equals compare equals
+                     (= a b) 0
+                     ; api artifact must come first
+                     (= "api" (name a)) -1
+                     (= "api" (name b)) 1
+                     ; endpoints must come next
+                     (= "endpoints" (name a)) -1
+                     (= "endpoints" (name b)) 1
+                     ; everything else is sorted alphabetically
+                     :else (compare a b)))))
 
 (defn version-prefix []
   (read-string (slurp (io/file "VERSION_PREFIX"))))
@@ -41,9 +43,9 @@
         cp (java.io.File/createTempFile fname (str "." ext))]
     (io/copy f cp)
     (with-open [r (io/reader cp)
-                w (io/writer f)]
+                ^BufferedWriter w (io/writer f)]
       (doseq [l (line-seq r)]
-        (.write w (xform l))
+        (.write w ^String (xform l))
         (.newLine w)))))
 
 (defn latest-releases []

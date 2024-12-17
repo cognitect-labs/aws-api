@@ -27,6 +27,7 @@ below, at the `1.11.444` tag.
 
 | source-rev | source repository | example source tag | example endpoints version |
 |------------|-------------------|--------------------|---------------------------|
+| >= 871     | aws-sdk-java-v2   | 2.29.35            | 871.2.29.35               |
 | 1          | aws-sdk-java      | 1.11.444           | 1.1.11.444                |
 
 If we start to source endpoints from a different repository,
@@ -44,6 +45,7 @@ per the table below, at the `2.347.0` tag.
 
 | generator-rev | source repository | example source tag | example service version |
 |---------------|-------------------|--------------------|-------------------------|
+| >= 871        | aws-sdk-java-v2   | 2.29.35            | 871.2.29.35             |
 | >= 631        | aws-sdk-js        | v2.347.0           | 631.2.347.0             |
 
 If we start to source services from a different repository,
