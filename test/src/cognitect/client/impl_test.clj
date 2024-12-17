@@ -110,7 +110,7 @@
                  (:http-response (meta res)))))
         (testing "includes :http-request"
           (is (=  {:uri "/"
-                   :server-name "s3.amazonaws.com"
+                   :server-name "s3.us-east-1.amazonaws.com"
                    :body nil}
                   (select-keys (:http-request (meta res)) [:uri :server-name :body]))))))
     (testing "returns :cognitect.anomalies/unsupported when op is not supported"
@@ -163,7 +163,7 @@
   (let [client (aws/client params)]
     (is (= "s3" (:api client)))
     (is (= :us-east-1 (:region client)))
-    (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
+    (is (= "s3.us-east-1.amazonaws.com" (:hostname (:endpoint client))))
     (is (= {:access-key-id "a", :secret-access-key "b"}
            (:credentials client)))
     (is (= (:metadata (:service (client.protocol/-get-info client)))
