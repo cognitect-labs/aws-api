@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* upgrade dependencies
+
 ## 0.8.711 / 2024-12-03
 
 * New `java.net.http`-based HTTP client, without external dependencies
