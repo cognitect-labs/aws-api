@@ -2,8 +2,10 @@
 
 ## DEV
 
-* upgrade dependencies
+* Upgrade dependencies
 * Fix InvalidSignatureException with services that support HTTP/2 [#261](https://github.com/cognitect-labs/aws-api/issues/261)
+* Performance improvements in highly parallel scenarios related to URI encoding and date/time formatting
+* Use newVirtualThreadPerTaskExecutor if virtual threads are available
 
 ## 0.8.711 / 2024-12-03
 
