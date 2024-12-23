@@ -16,7 +16,7 @@
                                            http-kit/http-kit             {:mvn/version "2.8.0"}
                                            com.amazonaws/aws-java-sdk-s3 {:mvn/version "1.12.779"}
                                            com.cognitect/http-client     {:mvn/version "1.0.127"}
-                                           com.cognitect.aws/endpoints   {:mvn/version "871.2.29.35"}
+                                           com.cognitect.aws/endpoints   {:mvn/version "871.2.29.39"}
                                            com.cognitect.aws/autoscaling {:mvn/version "871.2.29.35"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "871.2.29.35"}
                                            com.cognitect.aws/ec2         {:mvn/version "871.2.29.35"}
