@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.723 / 2024-12-23
 
 * Upgrade dependencies
 * Fix InvalidSignatureException with services that support HTTP/2 [#261](https://github.com/cognitect-labs/aws-api/issues/261)
