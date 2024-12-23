@@ -136,6 +136,28 @@
                    .headers
                    .map))))))
 
+  (deftest request->java-net-http-request-default-port-test
+    (let [base-request {:request-method :get
+                        :server-name    "server-test"
+                        :uri            "/uri"}]
+
+      (doseq [[opts expected] [; no explicit port
+                               [{:scheme :http} "http://server-test/uri"]
+                               [{:scheme :https} "https://server-test/uri"]
+                               ; default scheme port
+                               [{:scheme :http :server-port 80} "http://server-test/uri"]
+                               [{:scheme :https :server-port 443} "https://server-test/uri"]
+                               ; alternative port
+                               [{:scheme :http :server-port 1234} "http://server-test:1234/uri"]
+                               [{:scheme :https :server-port 1234} "https://server-test:1234/uri"]]]
+        (let [java-net-http-request (java-http-client/request->java-net-http-request
+                                      (merge base-request opts))]
+          (testing (str "URI for " opts)
+            (is (= expected
+                   (-> java-net-http-request
+                       .uri
+                       .toString))))))))
+
   (deftest request->java-net-http-request-test-no-read-response-timeout-yields-no-timeout-set
     (let [request {:scheme         "http"
                    :body           nil
