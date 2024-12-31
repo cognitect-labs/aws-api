@@ -64,7 +64,7 @@
 
   Alpha. Subject to change."
   [{:keys [api region region-provider retriable? backoff credentials-provider endpoint-override http-client]
-    :or   {endpoint-override {} credentials-provider (shared/credentials-provider)}}]
+    :or   {endpoint-override {}}}]
   (when (string? endpoint-override)
     (log/warn
      (format
@@ -77,6 +77,7 @@
         region-provider      (cond region          (reify region/RegionProvider (fetch [_] region))
                                    region-provider region-provider
                                    :else           (shared/region-provider))
+        credentials-provider (or credentials-provider (shared/credentials-provider))
         endpoint-provider    (endpoint/default-endpoint-provider
                               (get-in service [:metadata :endpointPrefix])
                               endpoint-override)]
