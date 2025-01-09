@@ -207,7 +207,7 @@
   [^String s]
   (-> s
       (URLEncoder/encode "UTF-8")
-      ;; https://github.com/aws/aws-sdk-java/blob/fd409de/aws-java-sdk-core/src/main/java/com/amazonaws/util/SdkHttpUtils.java#L77-L91
+      ;; https://github.com/aws/aws-sdk-java-v2/blob/61d16e0/utils/src/main/java/software/amazon/awssdk/utils/http/SdkHttpUtils.java#L170-L176
       (.replace "+" "%20")
       (.replace "*" "%2A")))
 

@@ -34,28 +34,11 @@ outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
 
-Most AWS SDKs have their own copies of these data descriptions in their
-github repos. We use [aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
-the source for these, and release separate artifacts for each api.
-The [api descriptors](https://github.com/aws/aws-sdk-js/tree/master/apis)
-include the AWS `api-version` in their filenames (and in their data). For
-example you'll see both of the following files listed:
+Most AWS SDKs have their own copies of these data descriptions in their github
+repos. We use [aws-sdk-java-2](https://github.com/aws/aws-sdk-java-v2) as the
+source for these, and release separate artifacts for each api.
 
-    dynamodb-2011-12-05.normal.json
-    dynamodb-2012-08-10.normal.json
-
-Whenever we release com.cognitect.aws/dynamodb, we look for the
-descriptor with the most recent API version. If aws-sdk-js-v2.351.0
-contains an update to dynamodb-2012-08-10.normal.json, or a new
-dynamodb descriptor with a more recent api-version, we'll make a
-release whose version number includes the 2.351.0 from the version
-of aws-sdk-js.
-
-We also include the revision of our generator in the version. For example,
-`com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
-generator, and tag `v2.351.0` of aws-sdk-js.
-
-* See [Versioning](/doc/versioning.md) for more about how we version releases.
+* See [Versioning](/doc/versioning.md) for more info about how we version releases.
 * See [latest releases](latest-releases.edn) for a list of the latest releases of
 `api`, `endpoints`, and all supported services.
 
@@ -471,7 +454,7 @@ operation requires a custom endpoint, e.g.
 
 This indicates that the data in the `com.cognitect.aws/endpoints` lib
 (which is derived from
-[endpoints.json](https://github.com/aws/aws-sdk-java/blob/master/aws-java-sdk-core/src/main/resources/com/amazonaws/partitions/endpoints.json))
+[endpoints.json](https://github.com/aws/aws-sdk-java-v2/blob/master/core/regions/src/main/resources/software/amazon/awssdk/regions/internal/region/endpoints.json))
 does not support the `:api`/`:region` combination you are trying to
 access.
 

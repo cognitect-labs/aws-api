@@ -81,7 +81,7 @@
       (.isEmpty encoded-path)
       "/"
 
-      ;; https://github.com/aws/aws-sdk-java/blob/fd409de/aws-java-sdk-core/src/main/java/com/amazonaws/auth/AbstractAWSSigner.java#L392-L397
+      ;; https://github.com/aws/aws-sdk-java-v2/blob/61d16e0/core/auth/src/main/java/software/amazon/awssdk/auth/signer/internal/AbstractAws4Signer.java#L546-L555
       ;; Normalization can leave a trailing slash at the end of the resource path,
       ;; even if the input path doesn't end with one. Example input: /foo/bar/.
       ;; Remove the trailing slash if the input path doesn't end with one.

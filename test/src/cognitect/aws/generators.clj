@@ -25,10 +25,10 @@
             query-ks (gen/vector (gen/such-that seq gen/string-alphanumeric))
             query-vs (gen/vector (gen/such-that seq gen/string-alphanumeric) (count query-ks))
             method (gen/elements [:get :post])
-            ;; https://github.com/aws/aws-sdk-java/blob/d35b018/aws-java-sdk-core/src/main/java/com/amazonaws/auth/internal/SignerKey.java#L30-L34
-            ;; date must be >1 day past epoch and <= today
-            ;; 1668999574880 == 2022-11-20
-            epoch (gen/large-integer* {:min 86400000 :max 1668999574880})
+            ;; https://github.com/aws/aws-sdk-java-v2/blob/61d16e0/core/auth/src/main/java/software/amazon/awssdk/auth/signer/internal/SignerKey.java#L44
+            ;; date will be >1 day past epoch and <= today
+            ;; 1735838904634 == 2025-01-02
+            epoch (gen/large-integer* {:min 86400000 :max 1735838904634})
             body gen/string]
     {:request-method method
      :body           (.getBytes ^String body "UTF-8")
