@@ -35,23 +35,10 @@
    :delete "DELETE"
    :patch  "PATCH"})
 
-(def ^:private new-virtual-thread-executor-handle
-  (try
-    (.findStatic (MethodHandles/lookup) Executors "newVirtualThreadPerTaskExecutor" (MethodType/methodType ExecutorService))
-    (catch NoSuchMethodException _ nil)))
-
-(defn- use-virtual-thread-executor-if-available
-  ^HttpClient$Builder [^HttpClient$Builder builder]
-  (when new-virtual-thread-executor-handle
-    (let [executor (.invokeWithArguments ^MethodHandle new-virtual-thread-executor-handle (object-array 0))]
-      (.executor builder executor)))
-  builder)
-
 (defn http-client
   "Create and return a java.net.http.HttpClient with some reasonable defaults"
   []
   (-> (HttpClient/newBuilder)
-      (use-virtual-thread-executor-if-available)
       (.connectTimeout (Duration/ofMillis 10000))
       (.followRedirects HttpClient$Redirect/NEVER)
       (.build)))

@@ -1,5 +1,11 @@
 # aws-api
 
+## DEV
+
+* Don't unnecessarily deref shared delays when they are overridden [#262](https://github.com/cognitect-labs/aws-api/issues/262) 
+* Revert virtual thread executor in HttpClient
+  * This executor is meant to handle asynchronous non-blocking tasks, so virtual threads are not a good fit
+
 ## 0.8.723 / 2024-12-23
 
 * Upgrade dependencies
