@@ -44,11 +44,11 @@ example you'll see both of the following files listed:
     dynamodb-2011-12-05.normal.json
     dynamodb-2012-08-10.normal.json
 
-Whenever we release com.cognitect.aws/dynamodb, we look for the
-descriptor with the most recent API version. If aws-sdk-js-v2.351.0
-contains an update to dynamodb-2012-08-10.normal.json, or a new
+Whenever we release `com.cognitect.aws/dynamodb`, we look for the
+descriptor with the most recent API version. If `aws-sdk-js-v2.351.0`
+contains an update to `dynamodb-2012-08-10.normal.json`, or a new
 dynamodb descriptor with a more recent api-version, we'll make a
-release whose version number includes the 2.351.0 from the version
+release whose version number includes the `2.351.0` from the version
 of aws-sdk-js.
 
 We also include the revision of our generator in the version. For example,
