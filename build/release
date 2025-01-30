@@ -19,9 +19,9 @@ version=`build/version`
 echo $version
 
 echo "Releasing..."
-mvn versions:set -DnewVersion=${version}
-mvn clean deploy
-mvn versions:revert
+./mvnw versions:set -DnewVersion=${version}
+./mvnw clean deploy
+./mvnw versions:revert
 
 echo "Tagging..."
 git tag -a v${version} -m "Release ${version}"

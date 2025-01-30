@@ -2,3 +2,5 @@
 target
 logs
 log
+.nrepl-port
+VERSION_SUFFIX
