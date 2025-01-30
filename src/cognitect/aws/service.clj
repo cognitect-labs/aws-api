@@ -3,10 +3,10 @@
 
 (ns ^:skip-wiki cognitect.aws.service
   "Impl, don't call directly."
-  (:require [clojure.string :as str]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [clojure.walk :as walk]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]))
+            [cognitect.aws.resources :as resources]))
 
 (set! *warn-on-reflection* true)
 
@@ -18,7 +18,7 @@
   (str base-resource-path "/" service-name "/service.edn"))
 
 (defn descriptor-resource [service-name]
-  (io/resource (descriptor-resource-path service-name)))
+  (resources/resource (descriptor-resource-path service-name)))
 
 (defn read-service-description
   "Return service description readerable source (anything supported by
@@ -86,7 +86,7 @@
                             {}
                             (clojure.edn/read-string
                              (slurp
-                              (io/resource (format "%s/%s/docs.edn" base-resource-path (service-name service)))))))
+                              (resources/resource (format "%s/%s/docs.edn" base-resource-path (service-name service)))))))
           (get k)))))
 
 (defn request-spec-key

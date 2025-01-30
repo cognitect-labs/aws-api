@@ -2,7 +2,8 @@
 
 ## DEV
 
-* Don't unnecessarily deref shared delays when they are overridden [#262](https://github.com/cognitect-labs/aws-api/issues/262) 
+* Ensure all resources are loaded with the expected class loader [#265](https://github.com/cognitect-labs/aws-api/issues/265)
+* Don't unnecessarily deref shared delays when they are overridden [#262](https://github.com/cognitect-labs/aws-api/issues/262)
 * Revert virtual thread executor in HttpClient
   * This executor is meant to handle asynchronous non-blocking tasks, so virtual threads are not a good fit
 
