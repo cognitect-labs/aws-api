@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.http.default - aws-api API documentation</title>
+    <title>cognitect.aws.resources - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -52,17 +52,19 @@ namespace.
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
     <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.http.default/create">create</a>
+      <a href="#cognitect.aws.resources/loader">loader</a>
+    </div><div class="toc-entry" style="margin-left: 1em;">
+      <a href="#cognitect.aws.resources/resource">resource</a>
     </div>
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.http.default</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.resources</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.http.default</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.resources</span>
 <p></p>
 <h2>Overview</h2>
 <pre id="namespace-docstr"></pre>
@@ -73,16 +75,28 @@ namespace.
 <div id="var-entry">
   <br />
   <hr />
-  <h2 id="cognitect.aws.http.default/create">create</h2>
+  <h2 id="cognitect.aws.resources/loader">loader</h2>
+  <span id="var-type">var</span><br />
+  <pre id="var-usage"></pre>
+  <pre id="var-docstr">Clojure's base class loader, used to load all resources.
+
+This ensures the same class loader is used, no matter which thread invokes `resource`.
+This is needed to guard against the scenario where the application is running in an
+environment that uses a non-default class loader, and the `resource` function is invoked
+from a thread that does not inherit the custom class loader (e.g. ForkJoinPool/commonPool threads).
+
+See <a href="https://github.com/cognitect-labs/aws-api/issues/265">https://github.com/cognitect-labs/aws-api/issues/265</a> for details</pre>
+  
+  
+  
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="cognitect.aws.resources/resource">resource</h2>
   <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (create)
+  <pre id="var-usage">Usage: (resource n)
 </pre>
-  <pre id="var-docstr">Returns a new cognitect.aws.http/HttpClient.
-
-- If running JVM is JDK 11+, returns a client based on java.net.http.HttpClient.
-- If cognitect.http-client ns is available, returns a client based on it.
-
-If none of these requirements are met, throws.</pre>
+  <pre id="var-docstr">Returns the URL for a named resource, always using Clojure's base class loader.</pre>
   
   
   
