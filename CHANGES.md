@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.730-beta01 / 2025-01-30
 
 * Ensure all resources are loaded with the expected class loader [#265](https://github.com/cognitect-labs/aws-api/issues/265)
 * Don't unnecessarily deref shared delays when they are overridden [#262](https://github.com/cognitect-labs/aws-api/issues/262)
