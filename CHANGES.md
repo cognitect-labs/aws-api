@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.735 / 2025-02-26
 
 * This is the official release of the previous `0.8.730-beta01` release, see those release notes
 
