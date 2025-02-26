@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* This is the official release of the previous `0.8.730-beta01` release, see those release notes
+
 ## 0.8.730-beta01 / 2025-01-30
 
 * Ensure all resources are loaded with the expected class loader [#265](https://github.com/cognitect-labs/aws-api/issues/265)
