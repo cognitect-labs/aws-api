@@ -134,14 +134,14 @@
 (deftest test-uri-encode
   (testing "with *unchecked-math* true"
     (set! *unchecked-math* true)
-    (require '[cognitect.aws.signers :as signers] :reload)
+    (require '[cognitect.aws.signers] :reload)
     (let [res (first (stest/check `signers/uri-encode))]
       (is (true? (-> res :clojure.spec.test.check/ret :result))
           res)))
 
   (testing "with *unchecked-math* false (default)"
     (set! *unchecked-math* false)
-    (require '[cognitect.aws.signers :as signers] :reload)
+    (require '[cognitect.aws.signers] :reload)
     (let [res (first (stest/check `signers/uri-encode))]
       (is (true? (-> res :clojure.spec.test.check/ret :result))
           res))))

@@ -28,12 +28,9 @@
                   (into #{}))
              bucket-name))
 
-(defn test-s3-client-with-http-client
-  [http-client]
-  (let [s3 (aws/client {:api :s3
-                        :http-client http-client
-                        :credentials-provider (creds/default-credentials-provider http-client)})
-        bucket-name (str "aws-api-test-bucket-" (.toEpochMilli (Instant/now)) "-" (rand-int 1000))]
+(defn test-s3-client
+  [s3]
+  (let [bucket-name (str "aws-api-test-bucket-" (.toEpochMilli (Instant/now)) "-" (rand-int 1000))]
 
     (testing ":CreateBucket"
       (invoke s3 {:op :CreateBucket :request {:Bucket bucket-name}})
@@ -77,6 +74,13 @@
       (invoke s3 {:op :DeleteBucket :request {:Bucket bucket-name}})
       (is (not (bucket-listed? (invoke s3 {:op :ListBuckets}) bucket-name))))))
 
+(defn test-s3-client-with-http-client
+  [http-client]
+  (let [s3 (aws/client {:api :s3
+                        :http-client http-client
+                        :credentials-provider (creds/default-credentials-provider http-client)})]
+    (test-s3-client s3)))
+
 (deftest ^:integration test-default-http-client
   (testing "Default http client"
     (test-s3-client-with-http-client (aws/default-http-client))))
@@ -88,3 +92,42 @@
  (require '[cognitect.aws.http.java :as http-java-client])
  (deftest ^:integration test-java-http-client
    (test-s3-client-with-http-client (http-java-client/create))))
+
+(defn- for-each-http-client
+  [f]
+  (let [clients (remove nil? [(http-cognitect-client/create)
+                              (utils/when-java11
+                                (require '[cognitect.aws.http.java :as http-java-client])
+                                (http-java-client/create))])]
+    (doseq [client clients]
+      (f client))))
+
+(deftest ^:integration test-custom-endpoint-local-http
+  ; Regression test for https://github.com/cognitect-labs/aws-api/issues/263
+  ; Requires a local instance of MinIO:
+  ;     docker run --rm -p 9000:9000 bitnami/minio
+  (for-each-http-client
+   #(let [s3 (aws/client {:api                  :s3
+                          :http-client          %
+                          :endpoint-override    {:protocol :http
+                                                 :hostname "localhost"
+                                                 :port     9000}
+                          :credentials-provider (creds/basic-credentials-provider
+                                                 {:access-key-id     "minio"
+                                                  :secret-access-key "miniosecret"})})]
+      (testing (str "with http client " (class %))
+        (test-s3-client s3)))))
+
+(deftest ^:integration test-custom-endpoint-remote-https
+  ; Public MinIO playground
+  ; https://min.io/docs/minio/linux/administration/minio-console.html#minio-console-play-login
+  (for-each-http-client
+   #(let [s3 (aws/client {:api                  :s3
+                          :http-client          %
+                          ; uses deprecated endpoint-override mode, that does not provide protocol and port
+                          :endpoint-override    "play.min.io"
+                          :credentials-provider (creds/basic-credentials-provider
+                                                 {:access-key-id     "Q3AM3UQ867SPQQA43P2F"
+                                                  :secret-access-key "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"})})]
+      (testing (str "with http client " (class %))
+        (test-s3-client s3)))))
