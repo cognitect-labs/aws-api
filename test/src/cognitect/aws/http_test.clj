@@ -18,3 +18,28 @@
     (is (= true
          (io/delete-file "test/resources/cognitect_aws_http.edn" :failed))
         "Accidentally failed to delete file")))
+
+(deftest uri-authority-test
+  (testing "http scheme, default port"
+    (is (= "a-server.example.com" (aws-http/uri-authority :http "a-server.example.com" 80)))
+    (is (= "a-server.example.com" (aws-http/uri-authority :http "A-sErvEr.example.com" nil)))
+    (is (= "a-server.example.com" (aws-http/uri-authority "HTTP" "a-server.example.com" 80)))
+    (is (= "a-server.example.com" (aws-http/uri-authority "http" "a-server.example.com" nil))))
+
+  (testing "https scheme, default port"
+    (is (= "a-server.example.com" (aws-http/uri-authority :https "a-server.example.com" 443)))
+    (is (= "a-server.example.com" (aws-http/uri-authority :https "A-sErvEr.example.com" nil)))
+    (is (= "a-server.example.com" (aws-http/uri-authority "https" "a-server.example.com" 443)))
+    (is (= "a-server.example.com" (aws-http/uri-authority "HTTPs" "a-server.example.com" nil))))
+
+  (testing "http scheme, custom port"
+    (is (= "a-server.example.com:8080" (aws-http/uri-authority :http "a-server.example.com" 8080)))
+    (is (= "a-server.example.com:4080" (aws-http/uri-authority :http "a-server.example.com" 4080)))
+    (is (= "a-server.example.com:443" (aws-http/uri-authority :http "a-server.example.com" 443)))
+    (is (= "a-server.example.com:1" (aws-http/uri-authority :http "a-server.example.com" 1))))
+
+  (testing "https scheme, custom port"
+    (is (= "a-server.example.com:8080" (aws-http/uri-authority :https "a-server.example.com" 8080)))
+    (is (= "a-server.example.com:4443" (aws-http/uri-authority :https "a-server.example.com" 4443)))
+    (is (= "a-server.example.com:80" (aws-http/uri-authority :https "a-server.example.com" 80)))
+    (is (= "a-server.example.com:1" (aws-http/uri-authority :https "a-server.example.com" 1)))))

@@ -5,6 +5,7 @@
   "Impl, don't call directly."
   (:require [clojure.edn :as edn]
             [clojure.core.async :as a]
+            [clojure.string :as str]
             [cognitect.aws.dynaload :as dynaload]))
 
 (set! *warn-on-reflection* true)
@@ -91,3 +92,31 @@
       (throw (ex-info "not an http client" {:provided http-client-or-sym
                                             :resolved c})))
     c))
+
+(defn uri-authority
+  "Returns the normalized URI authority (RFC 3986 section 3.2) for the given URI components,
+   good for building the full request URI, signing the request, and computing the Host header,
+   according to RFC 9112 section 3.2:
+
+       A client MUST send a Host header field in all HTTP/1.1 request messages. If the target URI
+       includes an authority component, then a client MUST send a field value for Host that is identical
+       to that authority component, excluding any userinfo subcomponent and its \"@\" delimiter.
+
+   `uri-scheme` and `uri-host` are required. `uri-port` may be nil in case the default port
+   for the scheme is used.
+
+   Normalization follows RFC 9110 section 4.2.3 (default port for the scheme is omitted;
+   scheme and host are normalized to lowercase). The userinfo component of the URI is
+   always omitted as per RFC 9110 section 4.2.4.
+
+       authority = host [ \":\" port ]"
+  [uri-scheme uri-host uri-port]
+  (let [scheme (str/lower-case (name uri-scheme))
+        host (str/lower-case uri-host)
+        is-default-port (case scheme
+                          "http" (= uri-port 80)
+                          "https" (= uri-port 443)
+                          false)
+        should-include-port (and (some? uri-port)
+                                 (not is-default-port))]
+    (str host (when should-include-port (str ":" uri-port)))))

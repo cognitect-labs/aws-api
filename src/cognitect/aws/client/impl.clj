@@ -33,13 +33,28 @@
       {:cognitect.anomalies/category :cognitect.anomalies/fault
        ::throwable t})))
 
-(defn ^:private with-endpoint [req {:keys [protocol hostname port path]}]
-  (cond-> (-> req
-              (assoc-in [:headers "host"] hostname)
-              (assoc :server-name hostname))
-    protocol (assoc :scheme protocol)
-    port     (assoc :server-port port)
-    path     (assoc :uri path)))
+(defn ^:private with-endpoint
+  "Updates the request map `req` with data returned by the endpoint provider.
+
+   The request map is created with reasonable defaults by `cognitect.aws.protocols/build-http-request`,
+   and the `:scheme`, `:server-port` and `:uri` may be overridden here with
+   data from the endpoint provider.
+
+   `:server-name` is always set based on the endpoint provider data.
+
+   Also computes and sets the `Host` header with the appropriate authority."
+  [req {:keys [protocol hostname port path]}]
+  (let [scheme (or protocol (:scheme req) (throw (IllegalArgumentException. "missing protocol/scheme")))
+        server-name (or hostname (throw (IllegalArgumentException. "missing hostname")))
+        server-port (or port (:server-port req) (throw (IllegalArgumentException. "missing port/server-port")))
+        uri (or path (:uri req) (throw (IllegalArgumentException. "missing path/uri")))
+        authority (http/uri-authority scheme server-name server-port)]
+    (-> req
+        (assoc-in [:headers "host"] authority)
+        (assoc :scheme scheme
+               :server-name server-name
+               :server-port server-port
+               :uri uri))))
 
 (defn ^:private put-throwable [result-ch t response-meta op-map]
   (a/put! result-ch (with-meta

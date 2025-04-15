@@ -3,14 +3,12 @@
             [clojure.core.async :as async]
             [clojure.string :as string])
   (:import [java.io IOException]
-           [java.lang.invoke MethodHandle MethodHandles MethodType]
            [java.net URI]
            [java.net.http
-            HttpClient HttpClient$Builder HttpClient$Redirect HttpRequest HttpRequest$Builder
+            HttpClient HttpClient$Redirect HttpRequest HttpRequest$Builder
             HttpRequest$BodyPublishers HttpResponse HttpResponse$BodyHandlers]
            [java.nio ByteBuffer]
            [java.time Duration]
-           [java.util.concurrent ExecutorService Executors]
            [java.util.function Function]))
 
 (set! *warn-on-reflection* true)
@@ -53,22 +51,11 @@
   "Builds and returns a java.net.URI from the request map."
   [{:keys [scheme server-name server-port uri query-string]
     :or   {scheme "https"}}]
-  (let [;; NOTE: we should only include the port if it was explicitly specified to a
-        ;; non-default value. This check is needed to ensure the HttpClient instance
-        ;; generate consistent headers with the `host` header used when signing
-        ;; the request.
-        ;; The relevant restricted headers managed by HttpClient here are the `Host`
-        ;; header for HTTP/1.1, and the `:authority` pseudo-header for HTTP/2.
-        is-default-port (if (= (name scheme) "http")
-                          (= server-port 80)
-                          (= server-port 443))
-        should-include-port (and (some? server-port)
-                                 (not is-default-port))
-        ;; NOTE: we can't use URI's constructor passing individual components, because sometimes
+  (let [;; NOTE: we can't use URI's constructor passing individual components, because sometimes
         ;;       the `:uri` part includes query params
         ;;       (e.g. on DeleteObjects op, :uri is `/bucket-name?delete`)
-        full-uri (str (name scheme) "://" server-name
-                      (when should-include-port (str ":" server-port))
+        full-uri (str (name scheme) "://"
+                      (aws-http/uri-authority scheme server-name server-port)
                       uri
                       (when query-string (str "?" query-string)))]
     (URI/create full-uri)))
