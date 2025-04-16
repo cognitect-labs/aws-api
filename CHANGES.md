@@ -3,6 +3,7 @@
 ## DEV
 
 * Fix invalid signature for nonstandard host port [#263](https://github.com/cognitect-labs/aws-api/issues/263)
+* Upgrade dependencies
 
 ## 0.8.735 / 2025-02-26
 
