@@ -165,7 +165,11 @@
 
 (defmethod json-serialize* "structure"
   [shapes shape data]
-  (when data
+  (cond
+    (:document shape)
+    data
+
+    data
     (reduce-kv (fn [m k v]
                  (if-let [member-shape (resolve shapes (structure-member-shape-ref shape k))]
                    (assoc m
