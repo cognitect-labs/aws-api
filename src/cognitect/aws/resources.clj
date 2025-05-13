@@ -1,5 +1,5 @@
-(ns cognitect.aws.resources
-  (:require [clojure.java.io :as io])
+(ns ^:skip-wiki cognitect.aws.resources
+  "Impl, don't call directly."
   (:import (clojure.lang RT)))
 
 (def loader
@@ -16,4 +16,4 @@
 (defn resource
   "Returns the URL for a named resource, always using Clojure's base class loader."
   [n]
-  (io/resource n loader))
+  (.getResource ^ClassLoader loader n))
