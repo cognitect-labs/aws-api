@@ -106,62 +106,64 @@
           (put-throwable result-ch t response-meta op-map))))
     result-ch))
 
-(deftype Client [client-meta info]
-  clojure.lang.IObj
-  (meta [_] @client-meta)
-  (withMeta [this m] (swap! client-meta merge m) this)
+(defn ->Client [client-meta info]
+  (with-meta
+   (reify
+     ILookup
+     (valAt [this k]
+       (.valAt this k nil))
 
-  ILookup
-  (valAt [this k]
-    (.valAt this k nil))
+     (valAt [this k default]
+       (case k
+         :api
+         (-> info :service :metadata :cognitect.aws/service-name)
+         :region
+         (some-> info :region-provider region/fetch)
+         :endpoint
+         (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
+         :credentials
+         (some-> info :credentials-provider credentials/fetch)
+         :service
+         (some-> info :service (select-keys [:metadata]))
+         :http-client
+         (:http-client info)
+         default))
 
-  (valAt [this k default]
-    (case k
-      :api
-      (-> info :service :metadata :cognitect.aws/service-name)
-      :region
-      (some-> info :region-provider region/fetch)
-      :endpoint
-      (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
-      :credentials
-      (some-> info :credentials-provider credentials/fetch)
-      :service
-      (some-> info :service (select-keys [:metadata]))
-      :http-client
-      (:http-client info)
-      default))
+     client.protocol/Client
+     (-get-info [_] info)
 
-  client.protocol/Client
-  (-get-info [_] info)
+     (-invoke [client op-map]
+       (a/<!! (client.protocol/-invoke-async client op-map)))
 
-  (-invoke [client op-map]
-    (a/<!! (.-invoke-async client op-map)))
+     (-invoke-async [client {:keys [op request] :as op-map}]
+       (let [result-chan (or (:ch op-map) (a/promise-chan))
+             {:keys [service retriable? backoff]} (client.protocol/-get-info client)
+             spec (and (validation/validate-requests? client) (validation/request-spec service op))]
+         (cond
+           (not (contains? (:operations service) (:op op-map)))
+           (a/put! result-chan (validation/unsupported-op-anomaly service op))
 
-  (-invoke-async [client {:keys [op request] :as op-map}]
-    (let [result-chan (or (:ch op-map) (a/promise-chan))
-          {:keys [service retriable? backoff]} (client.protocol/-get-info client)
-          spec (and (validation/validate-requests? client) (validation/request-spec service op))]
-      (cond
-        (not (contains? (:operations service) (:op op-map)))
-        (a/put! result-chan (validation/unsupported-op-anomaly service op))
+           (and spec (not (validation/valid? spec request)))
+           (a/put! result-chan (validation/invalid-request-anomaly spec request))
 
-        (and spec (not (validation/valid? spec request)))
-        (a/put! result-chan (validation/invalid-request-anomaly spec request))
+           :else
+           ;; In case :body is an InputStream, ensure that we only read
+           ;; it once by reading it before we send it to with-retry.
+           (let [req (-> (aws.protocols/build-http-request service op-map)
+                         (update :body util/->bbuf))]
+             (retry/with-retry
+              #(send-request client op-map req)
+              result-chan
+              (or (:retriable? op-map) retriable?)
+              (or (:backoff op-map) backoff))))
 
-        :else
-        ;; In case :body is an InputStream, ensure that we only read
-        ;; it once by reading it before we send it to with-retry.
-        (let [req (-> (aws.protocols/build-http-request service op-map)
-                      (update :body util/->bbuf))]
-          (retry/with-retry
-            #(send-request client op-map req)
-            result-chan
-            (or (:retriable? op-map) retriable?)
-            (or (:backoff op-map) backoff))))
+         result-chan))
 
-      result-chan))
-
-  (-stop [aws-client]
-    (let [{:keys [http-client]} (client.protocol/-get-info aws-client)]
-      (when-not (#'shared/shared-http-client? http-client)
-        (http/stop http-client)))))
+     (-stop [aws-client]
+       (let [{:keys [http-client]} (client.protocol/-get-info aws-client)]
+         (when-not (#'shared/shared-http-client? http-client)
+           (http/stop http-client)))))
+   (if (map? client-meta)
+     client-meta
+     ; backwards compatibility: `client-meta` used to be an atom
+     (deref client-meta))))
