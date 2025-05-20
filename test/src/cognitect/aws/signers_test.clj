@@ -10,7 +10,7 @@
             [clojure.test :as t :refer [deftest is testing]]
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.properties :as prop]
-            [cognitect.aws.jdk :as jdk]
+            [cognitect.aws.jdk-v2 :as jdk-v2]
             [cognitect.aws.generators :as g]
             [cognitect.aws.signers :as signers])
   (:import [java.io ByteArrayInputStream]
@@ -150,17 +150,17 @@
   (prop/for-all [service (g/gen-service "v4")
                  request g/gen-request]
     (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
-          jdk-signed-request (jdk/v4-jdk-signed-request service credentials request)]
+          jdk-signed-request (jdk-v2/v4-jdk-signed-request service "us-east-1" credentials request)]
       (is (= (get-in signed-request [:headers "authorization"])
-             (get (.getHeaders jdk-signed-request) "Authorization"))))))
+             (-> jdk-signed-request :headers :authorization))))))
 
 (defspec aws-s3v4-signer-parity 1000
   (prop/for-all [service (g/gen-service "s3v4")
                  request g/gen-request]
     (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
-          jdk-signed-request (jdk/s3v4-jdk-signed-request service credentials request)]
+          jdk-signed-request (jdk-v2/s3v4-jdk-signed-request service "us-east-1" credentials request)]
       (is (= (get-in signed-request [:headers "authorization"])
-             (get (.getHeaders jdk-signed-request) "Authorization"))))))
+             (-> jdk-signed-request :headers :authorization))))))
 
 (defspec aws-s3-signer-parity 1000
   (prop/for-all [service (g/gen-service "s3")
@@ -168,12 +168,36 @@
     (let [signed-request (signers/sign-http-request service {:region "us-east-1"} credentials request)
           ;; https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingAWSSDK.html
           ;; If you are sending direct REST calls to Amazon S3, you must modify your application to use the Signature Version 4 signing process.
-          jdk-signed-request (jdk/s3v4-jdk-signed-request service credentials request)]
+          jdk-signed-request (jdk-v2/s3v4-jdk-signed-request service "us-east-1" credentials request)]
       (is (= (get-in signed-request [:headers "authorization"])
-             (get (.getHeaders jdk-signed-request) "Authorization"))))))
+             (-> jdk-signed-request :headers :authorization))))))
 
 (comment
   (t/run-tests)
+
+  (require '[clojure.spec.gen.alpha :as gen])
+
+  (defn gen-request
+    "Gen a request with a non-empty body"
+    []
+    (let [body (->> (gen/string) gen/sample (filter seq) first)]
+      (-> g/gen-request gen/sample first (assoc :body (.getBytes ^String body "UTF-8")))))
+
+  ;; ======================================================================
+  ;; V4 testing
+  (def my-service (-> (g/gen-service "v4") gen/sample first))
+  (def my-request (gen-request))
+  (def my-jdk-v2-signed-request (jdk-v2/v4-jdk-signed-request my-service "us-east-1" credentials my-request))
+  (-> my-jdk-v2-signed-request :headers)
+  (-> (signers/sign-http-request my-service {:region "us-east-1"} credentials my-request) :headers)
+  ;; ======================================================================
+  ;; S3V4 testing
+  (def my-s3-service (-> (g/gen-service "s3v4") gen/sample first))
+  (def my-s3-request (gen-request))
+  (def my-s3-jdk-v2-signed-request (jdk-v2/s3v4-jdk-signed-request my-s3-service "us-east-1" credentials my-s3-request))
+  (-> my-s3-jdk-v2-signed-request :headers)
+  (-> (signers/sign-http-request my-s3-service {:region "us-east-1"} credentials my-s3-request) :headers)
+  ;; ======================================================================
 
   (sub-directories (io/file (io/resource "aws-sig-v4-test-suite")))
 

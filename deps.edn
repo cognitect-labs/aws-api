@@ -14,7 +14,7 @@
                                            org.clojure/test.check        {:mvn/version "1.1.1"}
                                            org.slf4j/slf4j-reload4j      {:mvn/version "2.0.16"}
                                            http-kit/http-kit             {:mvn/version "2.8.0"}
-                                           com.amazonaws/aws-java-sdk-s3 {:mvn/version "1.12.779"}
+                                           software.amazon.awssdk/s3     {:mvn/version "2.31.46"}
                                            com.cognitect/http-client     {:mvn/version "1.0.127"}
                                            com.cognitect.aws/endpoints   {:mvn/version "871.2.31.64"}
                                            com.cognitect.aws/autoscaling {:mvn/version "871.2.31.64"}
