@@ -107,63 +107,70 @@
     result-ch))
 
 (defn ->Client [client-meta info]
-  (with-meta
-   (reify
-     ILookup
-     (valAt [this k]
-       (.valAt this k nil))
+  (let [; backwards compatibility: `client-meta` used to be an atom
+        client-meta-map (if (map? client-meta)
+                          client-meta
+                          (deref client-meta))
+        datafy-fn (get client-meta-map 'clojure.core.protocols/datafy)
+        ; don't extend protocol via metadata (babashka friendly)
+        client-meta' (dissoc client-meta-map 'clojure.core.protocols/datafy)]
+    (with-meta
+     (reify
+       ILookup
+       (valAt [this k]
+         (.valAt this k nil))
 
-     (valAt [this k default]
-       (case k
-         :api
-         (-> info :service :metadata :cognitect.aws/service-name)
-         :region
-         (some-> info :region-provider region/fetch)
-         :endpoint
-         (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
-         :credentials
-         (some-> info :credentials-provider credentials/fetch)
-         :service
-         (some-> info :service (select-keys [:metadata]))
-         :http-client
-         (:http-client info)
-         default))
+       (valAt [this k default]
+         (case k
+           :api
+           (-> info :service :metadata :cognitect.aws/service-name)
+           :region
+           (some-> info :region-provider region/fetch)
+           :endpoint
+           (some-> info :endpoint-provider (endpoint/fetch (.valAt this :region)))
+           :credentials
+           (some-> info :credentials-provider credentials/fetch)
+           :service
+           (some-> info :service (select-keys [:metadata]))
+           :http-client
+           (:http-client info)
+           default))
 
-     client.protocol/Client
-     (-get-info [_] info)
+       clojure.core.protocols/Datafiable
+       (datafy [this] (datafy-fn this))
 
-     (-invoke [client op-map]
-       (a/<!! (client.protocol/-invoke-async client op-map)))
+       client.protocol/Client
+       (-get-info [_] info)
 
-     (-invoke-async [client {:keys [op request] :as op-map}]
-       (let [result-chan (or (:ch op-map) (a/promise-chan))
-             {:keys [service retriable? backoff]} (client.protocol/-get-info client)
-             spec (and (validation/validate-requests? client) (validation/request-spec service op))]
-         (cond
-           (not (contains? (:operations service) (:op op-map)))
-           (a/put! result-chan (validation/unsupported-op-anomaly service op))
+       (-invoke [client op-map]
+         (a/<!! (client.protocol/-invoke-async client op-map)))
 
-           (and spec (not (validation/valid? spec request)))
-           (a/put! result-chan (validation/invalid-request-anomaly spec request))
+       (-invoke-async [client {:keys [op request] :as op-map}]
+         (let [result-chan (or (:ch op-map) (a/promise-chan))
+               {:keys [service retriable? backoff]} (client.protocol/-get-info client)
+               spec (and (validation/validate-requests? client) (validation/request-spec service op))]
+           (cond
+             (not (contains? (:operations service) (:op op-map)))
+             (a/put! result-chan (validation/unsupported-op-anomaly service op))
 
-           :else
-           ;; In case :body is an InputStream, ensure that we only read
-           ;; it once by reading it before we send it to with-retry.
-           (let [req (-> (aws.protocols/build-http-request service op-map)
-                         (update :body util/->bbuf))]
-             (retry/with-retry
-              #(send-request client op-map req)
-              result-chan
-              (or (:retriable? op-map) retriable?)
-              (or (:backoff op-map) backoff))))
+             (and spec (not (validation/valid? spec request)))
+             (a/put! result-chan (validation/invalid-request-anomaly spec request))
 
-         result-chan))
+             :else
+             ;; In case :body is an InputStream, ensure that we only read
+             ;; it once by reading it before we send it to with-retry.
+             (let [req (-> (aws.protocols/build-http-request service op-map)
+                           (update :body util/->bbuf))]
+               (retry/with-retry
+                #(send-request client op-map req)
+                result-chan
+                (or (:retriable? op-map) retriable?)
+                (or (:backoff op-map) backoff))))
 
-     (-stop [aws-client]
-       (let [{:keys [http-client]} (client.protocol/-get-info aws-client)]
-         (when-not (#'shared/shared-http-client? http-client)
-           (http/stop http-client)))))
-   (if (map? client-meta)
-     client-meta
-     ; backwards compatibility: `client-meta` used to be an atom
-     (deref client-meta))))
+           result-chan))
+
+       (-stop [aws-client]
+         (let [{:keys [http-client]} (client.protocol/-get-info aws-client)]
+           (when-not (#'shared/shared-http-client? http-client)
+             (http/stop http-client)))))
+     client-meta')))

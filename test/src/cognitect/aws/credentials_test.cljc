@@ -4,7 +4,6 @@
 (ns cognitect.aws.credentials-test
   (:require [clojure.test :as t :refer [deftest testing is]]
             [clojure.java.io :as io]
-            [clojure.tools.logging.test :refer [with-log logged?]]
             [cognitect.aws.client.shared :as shared]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
@@ -37,15 +36,20 @@
     (testing "The chain provider returns nil if none of the providers returns credentials."
       (is (nil? (credentials/fetch (credentials/chain-credentials-provider [p1])))))))
 
-(deftest valid-credentials-test
-  (with-log
-    (credentials/valid-credentials nil "x provider")
-    (is (logged? 'cognitect.aws.credentials :debug (str "Unable to fetch credentials from x provider."))))
-  (with-log
-    (credentials/valid-credentials {:aws/access-key-id     "id"
-                                    :aws/secret-access-key "secret"}
-                                   "x provider")
-    (is (logged? 'cognitect.aws.credentials :debug (str "Fetched credentials from x provider.")))))
+; clojure.tools.logging.test not supported in babashka
+#?(:bb nil
+   :clj
+   (do
+     (require '[clojure.tools.logging.test :refer [with-log logged?]])
+     (deftest valid-credentials-test
+       (with-log
+        (credentials/valid-credentials nil "x provider")
+        (is (logged? 'cognitect.aws.credentials :debug (str "Unable to fetch credentials from x provider."))))
+       (with-log
+        (credentials/valid-credentials {:aws/access-key-id     "id"
+                                        :aws/secret-access-key "secret"}
+                                       "x provider")
+        (is (logged? 'cognitect.aws.credentials :debug (str "Fetched credentials from x provider.")))))))
 
 (deftest environment-credentials-provider-test
   (testing "required vars present"

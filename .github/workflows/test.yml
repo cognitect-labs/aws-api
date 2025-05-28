@@ -51,6 +51,7 @@ jobs:
         uses: DeLaGuardo/setup-clojure@13.1
         with:
           cli: 1.12.0.1488
+          bb: 1.12.200
 
       - name: Cache clojure dependencies
         uses: actions/cache@v4
@@ -74,3 +75,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
 
         run: clojure -M:dev:test-integration
+
+      - name: Run babashka tests
+        env:
+          # AWS_PROFILE is only required to comply with fixture check,
+          # it's not actually used to load credentials
+          AWS_PROFILE: aws-api-test
+          AWS_ACCESS_KEY_ID: ${{ secrets.INTEGRATION_TEST_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
+
+        run: bb test-bb

@@ -3,7 +3,6 @@
             [clojure.test :refer [deftest is testing use-fixtures]]
             [cognitect.aws.client.api :as aws]
             [cognitect.aws.credentials :as creds]
-            [cognitect.aws.http.cognitect :as http-cognitect-client]
             [cognitect.aws.integration.fixtures :as fixtures]
             [cognitect.aws.test.utils :as utils])
   (:import (java.nio ByteBuffer)
@@ -85,8 +84,12 @@
   (testing "Default http client"
     (test-s3-client-with-http-client (aws/default-http-client))))
 
-(deftest ^:integration test-cognitect-http-client
-  (test-s3-client-with-http-client (http-cognitect-client/create)))
+; cannot load Jetty (and thus http-cognitect-client) in babashka
+#?(:bb nil
+   :clj
+   (do (require '[cognitect.aws.http.cognitect :as http-cognitect-client])
+       (deftest ^:integration test-cognitect-http-client
+                (test-s3-client-with-http-client (http-cognitect-client/create)))))
 
 (utils/when-java11
  (require '[cognitect.aws.http.java :as http-java-client])
@@ -95,7 +98,8 @@
 
 (defn- for-each-http-client
   [f]
-  (let [clients (remove nil? [(http-cognitect-client/create)
+  (let [clients (remove nil? [#?(:bb nil
+                                 :clj (http-cognitect-client/create))
                               (utils/when-java11
                                 (require '[cognitect.aws.http.java :as http-java-client])
                                 (http-java-client/create))])]
