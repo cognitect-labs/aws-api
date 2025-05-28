@@ -17,3 +17,8 @@
   "Returns the URL for a named resource, always using Clojure's base class loader."
   [n]
   (.getResource ^ClassLoader loader n))
+
+(defn resources
+  "Returns a seq of URLs for a named resource, always using Clojure's base class loader."
+  [n]
+  (enumeration-seq (.getResources ^ClassLoader loader n)))

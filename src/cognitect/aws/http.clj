@@ -6,6 +6,7 @@
   (:require [clojure.edn :as edn]
             [clojure.core.async :as a]
             [clojure.string :as str]
+            [cognitect.aws.resources :as resources]
             [cognitect.aws.dynaload :as dynaload]))
 
 (set! *warn-on-reflection* true)
@@ -72,8 +73,7 @@
 
   Throws if more than one `cognitect_aws_http.edn` files are found."
   []
-  (let [cl   (.. Thread currentThread getContextClassLoader)
-        cfgs (enumeration-seq (.getResources cl "cognitect_aws_http.edn"))]
+  (let [cfgs (resources/resources "cognitect_aws_http.edn")]
     (case (count cfgs)
       0 'cognitect.aws.http.default/create
       1 (-> cfgs first read-config :constructor-var)
