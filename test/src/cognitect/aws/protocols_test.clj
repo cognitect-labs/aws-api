@@ -3,7 +3,7 @@
 
 (ns cognitect.aws.protocols-test
   "Test the protocols implementations."
-  (:require [clojure.data.json :as json]
+  (:require [cognitect.aws.json :as json]
             [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.spec.alpha :as s]
@@ -484,7 +484,7 @@
     (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/busy}
                  (aws.protocols/parse-http-error-response
                   {:status 400
-                   :body (util/->bbuf (json/json-str {:__type "ThrottlingException"}))})))
+                   :body (util/->bbuf (json/write-str {:__type "ThrottlingException"}))})))
     (is (submap? {:cognitect.anomalies/category :cognitect.anomalies/busy}
                  (aws.protocols/parse-http-error-response
                   {:status 400
@@ -503,8 +503,8 @@
                 "aws.protocoltests.restjson#FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/"
                 "aws.protocoltests.restjson#FooError:http://internal.amazon.com/coral/com.amazon.coral.validate/#some-more-stuff"]]
     (doseq [data [{:headers {"x-amzn-errortype" code}}
-                  {:body (util/->bbuf (json/json-str {:__type code}))}
-                  {:body (util/->bbuf (json/json-str {:code code}))}
+                  {:body (util/->bbuf (json/write-str {:__type code}))}
+                  {:body (util/->bbuf (json/write-str {:code code}))}
                   {:body (util/->bbuf (str "<Error><Code>" code "</Code></Error>"))}
                   {:body (util/->bbuf (str "<ErrorResponse><Error><Code>" code "</Code></Error></ErrorResponse>"))}
                   {:body (util/->bbuf (str "<Response><Errors><Error><Code>" code "</Code></Error></Errors></Response>"))}]]

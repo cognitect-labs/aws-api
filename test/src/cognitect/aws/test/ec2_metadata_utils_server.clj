@@ -3,8 +3,7 @@
 
 (ns cognitect.aws.test.ec2-metadata-utils-server
   "Modeled after com.amazonaws.util.EC2MetadataUtilsServer"
-  (:require [clojure.data.json :as json]
-            [cognitect.aws.client.shared :as shared]
+  (:require [cognitect.aws.json :as json]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
             [cognitect.aws.util :as u]
             [org.httpkit.server :as http-server]))
