@@ -7,11 +7,11 @@
   <packaging>jar</packaging>
   <name>aws-api</name>
   <description>A Clojure API for the AWS API</description>
-  <url>http://github.com/cognitect-labs/aws-api</url>
+  <url>https://github.com/cognitect-labs/aws-api</url>
   <licenses>
     <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
     </license>
   </licenses>
   <developers>
@@ -19,13 +19,13 @@
       <name>Cognitect</name>
       <email>labs@cognitect.com</email>
       <organization>Cognitect</organization>
-      <organizationUrl>http://cognitect.com</organizationUrl>
+      <organizationUrl>https://cognitect.com</organizationUrl>
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git@github.com:cognitect-labs/aws-api.git </connection>
-    <developerConnection>scm:git:git@github.com:cognitect-labs/aws-api.git </developerConnection>
-    <url>git@github.com:cognitect-labs/aws-api.git</url>
+    <connection>scm:git:git@github.com:cognitect-labs/aws-api.git</connection>
+    <developerConnection>scm:git:git@github.com:cognitect-labs/aws-api.git</developerConnection>
+    <url>https://github.com/cognitect-labs/aws-api</url>
   </scm>
   <dependencies>
     <dependency>
@@ -85,42 +85,14 @@
     <outputDirectory>target/classes</outputDirectory>
     <plugins>
       <plugin>
-        <groupId>com.theoryinpractise</groupId>
-        <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.7.1</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
         <extensions>true</extensions>
         <configuration>
-          <sourceDirectories>
-            <sourceDirectory>src</sourceDirectory>
-          </sourceDirectories>
-          <testSourceDirectories>
-            <testSourceDirectory>test</testSourceDirectory>
-          </testSourceDirectories>
+          <publishingServerId>central</publishingServerId>
+          <autoPublish>true</autoPublish>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.13</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -158,18 +130,6 @@
         </executions>
       </plugin>
     </plugins>
-    <extensions>
-      <extension>
-        <groupId>org.springframework.build</groupId>
-        <artifactId>aws-maven</artifactId>
-        <version>5.0.0.RELEASE</version>
-      </extension>
-      <extension>
-        <groupId>com.gkatzioura.maven.cloud</groupId>
-        <artifactId>s3-storage-wagon</artifactId>
-        <version>1.0</version>
-      </extension>
-    </extensions>
     <sourceDirectory>src</sourceDirectory>
   </build>
   <repositories>
