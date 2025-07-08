@@ -237,11 +237,14 @@
       (fetch [_]
         (when (.exists f)
           (try
-            (let [profile (get (config/parse f) profile-name)]
+            (let [config         (config/parse f)
+                  profile        (get config profile-name)
+                  source-profile (some->> "source_profile" (get profile) (get config))
+                  creds-profile  (or source-profile profile)]
               (valid-credentials
-               {:aws/access-key-id     (get profile "aws_access_key_id")
-                :aws/secret-access-key (get profile "aws_secret_access_key")
-                :aws/session-token     (get profile "aws_session_token")}
+               {:aws/access-key-id     (get creds-profile "aws_access_key_id")
+                :aws/secret-access-key (get creds-profile "aws_secret_access_key")
+                :aws/session-token     (get creds-profile "aws_session_token")}
                "aws profiles file"))
             (catch Throwable t
               (log/error t "Error fetching credentials from aws profiles file")))))))))
