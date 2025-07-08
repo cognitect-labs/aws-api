@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ nu-main ]
+    branches: [ main ]
   pull_request:
-    branches: [ nu-main ]
+    branches: [ main ]
 
 env:
   AWS_REGION: us-east-1
