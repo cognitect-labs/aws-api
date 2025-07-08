@@ -1,0 +1,76 @@
+name: Tests
+
+on:
+  push:
+    branches: [ nu-main ]
+  pull_request:
+    branches: [ nu-main ]
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  tests-using-java:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+          java-version: [ '8', '11', '17', '21']
+
+    name: Java version ${{ matrix.java-version }}
+
+    services:
+      s3:
+        image: bitnami/minio
+        ports:
+          - 9000:9000
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Cache build materials
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('deps.edn') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Print java version
+        run: java -version
+
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@13.1
+        with:
+          cli: 1.12.0.1488
+
+      - name: Cache clojure dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: cljdeps-${{ hashFiles('deps.edn') }}
+          restore-keys: cljdeps-
+
+      - name: Run unit tests
+        run: clojure -M:dev:test
+
+      - name: Run integration tests
+        env:
+          # AWS_PROFILE is only required to comply with fixture check,
+          # it's not actually used to load credentials
+          AWS_PROFILE: aws-api-test
+          AWS_ACCESS_KEY_ID: ${{ secrets.INTEGRATION_TEST_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
+
+        run: clojure -M:dev:test-integration
