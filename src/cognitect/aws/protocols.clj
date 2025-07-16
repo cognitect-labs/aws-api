@@ -3,7 +3,7 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols
   "Impl, don't call directly. "
-  (:require [clojure.data.json :as json]
+  (:require [cognitect.aws.json :as json]
             [clojure.string :as str]
             [cognitect.aws.util :as util])
   (:import (java.time ZoneOffset ZonedDateTime)))

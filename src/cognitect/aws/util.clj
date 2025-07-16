@@ -5,7 +5,7 @@
   "Impl, don't call directly."
   (:require [clojure.string :as str]
             [clojure.data.xml :as xml]
-            [clojure.data.json :as json]
+            [cognitect.aws.json :as json]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
   (:import [java.time ZoneOffset ZonedDateTime]

@@ -22,7 +22,7 @@
                 like list, map, and structure, include shape-refs to refer to the other shapes
                 that represent the member shapes."
   (:refer-clojure :exclude [resolve])
-  (:require [clojure.data.json :as json]
+  (:require [cognitect.aws.json :as json]
             [cognitect.aws.util :as util]))
 
 (set! *warn-on-reflection* true)
