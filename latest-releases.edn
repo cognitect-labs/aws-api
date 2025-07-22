@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.741"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.32.2"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.32.5"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -82,8 +82,7 @@
  com.cognitect.aws/athena
  {:mvn/version "871.2.31.64", :aws/serviceFullName "Amazon Athena"},
  com.cognitect.aws/auditmanager
- {:mvn/version "871.2.31.64",
-  :aws/serviceFullName "AWS Audit Manager"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "AWS Audit Manager"},
  com.cognitect.aws/autoscaling
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Auto Scaling"},
  com.cognitect.aws/autoscaling-plans
@@ -161,7 +160,7 @@
  {:mvn/version "871.2.31.64",
   :aws/serviceFullName "AWS Clean Rooms Service"},
  com.cognitect.aws/cleanroomsml
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "AWS Clean Rooms ML"},
  com.cognitect.aws/cloud9
  {:mvn/version "871.2.29.35", :aws/serviceFullName "AWS Cloud9"},
@@ -175,8 +174,7 @@
  {:mvn/version "871.2.32.2",
   :aws/serviceFullName "AWS CloudFormation"},
  com.cognitect.aws/cloudfront
- {:mvn/version "871.2.31.64",
-  :aws/serviceFullName "Amazon CloudFront"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "Amazon CloudFront"},
  com.cognitect.aws/cloudfront-keyvaluestore
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon CloudFront KeyValueStore"},
@@ -295,7 +293,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
  com.cognitect.aws/deadline
- {:mvn/version "871.2.32.2", :aws/serviceFullName "AWSDeadlineCloud"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "AWSDeadlineCloud"},
  com.cognitect.aws/detective
  {:mvn/version "871.2.30.11", :aws/serviceFullName "Amazon Detective"},
  com.cognitect.aws/devicefarm
@@ -339,7 +337,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "871.2.29.35",
@@ -558,7 +556,7 @@
  com.cognitect.aws/keyspaces
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon Keyspaces"},
  com.cognitect.aws/keyspacesstreams
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon Keyspaces Streams"},
  com.cognitect.aws/kinesis
  {:mvn/version "871.2.31.64", :aws/serviceFullName "Amazon Kinesis"},
@@ -612,7 +610,7 @@
  {:mvn/version "871.2.31.23",
   :aws/serviceFullName "Amazon Location Service"},
  com.cognitect.aws/logs
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon CloudWatch Logs"},
  com.cognitect.aws/lookoutequipment
  {:mvn/version "871.2.29.35",
@@ -632,7 +630,7 @@
  com.cognitect.aws/macie2
  {:mvn/version "871.2.29.39", :aws/serviceFullName "Amazon Macie 2"},
  com.cognitect.aws/mailmanager
- {:mvn/version "871.2.31.64", :aws/serviceFullName "MailManager"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "MailManager"},
  com.cognitect.aws/managedblockchain
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Managed Blockchain"},
@@ -657,7 +655,7 @@
  com.cognitect.aws/mediaconnect
  {:mvn/version "871.2.31.64", :aws/serviceFullName "AWS MediaConnect"},
  com.cognitect.aws/mediaconvert
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
  {:mvn/version "871.2.31.64",
@@ -770,7 +768,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon OpenSearch Ingestion"},
  com.cognitect.aws/outposts
- {:mvn/version "871.2.32.2", :aws/serviceFullName "AWS Outposts"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "AWS Outposts"},
  com.cognitect.aws/panorama
  {:mvn/version "871.2.29.35", :aws/serviceFullName "AWS Panorama"},
  com.cognitect.aws/partnercentral-selling
@@ -921,7 +919,7 @@
  com.cognitect.aws/s3tables
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon S3 Tables"},
  com.cognitect.aws/sagemaker
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "871.2.29.35",
@@ -968,7 +966,7 @@
  com.cognitect.aws/servicediscovery
  {:mvn/version "871.2.29.35", :aws/serviceFullName "AWS Cloud Map"},
  com.cognitect.aws/sesv2
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon Simple Email Service"},
  com.cognitect.aws/shield
  {:mvn/version "871.2.29.35", :aws/serviceFullName "AWS Shield"},
@@ -996,7 +994,7 @@
  {:mvn/version "871.2.29.52",
   :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Amazon Simple Systems Manager (SSM)"},
  com.cognitect.aws/ssm-contacts
  {:mvn/version "871.2.29.35",
@@ -1023,7 +1021,7 @@
  com.cognitect.aws/sso-oidc
  {:mvn/version "871.2.31.23", :aws/serviceFullName "AWS SSO OIDC"},
  com.cognitect.aws/states
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "AWS Step Functions"},
  com.cognitect.aws/storagegateway
  {:mvn/version "871.2.32.2",
@@ -1044,13 +1042,13 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Simple Workflow Service"},
  com.cognitect.aws/synthetics
- {:mvn/version "871.2.31.64", :aws/serviceFullName "Synthetics"},
+ {:mvn/version "871.2.32.5", :aws/serviceFullName "Synthetics"},
  com.cognitect.aws/taxsettings
  {:mvn/version "871.2.31.23", :aws/serviceFullName "Tax Settings"},
  com.cognitect.aws/textract
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon Textract"},
  com.cognitect.aws/timestream-influxdb
- {:mvn/version "871.2.31.23",
+ {:mvn/version "871.2.32.5",
   :aws/serviceFullName "Timestream InfluxDB"},
  com.cognitect.aws/timestream-query
  {:mvn/version "871.2.29.35",
