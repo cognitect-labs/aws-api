@@ -14,7 +14,7 @@
     (get props k)))
 
 (defn major-java-version []
-  (-> (System/getProperty "java.version") (str/split #"\.") first read-string))
+  (-> (System/getProperty "java.version") (str/split #"[\.-]") first read-string))
 
 (defmacro when-java11 [& body]
   (when (<= 11 (major-java-version))

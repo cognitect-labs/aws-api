@@ -4,7 +4,7 @@
 (ns ^:skip-wiki cognitect.aws.ec2-metadata-utils
   "Impl, don't call directly"
   (:require [clojure.string :as str]
-            [clojure.data.json :as json]
+            [cognitect.aws.json :as json]
             [clojure.core.async :as a]
             [cognitect.aws.http :as http]
             [cognitect.aws.util :as u]
