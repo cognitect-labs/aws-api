@@ -8,10 +8,9 @@
 
   (require '[cognitect.aws.http.java :as java-http-client]
            '[clojure.test :refer [deftest is testing]])
-  (import '(jdk.internal.net.http RequestPublishers$ByteArrayPublisher RequestPublishers$EmptyPublisher)
-          '(java.time Duration)
+  (import '(java.time Duration)
           '(java.io IOException)
-          '(java.net.http HttpClient$Redirect)
+          '(java.net.http HttpRequest HttpClient$Redirect)
           '[java.nio ByteBuffer])
 
   (deftest http-client-defaults-parity-with-cognitect-client
@@ -53,14 +52,17 @@
         (is (= (URI/create "https://localhost/api/uri")
                (java-http-client/request->complete-uri request))))))
 
-  (deftest body->body-publisher-test
-    (testing "nil"
-      (is (= RequestPublishers$EmptyPublisher
-             (type (java-http-client/body->body-publisher nil)))))
+  ; loading internal JDK classes in babashka is not supported
+  #?(:bb nil
+     :clj
+     (deftest body->body-publisher-test
+       (testing "nil"
+         (is (= jdk.internal.net.http.RequestPublishers$EmptyPublisher
+                (type (java-http-client/body->body-publisher nil)))))
 
-    (testing "ByteBuffer"
-      (is (= RequestPublishers$ByteArrayPublisher
-             (type (java-http-client/body->body-publisher (ByteBuffer/wrap (.getBytes "body"))))))))
+       (testing "ByteBuffer"
+         (is (= jdk.internal.net.http.RequestPublishers$ByteArrayPublisher
+                (type (java-http-client/body->body-publisher (ByteBuffer/wrap (.getBytes "body")))))))))
 
   (deftest remove-restricted-headers-test
     (testing "Remove restricted headers"
@@ -115,25 +117,25 @@
       (testing "URI"
         (is (= "http://server-test:8080/uri?foo=bar"
                (-> java-net-http-request
-                   .uri
+                   HttpRequest/.uri
                    .toString))))
 
       (testing "Method"
         (is (= "GET"
                (-> java-net-http-request
-                   .method))))
+                   HttpRequest/.method))))
 
       (testing "Timeout"
         (is (= (Duration/ofMillis 2000)
                (-> java-net-http-request
-                   .timeout
+                   HttpRequest/.timeout
                    .get))))
 
       (testing "Headers"
         (is (= {"header" ["value"]
                 "thingy" ["frob"]}
                (-> java-net-http-request
-                   .headers
+                   HttpRequest/.headers
                    .map))))))
 
   (deftest request->java-net-http-request-default-port-test
@@ -155,7 +157,7 @@
           (testing (str "URI for " opts)
             (is (= expected
                    (-> java-net-http-request
-                       .uri
+                       HttpRequest/.uri
                        .toString))))))))
 
   (deftest request->java-net-http-request-test-no-read-response-timeout-yields-no-timeout-set
@@ -170,7 +172,7 @@
           java-net-http-request (java-http-client/request->java-net-http-request request)]
 
       (testing "Timeout"
-        (is (= (Optional/empty) (-> java-net-http-request .timeout))))))
+        (is (= (Optional/empty) (-> java-net-http-request HttpRequest/.timeout))))))
 
   (deftest error->anomaly-test
     (testing "IOException"
