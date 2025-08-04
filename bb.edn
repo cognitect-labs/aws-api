@@ -2,11 +2,4 @@
  :tasks
  {test-bb {:doc  "Run Babashka tests"
            :extra-paths ["src" "test/src" "test/resources"]
-           :extra-deps {org.clojure/test.check        {:mvn/version "1.1.1"}
-                        com.cognitect.aws/endpoints   {:mvn/version "871.2.31.23"}
-                        com.cognitect.aws/autoscaling {:mvn/version "871.2.29.35"}
-                        com.cognitect.aws/ec2         {:mvn/version "871.2.31.23"}
-                        com.cognitect.aws/lambda      {:mvn/version "871.2.31.23"}
-                        com.cognitect.aws/s3          {:mvn/version "871.2.31.23"}
-                        com.cognitect.aws/ssm         {:mvn/version "871.2.31.23"}}
            :task bb-test-runner/run-tests}}}
