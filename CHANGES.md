@@ -1,5 +1,10 @@
 # aws-api
 
+## DEV
+
+* Add Babashka support
+* NOTE: the internal class `cognitect.aws.client.impl.Client` was removed
+
 ## 0.8.741 / 2025-04-17
 
 * Fix invalid signature for nonstandard host port [#263](https://github.com/cognitect-labs/aws-api/issues/263)
