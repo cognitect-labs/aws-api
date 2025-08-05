@@ -1,0 +1,5 @@
+{:deps {com.cognitect.aws/api {:local/root "."}}
+ :tasks
+ {test-bb {:doc  "Run Babashka tests"
+           :extra-paths ["src" "test/src" "test/resources"]
+           :task bb-test-runner/run-tests}}}
