@@ -6,7 +6,7 @@ echo "Cleaning..."
 rm -rf ./target
 
 echo "Aligning pom.xml with deps.edn ..."
-clj -Srepro -Spom
+clojure -Srepro -Spom
 if [ "$(git diff pom.xml)" = "" ]; then
     echo "nothing to change"
 else
@@ -28,7 +28,7 @@ echo "Releasing..."
 #git push ${AWS_API_REMOTE:-origin} v${version}
 
 echo "Updating README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}"
-clj -A:update-versions --update-latest-releases --update-changelog --update-readme
+clojure -A:update-versions --update-latest-releases --update-changelog --update-readme
 git commit -m "Update README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}" \
     README.md CHANGES.md UPGRADE.md latest-releases.edn
 git push
