@@ -1,0 +1,37 @@
+name: Release
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  release:
+    name: 'Publish to Maven Central'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 21
+        cache: 'maven'
+        server-id: central
+        server-username: MAVEN_CENTRAL_TOKEN
+        server-password: MAVEN_CENTRAL_TOKEN_PASSWORD
+        gpg-private-key: ${{ secrets.COGNITECT_SECRET_GPG_KEY }}
+        gpg-passphrase: COGNITECT_SECRET_GPG_KEY_PASSPHRASE
+
+    - name: Install clojure
+      uses: DeLaGuardo/setup-clojure@master
+      with:
+        cli: '1.12.1.1550'
+
+    - name: Publish to Maven OSS Server
+      run: ./build/release
+      env:
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_CENTRAL_TOKEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_PASSWORD }}
+        COGNITECT_SECRET_GPG_KEY_PASSPHRASE: ${{ secrets.COGNITECT_SECRET_GPG_KEY_PASSPHRASE }}
