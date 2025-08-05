@@ -19,13 +19,13 @@ version=`build/version`
 echo $version
 
 echo "Releasing..."
-./mvnw versions:set -DnewVersion=${version}
+./mvnw -ntp -B versions:set -DnewVersion=${version}
 ./mvnw -ntp -B clean deploy
-./mvnw versions:revert
+./mvnw -ntp -B versions:revert
 
-#echo "Tagging..."
-#git tag -a v${version} -m "Release ${version}"
-#git push ${AWS_API_REMOTE:-origin} v${version}
+echo "Tagging..."
+git tag -a v${version} -m "Release ${version}"
+git push ${AWS_API_REMOTE:-origin} v${version}
 
 echo "Updating README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}"
 clojure -A:update-versions --update-latest-releases --update-changelog --update-readme
@@ -33,7 +33,7 @@ git commit -m "Update README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn
     README.md CHANGES.md UPGRADE.md latest-releases.edn
 git push
 
-#echo "Updating gh-pages with new api docs"
-#build/doc
+echo "Updating gh-pages with new api docs"
+build/doc
 
 echo "Release done!"

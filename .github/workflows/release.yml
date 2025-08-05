@@ -17,8 +17,8 @@ jobs:
 
     - name: Set Github identity
       run: |
-        git config --global user.name scott.bale
-        git config --global user.email "scott.bale@nubank.com.br"
+        git config --global user.name nubank-cicd
+        git config --global user.email "nubank-cicd@users.noreply.github.com"
 
     - uses: actions/setup-java@v4
       with:
