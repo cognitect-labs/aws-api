@@ -1,6 +1,6 @@
 name: Release
 permissions:
-  contents: read
+  contents: write
 
 on:
   workflow_dispatch:
@@ -12,6 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set Github identity
+      run: |
+        git config --global user.name nubank-cicd
+        git config --global user.email "nubank-cicd@users.noreply.github.com"
 
     - uses: actions/setup-java@v4
       with:
