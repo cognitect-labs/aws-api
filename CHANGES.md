@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.762 / 2025-08-05
 
 * Add Babashka support
 * NOTE: the internal class `cognitect.aws.client.impl.Client` was removed
