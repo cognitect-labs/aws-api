@@ -2,16 +2,16 @@
 
 set -e
 
-echo "Building docs...\n"
+echo "Building docs..."
 rm -rf ./target/autodoc
 ./mvnw -ntp -B -Pautodoc clojure:autodoc
 
-echo -e "Checking out gh-pages branch\n"
+echo "Checking out gh-pages branch"
 rm -rf gh-pages
 git clone --quiet --branch=gh-pages git@github.com:cognitect-labs/aws-api.git gh-pages > /dev/null
 cd gh-pages
 
-echo -e "Replacing old gh-pages content with new docs\n"
+echo "Replacing old gh-pages content with new docs"
 git rm -rf ./*
 cp -Rf ../target/autodoc/* ./
 git add -f .
@@ -19,5 +19,5 @@ git commit -m "Updating gh-pages with new api docs"
 git push -fq origin gh-pages > /dev/null
 cd ..
 
-echo -e "Cleaning up\n"
+echo "Cleaning up"
 rm -rf gh-pages
