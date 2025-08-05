@@ -20,7 +20,7 @@ echo $version
 
 echo "Releasing..."
 ./mvnw versions:set -DnewVersion=${version}
-./mvnw clean deploy
+./mvnw -ntp -B clean deploy
 ./mvnw versions:revert
 
 #echo "Tagging..."

@@ -15,6 +15,11 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set Github identity
+      run: |
+        git config --global user.name scott.bale
+        git config --global user.email "scott.bale@nubank.com.br"
+
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
