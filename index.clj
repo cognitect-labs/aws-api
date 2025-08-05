@@ -29,10 +29,6 @@
    :wiki-url "cognitect.aws.region-api.html",
    :source-url nil}
   {:doc nil,
-   :name "cognitect.aws.resources",
-   :wiki-url "cognitect.aws.resources-api.html",
-   :source-url nil}
-  {:doc nil,
    :name "cognitect.aws.retry",
    :wiki-url "cognitect.aws.retry-api.html",
    :source-url nil}),
@@ -541,29 +537,6 @@
    :namespace "cognitect.aws.region",
    :wiki-url
    "/cognitect.aws.region-api.html#cognitect.aws.region/system-property-region-provider"}
-  {:raw-source-url nil,
-   :name "loader",
-   :file "src/cognitect/aws/resources.clj",
-   :source-url nil,
-   :line 5,
-   :var-type "var",
-   :doc
-   "Clojure's base class loader, used to load all resources.\n\nThis ensures the same class loader is used, no matter which thread invokes `resource`.\nThis is needed to guard against the scenario where the application is running in an\nenvironment that uses a non-default class loader, and the `resource` function is invoked\nfrom a thread that does not inherit the custom class loader (e.g. ForkJoinPool/commonPool threads).\n\nSee https://github.com/cognitect-labs/aws-api/issues/265 for details",
-   :namespace "cognitect.aws.resources",
-   :wiki-url
-   "/cognitect.aws.resources-api.html#cognitect.aws.resources/loader"}
-  {:raw-source-url nil,
-   :name "resource",
-   :file "src/cognitect/aws/resources.clj",
-   :source-url nil,
-   :line 16,
-   :var-type "function",
-   :arglists ([n]),
-   :doc
-   "Returns the URL for a named resource, always using Clojure's base class loader.",
-   :namespace "cognitect.aws.resources",
-   :wiki-url
-   "/cognitect.aws.resources-api.html#cognitect.aws.resources/resource"}
   {:raw-source-url nil,
    :name "capped-exponential-backoff",
    :file "src/cognitect/aws/retry.clj",
