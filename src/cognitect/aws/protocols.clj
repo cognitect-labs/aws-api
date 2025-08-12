@@ -90,12 +90,21 @@
 (defn headers [service operation]
   (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
     (cond-> {"x-amz-date" (.format util/x-amz-date-format (ZonedDateTime/now ZoneOffset/UTC))}
-      (contains? #{"json" "rest-json"} protocol)
-      (assoc "x-amz-target" (str targetPrefix "." (:name operation))
-             "content-type" (str "application/x-amz-json-" jsonVersion)
-             ;; NOTE: apigateway returns application/hal+json unless
+      ; https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html
+      (= "rest-json" protocol)
+      (assoc "content-type" "application/json"
+             ;; NOTE: some services return application/hal+json unless
              ;; we specify the accept header
              "accept"       "application/json")
+
+      ; https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html
+      ; https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html
+      (= "json" protocol)
+      (assoc "x-amz-target" (str targetPrefix "." (:name operation))
+             "content-type" (str "application/x-amz-json-" jsonVersion))
+
+      ; https://smithy.io/2.0/aws/protocols/aws-query-protocol.html
+      ; https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html
       (contains? #{"query" "ec2"} protocol)
       (assoc "content-type" "application/x-www-form-urlencoded; charset=utf-8"))))
 
