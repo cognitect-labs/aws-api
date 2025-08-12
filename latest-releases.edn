@@ -74,6 +74,9 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName
   "AWS Mainframe Modernization Application Testing"},
+ com.cognitect.aws/arc-region-switch
+ {:mvn/version "871.2.32.15",
+  :aws/serviceFullName "ARC - Region switch"},
  com.cognitect.aws/arc-zonal-shift
  {:mvn/version "871.2.32.2",
   :aws/serviceFullName "AWS ARC - Zonal Shift"},
@@ -117,6 +120,14 @@
  com.cognitect.aws/bedrock-agent-runtime
  {:mvn/version "871.2.31.64",
   :aws/serviceFullName "Agents for Amazon Bedrock Runtime"},
+ com.cognitect.aws/bedrock-agentcore
+ {:mvn/version "871.2.32.15",
+  :aws/serviceFullName
+  "Amazon Bedrock AgentCore Data Plane Fronting Layer"},
+ com.cognitect.aws/bedrock-agentcore-control
+ {:mvn/version "871.2.32.2",
+  :aws/serviceFullName
+  "Amazon Bedrock Agent Core Control Plane Fronting Layer"},
  com.cognitect.aws/bedrock-data-automation
  {:mvn/version "871.2.31.64",
   :aws/serviceFullName "Data Automation for Amazon Bedrock"},
@@ -921,6 +932,8 @@
   :aws/serviceFullName "Amazon S3 on Outposts"},
  com.cognitect.aws/s3tables
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon S3 Tables"},
+ com.cognitect.aws/s3vectors
+ {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon S3 Vectors"},
  com.cognitect.aws/sagemaker
  {:mvn/version "871.2.32.20",
   :aws/serviceFullName "Amazon SageMaker Service"},
