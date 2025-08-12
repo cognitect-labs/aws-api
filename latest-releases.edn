@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.762"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.32.20"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.32.21"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -209,7 +209,7 @@
  com.cognitect.aws/codeartifact
  {:mvn/version "871.2.29.35", :aws/serviceFullName "CodeArtifact"},
  com.cognitect.aws/codebuild
- {:mvn/version "871.2.32.20", :aws/serviceFullName "AWS CodeBuild"},
+ {:mvn/version "871.2.32.21", :aws/serviceFullName "AWS CodeBuild"},
  com.cognitect.aws/codecatalyst
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon CodeCatalyst"},
@@ -350,7 +350,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "871.2.32.20",
+ {:mvn/version "871.2.32.21",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "871.2.29.35",
