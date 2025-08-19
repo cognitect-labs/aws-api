@@ -23,7 +23,7 @@
  com.cognitect.aws/aiops
  {:mvn/version "871.2.32.15", :aws/serviceFullName "AWS AI Ops"},
  com.cognitect.aws/amp
- {:mvn/version "871.2.31.64",
+ {:mvn/version "871.2.32.25",
   :aws/serviceFullName "Amazon Prometheus Service"},
  com.cognitect.aws/amplify
  {:mvn/version "871.2.31.64", :aws/serviceFullName "AWS Amplify"},
@@ -101,10 +101,13 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Backup Gateway"},
  com.cognitect.aws/backupsearch
- {:mvn/version "871.2.29.39",
+ {:mvn/version "871.2.32.21",
   :aws/serviceFullName "AWS Backup Search"},
  com.cognitect.aws/batch
  {:mvn/version "871.2.32.20", :aws/serviceFullName "AWS Batch"},
+ com.cognitect.aws/bcm-dashboards
+ {:mvn/version "871.2.32.25",
+  :aws/serviceFullName "AWS Billing and Cost Management Dashboards"},
  com.cognitect.aws/bcm-data-exports
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Billing and Cost Management Data Exports"},
@@ -112,6 +115,10 @@
  {:mvn/version "871.2.31.64",
   :aws/serviceFullName
   "AWS Billing and Cost Management Pricing Calculator"},
+ com.cognitect.aws/bcm-recommended-actions
+ {:mvn/version "871.2.32.25",
+  :aws/serviceFullName
+  "AWS Billing and Cost Management Recommended Actions"},
  com.cognitect.aws/bedrock
  {:mvn/version "871.2.32.20", :aws/serviceFullName "Amazon Bedrock"},
  com.cognitect.aws/bedrock-agent
@@ -258,7 +265,7 @@
  com.cognitect.aws/config
  {:mvn/version "871.2.32.10", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "871.2.32.20",
+ {:mvn/version "871.2.32.25",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "871.2.31.23",
@@ -671,7 +678,7 @@
  {:mvn/version "871.2.32.5",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "871.2.31.64",
+ {:mvn/version "871.2.32.25",
   :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "871.2.29.35",
@@ -776,7 +783,8 @@
  com.cognitect.aws/opsworkscm
  {:mvn/version "871.2.32.2", :aws/serviceFullName "AWS OpsWorks CM"},
  com.cognitect.aws/organizations
- {:mvn/version "871.2.32.2", :aws/serviceFullName "AWS Organizations"},
+ {:mvn/version "871.2.32.21",
+  :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/osis
  {:mvn/version "871.2.32.10",
   :aws/serviceFullName "Amazon OpenSearch Ingestion"},
@@ -799,7 +807,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Private CA Connector for SCEP"},
  com.cognitect.aws/pcs
- {:mvn/version "871.2.32.15",
+ {:mvn/version "871.2.32.25",
   :aws/serviceFullName "AWS Parallel Computing Service"},
  com.cognitect.aws/personalize
  {:mvn/version "871.2.31.23",
@@ -935,7 +943,7 @@
  com.cognitect.aws/s3vectors
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon S3 Vectors"},
  com.cognitect.aws/sagemaker
- {:mvn/version "871.2.32.20",
+ {:mvn/version "871.2.32.21",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "871.2.29.35",
@@ -1076,10 +1084,10 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Telco Network Builder"},
  com.cognitect.aws/transcribe
- {:mvn/version "871.2.32.20",
+ {:mvn/version "871.2.32.21",
   :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transcribe-streaming
- {:mvn/version "871.2.31.64",
+ {:mvn/version "871.2.32.21",
   :aws/serviceFullName "Amazon Transcribe Streaming Service"},
  com.cognitect.aws/transfer
  {:mvn/version "871.2.32.2",
@@ -1117,7 +1125,8 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
- {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon WorkSpaces"},
+ {:mvn/version "871.2.32.25",
+  :aws/serviceFullName "Amazon WorkSpaces"},
  com.cognitect.aws/workspaces-instances
  {:mvn/version "871.2.32.2",
   :aws/serviceFullName "Amazon Workspaces Instances"},
