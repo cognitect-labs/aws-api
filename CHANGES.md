@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Add http read timeout to IMDS requests [#267](https://github.com/cognitect-labs/aws-api/issues/267)
+
 ## 0.8.762 / 2025-08-05
 
 * Add Babashka support

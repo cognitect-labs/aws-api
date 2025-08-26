@@ -47,7 +47,10 @@
 
 (defn- request-map
   [^URI uri]
-  (let [auth-token (u/getenv container-authorization-token-env-var)]
+  (let [auth-token (u/getenv container-authorization-token-env-var)
+        ;; matches the java sdk v2 default value
+        ;; https://github.com/aws/aws-sdk-java-v2/blob/43950cfe9c067b56f3eedaa8c078432495be7c36/core/sdk-core/src/main/java/software/amazon/awssdk/core/SdkSystemSetting.java#L93-L101
+        read-timeout-msec 1000]
     {:scheme (.getScheme uri)
      :server-name (.getHost uri)
      :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
@@ -57,7 +60,9 @@
      :request-method :get
      :headers (cond-> {"Accept" "*/*"}
                 auth-token
-                (assoc "Authorization" auth-token))}))
+                (assoc "Authorization" auth-token))
+     :timeout-msec read-timeout-msec
+     :cognitect.http-client/timeout-msec read-timeout-msec}))
 
 (defn- get-response-data [request-map http-client]
   (let [response (a/<!! (retry/with-retry
