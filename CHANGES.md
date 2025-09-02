@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.774 / 2025-09-02
 
 * Add http read timeout to IMDS requests [#267](https://github.com/cognitect-labs/aws-api/issues/267)
 * Fix `rest-json` and `json` protocol request headers [#168](https://github.com/cognitect-labs/aws-api/issues/168) [#241](https://github.com/cognitect-labs/aws-api/issues/241)
