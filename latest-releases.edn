@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.774"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.33.10"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.34.1"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -103,7 +103,7 @@
  {:mvn/version "871.2.32.21",
   :aws/serviceFullName "AWS Backup Search"},
  com.cognitect.aws/batch
- {:mvn/version "871.2.33.0", :aws/serviceFullName "AWS Batch"},
+ {:mvn/version "871.2.34.1", :aws/serviceFullName "AWS Batch"},
  com.cognitect.aws/bcm-dashboards
  {:mvn/version "871.2.32.25",
   :aws/serviceFullName "AWS Billing and Cost Management Dashboards"},
@@ -131,7 +131,7 @@
   :aws/serviceFullName
   "Amazon Bedrock AgentCore Data Plane Fronting Layer"},
  com.cognitect.aws/bedrock-agentcore-control
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName
   "Amazon Bedrock Agent Core Control Plane Fronting Layer"},
  com.cognitect.aws/bedrock-data-automation
@@ -151,7 +151,7 @@
  com.cognitect.aws/braket
  {:mvn/version "871.2.32.25", :aws/serviceFullName "Braket"},
  com.cognitect.aws/budgets
- {:mvn/version "871.2.32.20", :aws/serviceFullName "AWS Budgets"},
+ {:mvn/version "871.2.34.1", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
  {:mvn/version "871.2.33.10",
   :aws/serviceFullName "AWS Cost Explorer Service"},
@@ -169,7 +169,7 @@
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "Amazon Chime SDK Meetings"},
  com.cognitect.aws/chime-sdk-messaging
- {:mvn/version "871.2.32.30",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Chime SDK Messaging"},
  com.cognitect.aws/chime-sdk-voice
  {:mvn/version "871.2.33.0",
@@ -261,9 +261,9 @@
  {:mvn/version "871.2.31.64",
   :aws/serviceFullName "AWS Compute Optimizer"},
  com.cognitect.aws/config
- {:mvn/version "871.2.32.10", :aws/serviceFullName "AWS Config"},
+ {:mvn/version "871.2.34.1", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "871.2.33.10",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "871.2.31.23",
@@ -353,7 +353,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "871.2.33.5",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "871.2.33.0",
@@ -368,7 +368,7 @@
  {:mvn/version "871.2.33.10",
   :aws/serviceFullName "Amazon EC2 Container Service"},
  com.cognitect.aws/eks
- {:mvn/version "871.2.33.0",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Elastic Kubernetes Service"},
  com.cognitect.aws/eks-auth
  {:mvn/version "871.2.29.35", :aws/serviceFullName "Amazon EKS Auth"},
@@ -492,8 +492,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS SSO Identity Store"},
  com.cognitect.aws/imagebuilder
- {:mvn/version "871.2.31.64",
-  :aws/serviceFullName "EC2 Image Builder"},
+ {:mvn/version "871.2.34.1", :aws/serviceFullName "EC2 Image Builder"},
  com.cognitect.aws/inspector
  {:mvn/version "871.2.33.0", :aws/serviceFullName "Amazon Inspector"},
  com.cognitect.aws/inspector-scan
@@ -551,7 +550,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Interactive Video Service"},
  com.cognitect.aws/ivs-realtime
- {:mvn/version "871.2.31.64",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Interactive Video Service RealTime"},
  com.cognitect.aws/ivschat
  {:mvn/version "871.2.29.35",
@@ -566,7 +565,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "AWSKendraFrontendService"},
  com.cognitect.aws/kendra-ranking
- {:mvn/version "871.2.29.35",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Kendra Intelligent Ranking"},
  com.cognitect.aws/keyspaces
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon Keyspaces"},
@@ -617,7 +616,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS License Manager Linux Subscriptions"},
  com.cognitect.aws/license-manager-user-subscriptions
- {:mvn/version "871.2.31.23",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "AWS License Manager User Subscriptions"},
  com.cognitect.aws/lightsail
  {:mvn/version "871.2.32.15", :aws/serviceFullName "Amazon Lightsail"},
@@ -625,7 +624,7 @@
  {:mvn/version "871.2.32.15",
   :aws/serviceFullName "Amazon Location Service"},
  com.cognitect.aws/logs
- {:mvn/version "871.2.32.5",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon CloudWatch Logs"},
  com.cognitect.aws/lookoutequipment
  {:mvn/version "871.2.32.30",
@@ -673,7 +672,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "871.2.33.10",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "871.2.32.30",
@@ -740,7 +739,7 @@
  {:mvn/version "871.2.32.10",
   :aws/serviceFullName "Amazon NeptuneData"},
  com.cognitect.aws/network-firewall
- {:mvn/version "871.2.32.2",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "AWS Network Firewall"},
  com.cognitect.aws/networkflowmonitor
  {:mvn/version "871.2.33.10",
@@ -777,7 +776,7 @@
  {:mvn/version "871.2.33.10",
   :aws/serviceFullName "AWS Organizations"},
  com.cognitect.aws/osis
- {:mvn/version "871.2.33.0",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon OpenSearch Ingestion"},
  com.cognitect.aws/outposts
  {:mvn/version "871.2.32.5", :aws/serviceFullName "AWS Outposts"},
@@ -798,7 +797,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Private CA Connector for SCEP"},
  com.cognitect.aws/pcs
- {:mvn/version "871.2.33.5",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "AWS Parallel Computing Service"},
  com.cognitect.aws/personalize
  {:mvn/version "871.2.33.0",
@@ -1002,7 +1001,7 @@
  {:mvn/version "871.2.32.10",
   :aws/serviceFullName "AWS End User Messaging Social"},
  com.cognitect.aws/sqs
- {:mvn/version "871.2.32.30",
+ {:mvn/version "871.2.34.1",
   :aws/serviceFullName "Amazon Simple Queue Service"},
  com.cognitect.aws/ssm
  {:mvn/version "871.2.32.5",
