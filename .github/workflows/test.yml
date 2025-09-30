@@ -20,9 +20,10 @@ jobs:
 
     services:
       s3:
-        image: bitnami/minio
+        image: minio/minio
         ports:
           - 9000:9000
+        options: server /data
 
     steps:
       - name: Checkout repository
