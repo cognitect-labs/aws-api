@@ -20,7 +20,7 @@ jobs:
 
     services:
       s3:
-        image: bitnami/minio
+        image: bitnamilegacy/minio
         ports:
           - 9000:9000
 
