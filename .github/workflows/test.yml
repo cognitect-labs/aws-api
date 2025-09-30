@@ -23,7 +23,7 @@ jobs:
         image: minio/minio
         ports:
           - 9000:9000
-        options: server /data
+        args: ["server", "/data"]
 
     steps:
       - name: Checkout repository
