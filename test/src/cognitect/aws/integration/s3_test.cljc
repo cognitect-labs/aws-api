@@ -117,8 +117,8 @@
                                                  :hostname "localhost"
                                                  :port     9000}
                           :credentials-provider (creds/basic-credentials-provider
-                                                 {:access-key-id     "minio"
-                                                  :secret-access-key "miniosecret"})})]
+                                                 {:access-key-id     "minioadmin"
+                                                  :secret-access-key "minioadmin"})})]
       (testing (str "with http client " (class %))
         (test-s3-client s3)))))
 
