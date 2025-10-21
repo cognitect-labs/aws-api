@@ -95,7 +95,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "AWS B2B Data Interchange"},
  com.cognitect.aws/backup
- {:mvn/version "871.2.35.1", :aws/serviceFullName "AWS Backup"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "AWS Backup"},
  com.cognitect.aws/backup-gateway
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Backup Gateway"},
@@ -146,7 +146,7 @@
  com.cognitect.aws/billing
  {:mvn/version "871.2.34.6", :aws/serviceFullName "AWS Billing"},
  com.cognitect.aws/billingconductor
- {:mvn/version "871.2.29.35",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "AWSBillingConductor"},
  com.cognitect.aws/braket
  {:mvn/version "871.2.32.25", :aws/serviceFullName "Braket"},
@@ -263,7 +263,7 @@
  com.cognitect.aws/config
  {:mvn/version "871.2.34.1", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "871.2.34.6",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "871.2.31.23",
@@ -333,7 +333,7 @@
  {:mvn/version "871.2.35.1",
   :aws/serviceFullName "AWS Database Migration Service"},
  com.cognitect.aws/docdb
- {:mvn/version "871.2.32.30",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon DocumentDB with MongoDB compatibility"},
  com.cognitect.aws/docdb-elastic
  {:mvn/version "871.2.29.35",
@@ -479,7 +479,7 @@
  {:mvn/version "871.2.31.23",
   :aws/serviceFullName "AWS Ground Station"},
  com.cognitect.aws/guardduty
- {:mvn/version "871.2.35.1", :aws/serviceFullName "Amazon GuardDuty"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "Amazon GuardDuty"},
  com.cognitect.aws/health
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Health APIs and Notifications"},
@@ -619,7 +619,7 @@
  {:mvn/version "871.2.35.6",
   :aws/serviceFullName "AWS License Manager User Subscriptions"},
  com.cognitect.aws/lightsail
- {:mvn/version "871.2.34.6", :aws/serviceFullName "Amazon Lightsail"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "Amazon Lightsail"},
  com.cognitect.aws/location
  {:mvn/version "871.2.32.15",
   :aws/serviceFullName "Amazon Location Service"},
@@ -655,7 +655,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Marketplace Agreement Service"},
  com.cognitect.aws/marketplace-catalog
- {:mvn/version "871.2.31.64",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "AWS Marketplace Catalog Service"},
  com.cognitect.aws/marketplace-deployment
  {:mvn/version "871.2.31.64",
@@ -1075,7 +1075,7 @@
  {:mvn/version "871.2.33.5",
   :aws/serviceFullName "Amazon Transcribe Streaming Service"},
  com.cognitect.aws/transfer
- {:mvn/version "871.2.35.1",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "AWS Transfer Family"},
  com.cognitect.aws/translate
  {:mvn/version "871.2.32.30", :aws/serviceFullName "Amazon Translate"},
