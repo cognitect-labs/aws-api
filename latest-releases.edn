@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.774"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.35.6"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.35.10"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -66,7 +66,7 @@
  com.cognitect.aws/apprunner
  {:mvn/version "871.2.33.0", :aws/serviceFullName "AWS App Runner"},
  com.cognitect.aws/appstream
- {:mvn/version "871.2.34.6", :aws/serviceFullName "Amazon AppStream"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "Amazon AppStream"},
  com.cognitect.aws/appsync
  {:mvn/version "871.2.31.64", :aws/serviceFullName "AWS AppSync"},
  com.cognitect.aws/apptest
@@ -119,7 +119,7 @@
   :aws/serviceFullName
   "AWS Billing and Cost Management Recommended Actions"},
  com.cognitect.aws/bedrock
- {:mvn/version "871.2.34.6", :aws/serviceFullName "Amazon Bedrock"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "Amazon Bedrock"},
  com.cognitect.aws/bedrock-agent
  {:mvn/version "871.2.32.25",
   :aws/serviceFullName "Agents for Amazon Bedrock"},
@@ -128,12 +128,10 @@
   :aws/serviceFullName "Agents for Amazon Bedrock Runtime"},
  com.cognitect.aws/bedrock-agentcore
  {:mvn/version "871.2.35.6",
-  :aws/serviceFullName
-  "Amazon Bedrock AgentCore Data Plane Fronting Layer"},
+  :aws/serviceFullName "Amazon Bedrock AgentCore"},
  com.cognitect.aws/bedrock-agentcore-control
  {:mvn/version "871.2.35.6",
-  :aws/serviceFullName
-  "Amazon Bedrock Agent Core Control Plane Fronting Layer"},
+  :aws/serviceFullName "Amazon Bedrock AgentCore Control"},
  com.cognitect.aws/bedrock-data-automation
  {:mvn/version "871.2.34.6",
   :aws/serviceFullName "Data Automation for Amazon Bedrock"},
@@ -304,7 +302,7 @@
  com.cognitect.aws/datasync
  {:mvn/version "871.2.35.1", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/datazone
- {:mvn/version "871.2.35.1", :aws/serviceFullName "Amazon DataZone"},
+ {:mvn/version "871.2.35.10", :aws/serviceFullName "Amazon DataZone"},
  com.cognitect.aws/dax
  {:mvn/version "871.2.34.6",
   :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
@@ -353,7 +351,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "871.2.35.6",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "871.2.33.0",
@@ -385,7 +383,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticloadbalancingv2
- {:mvn/version "871.2.32.15",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Elastic Load Balancing"},
  com.cognitect.aws/elasticmapreduce
  {:mvn/version "871.2.32.10", :aws/serviceFullName "Amazon EMR"},
@@ -449,10 +447,10 @@
  com.cognitect.aws/gamelift
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon GameLift"},
  com.cognitect.aws/gameliftstreams
- {:mvn/version "871.2.32.30",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon GameLift Streams"},
  com.cognitect.aws/geo-maps
- {:mvn/version "871.2.33.0",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon Location Service Maps V2"},
  com.cognitect.aws/geo-places
  {:mvn/version "871.2.32.2",
@@ -1057,7 +1055,7 @@
  com.cognitect.aws/textract
  {:mvn/version "871.2.32.2", :aws/serviceFullName "Amazon Textract"},
  com.cognitect.aws/timestream-influxdb
- {:mvn/version "871.2.32.30",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Timestream InfluxDB"},
  com.cognitect.aws/timestream-query
  {:mvn/version "871.2.33.0",
@@ -1069,7 +1067,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Telco Network Builder"},
  com.cognitect.aws/transcribe
- {:mvn/version "871.2.32.21",
+ {:mvn/version "871.2.35.10",
   :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transcribe-streaming
  {:mvn/version "871.2.33.5",
