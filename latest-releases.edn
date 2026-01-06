@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.774"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.40.17"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.41.2"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -169,10 +169,10 @@
  {:mvn/version "871.2.35.1",
   :aws/serviceFullName "Amazon Chime SDK Voice"},
  com.cognitect.aws/cleanrooms
- {:mvn/version "871.2.40.14",
+ {:mvn/version "871.2.41.2",
   :aws/serviceFullName "AWS Clean Rooms Service"},
  com.cognitect.aws/cleanroomsml
- {:mvn/version "871.2.39.6",
+ {:mvn/version "871.2.41.2",
   :aws/serviceFullName "AWS Clean Rooms ML"},
  com.cognitect.aws/cloud9
  {:mvn/version "871.2.33.0", :aws/serviceFullName "AWS Cloud9"},
@@ -260,7 +260,7 @@
  com.cognitect.aws/config
  {:mvn/version "871.2.40.14", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "871.2.40.17",
+ {:mvn/version "871.2.41.2",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "871.2.31.23",
@@ -482,7 +482,7 @@
  {:mvn/version "871.2.40.4",
   :aws/serviceFullName "AWS Identity and Access Management"},
  com.cognitect.aws/identitystore
- {:mvn/version "871.2.40.4",
+ {:mvn/version "871.2.41.2",
   :aws/serviceFullName "AWS SSO Identity Store"},
  com.cognitect.aws/imagebuilder
  {:mvn/version "871.2.39.3", :aws/serviceFullName "EC2 Image Builder"},
