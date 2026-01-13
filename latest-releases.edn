@@ -1,5 +1,5 @@
 {com.cognitect.aws/api {:mvn/version "0.8.774"},
- com.cognitect.aws/endpoints {:mvn/version "871.2.41.2"},
+ com.cognitect.aws/endpoints {:mvn/version "871.2.41.6"},
  com.cognitect.aws/AWS242AppRegistry
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Service Catalog App Registry"},
@@ -126,7 +126,7 @@
  {:mvn/version "871.2.40.4",
   :aws/serviceFullName "Amazon Bedrock AgentCore"},
  com.cognitect.aws/bedrock-agentcore-control
- {:mvn/version "871.2.40.14",
+ {:mvn/version "871.2.41.6",
   :aws/serviceFullName "Amazon Bedrock AgentCore Control"},
  com.cognitect.aws/bedrock-data-automation
  {:mvn/version "871.2.40.14",
@@ -138,7 +138,7 @@
  {:mvn/version "871.2.40.4",
   :aws/serviceFullName "Amazon Bedrock Runtime"},
  com.cognitect.aws/billing
- {:mvn/version "871.2.39.3", :aws/serviceFullName "AWS Billing"},
+ {:mvn/version "871.2.41.6", :aws/serviceFullName "AWS Billing"},
  com.cognitect.aws/billingconductor
  {:mvn/version "871.2.40.9",
   :aws/serviceFullName "AWSBillingConductor"},
@@ -147,7 +147,7 @@
  com.cognitect.aws/budgets
  {:mvn/version "871.2.39.3", :aws/serviceFullName "AWS Budgets"},
  com.cognitect.aws/ce
- {:mvn/version "871.2.40.4",
+ {:mvn/version "871.2.41.6",
   :aws/serviceFullName "AWS Cost Explorer Service"},
  com.cognitect.aws/chatbot
  {:mvn/version "871.2.29.35", :aws/serviceFullName "AWS Chatbot"},
@@ -186,7 +186,7 @@
  {:mvn/version "871.2.39.3",
   :aws/serviceFullName "AWS CloudFormation"},
  com.cognitect.aws/cloudfront
- {:mvn/version "871.2.39.3", :aws/serviceFullName "Amazon CloudFront"},
+ {:mvn/version "871.2.41.6", :aws/serviceFullName "Amazon CloudFront"},
  com.cognitect.aws/cloudfront-keyvaluestore
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon CloudFront KeyValueStore"},
@@ -392,7 +392,7 @@
  {:mvn/version "871.2.33.10",
   :aws/serviceFullName "Amazon EMR Containers"},
  com.cognitect.aws/emr-serverless
- {:mvn/version "871.2.40.14", :aws/serviceFullName "EMR Serverless"},
+ {:mvn/version "871.2.41.6", :aws/serviceFullName "EMR Serverless"},
  com.cognitect.aws/entitlement-marketplace
  {:mvn/version "871.2.31.23",
   :aws/serviceFullName "AWS Marketplace Entitlement Service"},
@@ -459,7 +459,7 @@
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Global Accelerator"},
  com.cognitect.aws/glue
- {:mvn/version "871.2.39.6", :aws/serviceFullName "AWS Glue"},
+ {:mvn/version "871.2.41.6", :aws/serviceFullName "AWS Glue"},
  com.cognitect.aws/grafana
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon Managed Grafana"},
@@ -506,7 +506,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS IoT Jobs Data Plane"},
  com.cognitect.aws/iot-managed-integrations
- {:mvn/version "871.2.37.4",
+ {:mvn/version "871.2.41.6",
   :aws/serviceFullName
   "Managed integrations for AWS IoT Device Management"},
  com.cognitect.aws/iotanalytics
@@ -656,7 +656,7 @@
  {:mvn/version "871.2.40.14",
   :aws/serviceFullName "AWS Elemental MediaConvert"},
  com.cognitect.aws/medialive
- {:mvn/version "871.2.40.17",
+ {:mvn/version "871.2.41.6",
   :aws/serviceFullName "AWS Elemental MediaLive"},
  com.cognitect.aws/mediapackage
  {:mvn/version "871.2.32.30",
@@ -927,7 +927,7 @@
  com.cognitect.aws/s3vectors
  {:mvn/version "871.2.40.4", :aws/serviceFullName "Amazon S3 Vectors"},
  com.cognitect.aws/sagemaker
- {:mvn/version "871.2.40.14",
+ {:mvn/version "871.2.41.6",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "871.2.32.30",
@@ -1114,7 +1114,7 @@
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
- {:mvn/version "871.2.37.4", :aws/serviceFullName "Amazon WorkSpaces"},
+ {:mvn/version "871.2.41.6", :aws/serviceFullName "Amazon WorkSpaces"},
  com.cognitect.aws/workspaces-instances
  {:mvn/version "871.2.32.2",
   :aws/serviceFullName "Amazon Workspaces Instances"},
