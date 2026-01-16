@@ -45,6 +45,23 @@
       (str/replace #"\s" "-")
       (str/replace #"\." "-")))
 
+(def ^:private supported-protocols
+  #{"ec2" "json" "query" "rest-json" "rest-xml"})
+
+(defn service-protocol
+  "Return the best protocol that aws-api supports for the given service."
+  [service]
+  ;; NOTE: the AWS service descriptors include both a :protocols key (newer, vector, in preferred order)
+  ;;       and an older :protocol key (legacy, for backwards compatibility). We try both keys, giving
+  ;;       priority to the ordered :protocols list, and return the first one that aws-api supports.
+  ;;       https://github.com/cognitect-labs/aws-api/issues/291
+  (let [protocols (conj (get-in service [:metadata :protocols])
+                        (get-in service [:metadata :protocol]))]
+    (or (some supported-protocols protocols)
+        (throw (ex-info (str "No supported protocol for service " (service-name service))
+                        {:required-protocols  protocols
+                         :supported-protocols supported-protocols})))))
+
 (defn ns-prefix
   "Returns the namespace prefix to use when looking up resources."
   [service]
