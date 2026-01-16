@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Update dependencies
+
 ## 0.8.774 / 2025-09-02
 
 * Add http read timeout to IMDS requests [#267](https://github.com/cognitect-labs/aws-api/issues/267)
