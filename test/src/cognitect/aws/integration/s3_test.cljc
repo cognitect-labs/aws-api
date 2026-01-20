@@ -109,7 +109,7 @@
 (deftest ^:integration test-custom-endpoint-local-http
   ; Regression test for https://github.com/cognitect-labs/aws-api/issues/263
   ; Requires a local instance of MinIO:
-  ;     docker run --rm -p 9000:9000 bitnami/minio
+  ;     docker run --rm -p 9000:9000 bitnamilegacy/minio
   (for-each-http-client
    #(let [s3 (aws/client {:api                  :s3
                           :http-client          %

@@ -81,7 +81,7 @@
         endpoint-provider    (endpoint/default-endpoint-provider
                               (get-in service [:metadata :endpointPrefix])
                               endpoint-override)]
-    (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (get-in service [:metadata :protocol]))))
+    (dynaload/load-ns (symbol (str "cognitect.aws.protocols." (service/service-protocol service))))
     (client/->Client
      (atom {'clojure.core.protocols/datafy (fn [c]
                                              (let [info (client.protocol/-get-info c)
