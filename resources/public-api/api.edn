@@ -1,0 +1,22 @@
+{:version "v0",
+ :library-name "aws-api",
+ :public-api
+ [{:var cognitect.aws.client.api, :type :ns}
+  {:var cognitect.aws.http, :type :ns}
+  {:var cognitect.aws.http.cognitect, :type :ns}
+  {:var cognitect.aws.client.api.async/invoke,
+   :type :defn,
+   :deprecation
+   {:reason
+    "DEPRECATED: use cognitect.aws.client.api/invoke-async instead",
+    :alternatives [cognitect.aws.client.api/invoke-async]}}
+  {:var cognitect.aws.client.shared, :type :ns}
+  {:var cognitect.aws.http.default, :type :ns}
+  {:var cognitect.aws.http.java, :type :ns}
+  {:var cognitect.aws.config, :type :ns}
+  ;;double check  
+  {:var cognitect.aws.resources, :type :ns}
+  {:var cognitect.aws.retry/capped-exponential-backoff, :type :defn}
+  {:var cognitect.aws.retry/default-backoff :type :defn}
+  {:var cognitect.aws.retry/default-retriable? :type :def}
+  {:var cognitect.aws.dynaload, :type :ns}]}
