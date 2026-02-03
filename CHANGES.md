@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.800 / 2026-02-03
 
 * Do not attempt to use unsupported protocols [#291](https://github.com/cognitect-labs/aws-api/issues/291)
   * Some AWS services support multiple protocols, and aws-api would always pick the first one, even for cases where
