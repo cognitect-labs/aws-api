@@ -1,7 +1,6 @@
 # Development
 
-We don't accept PRs from outside Nubank (yet).
-
+See [Contributing](../README.md#Contributing) for contribution guidelines.
 
 ## Setup
 

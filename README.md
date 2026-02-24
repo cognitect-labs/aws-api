@@ -490,9 +490,28 @@ out of band (AWS console, etc).
 ## Contributing
 
 aws-api is open source, developed internally at Nubank.
-Issues can be filed using GitHub issues for this project. Because
-aws-api is incorporated into products, we prefer to do development
-internally and are not accepting pull requests or patches.
+Issues can be filed using GitHub issues for this project.
+
+We welcome external contributions to the aws-api. To ensure a smooth review process and maintain project quality, please adhere to the following guidelines.
+
+### Starting Your Contribution
+
+Before you begin writing code, please ensure there is [an existing Issue](https://github.com/cognitect-labs/aws-api/issues) for the bug you are fixing or the feature you are implementing.
+
+- For New Features: You must discuss proposed features with the maintainers within the issue tracker before starting work. This ensures the addition aligns with the project roadmap and saves you from potential rework.
+- For Bug Fixes: Link your eventual Pull Request to the relevant issue to provide context.
+
+### Technical Requirements
+
+See our [development guidelines](doc/development.md). To be considered for merging, all submissions must meet these standards:
+
+- Code Style: All changes must follow the project's established coding style and formatting rules.
+- Testing: Contributions must include tests that verify the change and prevent regressions.
+- CLA: All contributors are required to sign our [Contributor License Agreement](https://cla-assistant.io/cognitect-labs/aws-api) (CLA) before a Pull Request can be merged.
+
+### Review and Acceptance
+
+While we appreciate the effort involved in every submission, we reserve the right to decline any contribution that does not align with the project's goals, technical standards, or long-term maintenance needs.
 
 ## Contributors
 
