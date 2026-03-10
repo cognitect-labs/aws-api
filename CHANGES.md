@@ -1,5 +1,12 @@
 # aws-api
 
+## 0.8.800 / 2026-02-03
+
+* Do not attempt to use unsupported protocols [#291](https://github.com/cognitect-labs/aws-api/issues/291)
+  * Some AWS services support multiple protocols, and aws-api would always pick the first one, even for cases where
+    protocol support was not implemented. Now it picks the first _supported_ protocol instead.
+* Update dependencies
+
 ## 0.8.774 / 2025-09-02
 
 * Add http read timeout to IMDS requests [#267](https://github.com/cognitect-labs/aws-api/issues/267)

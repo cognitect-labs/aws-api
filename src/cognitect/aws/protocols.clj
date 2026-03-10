@@ -3,8 +3,9 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols
   "Impl, don't call directly. "
-  (:require [cognitect.aws.json :as json]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
+            [cognitect.aws.json :as json]
+            [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
   (:import (java.time ZoneOffset ZonedDateTime)))
 
@@ -13,12 +14,12 @@
 (defmulti parse-http-response
   "HTTP response -> AWS response"
   (fn [service _op-map _http-response]
-    (get-in service [:metadata :protocol])))
+    (service/service-protocol service)))
 
 (defmulti build-http-request
   "AWS request -> HTTP request."
   (fn [service _op-map]
-    (get-in service [:metadata :protocol])))
+    (service/service-protocol service)))
 
 (defn ^:private status-code->anomaly-category [^long code]
   (case code
@@ -88,7 +89,8 @@
     (str "The bucket is in this region: " region ". Please use this region to retry the request.")))
 
 (defn headers [service operation]
-  (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
+  (let [protocol (service/service-protocol service)
+        {:keys [targetPrefix jsonVersion]} (:metadata service)]
     (cond-> {"x-amz-date" (.format util/x-amz-date-format (ZonedDateTime/now ZoneOffset/UTC))}
       ; https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html
       (= "rest-json" protocol)

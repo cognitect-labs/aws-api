@@ -1,6 +1,6 @@
-.cpcache
-target
-logs
-log
+.cpcache/
+target/
+.clj-kondo/
+log/
 .nrepl-port
 VERSION_SUFFIX
