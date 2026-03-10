@@ -3,10 +3,10 @@
 
 (ns ^:skip-wiki cognitect.aws.service
   "Impl, don't call directly."
-  (:require [clojure.string :as str]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [clojure.walk :as walk]
-            [clojure.edn :as edn]
-            [clojure.java.io :as io]))
+            [cognitect.aws.resources :as resources]))
 
 (set! *warn-on-reflection* true)
 
@@ -18,7 +18,7 @@
   (str base-resource-path "/" service-name "/service.edn"))
 
 (defn descriptor-resource [service-name]
-  (io/resource (descriptor-resource-path service-name)))
+  (resources/resource (descriptor-resource-path service-name)))
 
 (defn read-service-description
   "Return service description readerable source (anything supported by
@@ -44,6 +44,23 @@
       (str/replace #"-\d{4}-\d{2}-\d{2}" "")
       (str/replace #"\s" "-")
       (str/replace #"\." "-")))
+
+(def ^:private supported-protocols
+  #{"ec2" "json" "query" "rest-json" "rest-xml"})
+
+(defn service-protocol
+  "Return the best protocol that aws-api supports for the given service."
+  [service]
+  ;; NOTE: the AWS service descriptors include both a :protocols key (newer, vector, in preferred order)
+  ;;       and an older :protocol key (legacy, for backwards compatibility). We try both keys, giving
+  ;;       priority to the ordered :protocols list, and return the first one that aws-api supports.
+  ;;       https://github.com/cognitect-labs/aws-api/issues/291
+  (let [protocols (conj (get-in service [:metadata :protocols])
+                        (get-in service [:metadata :protocol]))]
+    (or (some supported-protocols protocols)
+        (throw (ex-info (str "No supported protocol for service " (service-name service))
+                        {:required-protocols  protocols
+                         :supported-protocols supported-protocols})))))
 
 (defn ns-prefix
   "Returns the namespace prefix to use when looking up resources."
@@ -86,7 +103,7 @@
                             {}
                             (clojure.edn/read-string
                              (slurp
-                              (io/resource (format "%s/%s/docs.edn" base-resource-path (service-name service)))))))
+                              (resources/resource (format "%s/%s/docs.edn" base-resource-path (service-name service)))))))
           (get k)))))
 
 (defn request-spec-key

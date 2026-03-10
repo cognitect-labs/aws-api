@@ -1,5 +1,64 @@
 # aws-api
 
+## 0.8.800 / 2026-02-03
+
+* Do not attempt to use unsupported protocols [#291](https://github.com/cognitect-labs/aws-api/issues/291)
+  * Some AWS services support multiple protocols, and aws-api would always pick the first one, even for cases where
+    protocol support was not implemented. Now it picks the first _supported_ protocol instead.
+* Update dependencies
+
+## 0.8.774 / 2025-09-02
+
+* Add http read timeout to IMDS requests [#267](https://github.com/cognitect-labs/aws-api/issues/267)
+* Fix `rest-json` and `json` protocol request headers [#168](https://github.com/cognitect-labs/aws-api/issues/168) [#241](https://github.com/cognitect-labs/aws-api/issues/241)
+
+## 0.8.762 / 2025-08-05
+
+* Add Babashka support
+* NOTE: the internal class `cognitect.aws.client.impl.Client` was removed
+
+## 0.8.741 / 2025-04-17
+
+* Fix invalid signature for nonstandard host port [#263](https://github.com/cognitect-labs/aws-api/issues/263)
+* Upgrade dependencies
+
+## 0.8.735 / 2025-02-26
+
+* This is the official release of the previous `0.8.730-beta01` release, see those release notes
+
+## 0.8.730-beta01 / 2025-01-30
+
+* Ensure all resources are loaded with the expected class loader [#265](https://github.com/cognitect-labs/aws-api/issues/265)
+* Don't unnecessarily deref shared delays when they are overridden [#262](https://github.com/cognitect-labs/aws-api/issues/262)
+* Revert virtual thread executor in HttpClient
+  * This executor is meant to handle asynchronous non-blocking tasks, so virtual threads are not a good fit
+
+## 0.8.723 / 2024-12-23
+
+* Upgrade dependencies
+* Fix InvalidSignatureException with services that support HTTP/2 [#261](https://github.com/cognitect-labs/aws-api/issues/261)
+* Performance improvements in highly parallel scenarios related to URI encoding and date/time formatting
+* Use newVirtualThreadPerTaskExecutor if virtual threads are available
+
+## 0.8.711 / 2024-12-03
+
+* New `java.net.http`-based HTTP client, without external dependencies
+  * BREAKING: when running on java 8, an explicit dependency on `com.cognitect/http-client` is now required
+* Support IMDS v2 in default credentials and region provider chains [#243](https://github.com/cognitect-labs/aws-api/issues/243) [#165](https://github.com/cognitect-labs/aws-api/issues/165)
+
+See [Upgrade Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md) for more
+information about upgrading to this version.
+
+
+## 0.8.710-beta01 / 2024-10-16
+
+* New `java.net.http`-based HTTP client, without external dependencies
+  * BREAKING: when running on java 8, an explicit dependency on `com.cognitect/http-client` is now required
+* Support IMDS v2 in default credentials and region provider chains [#243](https://github.com/cognitect-labs/aws-api/issues/243) [#165](https://github.com/cognitect-labs/aws-api/issues/165)
+
+See [Upgrade Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md) for more
+information about upgrading to this version.
+
 ## 0.8.692 / 2024-01-31
 
 * upgrade to cognitect http-client 1.0.127

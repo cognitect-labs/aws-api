@@ -34,28 +34,11 @@ outputs. aws-api uses the same data descriptions to expose a
 data-oriented interface, using service descriptions, documentation,
 and specs which are generated from the source descriptions.
 
-Most AWS SDKs have their own copies of these data descriptions in their
-github repos. We use [aws-sdk-js](https://github.com/aws/aws-sdk-js/) as
-the source for these, and release separate artifacts for each api.
-The [api descriptors](https://github.com/aws/aws-sdk-js/tree/master/apis)
-include the AWS `api-version` in their filenames (and in their data). For
-example you'll see both of the following files listed:
+Most AWS SDKs have their own copies of these data descriptions in their github
+repos. We use [aws-sdk-java-2](https://github.com/aws/aws-sdk-java-v2) as the
+source for these, and release separate artifacts for each api.
 
-    dynamodb-2011-12-05.normal.json
-    dynamodb-2012-08-10.normal.json
-
-Whenever we release com.cognitect.aws/dynamodb, we look for the
-descriptor with the most recent API version. If aws-sdk-js-v2.351.0
-contains an update to dynamodb-2012-08-10.normal.json, or a new
-dynamodb descriptor with a more recent api-version, we'll make a
-release whose version number includes the 2.351.0 from the version
-of aws-sdk-js.
-
-We also include the revision of our generator in the version. For example,
-`com.cognitect.aws/dynamo-db-653.2.351.0` indicates revision `653` of the
-generator, and tag `v2.351.0` of aws-sdk-js.
-
-* See [Versioning](/doc/versioning.md) for more about how we version releases.
+* See [Versioning](/doc/versioning.md) for more info about how we version releases.
 * See [latest releases](latest-releases.edn) for a list of the latest releases of
 `api`, `endpoints`, and all supported services.
 
@@ -70,9 +53,9 @@ of your choice, e.g. `com.cognitect.aws/s3`.
 To use the s3 api, for example, add the following to deps.edn:
 
 ``` clojure
-{:deps {com.cognitect.aws/api       {:mvn/version "0.8.692"}
-        com.cognitect.aws/endpoints {:mvn/version "1.1.12.718"}
-        com.cognitect.aws/s3        {:mvn/version "868.2.1580.0"}}}
+{:deps {com.cognitect.aws/api       {:mvn/version "0.8.800"}
+        com.cognitect.aws/endpoints {:mvn/version "871.2.42.9"}
+        com.cognitect.aws/s3        {:mvn/version "871.2.41.20"}}}
 ```
 
 * See [latest releases](latest-releases.edn) for a listing of the latest releases of
@@ -256,22 +239,96 @@ the `:path` in the `:endpoint-override` map.
 
 ## http-client
 
+An http client is used in the following contexts:
+
+* The aws-api client uses an http client to carry out the http communication with an AWS endpoint
+  when you invoke an operation.
+* When running in EC2 or ECS, an http client may be used by the credentials provider to fetch
+  credentials information from within the running instance.
+* When running in EC2 or ECS, an http client may be used by the region provider to fetch region
+  information from within the running instance.
+
+### Shared http-client
+
+By default, each aws-api client uses a single, shared http-client, whose resources are managed by
+aws-api. See the `cognitect.aws.client.shared` namespace.
+
+The `cognitect.aws.client.shared` namespace also defines a single, globally shared credentials
+provider as well as a single, globally shared region provider - both of these also use the shared
+http client.
+
+### Default http-client
+
+An http-client will be created from the `default-http-client` function of the
+`cognitect.aws.client.api` namespace - this function returns a new instance of the default type of
+http client.
+
+The globally shared http-client will be an instance of this default type of client.
+
+The http client returned by the `default-http-client` function will be one of the following:
+
+* If the version of Java is recent enough (Java 11 or newer), the returned http client is a Java
+  native implementation based on the
+  [java.net.http](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)
+  module.
+* If the Java version is older, the legacy http client based on `com.cognitect/http-client` will be
+  used. However, this requires that you provide the `com.cognitect/http-client` dependency.
+* It is possible to configure a custom type of default http client (see next section).
+* If none of these conditions are met, an exception will be thrown.
+
 NOTE: the behavior of `com.cognitect.aws.api/client` and `com.cognitect.aws.api/stop`
 changed as of release 0.8.430. See [Upgrade
 Notes](https://github.com/cognitect-labs/aws-api/blob/master/UPGRADE.md)
 for more information.
 
-The aws-api client uses an http-client to send requests to AWS,
-including any operations you invoke _and_ fetching the region and
-credentials when you're running in EC2 or ECS. By default, each
-aws-api client uses a single, shared http-client, whose resources
-are managed by aws-api.
+### Overriding the http-client
+
+There are two ways of overriding the default http client behavior:
+
+* Setting the http client per each individual AWS client.
+* Changing the default type of http client (and, consequently, the globally shared http-client instance).
+
+#### Customize the http-client of an AWS client
+
+Http clients can be set on each individual AWS client. When you create an AWS client, you can set
+the http-client via the `:http-client` key.
+
+Example:
+```clj
+(require '[cognitect.aws.http.java :as http-java-client])
+
+(aws/client {:api :s3
+             :http-client http-java-client/create})
+```
+
+The value of `:http-client` can be either:
+
+* An http client instance.
+* A fully qualified symbol which resolves to a function of zero arguments which, when invoked,
+returns an http client instance.
+
+#### Override the default shared http client
+
+If you want to use a certain http-client by default in all clients, you can override the type of
+http client that is created by default, including for the globally shared http client instance.
+
+To do that, create a resource file called `cognitect_aws_http.edn` with content such as this:
+
+```edn
+{:constructor-var cognitect.aws.http.java/create}
+```
+
+The key must be the keyword `:constructor-var` and the value must be a fully qualified symbol which
+resolves to a function of zero arguments which, when invoked, returns an http client.
+
+This file must be available at runtime as a resource in the classpath of your application, and there
+must be at most one such file.
 
 ## Troubleshooting
 
 ### Retriable errors
 
-When the aws-api client encounters an error, it uses two funtions
+When the aws-api client encounters an error, it uses two functions
 to determine whether to retry the request:
 
 ``` clojure
@@ -397,7 +454,7 @@ operation requires a custom endpoint, e.g.
 
 This indicates that the data in the `com.cognitect.aws/endpoints` lib
 (which is derived from
-[endpoints.json](https://github.com/aws/aws-sdk-java/blob/master/aws-java-sdk-core/src/main/resources/com/amazonaws/partitions/endpoints.json))
+[endpoints.json](https://github.com/aws/aws-sdk-java-v2/blob/master/core/regions/src/main/resources/software/amazon/awssdk/regions/internal/region/endpoints.json))
 does not support the `:api`/`:region` combination you are trying to
 access.
 
@@ -433,9 +490,28 @@ out of band (AWS console, etc).
 ## Contributing
 
 aws-api is open source, developed internally at Nubank.
-Issues can be filed using GitHub issues for this project. Because
-aws-api is incorporated into products, we prefer to do development
-internally and are not accepting pull requests or patches.
+Issues can be filed using GitHub issues for this project.
+
+We welcome external contributions to the aws-api. To ensure a smooth review process and maintain project quality, please adhere to the following guidelines.
+
+### Starting Your Contribution
+
+Before you begin writing code, please ensure there is [an existing Issue](https://github.com/cognitect-labs/aws-api/issues) for the bug you are fixing or the feature you are implementing.
+
+- For New Features: You must discuss proposed features with the maintainers within the issue tracker before starting work. This ensures the addition aligns with the project roadmap and saves you from potential rework.
+- For Bug Fixes: Link your eventual Pull Request to the relevant issue to provide context.
+
+### Technical Requirements
+
+See our [development guidelines](doc/development.md). To be considered for merging, all submissions must meet these standards:
+
+- Code Style: All changes must follow the project's established coding style and formatting rules.
+- Testing: Contributions must include tests that verify the change and prevent regressions.
+- CLA: All contributors are required to sign our [Contributor License Agreement](https://cla-assistant.io/cognitect-labs/aws-api) (CLA) before a Pull Request can be merged.
+
+### Review and Acceptance
+
+While we appreciate the effort involved in every submission, we reserve the right to decline any contribution that does not align with the project's goals, technical standards, or long-term maintenance needs.
 
 ## Contributors
 
@@ -446,6 +522,7 @@ contributed significantly to research and design:
 
 [Timothy Baldridge](https://github.com/halgari)<br/>
 [Scott Bale](https://github.com/scottbale)<br/>
+[Marco Biscaro](https://github.com/marcobiscaro2112)<br/>
 [David Chelimsky](https://github.com/dchelimsky)<br/>
 [Maria Clara Crespo](https://github.com/mariaclaracrespo)<br/>
 [Benoît Fleury](https://github.com/benfle)<br/>

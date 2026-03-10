@@ -297,13 +297,15 @@
            ::ttl                  (calculate-ttl creds)}
           "ecs container"))))))
 
-(defn instance-profile-credentials-provider
+(defn ^:deprecated instance-profile-credentials-provider
   "For internal use. Do not call directly.
 
   Return credentials from EC2 metadata service iff neither of
   AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
   AWS_CONTAINER_CREDENTIALS_FULL_URI
   is set.
+
+  DEPRECATED use `instance-profile-IMDSv2-credentials-provider`
 
   Alpha. Subject to change."
   [http-client]
@@ -318,6 +320,28 @@
            ::ttl                  (calculate-ttl creds)}
           "ec2 instance"))))))
 
+(defn instance-profile-IMDSv2-credentials-provider
+  "For internal use. Do not call directly.
+
+  Return credentials from IMDS v2 enabled EC2 metadata service iff neither of
+  AWS_CONTAINER_CREDENTIALS_RELATIVE_URI or
+  AWS_CONTAINER_CREDENTIALS_FULL_URI
+  is set.
+
+  Alpha. Subject to change."
+  [http-client]
+  (cached-credentials-with-auto-refresh
+   (reify CredentialsProvider
+     (fetch [_]
+       (when-let [IMDSv2-token (ec2/IMDSv2-token http-client)]
+         (when-let [creds (ec2/instance-credentials http-client IMDSv2-token)]
+           (valid-credentials
+            {:aws/access-key-id     (:AccessKeyId creds)
+             :aws/secret-access-key (:SecretAccessKey creds)
+             :aws/session-token     (:Token creds)
+             ::ttl                  (calculate-ttl creds)}
+            "IMDSv2 ec2 instance")))))))
+
 (defn default-credentials-provider
   "Returns a chain-credentials-provider with (in order):
 
@@ -325,6 +349,7 @@
     system-property-credentials-provider
     profile-credentials-provider
     container-credentials-provider
+    instance-profile-IMDSv2-credentials-provider
     instance-profile-credentials-provider
 
   Alpha. Subject to change."
@@ -334,6 +359,7 @@
     (system-property-credentials-provider)
     (profile-credentials-provider)
     (container-credentials-provider http-client)
+    (instance-profile-IMDSv2-credentials-provider http-client)
     (instance-profile-credentials-provider http-client)]))
 
 (defn basic-credentials-provider

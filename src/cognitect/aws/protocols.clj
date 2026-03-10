@@ -3,22 +3,23 @@
 
 (ns ^:skip-wiki cognitect.aws.protocols
   "Impl, don't call directly. "
-  (:require [clojure.data.json :as json]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
+            [cognitect.aws.json :as json]
+            [cognitect.aws.service :as service]
             [cognitect.aws.util :as util])
-  (:import (java.util Date)))
+  (:import (java.time ZoneOffset ZonedDateTime)))
 
 (set! *warn-on-reflection* true)
 
 (defmulti parse-http-response
   "HTTP response -> AWS response"
   (fn [service _op-map _http-response]
-    (get-in service [:metadata :protocol])))
+    (service/service-protocol service)))
 
 (defmulti build-http-request
   "AWS request -> HTTP request."
   (fn [service _op-map]
-    (get-in service [:metadata :protocol])))
+    (service/service-protocol service)))
 
 (defn ^:private status-code->anomaly-category [^long code]
   (case code
@@ -88,14 +89,24 @@
     (str "The bucket is in this region: " region ". Please use this region to retry the request.")))
 
 (defn headers [service operation]
-  (let [{:keys [protocol targetPrefix jsonVersion]} (:metadata service)]
-    (cond-> {"x-amz-date" (util/format-date util/x-amz-date-format (Date.))}
-      (contains? #{"json" "rest-json"} protocol)
-      (assoc "x-amz-target" (str targetPrefix "." (:name operation))
-             "content-type" (str "application/x-amz-json-" jsonVersion)
-             ;; NOTE: apigateway returns application/hal+json unless
+  (let [protocol (service/service-protocol service)
+        {:keys [targetPrefix jsonVersion]} (:metadata service)]
+    (cond-> {"x-amz-date" (.format util/x-amz-date-format (ZonedDateTime/now ZoneOffset/UTC))}
+      ; https://smithy.io/2.0/aws/protocols/aws-restjson1-protocol.html
+      (= "rest-json" protocol)
+      (assoc "content-type" "application/json"
+             ;; NOTE: some services return application/hal+json unless
              ;; we specify the accept header
              "accept"       "application/json")
+
+      ; https://smithy.io/2.0/aws/protocols/aws-json-1_0-protocol.html
+      ; https://smithy.io/2.0/aws/protocols/aws-json-1_1-protocol.html
+      (= "json" protocol)
+      (assoc "x-amz-target" (str targetPrefix "." (:name operation))
+             "content-type" (str "application/x-amz-json-" jsonVersion))
+
+      ; https://smithy.io/2.0/aws/protocols/aws-query-protocol.html
+      ; https://smithy.io/2.0/aws/protocols/aws-ec2-query-protocol.html
       (contains? #{"query" "ec2"} protocol)
       (assoc "content-type" "application/x-www-form-urlencoded; charset=utf-8"))))
 

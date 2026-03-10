@@ -84,8 +84,23 @@
            (catch Throwable t
              (log/error t "Unable to fetch region from the AWS config file " (str f)))))))))
 
-(defn instance-region-provider
+(defn ^:deprecated instance-region-provider
   "Returns the region from the ec2 instance's metadata service,
+  or nil if the service can not be found.
+
+  DEPRECATED use `instance-region-IMDS-v2-provider`
+
+  Alpha. Subject to change."
+  [http-client]
+  (let [cached-region (atom nil)
+        imdsv2-token nil]
+    (reify RegionProvider
+      (fetch [_]
+        (or @cached-region
+            (reset! cached-region (valid-region (ec2/get-ec2-instance-region http-client imdsv2-token))))))))
+
+(defn instance-region-IMDS-v2-provider
+  "Returns the region from the ec2 instance's IMDS v2 metadata service,
   or nil if the service can not be found.
 
   Alpha. Subject to change."
@@ -94,7 +109,8 @@
     (reify RegionProvider
       (fetch [_]
         (or @cached-region
-            (reset! cached-region (valid-region (ec2/get-ec2-instance-region http-client))))))))
+            (reset! cached-region (valid-region (when-let [IMDSv2-token (ec2/IMDSv2-token http-client)]
+                                                  (ec2/get-ec2-instance-region http-client IMDSv2-token)))))))))
 
 (defn default-region-provider
   "Returns a chain-region-provider with, in order:
@@ -102,6 +118,7 @@
     environment-region-provider
     system-property-region-provider
     profile-region-provider
+    instance-region-IMDS-v2-provider
     instance-region-provider
 
   Alpha. Subject to change."
@@ -110,6 +127,7 @@
    [(environment-region-provider)
     (system-property-region-provider)
     (profile-region-provider)
+    (instance-region-IMDS-v2-provider http-client)
     (instance-region-provider http-client)]))
 
 (defn fetch-async

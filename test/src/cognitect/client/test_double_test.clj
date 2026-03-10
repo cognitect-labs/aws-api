@@ -34,7 +34,7 @@
   (let [test-s3 (client.test/client {:api :s3})]
     (let [response {:Buckets []}]
       (client.test/instrument test-s3 {:ListBuckets response})
-      (is (= response (aws/invoke test-s3 {:op :ListBuckets}))))
+      (is (= response (aws/invoke test-s3 {:op :ListBuckets :request {}}))))
     (let [response {:Location "abc"}]
       (client.test/instrument test-s3 {:CreateBucket response})
       (is (= response (aws/invoke test-s3 {:op :CreateBucket :request {:Bucket "bucket"}}))))

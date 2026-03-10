@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Calculates the full version string for a release
+# Optionally includes a version suffix (such as for a beta release) if a VERSION_SUFFIX file exists.
+
+set -e
+
+prefix=`cat VERSION_PREFIX`
+suffix=`build/revision`
+
+if [ -f "VERSION_SUFFIX" ]; then
+    suffix=$suffix`cat VERSION_SUFFIX`
+fi
+
+version=$prefix.$suffix
+
+echo $version

@@ -6,16 +6,14 @@ echo "Cleaning..."
 rm -rf ./target
 
 echo "Calculating version..."
-prefix=`cat VERSION_PREFIX`
-suffix=`build/revision`
-version=$prefix.$suffix
+version=`build/version`
 echo $version
 
 target_name=api-${version}
 
 echo "Packaging..."
-mvn versions:set -DnewVersion=${version}
-mvn clean install -DcreateChecksum=true
-mvn versions:revert
+./mvnw versions:set -DnewVersion=${version}
+./mvnw clean install -DcreateChecksum=true
+./mvnw versions:revert
 
 echo "Package done!"

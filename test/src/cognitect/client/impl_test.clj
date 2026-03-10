@@ -67,7 +67,7 @@
 (def list-buckets-aws-client-response
   {:Buckets
    [{:Name "test-bucket",
-     :CreationDate #inst "2023-01-23T12:08:38.496-00:00"}],
+     :CreationDate #inst "2023-01-23T11:59:03.575-00:00"}],
    :Owner
    {:DisplayName "cognitect-aws",
     :ID "a3a42310-42d0-46d1-9745-0cee9f4fb851"}})
@@ -110,7 +110,7 @@
                  (:http-response (meta res)))))
         (testing "includes :http-request"
           (is (=  {:uri "/"
-                   :server-name "s3.amazonaws.com"
+                   :server-name "s3.us-east-1.amazonaws.com"
                    :body nil}
                   (select-keys (:http-request (meta res)) [:uri :server-name :body]))))))
     (testing "returns :cognitect.anomalies/unsupported when op is not supported"
@@ -163,7 +163,7 @@
   (let [client (aws/client params)]
     (is (= "s3" (:api client)))
     (is (= :us-east-1 (:region client)))
-    (is (= "s3.amazonaws.com" (:hostname (:endpoint client))))
+    (is (= "s3.us-east-1.amazonaws.com" (:hostname (:endpoint client))))
     (is (= {:access-key-id "a", :secret-access-key "b"}
            (:credentials client)))
     (is (= (:metadata (:service (client.protocol/-get-info client)))

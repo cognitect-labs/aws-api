@@ -2,17 +2,15 @@
 ;; All rights reserved.
 
 (ns cognitect.aws.credentials-test
-  (:require [clojure.test :as t :refer [deftest testing use-fixtures is]]
+  (:require [clojure.test :as t :refer [deftest testing is]]
             [clojure.java.io :as io]
-            [clojure.tools.logging.test :refer [with-log logged?]]
+            [cognitect.aws.client.shared :as shared]
             [cognitect.aws.credentials :as credentials]
             [cognitect.aws.util :as u]
             [cognitect.aws.test.utils :as tu]
             [cognitect.aws.ec2-metadata-utils :as ec2-metadata-utils]
-            [cognitect.aws.ec2-metadata-utils-test :as ec2-metadata-utils-test])
+            [cognitect.aws.test.ec2-metadata-utils-server :as ec2-metadata-utils-test-server])
   (:import (java.time Instant)))
-
-(use-fixtures :once ec2-metadata-utils-test/test-server)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; tests
@@ -38,15 +36,20 @@
     (testing "The chain provider returns nil if none of the providers returns credentials."
       (is (nil? (credentials/fetch (credentials/chain-credentials-provider [p1])))))))
 
-(deftest valid-credentials-test
-  (with-log
-    (credentials/valid-credentials nil "x provider")
-    (is (logged? 'cognitect.aws.credentials :debug (str "Unable to fetch credentials from x provider."))))
-  (with-log
-    (credentials/valid-credentials {:aws/access-key-id     "id"
-                                    :aws/secret-access-key "secret"}
-                                   "x provider")
-    (is (logged? 'cognitect.aws.credentials :debug (str "Fetched credentials from x provider.")))))
+; clojure.tools.logging.test not supported in babashka
+#?(:bb nil
+   :clj
+   (do
+     (require '[clojure.tools.logging.test :refer [with-log logged?]])
+     (deftest valid-credentials-test
+       (with-log
+        (credentials/valid-credentials nil "x provider")
+        (is (logged? 'cognitect.aws.credentials :debug (str "Unable to fetch credentials from x provider."))))
+       (with-log
+        (credentials/valid-credentials {:aws/access-key-id     "id"
+                                        :aws/secret-access-key "secret"}
+                                       "x provider")
+        (is (logged? 'cognitect.aws.credentials :debug (str "Fetched credentials from x provider.")))))))
 
 (deftest environment-credentials-provider-test
   (testing "required vars present"
@@ -134,38 +137,57 @@
 
 (deftest container-credentials-provider-test
   (testing "The provider reads container metadata correctly."
-    (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-relative-uri-env-var
-                                            ec2-metadata-utils/security-credentials-path})]
-      (let [creds (credentials/fetch (credentials/container-credentials-provider
-                                      ec2-metadata-utils-test/*http-client*))]
-        (is (= {:aws/access-key-id "foobar"
-                :aws/secret-access-key "it^s4$3cret!"
-                :aws/session-token "norealvalue"}
-               (dissoc creds ::credentials/ttl)))
-        (is (integer? (::credentials/ttl creds)))))
-    (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-full-uri-env-var
-                                            (str "http://localhost:"
-                                                 ec2-metadata-utils-test/*test-server-port*
-                                                 ec2-metadata-utils/security-credentials-path)})]
-      (let [creds (credentials/fetch (credentials/container-credentials-provider
-                                      ec2-metadata-utils-test/*http-client*))]
+    (ec2-metadata-utils-test-server/with-test-server
+      (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-relative-uri-env-var
+                                              ec2-metadata-utils/security-credentials-path})]
+        (let [creds (credentials/fetch (credentials/container-credentials-provider
+                                        (shared/http-client)))]
+          (is (= {:aws/access-key-id "foobar"
+                  :aws/secret-access-key "it^s4$3cret!"
+                  :aws/session-token "norealvalue"}
+                 (dissoc creds ::credentials/ttl)))
+          (is (integer? (::credentials/ttl creds)))))
+      (with-redefs [u/getenv (tu/stub-getenv {ec2-metadata-utils/container-credentials-full-uri-env-var
+                                              (str "http://localhost:"
+                                                   ec2-metadata-utils-test-server/*test-server-port*
+                                                   ec2-metadata-utils/security-credentials-path)})]
+        (let [creds (credentials/fetch (credentials/container-credentials-provider
+                                        (shared/http-client)))]
+          (is (= {:aws/access-key-id "foobar"
+                  :aws/secret-access-key "it^s4$3cret!"
+                  :aws/session-token "norealvalue"}
+                 (dissoc creds ::credentials/ttl)))
+          (is (integer? (::credentials/ttl creds))))))))
+
+(deftest instance-profile-credentials-provider-test
+  (testing "The provider reads ec2 metadata correctly."
+    (ec2-metadata-utils-test-server/with-test-server
+      (let [creds (credentials/fetch (credentials/instance-profile-credentials-provider
+                                      (shared/http-client)))]
         (is (= {:aws/access-key-id "foobar"
                 :aws/secret-access-key "it^s4$3cret!"
                 :aws/session-token "norealvalue"}
                (dissoc creds ::credentials/ttl)))
         (is (integer? (::credentials/ttl creds)))))))
 
-(deftest instance-profile-credentials-provider-test
-  (testing "The provider reads ec2 metadata correctly."
-    (let [creds (credentials/fetch (credentials/instance-profile-credentials-provider
-                                    ec2-metadata-utils-test/*http-client*))]
-      (is (= {:aws/access-key-id "foobar"
-              :aws/secret-access-key "it^s4$3cret!"
-              :aws/session-token "norealvalue"}
-             (dissoc creds ::credentials/ttl)))
-      (is (integer? (::credentials/ttl creds))))))
+(deftest instance-profile-credentials-provider-test-not-IMDSv2-compliant
+  (testing "The provider returns nil when IMDSv2 is enabled"
+    (ec2-metadata-utils-test-server/with-IMDSv2-test-server
+      (is (nil? (credentials/fetch (credentials/instance-profile-credentials-provider
+                                    (shared/http-client))))))))
 
-(deftest auto-refresh-test
+(deftest instance-profile-IMDSv2-credentials-provider-test
+  (testing "The provider retrieves token then reads ec2 metadata correctly."
+    (ec2-metadata-utils-test-server/with-IMDSv2-test-server
+      (let [creds (credentials/fetch (credentials/instance-profile-IMDSv2-credentials-provider
+                                      (shared/http-client)))]
+        (is (= {:aws/access-key-id "foobar"
+                :aws/secret-access-key "it^s4$3cret!"
+                :aws/session-token "norealvalue"}
+               (dissoc creds ::credentials/ttl)))
+        (is (integer? (::credentials/ttl creds)))))))
+
+(deftest auto-refresh-test ;; TODO flaky test
   (let [cnt (atom 0)
         p (reify credentials/CredentialsProvider
             (credentials/fetch [_]

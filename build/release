@@ -6,7 +6,7 @@ echo "Cleaning..."
 rm -rf ./target
 
 echo "Aligning pom.xml with deps.edn ..."
-clj -Srepro -Spom
+clojure -Srepro -Spom
 if [ "$(git diff pom.xml)" = "" ]; then
     echo "nothing to change"
 else
@@ -15,26 +15,22 @@ else
 fi
 
 echo "Calculating version..."
-prefix=`cat VERSION_PREFIX`
-suffix=`build/revision`
-version=$prefix.$suffix
+version=`build/version`
 echo $version
 
-target_name=api-${version}
-
 echo "Releasing..."
-mvn versions:set -DnewVersion=${version}
-mvn clean deploy
-mvn versions:revert
+./mvnw -ntp -B versions:set -DnewVersion=${version}
+./mvnw -ntp -B clean deploy
+./mvnw -ntp -B versions:revert
 
 echo "Tagging..."
 git tag -a v${version} -m "Release ${version}"
-git push origin v${version}
+git push ${AWS_API_REMOTE:-origin} v${version}
 
-echo "Updating README.md, CHANGES.md, and latest-releases.edn with ${version}"
-clj -A:update-versions --update-latest-releases --update-changelog --update-readme
-git commit -m "Update README.md, CHANGES.md, and latest-releases.edn with ${version}" \
-    README.md CHANGES.md latest-releases.edn
+echo "Updating README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}"
+clojure -A:update-versions --update-latest-releases --update-changelog --update-readme
+git commit -m "Update README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}" \
+    README.md CHANGES.md UPGRADE.md latest-releases.edn
 git push
 
 echo "Updating gh-pages with new api docs"

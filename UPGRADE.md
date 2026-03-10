@@ -1,5 +1,32 @@
 # Upgrade Notes
 
+## 0.8.711 / 2024-12-03
+
+### New Java-native HTTP client
+
+This release provides a new `java.net.http`-based HTTP client.
+
+This release changes the default type of http client to be the new Java
+native client, when the version of Java is recent enough (11 or newer).
+
+With this release, the `com.cognitect/http-client` is no longer
+a required dependency for this library. If you need to run on Java 8
+(which predates the `java.net.http` module), you must add an explicit
+dependency on `com.cognitect/http-client` in your project, to make the
+previous HTTP client implementation available again - it will be
+automatically used when running on Java 8, as long as it is in the
+classpath.
+
+If you only need to run on java 11+, the new HTTP client is now the
+default, and the change should be transparent. In case you want to
+revert to the previous HTTP client implementation, please see the
+README section about [overriding the http
+client](README.md#overriding-the-http-client).
+
+This fixes issues
+[181](https://github.com/cognitect-labs/aws-api/issues/181) and
+[250](https://github.com/cognitect-labs/aws-api/issues/250).
+
 ## 0.8.430
 
 This release changed the behavior of the following functions:

@@ -4,9 +4,9 @@
 (ns ^:skip-wiki cognitect.aws.endpoint
   "Impl, don't call directly."
   (:refer-clojure :exclude [resolve])
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]
-            [clojure.edn :as edn]
+  (:require [clojure.edn :as edn]
+            [clojure.string :as str]
+            [cognitect.aws.resources :as resources]
             [cognitect.aws.service :as service]))
 
 (set! *warn-on-reflection* true)
@@ -14,7 +14,7 @@
 (defn descriptor-resource-path [] (format "%s/endpoints.edn" service/base-resource-path))
 
 (defn read-endpoints-description []
-  (if-let [resource (io/resource (descriptor-resource-path))]
+  (if-let [resource (resources/resource (descriptor-resource-path))]
     (edn/read-string (slurp resource))
     (throw (ex-info (str "Cannot find resource " (descriptor-resource-path) ".") {}))))
 
