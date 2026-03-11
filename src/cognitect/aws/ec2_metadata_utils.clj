@@ -42,8 +42,8 @@
 (defn get-host-address
   "Gets the EC2 (or ECS) metadata host address"
   []
-  (or (u/getenv ec2-metadata-service-override-env-var)
-      (u/getProperty ec2-metadata-service-override-system-property)
+  (or (u/getProperty ec2-metadata-service-override-system-property)
+      (u/getenv ec2-metadata-service-override-env-var)
       (when (in-container?) ecs-metadata-host)
       ec2-metadata-host))
 
