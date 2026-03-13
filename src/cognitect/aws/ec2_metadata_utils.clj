@@ -13,6 +13,7 @@
 
 (set! *warn-on-reflection* true)
 
+(def ^:const ec2-metadata-service-override-env-var "AWS_EC2_METADATA_SERVICE_ENDPOINT")
 (def ^:const ec2-metadata-service-override-system-property "com.amazonaws.sdk.ec2MetadataServiceEndpointOverride")
 (def ^:const dynamic-data-root "/latest/dynamic/")
 (def ^:const imds-v2-token-path "/latest/api/token")
@@ -42,6 +43,7 @@
   "Gets the EC2 (or ECS) metadata host address"
   []
   (or (u/getProperty ec2-metadata-service-override-system-property)
+      (u/getenv ec2-metadata-service-override-env-var)
       (when (in-container?) ecs-metadata-host)
       ec2-metadata-host))
 
