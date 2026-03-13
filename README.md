@@ -332,14 +332,15 @@ When the aws-api client encounters an error, it uses two functions
 to determine whether to retry the request:
 
 ``` clojure
-(retriable? [anomaly]
-  ;; should return a truthy value when the anomaly* indicates that
-  ;; the request is retriable.
-  )
+(fn retriable? [error-info]
+  (let [anomaly (:cognitect.anomalies/category error-info)]
+    ;; should return a truthy value when the anomaly* indicates that
+    ;; the request is retriable.
+  ))
 
 ;; Then, if retriable? returns a truthy value:
 
-(backoff [n-tries-so-far]
+(fn backoff [n-tries-so-far]
   ;; should return the number of milliseconds to wait before trying
   ;; again, or nil, which indicates that we have reached the max number
   ;; of retries and should not try again.
@@ -392,6 +393,9 @@ client.
 Only `cognitect.anomalies/category` is controlled by aws-api, and you
 should inspect the actual error to understand what other information
 is available to you to decide whether or not a request is retriable.
+
+See [Responses, successes, redirects, and failures](#responses-successes-redirects-and-failures)
+for details about the provided `error-info` argument.
 
 #### default backoff
 
