@@ -7,7 +7,6 @@
   Authors: Ghadi Shayban, Marco Biscaro"
   (:require [clojure.string :as str])
   (:import (java.net URLEncoder)
-           (java.nio.charset StandardCharsets)
            (javax.xml.stream XMLInputFactory
                              XMLStreamConstants
                              XMLStreamReader)))
@@ -30,7 +29,7 @@
   [attr-ns attr-local-name]
   (keyword (when-not (str/blank? attr-ns)
              ; For compatibility with clojure.data.xml
-             (URLEncoder/encode (str "xmlns." attr-ns) StandardCharsets/UTF_8))
+             (URLEncoder/encode (str "xmlns." attr-ns) "UTF-8"))
            attr-local-name))
 
 (defn- read-element
