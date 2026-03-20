@@ -26,11 +26,13 @@
    XMLStreamConstants/CHARACTERS    :chars})
 
 (defn- attr-key
-  [attr-ns attr-local-name]
-  (keyword (when-not (str/blank? attr-ns)
-             ; For compatibility with clojure.data.xml
-             (URLEncoder/encode (str "xmlns." attr-ns) "UTF-8"))
-           attr-local-name))
+  [^XMLStreamReader rdr i]
+  (let [attr-ns (.getAttributeNamespace rdr i)
+        attr-local-name (.getAttributeLocalName rdr i)]
+    (keyword (when-not (str/blank? attr-ns)
+               ; For compatibility with clojure.data.xml
+               (URLEncoder/encode (str "xmlns." attr-ns) "UTF-8"))
+             attr-local-name)))
 
 (defn- read-element
   [^XMLStreamReader rdr]
@@ -41,31 +43,26 @@
               (if (< i nattrs)
                 (recur (inc i)
                        (assoc attrs
-                         (attr-key (.getAttributeNamespace rdr i) (.getAttributeLocalName rdr i))
+                         (attr-key rdr i)
                          (.getAttributeValue rdr i)))
                 attrs))}))
 
 (defn- xml->map
   [^XMLStreamReader rdr]
+  ;; stack is interleaved: coll, element-info, coll, element-info...
   (loop [stack nil content []]
     (if (.hasNext rdr)
       (let [tok (.next rdr)
             tok (consts tok tok)]
         (case tok
+          ;; when an element nests, push current coll and nested element info
           :el/start (recur (conj stack content (read-element rdr)) [])
+          ;; pop element info and parent coll, add element to parent coll
           :el/end (let [[el pcontent & stack] stack]
-                    (recur stack
-                           (conj pcontent (cond-> el
-                                                  (pos? (count content))
-                                                  (assoc :content content)))))
-
-          :chars (recur stack
-                        (if (.isWhiteSpace rdr)
-                          content
-                          (conj content (.getText rdr))))
-          :doc/end
-          (nth content 0)
-
+                    (recur stack (conj pcontent (assoc el :content content))))
+          :chars (recur stack (cond-> content (not (.isWhiteSpace rdr)) (conj (.getText rdr))))
+          :doc/end (nth content 0)
+          ;; skip other types (e.g. comment, ignorable space, dtd, cdata)
           (recur stack content)))
       (throw (IllegalStateException. "unreachable")))))
 
