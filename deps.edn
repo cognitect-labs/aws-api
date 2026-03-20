@@ -5,8 +5,7 @@
  :deps    {org.clojure/clojure       {:mvn/version "1.12.4"}
            org.clojure/core.async    {:mvn/version "1.8.741"}
            org.clojure/tools.logging {:mvn/version "1.3.1"}
-           org.clojure/data.json     {:mvn/version "2.5.2"}
-           org.clojure/data.xml      {:mvn/version "0.2.0-alpha10"}}
+           org.clojure/data.json     {:mvn/version "2.5.2"}}
  :aliases {:update-versions {:extra-paths ["build/src"]
                              :main-opts   ["-m" "cognitect.aws.version-updater"]}
            :dev             {:extra-paths ["dev/src" "dev/resources" "test/src" "test/resources" "examples" "examples/resources"]
@@ -15,6 +14,7 @@
                                            org.slf4j/slf4j-reload4j      {:mvn/version "2.0.17"}
                                            http-kit/http-kit             {:mvn/version "2.8.1"}
                                            software.amazon.awssdk/s3     {:mvn/version "2.41.9"}
+                                           org.clojure/data.xml          {:mvn/version "0.2.0-alpha10"}
                                            com.cognitect/http-client     {:mvn/version "1.0.127"}
                                            com.cognitect.aws/endpoints   {:mvn/version "871.2.42.9"}
                                            com.cognitect.aws/autoscaling {:mvn/version "871.2.41.15"}

@@ -45,11 +45,6 @@
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
-      <artifactId>data.xml</artifactId>
-      <version>0.2.0-alpha10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
       <version>1.8.741</version>
     </dependency>

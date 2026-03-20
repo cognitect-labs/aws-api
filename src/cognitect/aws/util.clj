@@ -4,8 +4,8 @@
 (ns ^:skip-wiki cognitect.aws.util
   "Impl, don't call directly."
   (:require [clojure.string :as str]
-            [clojure.data.xml :as xml]
             [cognitect.aws.json :as json]
+            [cognitect.aws.util.xml :as util.xml]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
   (:import [java.time ZoneOffset ZonedDateTime]
@@ -17,7 +17,7 @@
            [javax.crypto Mac]
            [javax.crypto.spec SecretKeySpec]
            [java.nio ByteBuffer]
-           [java.io ByteArrayInputStream ByteArrayOutputStream]
+           [java.io ByteArrayOutputStream StringReader]
            [java.net URLEncoder]
            [java.util Base64]))
 
@@ -166,9 +166,7 @@
 (defn xml-read
   "Parse the UTF-8 XML string."
   [s]
-  (xml/parse (ByteArrayInputStream. (.getBytes ^String s "UTF-8"))
-             :namespace-aware false
-             :skip-whitespace true))
+  (util.xml/parse (StringReader. s)))
 
 (defn xml->map [element]
   (cond
