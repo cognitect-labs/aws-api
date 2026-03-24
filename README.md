@@ -58,8 +58,10 @@ To use the s3 api, for example, add the following to deps.edn:
         com.cognitect.aws/s3        {:mvn/version "871.2.42.14"}}}
 ```
 
-* See [latest releases](latest-releases.edn) for a listing of the latest releases of
+See [latest releases](latest-releases.edn) for a listing of the latest releases of
 `api`, `endpoints`, and all supported services.
+
+aws-api is compatible with Java 8+, and Clojure 1.11+.
 
 ### explore!
 
