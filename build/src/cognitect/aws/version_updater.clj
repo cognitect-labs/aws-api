@@ -57,7 +57,7 @@
   (let [version (get-in latest [(symbol "com.cognitect.aws" libname) :mvn/version])]
     (update-file fname
                  #(if (re-find (re-pattern (str "com.cognitect.aws\\/" libname "\\s+\\{:mvn\\/version")) %)
-                    (str/replace-first % (re-pattern "\\d+(.\\d+)+") version)
+                    (str/replace-first % #":mvn/version\s+\"[^\"]+\"" (str ":mvn/version \"" version \"""))
                     %))))
 
 (defn update-versions-in-readme []
