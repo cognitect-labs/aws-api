@@ -1,5 +1,11 @@
 # aws-api
 
+## DEV
+
+* Add support for `AWS_EC2_METADATA_SERVICE_ENDPOINT` environment variable (by @dancmeyers) [#293](https://github.com/cognitect-labs/aws-api/issues/293)
+* Remove data.xml dependency [#252](https://github.com/cognitect-labs/aws-api/issues/252)
+  * Prevents cryptic error when using the non-alpha release of data.xml
+
 ## 0.8.800 / 2026-02-03
 
 * Do not attempt to use unsupported protocols [#291](https://github.com/cognitect-labs/aws-api/issues/291)
