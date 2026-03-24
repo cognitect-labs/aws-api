@@ -3,9 +3,13 @@
             [clojure.edn :as edn]))
 
 ; Load dev dependencies from deps.edn
-(require '[babashka.deps :as deps])
-(deps/add-deps (edn/read-string (slurp "deps.edn"))
-               {:aliases [:dev]})
+(when-let [add-deps (try
+                      (requiring-resolve 'babashka.deps/add-deps)
+                      (catch Exception _ignored
+                        ; not in babashka
+                        nil))]
+  (add-deps (edn/read-string (slurp "deps.edn"))
+            {:aliases [:dev]}))
 
 ; NOTE: some tests won't run in babashka:
 ; cognitect.aws.http.default-test - all reify instances start with `babashka.impl.reify`, test won't pass
