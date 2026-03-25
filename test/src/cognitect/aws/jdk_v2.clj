@@ -3,6 +3,7 @@
   (:require [clojure.string :as str]
             [cognitect.aws.util :as util])
   (:import [java.time Clock ZonedDateTime]
+           [java.util.function Consumer]
            [software.amazon.awssdk.auth.credentials AwsBasicCredentials]
            [software.amazon.awssdk.auth.signer Aws4Signer] ;; deprecated
            [software.amazon.awssdk.auth.signer.params Aws4SignerParams] ;; deprecated
@@ -72,17 +73,19 @@
         normalize-path?    (= "v4" signature-version)
         payload-sign?      (some? (#{"s3v4" "s3"} signature-version))]
     (-> signer
-        (.sign (fn [r] (doto r
-                         (.identity basic-credentials)
-                         (.request req)
-                         (.payload (-> req .contentStreamProvider .get))
-                         (.putProperty AwsV4HttpSigner/SERVICE_SIGNING_NAME signing-name)
-                         (.putProperty AwsV4HttpSigner/REGION_NAME region)
-                         (.putProperty AwsV4HttpSigner/SIGNING_CLOCK clock)
-                         (.putProperty AwsV4HttpSigner/DOUBLE_URL_ENCODE double-url-encode?)
-                         (.putProperty AwsV4HttpSigner/NORMALIZE_PATH normalize-path?)
-                         (.putProperty AwsV4HttpSigner/PAYLOAD_SIGNING_ENABLED payload-sign?)
-                         (.putProperty AwsV4HttpSigner/CHUNK_ENCODING_ENABLED false))))
+        (.sign (reify Consumer
+                 (accept [_ r]
+                   (doto r
+                     (.identity basic-credentials)
+                     (.request req)
+                     (.payload (-> req .contentStreamProvider .get))
+                     (.putProperty AwsV4HttpSigner/SERVICE_SIGNING_NAME signing-name)
+                     (.putProperty AwsV4HttpSigner/REGION_NAME region)
+                     (.putProperty AwsV4HttpSigner/SIGNING_CLOCK clock)
+                     (.putProperty AwsV4HttpSigner/DOUBLE_URL_ENCODE double-url-encode?)
+                     (.putProperty AwsV4HttpSigner/NORMALIZE_PATH normalize-path?)
+                     (.putProperty AwsV4HttpSigner/PAYLOAD_SIGNING_ENABLED payload-sign?)
+                     (.putProperty AwsV4HttpSigner/CHUNK_ENCODING_ENABLED false)))))
         .request
         sdk-request->request-map)))
 
