@@ -30,4 +30,6 @@
                                           "-e" "integration"]}
            :test-integration {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
                               :main-opts  ["-m" "cognitect.test-runner"
-                                           "-i" "integration"]}}}
+                                           "-i" "integration"]}
+           :clojure-1.11    {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
+           :clojure-1.12    {:override-deps {org.clojure/clojure {:mvn/version "1.12.4"}}}}}
