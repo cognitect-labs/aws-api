@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>cognitect.aws.client.test-double - aws-api API documentation</title>
+    <title>cognitect.aws.util.xml - aws-api API documentation</title>
     <link rel="icon" href="static/favicon.png" />
     <link rel="shortcut icon" href="static/favicon.png" />
     <link rel="stylesheet" href="static/clojure.css" type="text/css" media="all" />
@@ -51,69 +51,29 @@ namespace.
   <h1 class="nopad">Table of Contents</h1>
   <div class="toc-section" style="margin-left: 1em;">
     <a href="#toc0">Overview</a>
-    <div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.test-double/client">client</a>
-    </div><div class="toc-entry" style="margin-left: 1em;">
-      <a href="#cognitect.aws.client.test-double/instrument">instrument</a>
-    </div>
+    
     <br />
   </div>
 </div>
 </div>
-                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.client.test-double</span>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">cognitect.aws.util.xml</span>
   - <span id="header-project">aws-api</span> <span id="header-version"></span>
   </h1>
 
-<br />Full namespace name: <span id="long-name">cognitect.aws.client.test-double</span>
+<br />Full namespace name: <span id="long-name">cognitect.aws.util.xml</span>
 <p></p>
 <h2>Overview</h2>
-<pre id="namespace-docstr">Provides a test implementation of the aws client, which can be passed
-to the functions in the cognitect.aws.client.api ns.</pre>
+<pre id="namespace-docstr">For internal use. Do not call directly.
+
+Parse XML strings into Clojure maps. Simplified version of clojure.data.xml/parse,
+expected to be backwards compatible.
+
+Authors: Ghadi Shayban, Marco Biscaro</pre>
 
 
 <br />
 <h2>Public Variables and Functions</h2>
-<div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.client.test-double/client">client</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (client {:keys [api ops]})
-</pre>
-  <pre id="var-docstr">Given a map with :api and :ops (optional), returns a test double client that
-you can pass to `cognitect.aws.client.api/invoke` and `cognitect.aws.client.api/stop`
-in implementation code.
- 
-You can provide :ops on creation or use `instrument` to add them later.
 
-:ops should be a map of operation (keyword) to one of
-- a function of op-map that returns a response map
-- a literal response map
-
-Notes:
-- you must instrument every op that will be invoked during a test
-- every op must be supported
-  - See (keys (cognitect.aws.client.api/ops &lt;test-client&gt;))
-- will validate request payloads passed to `invoke` by default
-  - you can disable request validation with (cognitect.aws.client.api/validate-requests client false)
-- will not validate response payloads</pre>
-  
-  
-  
-</div><div id="var-entry">
-  <br />
-  <hr />
-  <h2 id="cognitect.aws.client.test-double/instrument">instrument</h2>
-  <span id="var-type">function</span><br />
-  <pre id="var-usage">Usage: (instrument client ops)
-</pre>
-  <pre id="var-docstr">Given a test double client and a `:ops` map of operations to handlers,
-instruments the client with handlers. See `client` for more info about
-`:ops`.</pre>
-  
-  
-  
-</div>
 
 
 </div>
