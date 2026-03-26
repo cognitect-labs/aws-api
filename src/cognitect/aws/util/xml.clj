@@ -1,4 +1,4 @@
-(ns cognitect.aws.util.xml
+(ns ^:skip-wiki cognitect.aws.util.xml
   "For internal use. Do not call directly.
 
   Parse XML strings into Clojure maps. Simplified version of clojure.data.xml/parse,
