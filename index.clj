@@ -31,11 +31,6 @@
   {:doc nil,
    :name "cognitect.aws.retry",
    :wiki-url "cognitect.aws.retry-api.html",
-   :source-url nil}
-  {:doc
-   "For internal use. Do not call directly.\n\nParse XML strings into Clojure maps. Simplified version of clojure.data.xml/parse,\nexpected to be backwards compatible.\n\nAuthors: Ghadi Shayban, Marco Biscaro",
-   :name "cognitect.aws.util.xml",
-   :wiki-url "cognitect.aws.util.xml-api.html",
    :source-url nil}),
  :vars
  ({:raw-source-url nil,
