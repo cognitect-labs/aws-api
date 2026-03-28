@@ -17,7 +17,7 @@ jobs:
         java-version: [ '8', '11', '17', '21', '25' ]
         clojure-version: ['clojure-1.11', 'clojure-1.12']
 
-    name: Tests with Java version ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
+    name: Tests with Java ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
 
     steps:
       - name: Checkout repository
@@ -64,15 +64,6 @@ jobs:
       - name: Run unit tests
         run: clojure -M:dev:test:${{ matrix.clojure-version }}
 
-      - name: Run babashka tests
-        env:
-          # AWS_PROFILE is only required to comply with fixture check,
-          # it's not actually used to load credentials
-          AWS_PROFILE: aws-api-test
-          AWS_ACCESS_KEY_ID: ${{ secrets.INTEGRATION_TEST_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
-
-        run: bb test-bb
 
   integration-tests-using-java:
     runs-on: ubuntu-24.04
@@ -82,7 +73,7 @@ jobs:
         java-version: [ '8', '25' ]
         clojure-version: ['clojure-1.11', 'clojure-1.12']
 
-    name: Integration tests with Java version ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
+    name: Integration tests with Java ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
 
     services:
       s3:
@@ -141,3 +132,13 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
 
         run: clojure -M:dev:test-integration:${{ matrix.clojure-version }}
+
+      - name: Run babashka tests
+        env:
+          # AWS_PROFILE is only required to comply with fixture check,
+          # it's not actually used to load credentials
+          AWS_PROFILE: aws-api-test
+          AWS_ACCESS_KEY_ID: ${{ secrets.INTEGRATION_TEST_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
+
+        run: bb test-bb
