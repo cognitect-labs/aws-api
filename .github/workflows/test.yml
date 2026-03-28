@@ -59,7 +59,7 @@ jobs:
           restore-keys: cljdeps-
 
       - name: Print Clojure version
-        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
+        run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
 
       - name: Run unit tests
         run: clojure -M:dev:test:${{ matrix.clojure-version }}
@@ -121,7 +121,7 @@ jobs:
           restore-keys: cljdeps-
 
       - name: Print Clojure version
-        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
+        run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
 
       - name: Run integration tests
         env:
