@@ -32,7 +32,7 @@ jobs:
             ~/.m2/repository
             ~/.gitlibs
             ~/.deps.clj
-          key: ${{ runner.os }}-maven-${{ hashFiles('deps.edn') }}
+          key: ${{ runner.os }}-maven-cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -50,16 +50,6 @@ jobs:
         with:
           cli: '1.12.4.1618'
           bb: 1.12.214
-
-      # - name: Cache clojure dependencies
-      #   uses: actions/cache@v5.0.4
-      #   with:
-      #     path: |
-      #       ~/.m2/repository
-      #       ~/.gitlibs
-      #       ~/.deps.clj
-      #     key: cljdeps-${{ hashFiles('deps.edn') }}
-      #     restore-keys: cljdeps-
 
       - name: Print Clojure version
         run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
@@ -97,7 +87,7 @@ jobs:
             ~/.m2/repository
             ~/.gitlibs
             ~/.deps.clj
-          key: ${{ runner.os }}-maven-${{ hashFiles('deps.edn') }}
+          key: ${{ runner.os }}-maven-cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
