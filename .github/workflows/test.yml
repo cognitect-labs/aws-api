@@ -48,9 +48,6 @@ jobs:
           cli: '1.12.4.1618'
           bb: 1.12.214
 
-      - name: Print Clojure version
-        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
-
       - name: Cache clojure dependencies
         uses: actions/cache@v5.0.4
         with:
@@ -60,6 +57,9 @@ jobs:
             ~/.deps.clj
           key: cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: cljdeps-
+
+      - name: Print Clojure version
+        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
 
       - name: Run unit tests
         run: clojure -M:dev:test:${{ matrix.clojure-version }}
@@ -110,9 +110,6 @@ jobs:
           cli: '1.12.4.1618'
           bb: 1.12.214
 
-      - name: Print Clojure version
-        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
-
       - name: Cache clojure dependencies
         uses: actions/cache@v5.0.4
         with:
@@ -122,6 +119,9 @@ jobs:
             ~/.deps.clj
           key: cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: cljdeps-
+
+      - name: Print Clojure version
+        run: clojure -M:dev:clojure-1.11 -e "(println (clojure-version))"
 
       - name: Run integration tests
         env:
