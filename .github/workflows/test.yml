@@ -17,7 +17,7 @@ jobs:
         java-version: [ '8', '11', '17', '21', '25' ]
         clojure-version: ['clojure-1.11', 'clojure-1.12']
 
-    name: Tests with Java ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
+    name: Tests with Java ${{ matrix.java-version }}, ${{ matrix.clojure-version }}
 
     steps:
       - name: Checkout repository
@@ -73,7 +73,7 @@ jobs:
         java-version: [ '8', '25' ]
         clojure-version: ['clojure-1.11', 'clojure-1.12']
 
-    name: Integration tests with Java ${{ matrix.java-version }}, Clojure ${{ matrix.clojure-version }}
+    name: Integration tests with Java ${{ matrix.java-version }}, ${{ matrix.clojure-version }}
 
     services:
       s3:
