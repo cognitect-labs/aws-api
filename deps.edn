@@ -32,4 +32,4 @@
                               :main-opts  ["-m" "cognitect.test-runner"
                                            "-i" "integration"]}
            :clojure-1.11    {:override-deps {org.clojure/clojure {:mvn/version "1.11.4"}}}
-           :clojure-1.12    {:override-deps {org.clojure/clojure {:mvn/version "1.12.4"}}}}}
+           :clojure-1.12    {}}}

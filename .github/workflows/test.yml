@@ -48,8 +48,7 @@ jobs:
       - name: Setup Clojure CLI
         uses: DeLaGuardo/setup-clojure@13.6.0
         with:
-          cli: '1.12.4.1618'
-          bb: 1.12.214
+          cli: 1.12.4.1618
 
       - name: Print Clojure version
         run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
@@ -103,7 +102,7 @@ jobs:
       - name: Setup Clojure CLI
         uses: DeLaGuardo/setup-clojure@13.6.0
         with:
-          cli: '1.12.4.1618'
+          cli: 1.12.4.1618
           bb: 1.12.214
 
       - name: Print Clojure version
