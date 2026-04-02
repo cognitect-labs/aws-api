@@ -32,3 +32,9 @@
            (shape/json-parse* {}
                               {:type "structure" :document true}
                               [{:this "is" :a "doc"}])))))
+
+(deftest test-json-serialize
+  (is (= "{\"this\":\"is\",\"a\":\"doc\"}"
+         (shape/json-serialize {}
+                               {:type "structure", :members {}, :document true}
+                               {:this "is" :a "doc"}))))
