@@ -14,9 +14,58 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-          java-version: [ '8', '11', '17', '21', '25' ]
+        java-version: [ '8', '11', '17', '21', '25' ]
+        clojure-version: ['clojure-1.11', 'clojure-1.12']
 
-    name: Java version ${{ matrix.java-version }}
+    name: Tests with Java ${{ matrix.java-version }}, ${{ matrix.clojure-version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache build materials and clojure deps
+        uses: actions/cache@v5.0.4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: ${{ runner.os }}-maven-cljdeps-${{ hashFiles('deps.edn') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
+
+      - name: Print java version
+        run: java -version
+
+      - name: Setup Clojure CLI
+        uses: DeLaGuardo/setup-clojure@13.6.0
+        with:
+          cli: 1.12.4.1618
+
+      - name: Print Clojure version
+        run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
+
+      - name: Run unit tests
+        run: clojure -M:dev:test:${{ matrix.clojure-version }}
+
+
+  integration-tests-using-java:
+    runs-on: ubuntu-24.04
+    strategy:
+      # Smaller matrix for integration tests, hopefully avoid rate-limiting on s3 bucket access
+      matrix:
+        java-version: [ '8', '25' ]
+        clojure-version: ['clojure-1.11', 'clojure-1.12']
+
+    name: Integration tests with Java ${{ matrix.java-version }}, ${{ matrix.clojure-version }}
 
     services:
       s3:
@@ -30,16 +79,19 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Cache build materials
-        uses: actions/cache@v5.0.2
+      - name: Cache build materials and clojure deps
+        uses: actions/cache@v5.0.4
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('deps.edn') }}
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: ${{ runner.os }}-maven-cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Setup Java
-        uses: actions/setup-java@v5.1.0
+      - name: Setup Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v5.2.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
@@ -47,24 +99,13 @@ jobs:
       - name: Print java version
         run: java -version
 
-      - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@13.5
+      - name: Setup Clojure CLI
+        uses: DeLaGuardo/setup-clojure@13.6.0
         with:
-          cli: 1.12.4.1582
-          bb: 1.12.214
+          cli: 1.12.4.1618
 
-      - name: Cache clojure dependencies
-        uses: actions/cache@v5.0.2
-        with:
-          path: |
-            ~/.m2/repository
-            ~/.gitlibs
-            ~/.deps.clj
-          key: cljdeps-${{ hashFiles('deps.edn') }}
-          restore-keys: cljdeps-
-
-      - name: Run unit tests
-        run: clojure -M:dev:test
+      - name: Print Clojure version
+        run: clojure -M:dev:${{ matrix.clojure-version }} -e "(println (clojure-version))"
 
       - name: Run integration tests
         env:
@@ -74,7 +115,39 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.INTEGRATION_TEST_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.INTEGRATION_TEST_AWS_SECRET_ACCESS_KEY }}
 
-        run: clojure -M:dev:test-integration
+        run: clojure -M:dev:test-integration:${{ matrix.clojure-version }}
+
+  babashka-tests:
+    runs-on: ubuntu-24.04
+    name: Babashka tests
+
+    services:
+      s3:
+        image: bitnamilegacy/minio
+        ports:
+          - 9000:9000
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Cache build materials and clojure deps
+        uses: actions/cache@v5.0.4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.deps.clj
+          key: ${{ runner.os }}-maven-cljdeps-${{ hashFiles('deps.edn') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Setup Clojure CLI
+        uses: DeLaGuardo/setup-clojure@13.6.0
+        with:
+          bb: 1.12.214
 
       - name: Run babashka tests
         env:
