@@ -119,7 +119,7 @@ jobs:
 
   babashka-tests:
     runs-on: ubuntu-24.04
-    name: Integration tests with Java ${{ matrix.java-version }}, ${{ matrix.clojure-version }}
+    name: Babashka tests
 
     services:
       s3:
