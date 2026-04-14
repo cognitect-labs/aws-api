@@ -1,5 +1,9 @@
 # aws-api
 
+## DEV
+
+* Support JSON serialization of document shapes (by @GaspardP) [#270](https://github.com/cognitect-labs/aws-api/issues/270)
+
 ## 0.8.812 / 2026-03-24
 
 * Add support for `AWS_EC2_METADATA_SERVICE_ENDPOINT` environment variable (by @dancmeyers) [#293](https://github.com/cognitect-labs/aws-api/issues/293)
