@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.824 / 2026-04-14
 
 * Support JSON serialization of document shapes (by @GaspardP) [#270](https://github.com/cognitect-labs/aws-api/issues/270)
 
