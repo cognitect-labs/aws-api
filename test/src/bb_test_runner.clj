@@ -14,7 +14,6 @@
 ; NOTE: some tests won't run in babashka:
 ; cognitect.aws.http.default-test - all reify instances start with `babashka.impl.reify`, test won't pass
 ; cognitect.aws.signers-test - requires loading AWS SDK, which is not supported (no Java libs)
-; cognitect.client.test-double-test - test double not supported in babashka
 (def test-namespaces
   ['cognitect.aws.api-test
    'cognitect.aws.client.shared-test
@@ -33,7 +32,8 @@
    'cognitect.aws.retry-test
    'cognitect.aws.shape-test
    'cognitect.aws.util-test
-   'cognitect.client.impl-test])
+   'cognitect.client.impl-test
+   'cognitect.client.test-double-test])
 
 (defn run-tests [& _args]
   (apply require test-namespaces)

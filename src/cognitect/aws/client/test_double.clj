@@ -20,64 +20,67 @@
 (defprotocol TestDoubleClient
   (-instrument [c ops]))
 
-(deftype Client [info handlers]
-  ILookup
-  (valAt [this k]
-    (.valAt this k nil))
+(defn- invoke* [client {:keys [op request] :as op-map} info handlers]
+  (let [spec    (validation/request-spec (:service info) op)
+        handler (get @handlers op)]
+    (cond
+      (not (get-in info [:service :operations op]))
+      (validation/unsupported-op-anomaly (:service info) op)
 
-  (valAt [_this k default]
-    (case k
-      :api
-      (-> info :service :metadata :cognitect.aws/service-name)
-      :service
-      (:service info)
-      default))
+      (and (validation/validate-requests? client)
+           spec
+           (not (validation/valid? spec request)))
+      (validation/invalid-request-anomaly spec request)
 
-  client.protocol/Client
-  (-get-info [_] info)
+      (not handler)
+      (no-handler-provided-anomaly op)
 
-  (-invoke [this {:keys [op request] :as op-map}]
-    (let [spec    (validation/request-spec (:service info) op)
-          handler (get @handlers op)]
-      (cond
-        (not (get-in info [:service :operations op]))
-        (validation/unsupported-op-anomaly (:service info) op)
+      :else
+      (handler op-map))))
 
-        (and (validation/validate-requests? this)
-             spec
-             (not (validation/valid? spec request)))
-        (validation/invalid-request-anomaly spec request)
+(defn ^:skip-wiki ->Client [info handlers]
+  (reify
+    ILookup
+    (valAt [this k]
+      (.valAt this k nil))
 
-        (not handler)
-        (no-handler-provided-anomaly op)
+    (valAt [_this k default]
+      (case k
+        :api
+        (-> info :service :metadata :cognitect.aws/service-name)
+        :service
+        (:service info)
+        default))
 
-        :else
-        (handler op-map))))
+    client.protocol/Client
+    (-get-info [_] info)
 
-  (-invoke-async [this {:keys [ch] :as op-map}]
-    (let [response-chan (or ch (a/promise-chan))]
-      (a/go
-        (let [resp (.-invoke this op-map)]
-          (a/>! response-chan resp)))
-      response-chan))
+    (-invoke [this op-map]
+      (invoke* this op-map info handlers))
 
-  (-stop [_aws-client])
-  
-  TestDoubleClient
-  (-instrument [client ops]
-               (swap! (.handlers client)
-                      (fn [handlers]
-                        (reduce-kv
-                         (fn [m op handler]
-                           (when-not (some-> client :service  :operations op)
-                             (throw (ex-info "Operation not supported"
-                                             (validation/unsupported-op-anomaly (-> client :service) op))))
-                           (assoc m op (if (fn? handler) handler (constantly handler))))
-                         handlers
-                         ops)))))
+    (-invoke-async [this {:keys [ch] :as op-map}]
+      (let [response-chan (or ch (a/promise-chan))]
+        (a/go
+          (let [resp (invoke* this op-map info handlers)]
+            (a/>! response-chan resp)))
+        response-chan))
 
-;; ->Client is intended for internal use
-(alter-meta! #'->Client assoc :skip-wiki true)
+    (-stop [_aws-client])
+
+    TestDoubleClient
+    (-instrument [client ops]
+      (swap! handlers
+             (fn [handlers]
+               (reduce-kv
+                 (fn [m op handler]
+                   (when-not (some-> client :service :operations op)
+                     (throw (ex-info "Operation not supported"
+                                     (validation/unsupported-op-anomaly (-> client :service) op))))
+                   (assoc m op (if (fn? handler) handler (constantly handler))))
+                 handlers
+                 ops))))))
+
+;; Intended for internal use
 (alter-meta! #'TestDoubleClient assoc :skip-wiki true)
 
 (defn instrument
