@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.838 / 2026-07-07
 
 * Fix test-double in Babashka [#312](https://github.com/cognitect-labs/aws-api/issues/312)
 
