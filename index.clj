@@ -218,7 +218,7 @@
    :name "client",
    :file "src/cognitect/aws/client/test_double.clj",
    :source-url nil,
-   :line 90,
+   :line 93,
    :var-type "function",
    :arglists ([{:keys [api ops]}]),
    :doc
@@ -230,7 +230,7 @@
    :name "instrument",
    :file "src/cognitect/aws/client/test_double.clj",
    :source-url nil,
-   :line 83,
+   :line 86,
    :var-type "function",
    :arglists ([client ops]),
    :doc
