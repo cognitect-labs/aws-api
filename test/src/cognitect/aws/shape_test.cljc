@@ -58,16 +58,19 @@
       (is (= "1785364595"
              (shape/format-date {:timestampFormat "unixTimestamp"} data)))))
 
-  (testing "custom protocol extension"
-    (extend-protocol Inst
-      Long
-      (inst-ms* [inst] inst))
+  #?(;; https://github.com/babashka/babashka/issues/1321
+     :bb nil
+     :clj
+     (testing "custom protocol extension"
+       (extend-protocol Inst
+         Long
+         (inst-ms* [inst] inst))
 
-    (let [data 1785364595339]
-      (is (inst? data))
-      (is (= "Wed, 29 Jul 2026 22:36:35 GMT"
-             (shape/format-date {:timestampFormat "rfc822"} data)))
-      (is (= "2026-07-29T22:36:35Z"
-             (shape/format-date {:timestampFormat "iso8601"} data)))
-      (is (= "1785364595"
-             (shape/format-date {:timestampFormat "unixTimestamp"} data))))))
+       (let [data 1785364595339]
+         (is (inst? data))
+         (is (= "Wed, 29 Jul 2026 22:36:35 GMT"
+                (shape/format-date {:timestampFormat "rfc822"} data)))
+         (is (= "2026-07-29T22:36:35Z"
+                (shape/format-date {:timestampFormat "iso8601"} data)))
+         (is (= "1785364595"
+                (shape/format-date {:timestampFormat "unixTimestamp"} data)))))))
