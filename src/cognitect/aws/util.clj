@@ -8,7 +8,7 @@
             [cognitect.aws.util.xml :as util.xml]
             [clojure.java.io :as io]
             [clojure.core.async :as a])
-  (:import [java.time ZoneOffset ZonedDateTime]
+  (:import [java.time Instant ZoneOffset ZonedDateTime]
            [java.time.format DateTimeFormatter]
            [java.util Date]
            [java.util UUID]
@@ -26,13 +26,13 @@
 (defn format-date
   ([fmt]
    (format-date fmt (Date.)))
-  ([^DateTimeFormatter fmt ^Date inst]
-   (.format fmt (.atZone (.toInstant inst) ZoneOffset/UTC))))
+  ([^DateTimeFormatter fmt inst]
+   (.format fmt (.atZone (Instant/ofEpochMilli (inst-ms inst)) ZoneOffset/UTC))))
 
 (defn format-timestamp
   "Format a timestamp in milliseconds."
   [inst]
-  (str (long (/ (.getTime ^Date inst) 1000))))
+  (str (long (/ (inst-ms inst) 1000))))
 
 (defn parse-date
   [^DateTimeFormatter fmt ^String s]
