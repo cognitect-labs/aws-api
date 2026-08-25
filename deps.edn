@@ -19,9 +19,9 @@
                                            com.cognitect.aws/endpoints   {:mvn/version "871.2.53.2"}
                                            com.cognitect.aws/autoscaling {:mvn/version "871.2.53.2"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "871.2.51.4"}
-                                           com.cognitect.aws/ec2         {:mvn/version "871.2.51.4"}
+                                           com.cognitect.aws/ec2         {:mvn/version "871.2.54.3"}
                                            com.cognitect.aws/iam         {:mvn/version "871.2.53.2"}
-                                           com.cognitect.aws/lambda      {:mvn/version "871.2.50.3"}
+                                           com.cognitect.aws/lambda      {:mvn/version "871.2.54.3"}
                                            com.cognitect.aws/s3          {:mvn/version "871.2.51.4"}
                                            com.cognitect.aws/ssm         {:mvn/version "871.2.49.4"}
                                            com.cognitect.aws/sts         {:mvn/version "871.2.42.37"}}}
