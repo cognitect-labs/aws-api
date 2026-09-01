@@ -58,7 +58,8 @@
      :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
                       (when (#{"https"} (.getScheme uri)) 443)
                       80)
-     :uri (.getPath uri)
+     :uri (.getRawPath uri)
+     :query-string (.getRawQuery uri)
      :request-method :get
      :headers (cond-> {"Accept" "*/*"}
                 auth-token

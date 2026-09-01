@@ -31,6 +31,10 @@
     (is (= 443  (:server-port (#'ec2-metadata-utils/request-map (URI/create "https://169.254.169.254")))))
     (is (= 80   (:server-port (#'ec2-metadata-utils/request-map (URI/create "http://169.254.169.254")))))
     (is (= 8081 (:server-port (#'ec2-metadata-utils/request-map (URI/create "http://169.254.169.254:8081"))))))
+  (testing "custom uris"
+    (let [req-map (#'ec2-metadata-utils/request-map (URI/create "http://localhost:8080/get%20credentials?auth=123&data=a%20b"))]
+      (is (= "/get%20credentials" (:uri req-map)))
+      (is (= "auth=123&data=a%20b" (:query-string req-map)))))
   (testing "auth token"
     (is (nil? (get-in (#'ec2-metadata-utils/request-map (URI/create "http://localhost")) [:headers "Authorization"])))
     (with-redefs [u/getenv {"AWS_CONTAINER_AUTHORIZATION_TOKEN" "this-is-the-token"}]
