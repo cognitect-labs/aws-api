@@ -15,7 +15,8 @@
                                            http-kit/http-kit             {:mvn/version "2.8.1"}
                                            software.amazon.awssdk/s3     {:mvn/version "2.54.10"}
                                            org.clojure/data.xml          {:mvn/version "0.2.0-alpha11"}
-                                           com.cognitect/http-client     {:mvn/version "1.0.148"}
+                                           ; NOTE: newer com.cognitect/http-client versions don't support Java 8
+                                           com.cognitect/http-client     {:mvn/version "1.0.127"}
                                            com.cognitect.aws/endpoints   {:mvn/version "871.2.53.2"}
                                            com.cognitect.aws/autoscaling {:mvn/version "871.2.54.9"}
                                            com.cognitect.aws/dynamodb    {:mvn/version "871.2.51.4"}
