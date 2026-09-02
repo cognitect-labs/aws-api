@@ -24,6 +24,7 @@
 (def ^:const container-credentials-relative-uri-env-var "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI")
 (def ^:const container-credentials-full-uri-env-var "AWS_CONTAINER_CREDENTIALS_FULL_URI")
 (def ^:const container-authorization-token-env-var "AWS_CONTAINER_AUTHORIZATION_TOKEN")
+(def ^:const container-authorization-token-file-env-var "AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE")
 
 (def ^:const ec2-metadata-host "http://169.254.169.254")
 (def ^:const ecs-metadata-host "http://169.254.170.2")
@@ -49,7 +50,11 @@
 
 (defn- request-map
   [^URI uri]
-  (let [auth-token (u/getenv container-authorization-token-env-var)
+  (let [auth-token (or (u/getenv container-authorization-token-env-var)
+                       (when-let [token-file (u/getenv container-authorization-token-file-env-var)]
+                         (try
+                           (str/trim (slurp token-file))
+                           (catch java.io.IOException _ignored nil))))
         ;; matches the java sdk v2 default value
         ;; https://github.com/aws/aws-sdk-java-v2/blob/43950cfe9c067b56f3eedaa8c078432495be7c36/core/sdk-core/src/main/java/software/amazon/awssdk/core/SdkSystemSetting.java#L93-L101
         read-timeout-msec 1000]
@@ -58,7 +63,8 @@
      :server-port (or (when (pos? (.getPort uri)) (.getPort uri))
                       (when (#{"https"} (.getScheme uri)) 443)
                       80)
-     :uri (.getPath uri)
+     :uri (.getRawPath uri)
+     :query-string (.getRawQuery uri)
      :request-method :get
      :headers (cond-> {"Accept" "*/*"}
                 auth-token
