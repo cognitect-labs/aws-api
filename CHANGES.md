@@ -1,6 +1,6 @@
 # aws-api
 
-## DEV
+## 0.8.847 / 2026-09-02
 
 * Accept any value that satisfies `inst?` in `timestamp` shapes [#314](https://github.com/cognitect-labs/aws-api/issues/314)
 * Add support for EKS Pod Identity via `AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE` [#286](https://github.com/cognitect-labs/aws-api/issues/286)
