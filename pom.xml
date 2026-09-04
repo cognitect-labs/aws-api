@@ -36,7 +36,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.12.4</version>
+      <version>1.12.6</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>core.async</artifactId>
-      <version>1.8.741</version>
+      <version>1.9.865</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -82,7 +82,7 @@
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.7.0</version>
+        <version>0.11.0</version>
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>
