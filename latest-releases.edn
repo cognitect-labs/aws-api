@@ -57,7 +57,7 @@
  com.cognitect.aws/appflow
  {:mvn/version "871.2.54.18", :aws/serviceFullName "Amazon Appflow"},
  com.cognitect.aws/appintegrations
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon AppIntegrations Service"},
  com.cognitect.aws/application-autoscaling
  {:mvn/version "871.2.46.17",
@@ -129,10 +129,10 @@
  {:mvn/version "871.2.53.2",
   :aws/serviceFullName "Agents for Amazon Bedrock Runtime"},
  com.cognitect.aws/bedrock-agentcore
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Bedrock AgentCore"},
  com.cognitect.aws/bedrock-agentcore-control
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Bedrock AgentCore Control"},
  com.cognitect.aws/bedrock-data-automation
  {:mvn/version "871.2.46.0",
@@ -146,7 +146,7 @@
  com.cognitect.aws/billing
  {:mvn/version "871.2.54.18", :aws/serviceFullName "AWS Billing"},
  com.cognitect.aws/billingconductor
- {:mvn/version "871.2.54.18",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWSBillingConductor"},
  com.cognitect.aws/braket
  {:mvn/version "871.2.42.34", :aws/serviceFullName "Braket"},
@@ -266,7 +266,7 @@
  com.cognitect.aws/config
  {:mvn/version "871.2.49.4", :aws/serviceFullName "AWS Config"},
  com.cognitect.aws/connect
- {:mvn/version "871.2.54.18",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Connect Service"},
  com.cognitect.aws/connect-contact-lens
  {:mvn/version "871.2.54.3",
@@ -297,7 +297,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "AWS Cost and Usage Report Service"},
  com.cognitect.aws/customer-profiles
- {:mvn/version "871.2.54.9",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Connect Customer Profiles"},
  com.cognitect.aws/databrew
  {:mvn/version "871.2.33.0", :aws/serviceFullName "AWS Glue DataBrew"},
@@ -309,7 +309,7 @@
  com.cognitect.aws/datasync
  {:mvn/version "871.2.50.3", :aws/serviceFullName "AWS DataSync"},
  com.cognitect.aws/datazone
- {:mvn/version "871.2.54.9", :aws/serviceFullName "Amazon DataZone"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "Amazon DataZone"},
  com.cognitect.aws/dax
  {:mvn/version "871.2.34.6",
   :aws/serviceFullName "Amazon DynamoDB Accelerator (DAX)"},
@@ -326,7 +326,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "Amazon DevOps Guru"},
  com.cognitect.aws/directconnect
- {:mvn/version "871.2.54.3",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS Direct Connect"},
  com.cognitect.aws/directory-service-data
  {:mvn/version "871.2.31.23",
@@ -341,7 +341,7 @@
  {:mvn/version "871.2.50.3",
   :aws/serviceFullName "AWS Database Migration Service"},
  com.cognitect.aws/docdb
- {:mvn/version "871.2.37.4",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon DocumentDB with MongoDB compatibility"},
  com.cognitect.aws/docdb-elastic
  {:mvn/version "871.2.29.35",
@@ -361,7 +361,7 @@
  {:mvn/version "871.2.32.30",
   :aws/serviceFullName "Amazon Elastic Block Store"},
  com.cognitect.aws/ec2
- {:mvn/version "871.2.54.18",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Elastic Compute Cloud"},
  com.cognitect.aws/ec2-instance-connect
  {:mvn/version "871.2.33.0",
@@ -384,7 +384,7 @@
  {:mvn/version "871.2.46.18",
   :aws/serviceFullName "Amazon ElastiCache"},
  com.cognitect.aws/elasticbeanstalk
- {:mvn/version "871.2.42.9",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS Elastic Beanstalk"},
  com.cognitect.aws/elasticfilesystem
  {:mvn/version "871.2.46.6",
@@ -471,7 +471,7 @@
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "AWS Global Accelerator"},
  com.cognitect.aws/glue
- {:mvn/version "871.2.54.18", :aws/serviceFullName "AWS Glue"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "AWS Glue"},
  com.cognitect.aws/grafana
  {:mvn/version "871.2.44.12",
   :aws/serviceFullName "Amazon Managed Grafana"},
@@ -484,7 +484,7 @@
  {:mvn/version "871.2.46.0",
   :aws/serviceFullName "AWS Ground Station"},
  com.cognitect.aws/guardduty
- {:mvn/version "871.2.54.13", :aws/serviceFullName "Amazon GuardDuty"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "Amazon GuardDuty"},
  com.cognitect.aws/health
  {:mvn/version "871.2.42.4",
   :aws/serviceFullName "AWS Health APIs and Notifications"},
@@ -545,12 +545,12 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS IoT TwinMaker"},
  com.cognitect.aws/iotwireless
- {:mvn/version "871.2.49.4", :aws/serviceFullName "AWS IoT Wireless"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "AWS IoT Wireless"},
  com.cognitect.aws/ivs
  {:mvn/version "871.2.49.4",
   :aws/serviceFullName "Amazon Interactive Video Service"},
  com.cognitect.aws/ivs-realtime
- {:mvn/version "871.2.42.34",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Interactive Video Service RealTime"},
  com.cognitect.aws/ivschat
  {:mvn/version "871.2.29.35",
@@ -652,7 +652,7 @@
  {:mvn/version "871.2.54.13",
   :aws/serviceFullName "AWS Marketplace Agreement Service"},
  com.cognitect.aws/marketplace-catalog
- {:mvn/version "871.2.54.3",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS Marketplace Catalog Service"},
  com.cognitect.aws/marketplace-deployment
  {:mvn/version "871.2.31.64",
@@ -753,7 +753,7 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "Amazon CloudWatch Network Monitor"},
  com.cognitect.aws/notifications
- {:mvn/version "871.2.33.5",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS User Notifications"},
  com.cognitect.aws/notificationscontacts
  {:mvn/version "871.2.29.35",
@@ -853,7 +853,7 @@
  com.cognitect.aws/qbusiness
  {:mvn/version "871.2.40.14", :aws/serviceFullName "QBusiness"},
  com.cognitect.aws/qconnect
- {:mvn/version "871.2.44.12", :aws/serviceFullName "Amazon Q Connect"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "Amazon Q Connect"},
  com.cognitect.aws/quicksight
  {:mvn/version "871.2.54.9", :aws/serviceFullName "Amazon QuickSight"},
  com.cognitect.aws/ram
@@ -886,7 +886,7 @@
  {:mvn/version "871.2.29.39",
   :aws/serviceFullName "AWS Resilience Hub"},
  com.cognitect.aws/resiliencehubv2
- {:mvn/version "871.2.54.18",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS Resilience Hub V2"},
  com.cognitect.aws/resource-explorer-2
  {:mvn/version "871.2.46.18",
@@ -952,7 +952,7 @@
  {:mvn/version "871.2.46.17",
   :aws/serviceFullName "Amazon S3 Vectors"},
  com.cognitect.aws/sagemaker
- {:mvn/version "871.2.54.18",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon SageMaker Service"},
  com.cognitect.aws/sagemaker-a2i-runtime
  {:mvn/version "871.2.32.30",
@@ -1007,7 +1007,7 @@
  com.cognitect.aws/servicediscovery
  {:mvn/version "871.2.32.25", :aws/serviceFullName "AWS Cloud Map"},
  com.cognitect.aws/sesv2
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Simple Email Service"},
  com.cognitect.aws/shield
  {:mvn/version "871.2.32.30", :aws/serviceFullName "AWS Shield"},
@@ -1029,10 +1029,10 @@
  {:mvn/version "871.2.43.0",
   :aws/serviceFullName "Amazon Import/Export Snowball"},
  com.cognitect.aws/sns
- {:mvn/version "871.2.46.6",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Simple Notification Service"},
  com.cognitect.aws/socialmessaging
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS End User Messaging Social"},
  com.cognitect.aws/sqs
  {:mvn/version "871.2.34.1",
@@ -1109,13 +1109,13 @@
  {:mvn/version "871.2.29.35",
   :aws/serviceFullName "AWS Telco Network Builder"},
  com.cognitect.aws/transcribe
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon Transcribe Service"},
  com.cognitect.aws/transcribe-streaming
  {:mvn/version "871.2.50.3",
   :aws/serviceFullName "Amazon Transcribe Streaming Service"},
  com.cognitect.aws/transfer
- {:mvn/version "871.2.54.13",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "AWS Transfer Family"},
  com.cognitect.aws/translate
  {:mvn/version "871.2.32.30", :aws/serviceFullName "Amazon Translate"},
@@ -1131,7 +1131,7 @@
  com.cognitect.aws/voice-id
  {:mvn/version "871.2.29.35", :aws/serviceFullName "Amazon Voice ID"},
  com.cognitect.aws/vpc-lattice
- {:mvn/version "871.2.54.3",
+ {:mvn/version "871.2.55.2",
   :aws/serviceFullName "Amazon VPC Lattice"},
  com.cognitect.aws/waf
  {:mvn/version "871.2.33.0", :aws/serviceFullName "AWS WAF"},
@@ -1156,7 +1156,7 @@
  {:mvn/version "871.2.33.0",
   :aws/serviceFullName "Amazon WorkMail Message Flow"},
  com.cognitect.aws/workspaces
- {:mvn/version "871.2.54.3", :aws/serviceFullName "Amazon WorkSpaces"},
+ {:mvn/version "871.2.55.2", :aws/serviceFullName "Amazon WorkSpaces"},
  com.cognitect.aws/workspaces-instances
  {:mvn/version "871.2.54.9",
   :aws/serviceFullName "Amazon Workspaces Instances"},
