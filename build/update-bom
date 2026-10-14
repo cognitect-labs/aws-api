@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+echo "Updating BOM"
+
+rm -rf target/api-bom
+clojure -M:update-bom
+
+echo "Releasing BOM to Central"
+
+./mvnw -ntp -B -f target/api-bom/pom.xml -Dgpg.signer=bc deploy
