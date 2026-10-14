@@ -29,8 +29,6 @@ jobs:
         server-id: central
         server-username: MAVEN_CENTRAL_TOKEN
         server-password: MAVEN_CENTRAL_TOKEN_PASSWORD
-        gpg-private-key: ${{ secrets.COGNITECT_SECRET_GPG_KEY }}
-        gpg-passphrase: COGNITECT_SECRET_GPG_KEY_PASSPHRASE
 
     - name: Install clojure
       uses: DeLaGuardo/setup-clojure@13.6.1
@@ -42,4 +40,5 @@ jobs:
       env:
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
         MAVEN_CENTRAL_TOKEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_PASSWORD }}
-        COGNITECT_SECRET_GPG_KEY_PASSPHRASE: ${{ secrets.COGNITECT_SECRET_GPG_KEY_PASSPHRASE }}
+        MAVEN_GPG_KEY: ${{ secrets.COGNITECT_SECRET_GPG_KEY }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.COGNITECT_SECRET_GPG_KEY_PASSPHRASE }}
