@@ -20,7 +20,7 @@ echo $version
 
 echo "Releasing..."
 ./mvnw -ntp -B versions:set -DnewVersion=${version}
-./mvnw -ntp -B clean deploy
+./mvnw -ntp -B -Dgpg.signer=bc clean deploy
 ./mvnw -ntp -B versions:revert
 
 echo "Tagging..."
@@ -32,6 +32,8 @@ clojure -A:update-versions --update-latest-releases --update-changelog --update-
 git commit -m "Update README.md, CHANGES.md, UPGRADE.md, and latest-releases.edn with ${version}" \
     README.md CHANGES.md UPGRADE.md latest-releases.edn
 git push
+
+build/update-bom
 
 echo "Updating gh-pages with new api docs"
 build/doc
