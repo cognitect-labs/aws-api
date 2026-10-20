@@ -48,6 +48,27 @@
   <version>" bom-version "</version>
   <packaging>pom</packaging>
   <name>" (xml-escape bom-name) "</name>
+  <description>" (xml-escape bom-name) "</description>
+  <url>https://github.com/cognitect-labs/aws-api</url>
+  <licenses>
+    <license>
+      <name>Apache-2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Cognitect</name>
+      <email>labs@cognitect.com</email>
+      <organization>Cognitect</organization>
+      <organizationUrl>https://cognitect.com</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:cognitect-labs/aws-api.git</connection>
+    <developerConnection>scm:git:git@github.com:cognitect-labs/aws-api.git</developerConnection>
+    <url>https://github.com/cognitect-labs/aws-api</url>
+  </scm>
   <dependencyManagement>
     <dependencies>
 "
