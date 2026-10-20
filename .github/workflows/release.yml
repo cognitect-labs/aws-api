@@ -36,7 +36,7 @@ jobs:
         cli: '1.12.6.1673'
 
     - name: Publish to Maven OSS Server
-      run: ./build/update-bom
+      run: ./build/release
       env:
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
         MAVEN_CENTRAL_TOKEN_PASSWORD: ${{ secrets.MAVEN_CENTRAL_TOKEN_PASSWORD }}
